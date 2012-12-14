@@ -1,8 +1,9 @@
 define([
 	"underscore",
 	"backbone",
-	"models/homecomponent"
-], function(_, Backbone, HomeComponent) {
+	"models/homecomponent",
+	"collections/devices",
+], function(_, Backbone, HomeComponentModel, DevicesCollection) {
 
 	/**
 	 * @class RoomModel
@@ -18,5 +19,4 @@ define([
 	});
 
 	return RoomModel;
-
 });
