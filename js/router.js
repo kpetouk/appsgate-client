@@ -11,29 +11,29 @@ define([
 	 */
 	var AppRouter = Backbone.Router.extend({
 		routes: {
-			// "/devices": showDevices,
 			"rooms": "showRooms",
+			"room/:id": "showSingleRoom",
 			"*path": "default"
 		}
 	});
 
 	/**
-	 * @constructor
+	 * initialize the router by mapping routes with callbacks
 	 */
 	var initialize = function() {
 		var appRouter = new AppRouter();
 
-		/* appRouter.on("showDevices", function() {
-			var deviceListView = new DeviceListView();
-			deviceListView.render();
-		}); */
-
+		/* show the list of the rooms */
 		appRouter.on("route:showRooms", function() {
-			console.log("show the rooms");
 			var roomListView = new RoomListView();
 			roomListView.render();
 		});
 
+		/* show a detailed view for the room id */
+		appRouter.on("route:showSingleRoom", function(id) {
+		});
+
+		/* default route, render the home page */
 		appRouter.on("route:default", function() {
 			var homeView = new HomeView();
 			homeView.render();

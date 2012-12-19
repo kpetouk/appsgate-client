@@ -1,5 +1,5 @@
 <ul>
 	<% _.each(rooms, function(room) { %>
-	<li><a href="#"><%= room.get("name") %></a></li>
+	<li><a href="#room/<%= room.get('id') %>"><%= room.get("name") %></a></li>
 	<% }); %>
 </ul>

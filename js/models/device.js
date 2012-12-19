@@ -8,6 +8,11 @@ define([
 	 * @class DeviceModel
 	 */
 	var DeviceModel = HomeComponentModel.extend({
+
+		defaults: {
+			roomId: -1
+		}
+
 	});
 
 	return DeviceModel;
