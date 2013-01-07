@@ -2,10 +2,9 @@ define([
 	"jquery",
 	"underscore",
 	"backbone",
-	"models/device",
 	"collections/devices",
 	"text!templates/devices/single.html"
-], function($, _, Backbone, DeviceModel, singleDeviceTemplate) {
+], function($, _, Backbone, DeviceCollection, singleDeviceTemplate) {
 
 	/**
 	 * @class SingleDeviceView
@@ -13,13 +12,28 @@ define([
 	var SingleDeviceView = Backbone.View.extend({
 		tagName: "article",
 		className: "device-container",
+		el: $("#appsgate"),
 		template: _.template(singleDeviceTemplate),
 
 		/**
+		 * @constructor
+		 */
+		initialize:function(opts) {
+			this.model = DeviceCollection.getDevices(opts.deviceCid);
+		},
+
+		/**
+		 * Render the view for a single device
+		 *
 		 * @method render
 		 */
 		render:function() {
-			this.$el.html(this.template(this.model.toJSON()));
+			if (this.model !== undefined) {
+				this.$el.html(this.template({ device: this.model }));
+			} else {
+				this.$el.html("device not found");
+			}
+
 			return this;
 		}
 	});

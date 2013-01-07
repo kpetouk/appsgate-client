@@ -4,23 +4,25 @@ define([
 	"backbone",
 	"collections/devices",
 	"text!templates/devices/list.html"
-], function($, _, Backbone, DevicesCollection, devicesListTemplate) {
+], function($, _, Backbone, DeviceCollection, devicesListTemplate) {
 
 	/**
 	 * @class DeviceListView
 	 */
 	var DeviceListView = Backbone.View.extend({
-		el: $("#container"),
+		tagName: "article",
+		className: "list-devices-container",
+		el: $("#appsgate"),
+		template: _.template(devicesListTemplate),
 
-		/**
-		 * @constructor
-		 */
-		initialize:function() {
-			this.collection = new DevicesCollection();
-			this.collection.add({ name: "Bob's tablet" });
+		render:function() {
+			var data = {
+				devices: devicesCollection, // DeviceCollection.getDevices(),
+				_: _
+			};
 
-			var template = _.template(devicesListTemplate, { devices: this.collection.models });
-			this.$el.html(template);
+			this.$el.html(this.template(data));
+			return this;
 		}
 	});
 

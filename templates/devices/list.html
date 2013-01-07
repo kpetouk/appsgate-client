@@ -1,0 +1,7 @@
+<h3>List of devices</h3>
+<ul>
+	<% _.each(devices, function(device) { %>
+	<li><a href="#devices/<%= device.cid %>"><%= device.get("name") %></a></li>
+	<% }); %>
+</ul>
+<a href="#">Back to the home page</a>

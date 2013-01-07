@@ -13,6 +13,7 @@ define([
 		template: _.template(appsgateHomeTemplate),
 		
 		/**
+		 * Render the home page of the application
 		 * @method render
 		 */
 		render:function() {

@@ -3,16 +3,17 @@ define([
 	"underscore",
 	"backbone",
 	"views/appsgate/home",
-	"views/rooms/list"
-], function($, _, Backbone, HomeView, RoomListView) {
+	"views/devices/single",
+	"views/devices/list"
+], function($, _, Backbone, HomeView, DeviceView, DeviceListView) {
 
 	/**
 	 * @class AppRouter
 	 */
 	var AppRouter = Backbone.Router.extend({
 		routes: {
-			"rooms": "showRooms",
-			"room/:id": "showSingleRoom",
+			"devices": "showDevices",
+			"devices/:cid": "showSingleDevice",
 			"*path": "default"
 		}
 	});
@@ -23,14 +24,18 @@ define([
 	var initialize = function() {
 		var appRouter = new AppRouter();
 
-		/* show the list of the rooms */
-		appRouter.on("route:showRooms", function() {
-			var roomListView = new RoomListView();
-			roomListView.render();
+		/* show the list of the devices */
+		appRouter.on("route:showDevices", function() {
+			var deviceListView = new DeviceListView();
+			deviceListView.render();
 		});
 
-		/* show a detailed view for the room id */
-		appRouter.on("route:showSingleRoom", function(id) {
+		/* show a detailed view for the device cid */
+		appRouter.on("route:showSingleDevice", function(cid) {
+			var deviceView = new DeviceView({
+				deviceCid: cid
+			});
+			deviceView.render();
 		});
 
 		/* default route, render the home page */
