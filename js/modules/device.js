@@ -121,8 +121,13 @@ define([
 			e.preventDefault();
 
 			// update the modified attributes
+			var id = parseInt($(e.target).closest("form").find("#id").val());
 			var name = $(e.target).closest("form").find("#device-name").val();
-			this.model.set({ name : name });
+
+			// update the model iif the ids are corresponding
+			if (this.model.get("id") === id) {
+				this.model.set({ name : name });
+			}
 
 			// back to the detailled view
 			this.render();
