@@ -84,6 +84,12 @@ define([
 					self.add(device);
 				});
 			});
+
+
+			// listen to the event when a device appears and add it
+			dispatcher.on("newDevice", function(device) {
+				self.add(device);
+			});
 		}
 	});
 
@@ -125,7 +131,7 @@ define([
 			var name = $(e.target).closest("form").find("#device-name").val();
 
 			// update the model iif the ids are corresponding
-			if (this.model.get("id") === id) {
+			if (this.model.get("id") == id) {
 				this.model.set({ name : name });
 			}
 
