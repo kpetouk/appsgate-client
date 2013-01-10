@@ -6,9 +6,10 @@ require([
 
 	// modules
 	"modules/communicator",
+	"modules/home",
 	"modules/device",
-	"modules/home"
-], function($, _, Backbone, Communicator, Device, Home) {
+	"modules/map",
+], function($, _, Backbone, Communicator, Home, Device, Map) {
 	// define the application router
 	var AppRouter = Backbone.Router.extend({
 		routes: {
@@ -32,6 +33,7 @@ require([
 
 		// initialize the communication layer for the application
 		window.communicator = new Communicator("ws://localhost:1337");
+		// window.communicator = new Communicator("ws://placetouch-0c60A.local:8080");
 
 		// wait for the socket to be open
 		dispatcher.on("WebSocketOpen", function() {
