@@ -34,6 +34,7 @@ require([
 		// initialize the communication layer for the application
 		window.communicator = new Communicator("ws://localhost:1337");
 		// window.communicator = new Communicator("ws://placetouch-0c60A.local:8080");
+		// window.communicator = new Communicator("ws://prima10:8080");
 
 		// wait for the socket to be open
 		dispatcher.on("WebSocketOpen", function() {
