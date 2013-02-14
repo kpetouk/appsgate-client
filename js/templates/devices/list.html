@@ -1,0 +1,62 @@
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>Nom</th>
+			<th>Type</th>
+			<th>Emplacement</th>
+			<th>Statut</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		<% _.each(devices, function(device) { %>
+		<% if (device.get("status") === 0) { %>
+		<tr class="error">
+		<% } else if (device.get("status") === 1) { %>
+		<tr class="warning">
+		<% } else { %>
+		<tr>
+		<% } %>
+			<td><%= device.get("name") %></td>
+			<td><%= device.get("type") %></td>
+			<td><%= locations.getNameByDevice(device) %></td>
+			<td>
+				<% if (device.get("status") === 0) { %>
+				<i class="icon-ban-circle"></i>
+				<% } else if (device.get("status") === 1) { %> 
+				<i class="icon-cog"></i>
+				<% } else { %>
+				<i class="icon-ok-sign"></i>
+				<% } %>
+			</td>
+			<td><a href="#devices/<%= device.id %>" class="btn">Modifier <i class="icon-circle-arrow-right"></i></a></td>
+		</tr>
+		<% }); %>
+	</tbody>
+</table>
+
+<div id="addDeviceModal" class="modal hide fade">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3>Installer dispositif</h3>
+	</div>
+	<div class="modal-body">
+		<div class="control-group">
+			<span class="btn btn-block scan"><i class="icon-qrcode"></i> Scanner QR code</span>
+			<p class="scannedSensor help-block input-block-level">Aucun dispositif scann&eacute;</p>
+		</div>
+			<input type="text" class="deviceName input-block-level" placeholder="Nom du dispositif">
+			<select class="input-block-level">
+				<% _.each(locations.models, function(location) { %>
+				<option value=<%= location.get("id") %>><%= location.get("name") %></option>
+				<% }) %>
+			</select>
+		<!-- </div> -->
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal">Annuler</button>
+		<button class="btn btn-primary validDeviceInstall">Valider</button>
+	</div>
+</div>
+
+<button data-target="#addDeviceModal" data-toggle="modal" class="btn btn-primary showDeviceInstallModal"><i class="icon-plus-sign icon-white"></i> Installer dispositif</button>
