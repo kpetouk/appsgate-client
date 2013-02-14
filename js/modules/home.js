@@ -1,8 +1,8 @@
 define([
-	"jquery",
-	"underscore",
-	"backbone",
-	"text!templates/home/home.html"
+	'jquery',
+	'underscore',
+	'backbone',
+	'text!templates/home/home.html',
 ], function($, _, Backbone, homeTemplate) {
 	// initialize the module
 	var Home = {};
@@ -12,7 +12,7 @@ define([
 
 	// home view
 	Home.Views.Default = Backbone.View.extend({
-		el: $("#appsgate"),
+		el: $("#container"),
 		template: _.template(homeTemplate),
 
 		// render the homepage of the application

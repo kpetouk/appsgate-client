@@ -1,20 +1,41 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8" />
-		<link rel="stylesheet" type="text/css" href="styles/index.css">
-		<script type="text/javascript" charset="utf-8"
-				src="js/libs/cordova/cordova-2.3.0.js"></script>
-		<script type="text/javascript">
-			var require = {
-				urlArgs: "bust=" + (new Date()).getTime()
-			};
-		</script>
-		<script data-main="js/config" src="js/libs/require/require.js"></script>
-		<title>AppsGate</title>
-	</head>
-	<body>
-		<h1>AppsGate</h1>
-		<div id="appsgate"></div>
-	</body>
+<head>
+    <title>AppsGate</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Twitter Bootstrap styles -->
+    <link rel="stylesheet" type="text/css" href="js/libs/bootstrap/css/bootstrap.min.css" />
+
+    <!-- Custom styles -->
+    <!-- <link rel="stylesheet" type="text/css" href="styles/style.css" media="all" /> -->
+
+    <!-- Fix for scrolling on iOS prior to iOS 6 -->
+    <style type="text/css">
+        .scrollable > * {
+            -webkit-transform: translateZ(0px);
+        }
+    </style>
+
+    <!-- Referencing iOS specific PhoneGap JS -->
+    <script type="text/javascript" src="js/libs/cordova/cordova-2.3.0.js"></script>
+
+    <!-- Barecode Scanner -->
+    <script type="text/javascript" src="js/libs/cordova/barcodescanner.js"></script>
+
+    <script data-main="js/config" src="js/libs/require/require.js"></script>
+</head>
+<body>
+    <div class="navbar navbar-static-top navbar-inverse">
+        <div class="navbar-inner">
+            <a href="#" class="brand">AppsGate</a>
+            <ul class="nav">
+                <li><a href="#locations">Pi&egrave;ces</a></li>
+                <li><a href="#devices">Dispositifs</a></li>
+                <li><a href="#editor">Programmes</a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="container"></div>
+</body>
 </html>

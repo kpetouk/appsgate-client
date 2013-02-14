@@ -36,7 +36,7 @@ define([
 		handleMessage:function(message) {
 			// rebuild the message for the application
 			var jsonMessage = JSON.parse(message.data);
-			var commandName = _.keys(jsonMessage)[0]
+			var commandName = _.keys(jsonMessage)[0];
 
 			// trigger a global event
 			dispatcher.trigger(commandName, jsonMessage[commandName]);
