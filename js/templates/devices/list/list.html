@@ -5,33 +5,11 @@
 			<th>Type</th>
 			<th>Emplacement</th>
 			<th>Statut</th>
+			<th>Valeur</th>
 			<th></th>
 		</tr>
 	</thead>
 	<tbody>
-		<% _.each(devices, function(device) { %>
-		<% if (device.get("status") === 0) { %>
-		<tr class="error">
-		<% } else if (device.get("status") === 1) { %>
-		<tr class="warning">
-		<% } else { %>
-		<tr>
-		<% } %>
-			<td><%= device.get("name") %></td>
-			<td><%= device.get("type") %></td>
-			<td><%= locations.getNameByDevice(device) %></td>
-			<td>
-				<% if (device.get("status") === 0) { %>
-				<i class="icon-ban-circle"></i>
-				<% } else if (device.get("status") === 1) { %> 
-				<i class="icon-cog"></i>
-				<% } else { %>
-				<i class="icon-ok-sign"></i>
-				<% } %>
-			</td>
-			<td><a href="#devices/<%= device.id %>" class="btn">Modifier <i class="icon-circle-arrow-right"></i></a></td>
-		</tr>
-		<% }); %>
 	</tbody>
 </table>
 
@@ -51,7 +29,6 @@
 				<option value=<%= location.get("id") %>><%= location.get("name") %></option>
 				<% }) %>
 			</select>
-		<!-- </div> -->
 	</div>
 	<div class="modal-footer">
 		<button class="btn" data-dismiss="modal">Annuler</button>

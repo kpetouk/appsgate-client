@@ -11,6 +11,10 @@ define([
 					"as a function");
 		}
 
+		if (!WebSocket) {
+			navigator.notification.alert("WebSocket is not supported...");
+		}
+
 		// open a websocket
 		this.webSocket = new WebSocket(serverAddr);
 
@@ -18,6 +22,10 @@ define([
 		this.webSocket.onopen = function() {
 			dispatcher.trigger("WebSocketOpen");
 		};
+
+		this.webSocket.onclose = function() {
+			console.log("socket is closed");
+		}
 
 		// message received on the socket
 		this.webSocket.onmessage = this.handleMessage;
@@ -36,10 +44,17 @@ define([
 		handleMessage:function(message) {
 			// rebuild the message for the application
 			var jsonMessage = JSON.parse(message.data);
-			var commandName = _.keys(jsonMessage)[0];
 
-			// trigger a global event
-			dispatcher.trigger(commandName, jsonMessage[commandName]);
+			if (jsonMessage.objectId !== undefined) {
+				var id = jsonMessage.objectId;
+				delete jsonMessage.objectId;
+				dispatcher.trigger(id, jsonMessage);
+			} else {
+				var commandName = _.keys(jsonMessage)[0];
+				dispatcher.trigger(commandName, jsonMessage[commandName]);
+			}
+
+			console.log("received:", message.data);
 		},
 
 		/**
@@ -49,14 +64,17 @@ define([
 		 *
 		 * @param commandName Command name to send with the message
 		 * @param{string} messageData Data to send, typically an object
+		 * @param targetType Parameter used by the server to route the message. 0: AbstractObject, 1: ApAM component
 		 */
-		sendMessage:function(commandName, messageData) {
-			// build message for the server
-			jsonMessage = {};
-			jsonMessage[commandName] = messageData;
+		sendMessage:function(message) {
+			console.log("sending:", JSON.stringify(message));
 
 			// send it
-			this.webSocket.send(JSON.stringify(jsonMessage));
+			this.webSocket.send(JSON.stringify(message));
+		},
+
+		close:function() {
+			this.webSocket.close();
 		}
 	};
 

@@ -2,13 +2,17 @@ define([
 	"jquery",
 	"underscore",
 	"backbone",
-	"text!templates/devices/details.html",
-	"text!templates/devices/list.html",
-	"text!templates/devices/edit.html",
-	"text!templates/devices/installFirst.html",
+	"text!templates/devices/list/list.html",
+	"text!templates/devices/list/contact.html",
+	"text!templates/devices/list/illumination.html",
+	"text!templates/devices/list/keyCard.html",
+	"text!templates/devices/list/switch.html",
+	"text!templates/devices/list/temperature.html",
+	"text!templates/devices/details/details.html",
 	"jqueryui"
-], function($, _, Backbone, deviceDetailsTemplate, deviceListTemplate,
-		deviceEditTemplate, deviceInstallFirstTemplate) {
+], function($, _, Backbone, deviceListTemplate,
+		contactListTemplate, illuminationListTemplate, keyCardListTemplate,
+		switchListTemplate, temperatureListTemplate, deviceDetailsTemplate) {
 	// initialize the module
 	var Device = {};
 
@@ -34,24 +38,12 @@ define([
 
 		// list all the devices
 		list:function(direction) {
-			/* this.navigate("devices");
-			if (direction !== undefined) {
-				if (direction !== "right") {
-					direction = "left";
-				}
-			} */
-
-			if (this.listView === undefined) {
-				this.listView = new Device.Views.List();
-			}
-
-			this.listView.render();
+			appRouter.showView(new Device.Views.List());
 		},
 
 		// give details on a device
 		details:function(id) {
-			var detailsView = new Device.Views.Details({ model: devices.get(id) });
-			detailsView.render();
+			appRouter.showView(new Device.Views.Details({ model : devices.get(id) }));
 		},
 
 		// launch the interface to install a new device
@@ -66,29 +58,103 @@ define([
 	// instantiate the router
 	var router = new Device.Router();
 
-	// model
+	/**
+	 * Abstract class regrouping common characteristics shared by all the devices
+	 *
+	 * @class Device.Model
+	 */
 	Device.Model = Backbone.Model.extend({
+
+		/**
+		 * @constructor 
+		 */
+		initialize:function() {
+			var self = this;
+
+			// when the user update the name, send the notification to the server
+			this.on("change:name", function(model, name) {
+				communicator.sendMessage({
+					targetType : "1",
+					objectId : model.get("id").toString(),
+					method : "setUserObjectName",
+					args : [{ type : "String", value : name }]
+				});
+			});
+
+			dispatcher.on(this.get("id"), function(updatedVariableJSON) {
+				console.log("received a message for myself");
+				self.set(updatedVariableJSON.varName, updatedVariableJSON.value);
+			});
+		},
+
+	});
+
+	/**
+	 * @class Device.TemperatureSensor
+	 */
+	Device.TemperatureSensor = Device.Model.extend({
 
 		/**
 		 * @constructor
 		 */
 		initialize:function() {
-			var self = this;
-
-			// listen to update from the backend
-			dispatcher.on("updateDevice", function(device) {
-				if (device.id == self.get("id")) {
-					self.set("name", device.name);
-					self.set("locationId", device.locationId);
-				}
-			});
-		},
-
-		// override its synchronization method
-		sync:function(method, model) {
-			communicator.sendMessage("updateDevice", model.toJSON());
+			Device.TemperatureSensor.__super__.initialize.apply(this, arguments);
 		}
 
+	});
+
+	/**
+	 * @class Device.SwitchSensor
+	 */
+	Device.SwitchSensor = Device.Model.extend({
+
+		/**
+		 * @constructor
+		 */
+		initialize:function() {
+			Device.SwitchSensor.__super__.initialize.apply(this, arguments);
+		}
+
+	});
+
+	/**
+	 * @class Device.IlluminationSensor
+	 */
+	Device.IlluminationSensor = Device.Model.extend({
+
+		/**
+		 * @constructor
+		 */
+		initialize:function() {
+			Device.IlluminationSensor.__super__.initialize.apply(this, arguments);
+		}
+
+	});
+
+	/**
+	 * @class Device.KeyCardSensor
+	 */
+	Device.KeyCardSensor = Device.Model.extend({
+
+		/**
+		 * @constructor
+		 */
+		initialize:function() {
+			Device.KeyCardSensor.__super__.initialize.apply(this, arguments);
+		}
+	});
+
+	/**
+	 * @class Device.ContactSensor
+	 */
+	Device.ContactSensor = Device.Model.extend({
+
+		/**
+		 * @constructor
+		 */
+		initialize:function() {
+			Device.ContactSensor.__super__.initialize.apply(this, arguments);
+		}
 	});
 
 	// collection
@@ -106,18 +172,46 @@ define([
 			// listen to the event when the list of devices is received
 			dispatcher.on("listDevices", function(devices) {
 				_.each(devices, function(device) {
-					self.add(device);
+					self.addDevice(device);
 				});
 				dispatcher.trigger("devicesReady");
 			});
 
 			// listen to the backend notifying when a device appears and add it
 			dispatcher.on("newDevice", function(device) {
-				self.add(device);
+				self.addDevice(device);
 			});
 
 			// send the request to fetch the devices
-			communicator.sendMessage("getDevices", null);
+			communicator.sendMessage({ targetType : "0", commandName : "getDevices" });
+		},
+
+		// check the type of device sent by the server, cast it and add it to the collection
+		addDevice:function(device) {
+			if (device.name == null) {
+				device.name = "Non d&eacute;fini";
+			}
+			device.type = parseInt(device.type);
+			switch (device.type) {
+				case 0:
+					this.add(new Device.TemperatureSensor(device));
+					break;
+				case 1:
+					this.add(new Device.IlluminationSensor(device));
+					break;
+				case 2:
+					this.add(new Device.SwitchSensor(device));
+					break;
+				case 3:
+					this.add(new Device.ContactSensor(device));
+					break;
+				case 4:
+					this.add(new Device.KeyCardSensor(device));
+					break;
+				default:
+					console.log("unknown type");
+					break;
+			}
 		}
 	});
 
@@ -126,9 +220,8 @@ define([
 	
 	// detailled view of a device
 	Device.Views.Details = Backbone.View.extend({
-		el: $("#container"),
-		// template: _.template(deviceDetailsTemplate),
-		editTemplate: _.template(deviceEditTemplate),
+		// el: $("#container"),
+		template: _.template(deviceDetailsTemplate),
 
 		// map the events and their callback
 		events: {
@@ -139,20 +232,44 @@ define([
 
 		// render the detailled view of a device
 		render:function() {
-			this.$el.html(this.editTemplate({
+
+			this.$el.html(this.template({
 				device : this.model,
 				locations : locations.models
 			}));
 
-			/* var self = this;
-
-			this.$el.toggle("slide", { direction : "left" }, "fast", function() {
-				self.$el.html(self.editTemplate({
-					device : self.model,
-					locations : locations.models
-				}));
-				self.$el.toggle("slide", { direction : "right" }, "fast");
-			}); */
+			switch (this.model.get("type")) {
+				case 0:
+					$(".sensorType").html("Capteur de temp&eacute;rature");
+					$(".sensorValue").html(this.model.get("value") + "°C");
+					break;
+				case 1:
+					$(".sensorType").html("Capteur de luminosit&eacute;");
+					$(".sensorValue").html(this.model.get("value") + " Lux");
+					break;
+				case 2:
+					$(".sensorType").html("Interrupteur");
+					$(".sensorValue").hide();
+					break;
+				case 3:
+					$(".sensorType").html("Capteur de contact");
+					if (this.model.get("contact")) {
+						$(".sensorValue").html("Ferm&eacute;");
+					} else {
+						$(".sensorValue").html("Ouvert");
+					}
+					break;
+				case 4:
+					$(".sensorType").html("Lecteur key-card");
+					if (this.model.get("inserted")) {
+						$(".sensorValue").html("Carte ins&eacute;r&eacute;e");
+					} else {
+						$(".sensorValue").html("Pas de carte ins&eacute;r&eacute;e");
+					}
+					break;
+				default:
+					break;
+			}
 
 			return this;
 		},
@@ -163,28 +280,32 @@ define([
 				e.preventDefault();
 
 				// update the modified attributes
-				var id = parseInt($(e.target).closest("form").find("#id").val());
+				var id = $(e.target).closest("form").find("#id").val();
 				var name = $(e.target).closest("form").find("#deviceName").val();
 				var selectElement = $("select")[0];
 				var locationId = parseInt(selectElement[selectElement.options.selectedIndex].value);
 
 				// update the model iif the ids are corresponding
 				if (this.model.get("id") == id) {
-					// remove the device from the old location
-					var oldLocation = locations.get(this.model.get("locationId"));
-					oldLocation.get("devices").splice(oldLocation.get("devices").indexOf(this.model.get("id")), 1);
-					oldLocation.save();
 
-					// update the model and notify the backend
-					this.model.set({
-						name : name,
-						locationId : locationId
+					if (locationId != -1) {
+						communicator.sendMessage({
+							targetType : "2",
+							commandName : "moveDevice",
+							srcLocationId : this.model.get("locationId").toString(),
+							destLocationId : locationId.toString(),
+							deviceId: this.model.get("id").toString()
+						});
+					}
+
+					// move the device
+					dispatcher.trigger("moveDevice", {
+						srcLocationId: this.model.get("locationId"),
+						destLocationId: locationId,
+						deviceId: id
 					});
-					this.model.save();
 
-					// add the device to the new location
-					locations.get(this.model.get("locationId")).get("devices").push(this.model.get("id"));
-					locations.get(this.model.get("locationId")).save();
+					this.model.set("name", name);
 
 					// go back to the previous view
 					window.history.back();
@@ -201,8 +322,12 @@ define([
 
 	// render the list of all the available devices
 	Device.Views.List = Backbone.View.extend({
-		el: $("#container"),
-		template: _.template(deviceListTemplate),
+		tpl: _.template(deviceListTemplate),
+		tplContact: _.template(contactListTemplate),
+		tplIllumination: _.template(illuminationListTemplate),
+		tplKeyCard: _.template(keyCardListTemplate),
+		tplSwitch: _.template(switchListTemplate),
+		tplTemperature: _.template(temperatureListTemplate),
 
 		events : {
 			"click span.scan"					: "scanQRCode",
@@ -213,15 +338,18 @@ define([
 			var self = this;
 
 			devices.on("change", function() {
+			// dispatcher.on("refreshDeviceList", function() {
 				// refresh only when the list is currently displayed
 				if (Backbone.history.fragment === "devices") {
-					self.render();
+					appRouter.showView(self);
+					// self.render();
 				}
 			});
 
 			devices.on("add", function() {
 				if (Backbone.history.fragment === "devices") {
-					self.render();
+					appRouter.showView(self);
+					// self.render();
 				}
 			});
 		},
@@ -279,81 +407,38 @@ define([
 
 		// render the list of devices
 		render:function(direction) {
-			this.$el.html(this.template({ devices : devices.models }));
+			var self = this;
+
+			this.$el.html(this.tpl());
+			_.each(devices.models, function(device) {
+				switch (device.get("type")) {
+					case 0:
+						$(self.$el).find("tbody").append(self.tplTemperature({ device : device }));
+						break;
+					case 1:
+						$(self.$el).find("tbody").append(self.tplIllumination({ device : device }));
+						break;
+					case 2:
+						$(self.$el).find("tbody").append(self.tplSwitch({ device : device }));
+						break;
+					case 3:
+						$(self.$el).find("tbody").append(self.tplContact({ device : device }));
+						break;
+					case 4:
+						$(self.$el).find("tbody").append(self.tplKeyCard({ device : device }));
+						break;
+					default:
+						break;
+				}
+			});
+
+			// disable the possibility to launch the installation interface with no camera is detected
+			// (user has to scan a qr code while installing a sensor)
 			if (!navigator.camera) {
 				$("button.showDeviceInstallModal").hide();
 			}
+
 			return this;
-			
-			/* var self = this;
-
-			if (direction !== undefined) {
-				this.$el.toggle("slide", { direction : direction }, "fast", function() {
-					self.$el.html(self.template({ devices : devices.models }));
-					if (direction === "left") {
-						direction = "right";
-					} else {
-						direction = "left";
-					}
-					self.$el.toggle("slide", { direction : direction }, "fast");
-				});
-			} else {
-				this.$el.html(this.template({ devices : devices.models }));
-			} */
-		}
-	});
-
-	// views for the installation
-	Device.Views.Install = {};
-
-	// main view for the installation of a new device
-	Device.Views.Install.Main = Backbone.View.extend({
-		el: $("#container"),
-		
-		/**
-		 * @constructor
-		 */
-		initialize:function() {
-			this.$el.html(this.template());
-			this.firstView = new Device.Views.Install.First();
-			this.secondView = new Device.Views.Install.Second();
-		},
-
-		// render the view corresponding to the current step of the installation
-		render:function() {
-		}
-	});
-
-	// first step
-	Device.Views.Install.First = Backbone.View.extend({
-		el: $("#container"),
-		template: _.template(deviceInstallFirstTemplate),
-
-		events: {
-			"click span.scan": 	"scanQRCode",
-			"click span.cancelInstallDevice"	: "cancelInstallDevice"
-		},
-
-		// render the install interface
-		render:function() {
-			this.$el.html(this.template());
-			return this;
-		},
-
-		// render the previous view when the user cancelled the installation
-		cancelInstallDevice:function() {
-			window.history.back();
-		}
-	});
-
-	// second step
-	Device.Views.Install.Second = Backbone.View.extend({
-		el: $(".deviceInstallInstruction"),
-
-		initialize:function() {
-			console.log(this.$el);
-			console.log($(".install-device-container"));
-			console.log($(".typeSensor").html());
 		}
 	});
 

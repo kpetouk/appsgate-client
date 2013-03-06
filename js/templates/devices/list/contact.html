@@ -1,0 +1,34 @@
+<% if (device.get("status") === 1) { %>
+<tr class="error">
+<% } else if (device.get("status") === 1) { %>
+<tr class="warning">
+<% } else { %>
+<tr>
+<% } %>
+	<td>
+		<% if (device.get("name") == null) { %>
+		Non d&eacute;fini
+		<% } else { %>
+		<%= device.get("name") %>
+		<% } %>
+	</td>
+	<td>Capteur de contact</td>
+	<td><%= locations.getNameByDevice(device) %></td>
+	<td>
+		<% if (device.get("status") === 0) { %>
+		<i class="icon-ban-circle"></i>
+		<% } else if (device.get("status") === 1) { %>
+		<i class="icon-cog"></i>
+		<% } else { %>
+		<i class="icon-ok-sign"></i>
+		<% } %>
+	</td>
+	<td>
+		<% if (device.get("contact") === "true") { %>
+		Ferm&eacute;
+		<% } else { %>
+		Ouvert
+		<% } %>
+	</td>
+	<td><a href="#devices/<%= device.id %>" class="btn">Modifier <i class="icon-circle-arrow-right"></i></a></td>
+</tr>

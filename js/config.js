@@ -20,6 +20,7 @@ require.config({
         communicator: "modules/communicator",
         location: "modules/location",
         device: "modules/device",
+        program: "modules/program",
         home: "modules/home"
     },
     shim: {

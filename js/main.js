@@ -2,6 +2,12 @@ require([
     "domReady",
     "app"
 ], function (domReady, App) {
+
+    Backbone.View.prototype.close = function() {
+        this.remove();
+        this.unbind();
+    };
+
     // domReady is RequireJS plugin that triggers when DOM is ready
     domReady(function () {
         function onDeviceReady(desktop) {
