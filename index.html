@@ -7,21 +7,18 @@
     <!-- Twitter Bootstrap styles -->
     <link rel="stylesheet" type="text/css" href="js/libs/bootstrap/css/bootstrap.min.css" />
 
-    <!-- Custom styles -->
-    <!-- <link rel="stylesheet" type="text/css" href="styles/style.css" media="all" /> -->
-
-    <!-- Fix for scrolling on iOS prior to iOS 6 -->
-    <style type="text/css">
-        .scrollable > * {
-            -webkit-transform: translateZ(0px);
-        }
-    </style>
-
-    <!-- Referencing iOS specific PhoneGap JS -->
-    <script type="text/javascript" src="js/libs/cordova/cordova-2.3.0.js"></script>
-
-    <!-- Barecode Scanner -->
-    <script type="text/javascript" src="js/libs/cordova/barcodescanner.js"></script>
+    <script type="text/javascript">
+    // load ios specific js files
+    if (navigator.userAgent.toLowerCase().match(/(ipad|ipod|iphone)/)) {
+        document.write("<script type='text/javascript' src='js/libs/cordova/ios/cordova-2.3.0.js'><\/script>");
+        document.write("<script type='text/javascript' src='js/libs/cordova/ios/plugins/barcodescanner.js'><\/script>");
+    // load android specific js files
+    } else if (navigator.userAgent.toLowerCase().match(/(android)/)) {
+        document.write("<script type='text/javascript' src='js/libs/cordova/android/cordova-2.3.0.js'><\/script>");
+        document.write("<script type='text/javascript' src='js/libs/cordova/android/plugins/websocket.js'><\/script>");
+        document.write("<script type='text/javascript' src='js/libs/cordova/android/plugins/barcodescanner.js'><\/script>");
+    }
+    </script>
 
     <script data-main="js/config" src="js/libs/require/require.js"></script>
 </head>

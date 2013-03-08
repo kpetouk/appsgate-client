@@ -49,9 +49,8 @@ define([
         // Setting the connection with the box
         // window.communicator = new Communicator('ws://prima5.inrialpes.fr:1337');
         // window.communicator = new Communicator("ws://placetouch-0c60a.local:8080");
-        window.communicator = new Communicator("ws://192.168.2.3:8080");
-        // window.communicator = new Communicator("ws://:8080");
-        // window.communicator = new Communicator("ws://192.168.2.4:1337");
+        // window.communicator = new Communicator("ws://192.168.2.3:8080");
+        window.communicator = new Communicator("ws://192.168.2.3:1337");
 
         // Wait for the socket to be opened
         dispatcher.on("WebSocketOpen", function() {
@@ -65,9 +64,6 @@ define([
             // Initialize the collection of programs
             // window.programs = new Program.Collection();
         });
-
-        // router of the application
-        // window.appRouter;
 
         // main router of the application
         window.appRouter; // = new AppRouter();

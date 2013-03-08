@@ -3,6 +3,7 @@ require([
     "app"
 ], function (domReady, App) {
 
+    // add a close method to all the views for convenience - see appRouter for usage
     Backbone.View.prototype.close = function() {
         this.remove();
         this.unbind();
@@ -12,7 +13,6 @@ require([
     domReady(function () {
         function onDeviceReady(desktop) {
             // Initialize the application-wide event dispatcher
-            // window.dispatcher = _.clone(Backbone.Events);
             App.initialize();
 
             // Hiding splash screen when app is loaded
@@ -21,7 +21,7 @@ require([
             }
         }
 
-        if (navigator.userAgent.match(/(iPad|iPod|iPhone|Android|Blackberry)/)) {
+        if (navigator.userAgent.toLowerCase().match(/(ipad|ipod|iphone|android|blackberry)/)) {
             // This is running on a device so waiting for deviceready event
             document.addEventListener('deviceready', onDeviceReady, false);
         } else {
