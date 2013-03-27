@@ -16,43 +16,56 @@ define([
 	// initialize the module
 	var Device = {};
 
-	// router
+	/**
+	 * Router to handle the routes for the devices
+	 *
+	 * @class Device.Router
+	 */
 	Device.Router = Backbone.Router.extend({
+		// define the routes for the devices
 		routes: {
 			"devices"				: "list",
-			"devices/d:direction"	: "list",
-			"devices/install/:step"	: "install",
 			"devices/:id"			: "details"
 		},
 
+		/**
+		 * @constructor
+		 */
 		initialize:function() {
 			var self = this;
 
-			this.dispatcher = _.clone(Backbone.Events);
+			/* this.dispatcher = _.clone(Backbone.Events);
 
 			this.dispatcher.on("savedDevice", function() {
 				router.navigate("devices");
 				self.list();
-			});
+			}); */
 		},
 
-		// list all the devices
-		list:function(direction) {
+		/**
+		 * @method list Show the list of devices
+		 */
+		list:function() {
 			appRouter.showView(new Device.Views.List());
 		},
 
-		// give details on a device
+		/**
+		 * Show the details of a device
+		 *
+		 * @method details
+		 * @param id Id of the device to show
+		 */
 		details:function(id) {
 			appRouter.showView(new Device.Views.Details({ model : devices.get(id) }));
 		},
 
 		// launch the interface to install a new device
-		install:function(step) {
+		/* install:function(step) {
 			if (this.installView === undefined) {
 				this.installView = new Device.Views.Install.First();
 			}
 			this.installView.render();
-		}
+		} */
 	});
 
 	// instantiate the router
@@ -81,8 +94,9 @@ define([
 				});
 			});
 
+			// each device listens to the event whose id corresponds to its own id. This ensures to
+			// receive only relevant events
 			dispatcher.on(this.get("id"), function(updatedVariableJSON) {
-				console.log("received a message for myself");
 				self.set(updatedVariableJSON.varName, updatedVariableJSON.value);
 			});
 		},
@@ -90,6 +104,10 @@ define([
 	});
 
 	/**
+	 * Implementation of temperature sensor
+	 * Specific attribute is: 
+	 * 	value, containing the last temperature sent by the backend, in degree Celsius
+	 *
 	 * @class Device.TemperatureSensor
 	 */
 	Device.TemperatureSensor = Device.Model.extend({
@@ -104,6 +122,11 @@ define([
 	});
 
 	/**
+	 * Implementation of switch sensor
+	 * Specific attributes are:
+	 * 	switchNumber. Values are depend of the type of the switch
+	 * 	buttonStatus, 0 when Off, 1 when On
+	 *
 	 * @class Device.SwitchSensor
 	 */
 	Device.SwitchSensor = Device.Model.extend({
@@ -118,6 +141,7 @@ define([
 	});
 
 	/**
+	 * Implementation of an illumination sensor
 	 * @class Device.IlluminationSensor
 	 */
 	Device.IlluminationSensor = Device.Model.extend({
