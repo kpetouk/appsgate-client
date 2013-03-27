@@ -1,3 +1,4 @@
 .DS_Store
-ios/build
-ios/CordovaLib/build
+android/bin/*
+ios/build/*
+ios/CordovaLib/build/*
