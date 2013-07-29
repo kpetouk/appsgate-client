@@ -3,16 +3,18 @@ define([
 	"underscore",
 	"backbone",
 	"text!templates/locations/list.html",
+	"text!templates/locations/placeContainer.html",
 	"text!templates/locations/details.html",
 	"text!templates/devices/list/list.html",
 	"text!templates/devices/list/contact.html",
 	"text!templates/devices/list/illumination.html",
 	"text!templates/devices/list/keyCard.html",
 	"text!templates/devices/list/switch.html",
-	"text!templates/devices/list/temperature.html"
-], function($, _, Backbone, locationListTemplate, locationDetailsTemplate, deviceListTemplate,
+	"text!templates/devices/list/temperature.html",
+	"text!templates/devices/list/phillipsHue.html"
+], function($, _, Backbone, locationListTemplate, placeContainerListTemplate, locationDetailsTemplate, deviceListTemplate,
 			contactListTemplate, illuminationListTemplate, keyCardListTemplate,
-			switchListTemplate, temperatureListTemplate) {
+			switchListTemplate, temperatureListTemplate, phillipsHueListTemplate) {
 	// initialize the module
 	var Location = {};
 
@@ -25,21 +27,11 @@ define([
 
 		// list all the locations
 		list:function() {
-			// console.log("slqkjdhflqksdjfhqslkdjhfqslk");
-			/* this.navigate("locations");
-			if (this.listView === undefined) {
-				this.listView = new Location.Views.List();
-			}
-			this.listView.render(); */
-			// var listView = new Location.Views.List();
-			// listView.render();
 			appRouter.showView(new Location.Views.List());
 		},
 
 		// show the details of a locations (i.e. list of devices in this location)
 		details:function(id) {
-			// var detailsView = new Location.Views.Details({ model : locations.get(id) });
-			// detailsView.render();
 			appRouter.showView(new Location.Views.Details({ model : locations.get(id) }));
 		}
 	});
@@ -58,7 +50,7 @@ define([
 
 			// listen to the event when one or several attributes have been updated
 		 	dispatcher.on("updateLocation", function(location) {
-		 		if (location.id == self.get("id")) {
+		 		if (location.id === self.get("id")) {
 		 			self.set(location);
 		 		}
 		 	});
@@ -102,14 +94,18 @@ define([
 		 */
 		initialize:function() {
 		 	var self = this;
+			
+			// sort the locations alphabetically
+			this.comparator = function(location) {
+				return location.get("name");
+			};
 
 		 	// when a location has been created and added by the user, notify the backend
 		 	this.on("add", function(location) {
-		 		console.log("location has been added to the collection", location);
 		 		communicator.sendMessage({
-		 			targetType : "2",
-		 			commandName : "newLocation",
-		 			location : location.toJSON()
+		 			method : "newPlace",
+					args: [location.toJSON()],
+		 			// location : location.toJSON()
 		 		});
 		 	});
 
@@ -122,13 +118,13 @@ define([
 		 	});
 
 		 	// listen to the event when a location appears and add it
-		 	dispatcher.on("newLocation", function(location) {
+		 	dispatcher.on("newPlace", function(location) {
 		 		// location is added silently because we dont want to fire the event 'add' on the collection
 		 		// which notifies the backend for a new location
 		 		self.add(location, { silent : true });
+				
 		 		// tell the list to refresh
 		 		dispatcher.trigger("refreshLocationList");
-		 		// dispatcher.trigger("refresh")
 		 	});
 
 		 	// listen to the event when a device has been moved
@@ -138,7 +134,11 @@ define([
 		 	});
 
 		 	// send the request to fetch the locations
-		 	communicator.sendMessage({ targetType : "2", commandName : "getLocations" });
+		 	communicator.sendMessage({
+				method : "getPlaces",
+				args: [],
+				callId: "listLocations"
+			});
 		 },
 
 		 /**
@@ -165,11 +165,11 @@ define([
 			var srcLocation = locations.get(srcLocationId);
 		 	var destLocation = locations.get(destLocationId);
 		 	// remove the device from the old location
-		 	if (srcLocation != undefined && srcLocation.get("devices").indexOf(deviceId) > -1) {
+		 	if (srcLocation !== undefined && srcLocation.get("devices").indexOf(deviceId) > -1) {
 		 		srcLocation.get("devices").splice(srcLocation.get("devices").indexOf(deviceId), 1);
 		 	}
 		 	// add the device to the new location
-		 	if (destLocation != undefined && destLocation.get("devices").indexOf(deviceId) == -1) {
+		 	if (destLocation !== undefined && destLocation.get("devices").indexOf(deviceId) === -1) {
 		 		destLocation.get("devices").push(deviceId);
 		 	}
 		 	// update the device itself
@@ -184,11 +184,19 @@ define([
 	Location.Views.List = Backbone.View.extend({
 		// el: $("#container"),
 		template: _.template(locationListTemplate),
+		tplPlaceContainer: _.template(placeContainerListTemplate),
+		tplTemperature: _.template(temperatureListTemplate),
+		tplIllumination: _.template(illuminationListTemplate),
+		tplSwitch: _.template(switchListTemplate),
+		tplContact: _.template(contactListTemplate),
+		tplKeyCard: _.template(keyCardListTemplate),
+		tplPhillipsHue: _.template(phillipsHueListTemplate),
 
 		events: {
 			"click button.valid-install"		: "addLocation",
 			"keypress :input.locationName"		: "addLocation",
-			"keyup :input.locationName"			: "checkLocation"
+			"keyup :input.locationName"			: "checkLocation",
+			// "click ul.list-devices > li"		: "expandDevice"
 		},
 
 		/**
@@ -231,25 +239,27 @@ define([
 
 				var location = new Location.Model({
 					id 		: Math.round(Math.random() * 1000),
-					name 	: $("input").val(),
+					name 	: $(".locationName").val(),
 					devices : []	
 				});
 
 				if (locations.where({ name : location.get("name") }).length > 0) {
+					$("#addLocationModal").modal("hide");
 					return;
 				}
 
 				// add the new location once the modal is hidden
 				// the backend is notified through the callback of the collection on the event 'add' on the collection
 				// the view is refreshed throught the callback of the view on the event 'add' on the collection
-				$("#addLocationModal").on("hidden", function() {
+				/* $("#addLocationModal").on("hidden", function() {
+					console.log("plop");
 					locations.add(location);
-				});
+				}); */
 
-				console.log("added a location through modal interface");
-
-				// hide the modal
 				$("#addLocationModal").modal("hide");
+				locations.add(location);
+				// this.render();
+				// hide the modal
 			}
 
 		},
@@ -264,8 +274,97 @@ define([
 		},
 
 		render:function() {
-			console.log("rendering locations list", this.$el);
-			this.$el.html(this.template({ locations: locations.models }));
+			var self = this;
+			
+			// initialize the html content of the view
+			this.$el.html(this.template());
+			
+			// render each row
+			for (var i = 0; i < locations.models.length; i += 2) {
+				// render two locations in a row
+				var locationsInRow = [locations.at(i), locations.at(i + 1)];
+				
+				// open the html anchor
+				var rowContent = "<div class='row-fluid'>";
+				
+				// render each location
+				_.forEach(locationsInRow, function(location) {
+					// last element can be undefined
+					if (location !== undefined) {
+						
+						var htmlLiDevices = "";
+						// render a line for each location's device
+						location.get("devices").forEach(function(deviceId) {
+							var device = devices.where({ id : deviceId })[0];
+							
+							// can be null, data are not reliable...
+							if (device !== undefined) {
+								switch (device.get("type")) {
+									case 0: // temperature sensor
+										htmlLiDevices += self.tplTemperature({
+											device			: device,
+											additionalInfo	: "Capteur temp&eacute;rature"
+										});
+										break;
+
+									case 1: // illumination sensor
+										htmlLiDevices += self.tplIllumination({
+											device			: device,
+											additionalInfo	: "Capteur luminosit&eacute;"
+										});
+										break;
+
+									case 2: // switch sensor
+										htmlLiDevices += self.tplSwitch({
+											device			: device,
+											additionalInfo	: "Interrupteur"
+										});
+										break;
+
+									case 3: // contact sensor
+										htmlLiDevices += self.tplContact({
+											device			: device,
+											additionalInfo	: "Capteur contact"
+										});
+										break;
+
+									case 4: // key card sensor
+										htmlLiDevices += self.tplKeyCard({
+											device			: device,
+											additionalInfo	: "Lecteur carte"
+										});
+										break;
+
+									case 7: // phillips hue
+										htmlLiDevices += self.tplPhillipsHue({
+											device			: device,
+											additionalInfo	: "Phillips Hue"
+										});
+										break;
+								}
+							}
+
+						});
+						
+						// add the location to the row
+						rowContent += self.tplPlaceContainer({
+							name		: location.get("name"),
+							nbDevices	: location.get("devices").length,
+							liDevices	: htmlLiDevices
+						});
+					}
+				});
+				
+				rowContent += "</div>";
+				this.$el.find(".locations").append(rowContent);
+			}
+			
+			// create the switches and bind their events
+			$(this.$el).find(".switch")
+					.bootstrapSwitch()
+					.on("switch-change", this.switchChange);
+			
+			return this;
 		}
 	});
 
@@ -290,7 +389,7 @@ define([
 			dispatcher.on("refreshLocationList", function() {
 				// refresh only when the view is currently displayed
 				if (Backbone.history.fragment.substring(0, 9) === "locations" &&
-						Backbone.history.fragment.substring(10, Backbone.history.fragment.length) == self.model.get("id")) {
+						Backbone.history.fragment.substring(10, Backbone.history.fragment.length) === self.model.get("id")) {
 					// self.render();
 					appRouter.showView(self);
 				}

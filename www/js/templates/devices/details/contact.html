@@ -1,0 +1,16 @@
+<li>
+	<strong>Type</strong>
+	<div class="pull-right">
+		Capteur de contact
+	</div>
+</li>
+<li>
+	<strong>Etat</strong>
+	<div class="pull-right">
+		<% if (device.get("value") === "true") { %>
+			Ouvert
+		<% } else { %>
+			Ferm&eacute;
+		<% } %>
+	</div>
+</li>

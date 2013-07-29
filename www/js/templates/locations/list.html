@@ -1,21 +1,5 @@
-<table class="table table-striped">
-	<thead>
-		<tr>
-			<th>Pi&egrave;ce</th>
-			<th>Nombre de dispositifs</th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-		<% _.each(locations, function(location) { %>
-		<tr>
-			<td><%= location.get("name") %></td>
-			<td><%= location.get("devices").length %></td>
-			<td><a href="#locations/<%= location.id %>" class="btn">Consulter <i class="icon-circle-arrow-right"></i></a></td>
-		</tr>
-		<% }); %>
-	</tbody>
-</table>
+<div class="locations">
+</div>
 
 <div id="addLocationModal" class="modal hide fade">
 	<div class="modal-header">

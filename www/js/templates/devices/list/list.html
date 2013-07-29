@@ -1,17 +1,5 @@
-<table class="table table-striped">
-	<thead>
-		<tr>
-			<th>Nom</th>
-			<th>Type</th>
-			<th>Emplacement</th>
-			<th>Statut</th>
-			<th>Valeur</th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-	</tbody>
-</table>
+<div class="devices">
+</div>
 
 <div id="addDeviceModal" class="modal hide fade">
 	<div class="modal-header">
@@ -20,10 +8,10 @@
 	</div>
 	<div class="modal-body">
 		<div class="control-group">
-			<span class="btn btn-block scan"><i class="icon-qrcode"></i> Scanner QR code</span>
-			<p class="scannedSensor help-block input-block-level">Aucun dispositif scann&eacute;</p>
+			<span class="btn btn-block scan"><i class="icon-qrcode"></i> Scan QR code</span>
+			<p class="scannedSensor help-block input-block-level">Pas de dispositif d&eacute;tect&eacute;</p>
 		</div>
-			<input type="text" class="deviceName input-block-level" placeholder="Nom du dispositif">
+			<input type="text" class="deviceName input-block-level" placeholder="Device's name">
 			<select class="input-block-level">
 				<% _.each(locations.models, function(location) { %>
 				<option value=<%= location.get("id") %>><%= location.get("name") %></option>
@@ -37,3 +25,4 @@
 </div>
 
 <button data-target="#addDeviceModal" data-toggle="modal" class="btn btn-primary showDeviceInstallModal"><i class="icon-plus-sign icon-white"></i> Installer dispositif</button>
+<button id="flashDeviceButton" class="btn btn-primary"><i class="icon-qrcode icon-white"></i> Flasher dispositif</button>

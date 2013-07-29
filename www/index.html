@@ -2,10 +2,16 @@
 <html>
 <head>
     <title>AppsGate</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Twitter Bootstrap styles -->
     <link rel="stylesheet" type="text/css" href="js/libs/bootstrap/css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="js/libs/bootstrap/css/bootstrap-responsive.min.css" />
+	<link rel="stylesheet" type="text/css" href="js/libs/bootstrap/css/bootstrap-switch.css" />
+	<link rel="stylesheet" type="text/css" href="js/libs/bootstrap/css/bootstrap-slider.css" />
+	
+	<!-- CSS -->
+	<link rel="stylesheet" type="text/css" href="styles/style.css" />
 
     <script type="text/javascript">
     // load ios specific js files
@@ -23,16 +29,34 @@
     <script data-main="js/config" src="js/libs/require/require.js"></script>
 </head>
 <body>
-    <div class="navbar navbar-static-top navbar-inverse">
+    <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="navbar-inner">
-            <a href="#" class="brand">AppsGate</a>
-            <ul class="nav">
-                <li><a href="#locations">Pi&egrave;ces</a></li>
-                <li><a href="#devices">Dispositifs</a></li>
-                <li><a href="#programs">Programmes</a></li>
-            </ul>
-        </div>
+			<div class="container">
+				
+				<button class="btn btn-navbar collapsed" data-toggle="collapse" data-target=".nav-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				
+				<a href="#" class="brand">AppsGate</a>
+				
+				<div class="nav-collapse collapse">
+					<ul class="nav">
+						<li class><a href="#locations">Pi&egrave;ces</a></li>
+						<li class><a href="#devices">Dispositifs</a></li>
+						<li class><a href="#programs">Programmes</a></li>
+					</ul>
+				</div>
+				
+			</div>
+		</div>
     </div>
-    <div id="container"></div>
+    <div id="container-fluid">
+		<div class="row-fluid">
+			<div class="span12 body-content">
+			</div>
+		</div>
+	</div>
 </body>
 </html>

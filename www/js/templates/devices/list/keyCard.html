@@ -1,34 +1,17 @@
-<% if (device.get("status") === 1) { %>
-<tr class="error">
-<% } else if (device.get("status") === 1) { %>
-<tr class="warning">
-<% } else { %>
-<tr>
-<% } %>
-	<td>
-		<% if (device.get("name") == null) { %>
-		Non d&eacute;fini
-		<% } else { %>
-		<%= device.get("name") %>
-		<% } %>
-	</td>
-	<td>Lecteur key-card</td>
-	<td><%= locations.getNameByDevice(device) %></td>
-	<td>
-		<% if (device.get("status") === 0) { %>
-		<i class="icon-ban-circle"></i>
-		<% } else if (device.get("status") === 1) { %>
-		<i class="icon-cog"></i>
-		<% } else { %>
-		<i class="icon-ok-sign"></i>
-		<% } %>
-	</td>
-	<td>
-		<% if (device.get("inserted") === "true") { %>
-		Carte inser&eacute;e
-		<% } else { %>
-		Pas de carte
-		<% } %>
-	</td>
-	<td><a href="#devices/<%= device.id %>" class="btn">Modifier <i class="icon-circle-arrow-right"></i></a></td>
-</tr>
+<li id="<%= device.get('id') %>">
+	<a href="#devices/<%= device.get('id') %>">
+	<div class="inline">
+		<span class="deviceName"><%= device.get("name") %></span>
+		<div class="deviceValue pull-right">
+			<% if (device.get("value")) { %>
+				Carte ins&eacute;r&eacute;e
+			<% } else { %>
+				Pas de carte
+			<% } %>
+		</div>
+	</div>
+	<small class="deviceInfo">
+		<%= additionalInfo %>
+	</small>
+	</a>
+</li>

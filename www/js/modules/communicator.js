@@ -45,7 +45,9 @@ define([
 			// rebuild the message for the application
 			var jsonMessage = JSON.parse(message.data);
 
-			if (jsonMessage.objectId !== undefined) {
+			if (jsonMessage.callId !== undefined) {
+				dispatcher.trigger(jsonMessage.callId, JSON.parse(jsonMessage.value));
+			} else if (jsonMessage.objectId !== undefined) {
 				var id = jsonMessage.objectId;
 				delete jsonMessage.objectId;
 				dispatcher.trigger(id, jsonMessage);

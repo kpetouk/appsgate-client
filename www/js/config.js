@@ -11,11 +11,19 @@ require.config({
         // jQuery UI
         jqueryui: "libs/jquery/jquery-ui-1.10.0.min",
         // bootstrap
-        bootstrap: "libs/bootstrap/js/bootstrap.min",
+        bootstrap: "libs/bootstrap/js/bs3/bootstrap.min",
+		// bootstrap switch
+		bootstrapSwitch: "libs/bootstrap/js/bootstrap-switch",
+		// bootstrap slider
+		bootstrapSlider: "libs/bootstrap/js/bootstrap-slider",
         // underscore library
         underscore: "libs/underscore/underscore",
         // Backbone.js library
         backbone: "libs/backbone/backbone",
+		// Raphael.js library
+		raphael: "libs/raphael/raphael.2.1.0.amd",
+		// Color wheel Raphael.js plugin
+		colorWheel: "libs/raphael/plugins/colorwheel",
         // Modules
         communicator: "modules/communicator",
         location: "modules/location",
@@ -34,8 +42,20 @@ require.config({
             deps: [ "underscore", "jquery" ],
             exports: "Backbone"
         },
+		"raphael" : {
+			exports: "Raphael"
+		},
+		"colorWheel" : {
+			deps: [ "jquery", "raphael" ]
+		},
         "jqueryui": {
             deps: [ "jquery" ]
-        }
+        },
+		"bootstrapSwitch": {
+			deps: ["bootstrap"]
+		},
+		"bootstrapSlider": {
+			deps: ["bootstrap"]
+		}
     }
 });

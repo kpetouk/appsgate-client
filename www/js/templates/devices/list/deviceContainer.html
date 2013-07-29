@@ -1,0 +1,23 @@
+<div class="span6 box">
+	<div class="box-header">
+		<%= type %>
+		<div class="pull-right"><%= nbDevices %></div>
+	</div>
+	<div class="box-body">
+		<ul class="list-devices unstyled">
+			<% _.each(devices, function(device) { %>
+				<% if (device.get("locationId") === "-1") { %>
+					<%= liDeviceTemplate({
+							device : device,
+							additionalInfo	: "Non localis&eacute;"
+						}) %>
+				<% } else { %>
+					<%= liDeviceTemplate({
+							device : device,
+							additionalInfo	: locations.where({ id : device.get("locationId") })[0].get("name")
+						}) %>
+				<% } %>
+			<% }); %>
+		</ul>
+	</div>
+</div>

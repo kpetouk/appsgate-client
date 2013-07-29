@@ -2,8 +2,8 @@
 	<a href="#devices/<%= device.get('id') %>">
 	<div class="inline">
 		<span class="deviceName"><%= device.get("name") %></span>
-		<div class="deviceValue pull-right">
-			<%= device.get("value") %> &deg;C
+		<div class="switch pull-right">
+			<input type="checkbox" <% if (device.get("value") === "true") { %> checked <% } %>>
 		</div>
 	</div>
 	<small class="deviceInfo">
