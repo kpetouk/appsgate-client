@@ -11,6 +11,7 @@ define([
 	"text!templates/devices/list/switch.html",
 	"text!templates/devices/list/temperature.html",
 	"text!templates/devices/list/phillipsHue.html",
+	"text!templates/devices/list/deviceListByCategory.html",
 	"text!templates/devices/details/deviceContainer.html",
 	"text!templates/devices/details/contact.html",
 	"text!templates/devices/details/illumination.html",
@@ -25,12 +26,25 @@ define([
 ], function($, _, Backbone, Raphael, deviceListTemplate, deviceContainerListTemplate,
 		contactListTemplate, illuminationListTemplate, keyCardListTemplate,
 		switchListTemplate, temperatureListTemplate, phillipsHueListTemplate,
+		deviceListByCategoryTemplate,
 		deviceDetailsTemplate, contactDetailTemplate, illuminationDetailTemplate,
 		keyCardDetailTemplate, switchDetailTemplate, temperatureDetailTemplate,
 		phillipsHueDetailTemplate) {
 	
 	// initialize the module
 	var Device = {};
+	
+	// global variables concerning the devices
+	window.deviceTypesName = {
+		0	: "Capteur de temp&eacute;rature",
+		1	: "Capteur de luminosit&eacute;",
+		2	: "Interrupteur",
+		3	: "Capteur de contact",
+		4	: "Lecteur de carte",
+		5	: "Capteur de mouvement",
+		6	: "Prise gigogne",
+		7	: "Lampe Philips Hue"
+	};
 
 	/**
 	 * Router to handle the routes for the devices
@@ -41,6 +55,7 @@ define([
 		// define the routes for the devices
 		routes: {
 			"devices": "list",
+			"devices/types/:id": "deviceByType",
 			"devices/:id": "details"
 		},
 
@@ -56,6 +71,10 @@ define([
 		list: function() {
 			appRouter.showView(new Device.Views.List());
 		},
+		
+		deviceByType:function(typeId) {
+			appRouter.showView(new Device.Views.DevicesByType({ id: typeId }));
+		},
 
 		/**
 		 * Show the details of a device
@@ -64,7 +83,7 @@ define([
 		 * @param id Id of the device to show
 		 */
 		details: function(id) {
-			appRouter.showView(new Device.Views.Details({model: devices.get(id)}));
+			appRouter.showView(new Device.Views.Details({ model: devices.get(id) }));
 		}
 	});
 
@@ -245,7 +264,7 @@ define([
 		 * 
 		 * @param device
 		 */
-		addDevice: function(device) {
+		addDevice:function(device) {
 			if (device.name === null) {
 				device.name = "Non d&eacute;fini";
 			}
@@ -275,7 +294,14 @@ define([
 					console.log("unknown type");
 					break;
 			}
+		},
+		
+		getDevicesByType:function() {
+			return devices.groupBy(function(device) {
+				return device.get("type");
+			});
 		}
+		
 	});
 
 	// views
@@ -334,6 +360,8 @@ define([
 				case 0: // temperature sensor
 					this.$el.html(this.template({
 						device: this.model,
+						sensorImg: "styles/img/sensors/temperature.jpg",
+						sensorType: deviceTypesName[0],
 						locations: locations,
 						deviceDetails: this.tplTemperature
 					}));
@@ -342,6 +370,8 @@ define([
 				case 1: // illumination sensor
 					this.$el.html(this.template({
 						device: this.model,
+						sensorImg: "styles/img/sensors/illumination.jpg",
+						sensorType: deviceTypesName[1],
 						locations: locations,
 						deviceDetails: this.tplIllumination
 					}));
@@ -350,6 +380,8 @@ define([
 				case 2: // switch sensor
 					this.$el.html(this.template({
 						device: this.model,
+						sensorImg: "styles/img/sensors/doubleSwitch.jpg",
+						sensorType: deviceTypesName[2],
 						locations: locations,
 						deviceDetails: this.tplSwitch
 					}));
@@ -358,6 +390,8 @@ define([
 				case 3: // contact sensor
 					this.$el.html(this.template({
 						device: this.model,
+						sensorImg: "styles/img/sensors/contact.jpg",
+						sensorType: deviceTypesName[3],
 						locations: locations,
 						deviceDetails: this.tplContact
 					}));
@@ -366,6 +400,8 @@ define([
 				case 4: // key card sensor
 					this.$el.html(this.template({
 						device: this.model,
+						sensorImg: "styles/img/sensors/keycard.jpg",
+						sensorType: deviceTypesName[4],
 						locations: locations,
 						deviceDetails: this.tplKeyCard
 					}));
@@ -374,6 +410,7 @@ define([
 				case 7: // phillips hue
 					this.$el.html(this.template({
 						device: this.model,
+						sensorType: deviceTypesName[7],
 						locations: locations,
 						deviceDetails: this.tplPhillipsHue
 					}));
@@ -399,10 +436,10 @@ define([
 							"#F00");
 					
 					// bind the events
-					// mobile
+					// mobile -> touch
 					if (navigator.userAgent.toLowerCase().match(/(ipad|ipod|iphone|android)/)) {
 						window.colorWheel.onchange = this.changeIpadColor;
-					} else { // desktop
+					} else { // desktop -> drag w/ the mouse
 						window.colorWheel.ring.node.onmouseup = this.changeColor;
 						window.colorWheel.square.node.onmouseup = this.changeColor;
 					}
@@ -550,6 +587,21 @@ define([
 
 			// send the message
 			communicator.sendMessage(messageJSON);
+		}
+	});
+	
+	Device.Views.DevicesByType = Backbone.View.extend({
+		tpl: _.template(deviceListByCategoryTemplate),
+		
+		render:function() {
+			console.log("plop", this.id);
+			this.$el.html(this.tpl({
+				typeId			: this.id,
+				deviceTypeName	: deviceTypesName[this.id],
+				places			: locations
+			}));
+			
+			return this;
 		}
 	});
 
@@ -728,12 +780,28 @@ define([
 
 		// render the list of devices
 		render: function() {
-			this.$el.html(this.tpl());
-
+			var self = this;
+			
+			// render the side menu
+			$(".aside-menu-title").html("Dispositifs");
+			$(".aside-menu-content").html("");
+			
 			// group the devices by type
-			var types = devices.groupBy(function(device) {
-				return device.get("type");
+			var types = devices.getDevicesByType();
+			
+			_.forEach(_.keys(types), function(type) {
+				$(".aside-menu-content").append(self.tplDeviceContainer({
+					type		: type,
+					typeName	: deviceTypesName[type],
+					devices		: types[type],
+					places		: locations
+				}));
 			});
+			
+			// render the first device type by default		
+			appRouter.showView(new Device.Views.DevicesByType({ id: "0" }));
+			
+			/* this.$el.html(this.tpl());
 			
 			// compute the number of rows - 1 row contains 2 categories
 			var nbRows = _.keys(types).length;
@@ -806,7 +874,7 @@ define([
 				}
 				rowContent += "</div>";
 				this.$el.find(".devices").append(rowContent);
-			}
+			} */
 
 			// disable the possibility to launch the installation interface with no camera is detected
 			// (user has to scan a qr code while installing a sensor)
@@ -815,7 +883,7 @@ define([
 			}
 
 			// create the switches and bind their events
-			$(this.$el).find(".switch")
+			$(".switch")
 					.bootstrapSwitch()
 					.on("switch-change", this.switchChange);
 

@@ -1,1 +1,223 @@
-<p class="lead"><span class="btn previousDetailsLocation"><i class="icon-circle-arrow-left"></i> Retour</span> <%= location.get("name") %></p>
+<div class="place-name-details lead">
+	<%= place.get("name") %>
+</div>
+
+<!-- temperature sensors -->
+<% if (place.getTemperatureSensors().length > 0) { %>
+<div class="box">
+	<div class="box-header">
+		<span class="device-name"><%= deviceTypes[0] %></span>
+		<div class="pull-right">
+			<%= place.getTemperatureSensors().length %>
+		</div>
+	</div>
+	<div class="box-body">
+		<ul class="unstyled">
+			<% place.getTemperatureSensors().forEach(function(s) { %>
+			<li>
+				<a href="#devices/<%= s.get('id') %>">
+				<%= s.get("name") %>
+				<div class="pull-right">
+					<i class="icon-chevron-right"></i>
+				</div>
+				</a>
+			</li>
+			<% }) %>
+		</ul>
+	</div>
+</div>
+<% } %>
+
+<!-- illumination sensors -->
+<% if (place.getIlluminationSensors().length > 0) { %>
+<div class="box">
+	<div class="box-header">
+		<span class="device-name"><%= deviceTypes[1] %></span>
+		<div class="pull-right">
+			<%= place.getIlluminationSensors().length %>
+		</div>
+	</div>
+	<div class="box-body">
+		<ul class="unstyled">
+			<% place.getIlluminationSensors().forEach(function(s) { %>
+			<li>
+				<a href="#devices/<%= s.get('id') %>">
+				<%= s.get("name") %>
+				<div class="pull-right">
+					<i class="icon-chevron-right"></i>
+				</div>
+				</a>
+			</li>
+			<% }) %>
+		</ul>
+	</div>
+</div>
+<% } %>
+
+<!-- switches -->
+<% if (place.getSwitches().length > 0) { %>
+<div class="box">
+	<div class="box-header">
+		<span class="device-name"><%= deviceTypes[2] %></span>
+		<div class="pull-right">
+			<%= place.getSwitches().length %>
+		</div>
+	</div>
+	<div class="box-body">
+		<div class="box-body">
+		<ul class="unstyled">
+			<% place.getSwitches().forEach(function(s) { %>
+			<li>
+				<a href="#devices/<%= s.get('id') %>">
+				<%= s.get("name") %>
+				<div class="pull-right">
+					<i class="icon-chevron-right"></i>
+				</div>
+				</a>
+			</li>
+			<% }) %>
+		</ul>
+	</div>
+	</div>
+</div>
+<% } %>
+
+<!-- contact sensors -->
+<% if (place.getContactSensors().length > 0) { %>
+<div class="box">
+	<div class="box-header">
+		<span class="device-name"><%= deviceTypes[3] %></span>
+		<div class="pull-right">
+			<%= place.getContactSensors().length %>
+		</div>
+	</div>
+	<div class="box-body">
+		<div class="box-body">
+		<ul class="unstyled">
+			<% place.getContactSensors().forEach(function(s) { %>
+			<li>
+				<a href="#devices/<%= s.get('id') %>">
+				<%= s.get("name") %>
+				<div class="pull-right">
+					<i class="icon-chevron-right"></i>
+				</div>
+				</a>
+			</li>
+			<% }) %>
+		</ul>
+	</div>
+	</div>
+</div>
+<% } %>
+
+<!-- key-card readers -->
+<% if (place.getKeyCardReaders().length > 0) { %>
+<div class="box">
+	<div class="box-header">
+		<span class="device-name"><%= deviceTypes[4] %></span>
+		<div class="pull-right">
+			<%= place.getKeyCardReaders().length %>
+		</div>
+	</div>
+	<div class="box-body">
+		<div class="box-body">
+		<ul class="unstyled">
+			<% place.getKeyCardReaders().forEach(function(s) { %>
+			<li>
+				<a href="#devices/<%= s.get('id') %>">
+				<%= s.get("name") %>
+				<div class="pull-right">
+					<i class="icon-chevron-right"></i>
+				</div>
+				</a>
+			</li>
+			<% }) %>
+		</ul>
+	</div>
+	</div>
+</div>
+<% } %>
+
+<!-- movement sensors -->
+<% if (place.getMovementSensors().length > 0) { %>
+<div class="box">
+	<div class="box-header">
+		<span class="device-name"><%= deviceTypes[5] %></span>
+		<div class="pull-right">
+			<%= place.getMovementSensors().length %>
+		</div>
+	</div>
+	<div class="box-body">
+		<div class="box-body">
+		<ul class="unstyled">
+			<% place.getMovementSensors().forEach(function(s) { %>
+			<li>
+				<a href="#devices/<%= s.get('id') %>">
+				<%= s.get("name") %>
+				<div class="pull-right">
+					<i class="icon-chevron-right"></i>
+				</div>
+				</a>
+			</li>
+			<% }) %>
+		</ul>
+	</div>
+	</div>
+</div>
+<% } %>
+
+<!-- plugs -->
+<% if (place.getPlugs().length > 0) { %>
+<div class="box">
+	<div class="box-header">
+		<span class="device-name"><%= deviceTypes[6] %></span>
+		<div class="pull-right">
+			<%= place.getPlugs().length %>
+		</div>
+	</div>
+	<div class="box-body">
+		<div class="box-body">
+		<ul class="unstyled">
+			<% place.getPlugs().forEach(function(s) { %>
+			<li>
+				<a href="#devices/<%= s.get('id') %>">
+				<%= s.get("name") %>
+				<div class="pull-right">
+					<i class="icon-chevron-right"></i>
+				</div>
+				</a>
+			</li>
+			<% }) %>
+		</ul>
+	</div>
+	</div>
+</div>
+<% } %>
+
+<!-- philips hue -->
+<% if (place.getPhilipsHueLamps().length > 0) { %>
+<div class="box">
+	<div class="box-header">
+		<span class="device-name"><%= deviceTypes[7] %></span>
+		<div class="pull-right">
+			<%= place.getPhilipsHueLamps().length %>
+		</div>
+	</div>
+	<div class="box-body">
+		<div class="box-body">
+		<ul class="unstyled">
+			<% place.getPhilipsHueLamps().forEach(function(s) { %>
+			<li>
+				<a href="#devices/<%= s.get('id') %>">
+				<%= s.get("name") %>
+				<div class="pull-right">
+					<i class="icon-chevron-right"></i>
+				</div>
+				</a>
+			</li>
+			<% }) %>
+		</ul>
+	</div>
+	</div>
+</div>
+<% } %>

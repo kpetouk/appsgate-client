@@ -8,15 +8,68 @@ body {
     -webkit-overflow-scrolling: touch;
 }
 
+.navbar {
+	border-bottom: 3px solid dodgerblue;
+}
+
 #container-fluid {
-	margin-left: 10px;
-	margin-right: 10px;
-	margin-bottom: 10px;
 }
 
 .body-content {
+	/* display: block; */
+	position: fixed;
+	height: 95.4%;
+	margin: 0;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.aside-menu-title {
+	background-color: black;
+	color: white;
+	text-align: center;
+	text-transform: uppercase;
+	font-weight: bold;
+	padding: 5px;
+}
+
+.aside-menu {
+	position: fixed;
+	left: 0;
+	height: 95.4%;
+	border-right: 1px solid black;
+}
+
+.place-menu-container > .header, .device-type-container > .header {
+	background-color: dodgerblue;
+	text-transform: uppercase;
+	font-weight: bold;
+	padding: 5px;
+}
+
+.place-menu-container > .header > a, .device-type-container > .header > a {
 	display: block;
-	margin: 0 auto;
+	color: #ffffff;
+	text-decoration: none;
+}
+
+.place-menu-container > .body, .device-type-container > .body {
+	background-color: #ffffff;
+	border-left: 1px solid #efefef;
+	border-bottom: 1px solid #efefef;
+	border-right: 1px solid #efefef;
+}
+
+.place-menu-container > .body > div, .device-type-container > .body > div {
+	padding: 5px;
+}
+
+.place-menu-container > .body > .switch-container, .device-type-container > .body > .switch-container {
+	padding-bottom: 15px;
+}
+
+.place-menu-container > .body > div:not(:last-child), .device-type-container > .body > div:not(:last-child) {
+	border-bottom: 1px solid #efefef;
 }
 
 .box {
@@ -47,12 +100,16 @@ body {
 	border-bottom: 1px solid #eaeaea;
 }
 
-.box-body > ul > li:hover {
-	background-color: #efefef;
+.box-body > ul > li > img {
+	width: 50%;
+	height: auto;
+	margin-left: 25%;
 }
 
 .box-body > ul > li > a {
+	display: block;
 	text-decoration: none;
+	color: #000000;
 }
 
 .box-body > ul > li .deviceName,
@@ -72,6 +129,11 @@ a > h4 {
 	display: inline-block;
 }
 
+.place-name-details, .device-type-name-details {
+	padding: 10px;
+	margin-bottom: 5px;
+}
+
 /* large desktop */
 @media (min-width: 1200px) {
 	body {
@@ -79,13 +141,13 @@ a > h4 {
 	}
 	
 	#container-fluid {
-		margin-top: 50px;
+		/* margin-top: 50px; */
 	}
 }
 
 @media (min-width: 980px) and (max-width: 1199px) {
 	#container-fluid {
-		margin-top: 50px;
+		/* margin-top: 50px; */
 	}
 }
 

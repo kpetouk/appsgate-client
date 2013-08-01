@@ -6,7 +6,19 @@
 		</div>
 	</div>
 	<div class="box-body">
+		
 		<ul class="unstyled">
+			<% if (typeof sensorImg !== "undefined") { %>
+			<li>
+				<img src="<%= sensorImg %>">
+			</li>
+			<% } %>
+			<li>
+				<strong>Type</strong>
+				<div class="pull-right">
+					<%= sensorType %>
+				</div>
+			</li>
 			<li>
 				<strong>Emplacement</strong>
 				<div class="device-location pull-right">

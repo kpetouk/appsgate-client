@@ -1,23 +1,46 @@
-<div class="span6 box">
-	<div class="box-header">
-		<%= type %>
-		<div class="pull-right"><%= nbDevices %></div>
+<div class="device-type-container">
+	
+	<!-- header -->
+	<div class="header">
+		<a href="#devices/types/<%= type %>">
+		<%= typeName %>
+		<div class="pull-right"><%= devices.length %></div>
+		</a>
 	</div>
-	<div class="box-body">
-		<ul class="list-devices unstyled">
-			<% _.each(devices, function(device) { %>
-				<% if (device.get("locationId") === "-1") { %>
-					<%= liDeviceTemplate({
-							device : device,
-							additionalInfo	: "Non localis&eacute;"
-						}) %>
-				<% } else { %>
-					<%= liDeviceTemplate({
-							device : device,
-							additionalInfo	: locations.where({ id : device.get("locationId") })[0].get("name")
-						}) %>
+	
+	<!-- body -->
+	<div class="body">
+		
+		<% places.forEach(function(place) { %>
+			<% if (place.getTypeSensors(type).length > 0) { %>
+			
+			<div class="inline <% if (type === '7') { %> switch-container <% } %>">
+				
+				<span class="label">
+					<%= place.getTypeSensors(type).length %>
+				</span>
+				
+				<%= place.get("name") %>
+				
+				<% if (type === "0") { %>
+				<div class="pull-right">
+					<%= place.getAverageTemperature() %>&deg;C
+				</div>
+				<% } else if (type === "1") { %>
+				<div class="pull-right">
+					<%= place.getAverageIllumination() %> Lux
+				</div>
+				<% } else if (type === "7") { %>
+				<div class="switch pull-right">
+					<input type="checkbox">
+				</div>
 				<% } %>
-			<% }); %>
-		</ul>
+				
+			</div>
+			
+			<% } %>
+		<% }) %>
+		
 	</div>
+	
 </div>

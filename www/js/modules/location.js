@@ -68,6 +68,125 @@ define([
 				}
 			}) */
 		},
+		
+		/**
+		 * Compute the average value of given sensors
+		 * 
+		 * @param sensors Array of sensors
+		 * @return Average value of the sensors if any, null otherwise
+		 */
+		getAverageValue:function(sensors) {
+			// return null if there is no temperature sensors in the room
+			if (sensors.length === 0) {
+				return null;
+			}
+			
+			var average = 0;
+			sensors.forEach(function(s) {
+				average += s.get("value");
+			});
+			
+			return average / sensors.length;
+		},
+		
+		/**
+		 * Compute the average temperature of the place from the temperature sensors in the place
+		 * 
+		 * @returns Average temperature of the place if any temperature sensor, null otherwise
+		 */
+		getAverageTemperature:function() {
+			return this.getAverageValue(this.getTemperatureSensors());
+		},
+				
+		/**
+		 * Compute the average illumination of the place from the illumination sensors in the place
+		 * 
+		 * @returns Average illumination of the place if any illumination sensor, null otherwise
+		 */
+		getAverageIllumination:function() {
+			return this.getAverageValue(this.getIlluminationSensors());
+		},
+		
+		/**
+		 * Return all the devices of the place that matches a given type
+		 * 
+		 * @param type Type of the devices to retrieve
+		 * @returns Array of devices w/ good type
+		 */
+		getTypeSensors:function(type) {
+			type = parseInt(type);
+			
+			// in case of wrong type, return an empty array
+			if (isNaN(type)) {
+				return [];
+			}
+			
+			var sensorsId = this.get("devices").filter(function(id) {
+				return (devices.get(id) !== undefined && devices.get(id).get("type") === type);
+			});
+			
+			sensors = devices.filter(function(device) {
+				return (sensorsId.indexOf(device.get("id").toString()) !== -1);
+			});
+			
+			return sensors;
+		},
+		
+		/**
+		 * @returns Array of temperature sensors in the place
+		 */
+		getTemperatureSensors:function() {
+			return this.getTypeSensors(0);
+		},
+			
+		/**
+		 * @returns Array of illumination sensors in the place
+		 */
+		getIlluminationSensors:function() {
+			return this.getTypeSensors(1);
+		},
+		
+		/**
+		 * @returns Array of switches in the place
+		 */
+		getSwitches:function() {
+			return this.getTypeSensors(2);
+		},
+		
+		/**
+		 * @returns Array of contact sensors in the place
+		 */
+		getContactSensors:function() {
+			return this.getTypeSensors(3);
+		},
+		
+		/**
+		 * @returns Array of key-card readers in the place
+		 */
+		getKeyCardReaders:function() {
+			return this.getTypeSensors(4);
+		},
+		
+		/**
+		 * @returns Array of movement sensors in the place
+		 */
+		getMovementSensors:function() {
+			return this.getTypeSensors(5);
+		},
+		
+		/**
+		 * @returns Array of plugs in the place
+		 */
+		getPlugs:function() {
+			return this.getTypeSensors(6);
+		},
+		
+		/**
+		 * @returns Array of Philips Hue lamps in the place
+		 */
+		getPhilipsHueLamps:function() {
+			return this.getTypeSensors(7);
+		},
 
 		// override its synchronization method to send a notification on the network
 		sync:function(method, model) {
@@ -104,8 +223,7 @@ define([
 		 	this.on("add", function(location) {
 		 		communicator.sendMessage({
 		 			method : "newPlace",
-					args: [location.toJSON()],
-		 			// location : location.toJSON()
+					args: [location.toJSON()]
 		 		});
 		 	});
 
@@ -182,7 +300,6 @@ define([
 
 	// render the list of all the rooms
 	Location.Views.List = Backbone.View.extend({
-		// el: $("#container"),
 		template: _.template(locationListTemplate),
 		tplPlaceContainer: _.template(placeContainerListTemplate),
 		tplTemperature: _.template(temperatureListTemplate),
@@ -196,7 +313,7 @@ define([
 			"click button.valid-install"		: "addLocation",
 			"keypress :input.locationName"		: "addLocation",
 			"keyup :input.locationName"			: "checkLocation",
-			// "click ul.list-devices > li"		: "expandDevice"
+			"click div"	: "showPlace"
 		},
 
 		/**
@@ -228,6 +345,10 @@ define([
 					// self.render();
 				}
 			})
+		},
+				
+		showPlace:function(e) {
+			console.log("plop!!!!!", e);
 		},
 
 		// adding a new location
@@ -277,10 +398,85 @@ define([
 			var self = this;
 			
 			// initialize the html content of the view
-			this.$el.html(this.template());
+			// this.$el.html(this.template());
+			
+			// render the side menu
+			$(".aside-menu-content").html("");
+			locations.forEach(function(location) {
+				$(".aside-menu-content").append(self.tplPlaceContainer({
+					place : location
+				}));
+			});
+			
+			// render the first place
+			appRouter.showView(new Location.Views.Details({ model : locations.at(0) }));
+			
+			/* locations.forEach(function(location) {
+				var htmlLiDevices = "";
+				
+				// render a line for each location's device
+				location.get("devices").forEach(function(deviceId) {
+					var device = devices.where({ id : deviceId })[0];
+
+					// can be null, data are not reliable...
+					if (device !== undefined) {
+						switch (device.get("type")) {
+							case 0: // temperature sensor
+								htmlLiDevices += self.tplTemperature({
+									device			: device,
+									additionalInfo	: "Capteur temp&eacute;rature"
+								});
+								break;
+
+							case 1: // illumination sensor
+								htmlLiDevices += self.tplIllumination({
+									device			: device,
+									additionalInfo	: "Capteur luminosit&eacute;"
+								});
+								break;
+
+							case 2: // switch sensor
+								htmlLiDevices += self.tplSwitch({
+									device			: device,
+									additionalInfo	: "Interrupteur"
+								});
+								break;
+
+							case 3: // contact sensor
+								htmlLiDevices += self.tplContact({
+									device			: device,
+									additionalInfo	: "Capteur contact"
+								});
+								break;
+
+							case 4: // key card sensor
+								htmlLiDevices += self.tplKeyCard({
+									device			: device,
+									additionalInfo	: "Lecteur carte"
+								});
+								break;
+
+							case 7: // phillips hue
+								htmlLiDevices += self.tplPhillipsHue({
+									device			: device,
+									additionalInfo	: "Phillips Hue"
+								});
+								break;
+						}
+					}
+				});
+				
+				self.$el.find(".list-locations").append(
+					self.tplPlaceContainer({
+						name:location.get("name"),
+						nbDevices:location.get("devices").length,
+						liDevices:htmlLiDevices
+					})
+				);
+			}); */
 			
 			// render each row
-			for (var i = 0; i < locations.models.length; i += 2) {
+			/* for (var i = 0; i < locations.models.length; i += 2) {
 				// render two locations in a row
 				var locationsInRow = [locations.at(i), locations.at(i + 1)];
 				
@@ -293,58 +489,6 @@ define([
 					if (location !== undefined) {
 						
 						var htmlLiDevices = "";
-						// render a line for each location's device
-						location.get("devices").forEach(function(deviceId) {
-							var device = devices.where({ id : deviceId })[0];
-							
-							// can be null, data are not reliable...
-							if (device !== undefined) {
-								switch (device.get("type")) {
-									case 0: // temperature sensor
-										htmlLiDevices += self.tplTemperature({
-											device			: device,
-											additionalInfo	: "Capteur temp&eacute;rature"
-										});
-										break;
-
-									case 1: // illumination sensor
-										htmlLiDevices += self.tplIllumination({
-											device			: device,
-											additionalInfo	: "Capteur luminosit&eacute;"
-										});
-										break;
-
-									case 2: // switch sensor
-										htmlLiDevices += self.tplSwitch({
-											device			: device,
-											additionalInfo	: "Interrupteur"
-										});
-										break;
-
-									case 3: // contact sensor
-										htmlLiDevices += self.tplContact({
-											device			: device,
-											additionalInfo	: "Capteur contact"
-										});
-										break;
-
-									case 4: // key card sensor
-										htmlLiDevices += self.tplKeyCard({
-											device			: device,
-											additionalInfo	: "Lecteur carte"
-										});
-										break;
-
-									case 7: // phillips hue
-										htmlLiDevices += self.tplPhillipsHue({
-											device			: device,
-											additionalInfo	: "Phillips Hue"
-										});
-										break;
-								}
-							}
-
-						});
 						
 						// add the location to the row
 						rowContent += self.tplPlaceContainer({
@@ -357,10 +501,10 @@ define([
 				
 				rowContent += "</div>";
 				this.$el.find(".locations").append(rowContent);
-			}
+			} */
 			
 			// create the switches and bind their events
-			$(this.$el).find(".switch")
+			$(".switch")
 					.bootstrapSwitch()
 					.on("switch-change", this.switchChange);
 			
@@ -370,7 +514,7 @@ define([
 
 	// detail view of a location
 	Location.Views.Details = Backbone.View.extend({
-		// el: $("#container"),
+		// el: $(".body-content"),
 		tpl: _.template(locationDetailsTemplate),
 		listDeviceTpl: _.template(deviceListTemplate),
 		tplContact: _.template(contactListTemplate),
@@ -390,7 +534,6 @@ define([
 				// refresh only when the view is currently displayed
 				if (Backbone.history.fragment.substring(0, 9) === "locations" &&
 						Backbone.history.fragment.substring(10, Backbone.history.fragment.length) === self.model.get("id")) {
-					// self.render();
 					appRouter.showView(self);
 				}
 			});
@@ -401,34 +544,14 @@ define([
 		},
 
 		render:function() {
-			var self = this;
-
-			this.$el.html(this.tpl({ location : this.model }));
-			this.$el.append(this.listDeviceTpl());
-			_.each(devices.where({ locationId : this.model.get("id") }), function(device) {
-				switch (device.get("type")) {
-					case 0:
-						$(self.el).find("tbody").append(self.tplTemperature({ device : device }));
-						break;
-					case 1:
-						$(self.el).find("tbody").append(self.tplIllumination({ device : device }));
-						break;
-					case 2:
-						$(self.el).find("tbody").append(self.tplSwitch({ device : device }));
-						break;
-					case 3:
-						$(self.el).find("tbody").append(self.tplContact({ device : device }));
-						break;
-					case 4:
-						$(self.el).find("tbody").append(self.tplKeyCard({ device : device }));
-						break;
-					default:
-						break;
-				}
-			});
-			// this.$el.append(this.listDeviceTemplate({ devices : devices.where({ locationId : this.model.get("id") }) }));
+			this.$el.html(this.tpl({
+				place : this.model,
+				deviceTypes	: deviceTypesName
+			}));
+			
+			return this;
 		}
-	})
+	});
 
 	return Location;
 });
