@@ -87,6 +87,12 @@ body {
 	font-weight: bold;
 }
 
+.device-details-name {
+	position: absolute;
+	width: 94%;
+	text-align: center;
+}
+
 .box-body {
 	display: block;
 	margin-bottom: -10px;

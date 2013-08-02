@@ -321,7 +321,8 @@ define([
 		events: {
 			"click button.validEditDevice": "validEditDevice",
 			"keypress :input.deviceName": "validEditDevice",
-			"click .icon-edit": "editDevice"
+			"click .icon-edit": "editDevice",
+			"click .icon-chevron-left": "goBack"
 		},
 		
 		/**
@@ -587,6 +588,10 @@ define([
 
 			// send the message
 			communicator.sendMessage(messageJSON);
+		},
+		
+		goBack:function() {
+			history.back();
 		}
 	});
 	
@@ -594,12 +599,13 @@ define([
 		tpl: _.template(deviceListByCategoryTemplate),
 		
 		render:function() {
-			console.log("plop", this.id);
 			this.$el.html(this.tpl({
 				typeId			: this.id,
 				deviceTypeName	: deviceTypesName[this.id],
 				places			: locations
 			}));
+			
+			this.$el.find(".switch").bootstrapSwitch();
 			
 			return this;
 		}
