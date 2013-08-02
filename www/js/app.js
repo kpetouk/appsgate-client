@@ -80,6 +80,36 @@ define([
                 // });
             });
         });
+		
+		// hide the button to flash devices if there is no camera
+		if (!navigator.camera) {
+			$("#flash-device-button").hide();
+		}
+		
+		// listen to the event coming from the button to flash a device
+		$("#flash-device-button").on("click", function() {
+			// launch the window to flash a device
+			window.plugins.barcodeScanner.scan(
+				function(result) {
+					if (result.cancelled) {
+						console.log("the user cancelled the scan");
+					} else {
+						if (typeof devices.get(result.text) !== "undefined") {
+							appRouter.navigate("#devices/" + result.text, { trigger : true });
+						} else {
+							navigator.notification.alert(
+								"Dispositif non reconnu",
+								null,
+								"Information"
+							);
+						}
+					}
+				},
+				function(error) {
+					console.log("scanning failed: " + error);
+				}
+			);
+		});
 
 	}
 
