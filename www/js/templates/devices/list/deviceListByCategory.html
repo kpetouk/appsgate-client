@@ -18,6 +18,27 @@
 				<a href="#devices/<%= s.get('id') %>">
 					<%= s.get("name") %>
 					<div class="pull-right">
+						<% if (typeId === "0") { %>
+							<%= s.get("value") %>&deg;C
+						<% } else if (typeId === "1") {%>
+							<%= s.get("value") %> Lux
+						<% } else if (typeId === "3") { %>
+							<% if (s.get("value") === "true") { %>
+								Ouvert
+							<% } else { %>
+								Ferm&eacute;
+							<% } %>
+						<% } else if (typeId === "4") { %>
+							<% if (s.get("value") === "true") { %>
+								Pas de carte
+							<% } else { %>
+								Carte ins&eacute;r&eacute;e
+							<% } %>
+						<% } else if (typeId === "7") { %>
+							<div class="switch">
+								<input type="checkbox">
+							</div>
+						<% } %>
 						<i class="icon-chevron-right"></i>
 					</div>
 				</a>
