@@ -45,22 +45,6 @@
 			<% } %>
 		<% }) %>
 		
-		<!-- unlocated devices -->
-		<% if (unlocatedDevices.length > 0) { %>
-		<div class="inline <% if (type === '7') { %> switch-container <% } %>">
-			<span class="label">
-				<%= unlocatedDevices.length %>
-			</span>
-			Non localis&eacute;
-			
-			<% if (type === "7") { %>
-			<div class="switch pull-right">
-				<input type="checkbox">
-			</div>
-			<% } %>
-		</div>
-		<% } %>
-		
 	</div>
 	
 </div>
