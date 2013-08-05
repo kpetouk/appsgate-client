@@ -13,6 +13,7 @@ define([
 	"text!templates/devices/list/phillipsHue.html",
 	"text!templates/devices/list/deviceListByCategory.html",
 	"text!templates/devices/details/deviceContainer.html",
+	"text!templates/devices/details/editModal.html",
 	"text!templates/devices/details/contact.html",
 	"text!templates/devices/details/illumination.html",
 	"text!templates/devices/details/keyCard.html",
@@ -27,7 +28,8 @@ define([
 		contactListTemplate, illuminationListTemplate, keyCardListTemplate,
 		switchListTemplate, temperatureListTemplate, phillipsHueListTemplate,
 		deviceListByCategoryTemplate,
-		deviceDetailsTemplate, contactDetailTemplate, illuminationDetailTemplate,
+		deviceDetailsTemplate, editModalTemplate,
+		contactDetailTemplate, illuminationDetailTemplate,
 		keyCardDetailTemplate, switchDetailTemplate, temperatureDetailTemplate,
 		phillipsHueDetailTemplate) {
 	
@@ -324,6 +326,7 @@ define([
 	// detailled view of a device
 	Device.Views.Details = Backbone.View.extend({
 		template: _.template(deviceDetailsTemplate),
+		tplEditModal: _.template(editModalTemplate),
 		tplContact: _.template(contactDetailTemplate),
 		tplIllumination: _.template(illuminationDetailTemplate),
 		tplKeyCard: _.template(keyCardDetailTemplate),
@@ -465,7 +468,11 @@ define([
 					break;
 			}
 			
-			this.$el.find(".popover-delete").popover();
+			// this.$el.find(".popover-delete").popover();
+			$("body").append(this.tplEditModal({
+				device: this.model,
+				locations: locations
+			}));
 
 			return this;
 		},

@@ -2,8 +2,8 @@ define([
 	"jquery",
 	"underscore",
 	"backbone",
-	"text!templates/locations/list.html",
 	"text!templates/locations/placeContainer.html",
+	"text!templates/locations/addButton.html",
 	"text!templates/locations/details.html",
 	"text!templates/devices/list/list.html",
 	"text!templates/devices/list/contact.html",
@@ -12,7 +12,7 @@ define([
 	"text!templates/devices/list/switch.html",
 	"text!templates/devices/list/temperature.html",
 	"text!templates/devices/list/phillipsHue.html"
-], function($, _, Backbone, locationListTemplate, placeContainerListTemplate, locationDetailsTemplate, deviceListTemplate,
+], function($, _, Backbone, placeContainerListTemplate, addPlaceTemplate, locationDetailsTemplate, deviceListTemplate,
 			contactListTemplate, illuminationListTemplate, keyCardListTemplate,
 			switchListTemplate, temperatureListTemplate, phillipsHueListTemplate) {
 	// initialize the module
@@ -307,14 +307,9 @@ define([
 
 	// render the list of all the rooms
 	Location.Views.List = Backbone.View.extend({
-		template: _.template(locationListTemplate),
+		// template: _.template(locationListTemplate),
 		tplPlaceContainer: _.template(placeContainerListTemplate),
-		tplTemperature: _.template(temperatureListTemplate),
-		tplIllumination: _.template(illuminationListTemplate),
-		tplSwitch: _.template(switchListTemplate),
-		tplContact: _.template(contactListTemplate),
-		tplKeyCard: _.template(keyCardListTemplate),
-		tplPhillipsHue: _.template(phillipsHueListTemplate),
+		tplAddPlace: _.template(addPlaceTemplate),
 
 		events: {
 			"click button.valid-install"		: "addLocation",
@@ -416,7 +411,10 @@ define([
 					}));
 				}
 			});
-			// append unlocated devices to the side menu
+			
+			// "add place" button to the side menu
+			// $(".aside-menu-content").append("<button class='btn add-place-button'><i class='icon-plus'></i> Ajouter pi&egrave;ce</button>");
+			$(".aside-menu-content").append(this.tplAddPlace());
 			
 			// render the first place
 			appRouter.showView(new Location.Views.Details({ model : locations.at(0) }));
