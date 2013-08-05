@@ -243,7 +243,6 @@ define([
 					self.addDevice(device);
 				});
 				dispatcher.trigger("devicesReady");
-				console.log("devicesReady");
 			});
 
 			// listen to the backend notifying when a device appears and add it
@@ -294,14 +293,29 @@ define([
 					console.log("unknown type");
 					break;
 			}
-		},
+			
+			if (device.locationId === "-1") {
+				locations.get("-1").get("devices").push(device.id);
+			}
+	},
 		
 		getDevicesByType:function() {
 			return devices.groupBy(function(device) {
 				return device.get("type");
 			});
-		}
+		},
 		
+		getUnlocatedDevices:function() {
+			return devices.filter(function(device) {
+				return device.get("locationId") === "-1";
+			});
+		},
+		
+		getUnlocatedDevicesByType:function() {
+			return _.groupBy(this.getUnlocatedDevices(), function(device) {
+				return device.get("type");
+			});
+		}
 	});
 
 	// views
@@ -321,8 +335,8 @@ define([
 		events: {
 			"click button.validEditDevice": "validEditDevice",
 			"keypress :input.deviceName": "validEditDevice",
-			"click .icon-edit": "editDevice",
-			"click .icon-chevron-left": "goBack"
+			"click .icon-chevron-left": "goBack",
+			"click #button-back": "goBack"
 		},
 		
 		/**
@@ -450,6 +464,8 @@ define([
 
 					break;
 			}
+			
+			this.$el.find(".popover-delete").popover();
 
 			return this;
 		},
@@ -599,6 +615,8 @@ define([
 		tpl: _.template(deviceListByCategoryTemplate),
 		
 		render:function() {
+			var self = this;
+			
 			this.$el.html(this.tpl({
 				typeId			: this.id,
 				deviceTypeName	: deviceTypesName[this.id],
@@ -797,15 +815,16 @@ define([
 			
 			_.forEach(_.keys(types), function(type) {
 				$(".aside-menu-content").append(self.tplDeviceContainer({
-					type		: type,
-					typeName	: deviceTypesName[type],
-					devices		: types[type],
-					places		: locations
+					type			: type,
+					typeName		: deviceTypesName[type],
+					devices			: types[type],
+					places			: locations,
+					unlocatedDevices: devices.filter(function(d) { return (d.get("locationId") === "-1" && d.get("type") == type) })
 				}));
 			});
 			
-			// render the first device type by default		
-			appRouter.showView(new Device.Views.DevicesByType({ id: "0" }));
+			// render the first device type by default
+			appRouter.showView(new Device.Views.DevicesByType({ id: _.keys(types)[0] }));
 			
 			/* this.$el.html(this.tpl());
 			
@@ -889,7 +908,7 @@ define([
 			}
 
 			// create the switches and bind their events
-			$(".switch")
+			$(".aside-menu-content .switch")
 					.bootstrapSwitch()
 					.on("switch-change", this.switchChange);
 

@@ -1,9 +1,9 @@
-<div id="<%= device.get('id') %>" class="span12 box">
+<div id="<%= device.get('id') %>" class="device-container span12 box">
 	<div class="box-header inline">
-		<i class="icon-chevron-left icon-white"></i>
+		<button id ="button-back" type="button" class="btn btn-primary"><i class="icon-chevron-left icon-white"></i></button>
 		<span class="device-details-name"><%= device.get("name") %></span>
 		<div class="pull-right">
-			<i class="icon-edit icon-white"></i>
+			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#edit-device-modal"><i class="icon-edit icon-white"></i></button>
 		</div>
 	</div>
 	<div class="box-body">
@@ -11,7 +11,7 @@
 		<ul class="unstyled">
 			<% if (typeof sensorImg !== "undefined") { %>
 			<li>
-				<img src="<%= sensorImg %>">
+				<img class="img-polaroid" src="<%= sensorImg %>">
 			</li>
 			<% } %>
 			<li>
@@ -30,13 +30,31 @@
 				<% } %>
 				</div>
 			</li>
+			<li>
+				<strong>Status</strong>
+				<div class="pull-right">
+					<% if (device.get("status") === "0") { %>
+						D&eacute;connect&eacute;
+					<% } else if (device.get("status" === "1")) { %>
+						En attente
+					<% } else { %>
+						Connect&eacute;
+					<% } %>
+				</div>
+			</li>
 			<%= deviceDetails({ device : device }) %>
+			<!-- <li>
+				<span class="buttons">
+					<button class="btn btn-primary" data-toggle="modal" data-target="#edit-device-modal">Modifier</button>
+					<button class="btn">Supprimer</button>
+				</span>
+			</li> -->
 		</ul>
 	</div>
 </div>
 
 <!-- modal edit device -->
-<div id="editDeviceModal" class="modal hide fade">
+<div id="edit-device-modal" class="modal hide fade">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 		<h3>Nom du dispositif</h3>

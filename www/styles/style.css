@@ -3,6 +3,10 @@ body {
 	background-color: #f5f5f5;
 }
 
+small {
+	color: #888888;
+}
+
 .scrollable {
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
@@ -87,6 +91,15 @@ body {
 	font-weight: bold;
 }
 
+.device-container > .box-header {
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.device-container > .box-header button {
+	margin-top: -5px;
+}
+
 .device-details-name {
 	position: absolute;
 	width: 94%;
@@ -116,6 +129,11 @@ body {
 	display: block;
 	text-decoration: none;
 	color: #000000;
+}
+
+.box-body > ul > li > .buttons {
+	display: block;
+	text-align: center;
 }
 
 .box-body > ul > li .deviceName,

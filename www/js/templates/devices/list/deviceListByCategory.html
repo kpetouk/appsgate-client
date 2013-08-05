@@ -2,6 +2,7 @@
 	<%= deviceTypeName %>
 </div>
 
+<!-- render located devices -->
 <% places.forEach(function(place) { %>
 <% if (place.getTypeSensors(typeId).length > 0) { %>
 <div class="box">
@@ -40,7 +41,16 @@
 							</div>
 						<% } %>
 						<i class="icon-chevron-right"></i>
-					</div>
+					</div><br />
+					<small>
+						<% if (s.get("status") === "0") { %>
+							D&eacute;connect&eacute;
+						<% } else if (s.get("status" === "1")) { %>
+							En attente
+						<% } else { %>
+							Connect&eacute;
+						<% } %>
+					</small>
 				</a>
 			</li>
 			<% }) %>

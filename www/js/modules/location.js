@@ -218,6 +218,13 @@ define([
 			this.comparator = function(location) {
 				return location.get("name");
 			};
+			
+			// add the location w/ id -1 for the unlocated devices
+			this.add({
+				id : "-1",
+				name: "Non localis&eacute;",
+				devices: []
+			});
 
 		 	// when a location has been created and added by the user, notify the backend
 		 	this.on("add", function(location) {
@@ -403,10 +410,13 @@ define([
 			// render the side menu
 			$(".aside-menu-content").html("");
 			locations.forEach(function(location) {
-				$(".aside-menu-content").append(self.tplPlaceContainer({
-					place : location
-				}));
+				if (location.get("id") !== "-1" || location.get("id") === "-1" && location.get("devices").length > 0) {
+					$(".aside-menu-content").append(self.tplPlaceContainer({
+						place : location
+					}));
+				}
 			});
+			// append unlocated devices to the side menu
 			
 			// render the first place
 			appRouter.showView(new Location.Views.Details({ model : locations.at(0) }));
