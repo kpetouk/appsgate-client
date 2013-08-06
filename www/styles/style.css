@@ -158,6 +158,13 @@ a > h4 {
 	margin-bottom: 5px;
 }
 
+.add-place-button {
+	display: block;
+	margin-top: 10px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
 /* large desktop */
 @media (min-width: 1200px) {
 	body {

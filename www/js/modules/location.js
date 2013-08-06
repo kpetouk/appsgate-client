@@ -312,8 +312,6 @@ define([
 		tplAddPlace: _.template(addPlaceTemplate),
 
 		events: {
-			"click button.valid-install"		: "addLocation",
-			"keypress :input.locationName"		: "addLocation",
 			"keyup :input.locationName"			: "checkLocation",
 			"click div"	: "showPlace"
 		},
@@ -346,7 +344,12 @@ define([
 					appRouter.showView(self);
 					// self.render();
 				}
-			})
+			});
+			
+			// bind events of the add place modal to the view
+			$("#add-place-modal .valid-button").on("click", this.addLocation);
+			$("#add-place-modal .place-name").on("keypress", this.addLocation);
+			$("#add-place-modal .place-name").on("keyup", this.checkLocation);
 		},
 				
 		showPlace:function(e) {
@@ -362,24 +365,24 @@ define([
 
 				var location = new Location.Model({
 					id 		: Math.round(Math.random() * 1000),
-					name 	: $(".locationName").val(),
+					name 	: $(".place-name").val(),
 					devices : []	
 				});
 
 				if (locations.where({ name : location.get("name") }).length > 0) {
-					$("#addLocationModal").modal("hide");
+					$("#add-place-modal").modal("hide");
 					return;
 				}
 
 				// add the new location once the modal is hidden
 				// the backend is notified through the callback of the collection on the event 'add' on the collection
 				// the view is refreshed throught the callback of the view on the event 'add' on the collection
-				/* $("#addLocationModal").on("hidden", function() {
+				/* $("#add-place-modal").on("hidden", function() {
 					console.log("plop");
 					locations.add(location);
 				}); */
 
-				$("#addLocationModal").modal("hide");
+				$("#add-place-modal").modal("hide");
 				locations.add(location);
 				// this.render();
 				// hide the modal
@@ -389,10 +392,10 @@ define([
 
 		// check the current value of the input text and show a message error if needed
 		checkLocation:function() {
-			if (locations.where({ name : $("input").val() }).length > 0) {
-				$("p.text-error").show();
+			if (locations.where({ name : $("#add-place-modal .place-name").val() }).length > 0) {
+				$("#add-place-modal p.text-error").show();
 			} else {
-				$("p.text-error").hide();
+				$("#add-place-modal p.text-error").hide();
 			}
 		},
 
