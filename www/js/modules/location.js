@@ -239,6 +239,27 @@ define([
 					}]
 		 		});
 		 	});
+			
+			// when a place has been deleted from the interface, update the devices located inside and notify the backend
+			this.on("remove", function(place) {
+				// update the devices of the place to be unlocated
+				self.postRemovePlace(place);
+				
+				// notify the backend
+				communicator.sendMessage({
+					method	: "removePlace",
+					args	: [{
+						type	: "String",
+						value	: place.get("id")
+					}]
+				});
+				
+				// tell the menu for places to refresh
+				dispatcher.trigger("refreshListPlaces");
+				
+				// display the first new place
+				appRouter.navigate("#locations/" + locations.at(0).get("id"), { trigger : true });
+			});
 
 		 	// listen to the event when the list of locations is received
 		 	dispatcher.on("listPlaces", function(locations) {
@@ -258,10 +279,40 @@ define([
 		 		dispatcher.trigger("refreshListPlaces");
 		 	});
 
-			// listen to the event when a place is updated
+			// listen to the event when a place has been updated
 			dispatcher.on("updatePlace", function(place) {
 				locations.get(place.id).set(place);
 				dispatcher.trigger("refreshListPlaces");
+			});
+			
+			// listen to the event when a place has been removed
+			dispatcher.on("removePlace", function(placeId) {
+				var removedPlace = locations.get(placeId);
+				
+				// check if the place exists in the collection
+				if (typeof removedPlace !== "undefined") {
+					// save the previous first id for checking when refreshing the view
+					var oldFirstId = locations.at(0).get("id");
+					
+					// remove the place from the collection
+					locations.remove(removedPlace, { silent : true });
+
+					// update the devices of the place
+					self.postRemovePlace(removedPlace);
+
+					// refresh the the menu if the places are displayed
+					if (Backbone.history.fragment.indexOf("locations") !== -1 || Backbone.history.fragment === "") {
+						dispatcher.trigger("refreshListPlaces");
+					}
+
+					// refresh the content if the details of the removed place was displayed
+					if (Backbone.history.fragment === "locations/" + placeId ||
+							Backbone.history.fragment === "locations" && placeId === "0" ||
+							Backbone.history.fragment === "" && placeId === oldFirstId ||
+							Backbone.history.fragment === "locations/-1") {
+						appRouter.navigate("#locations/" + locations.at(0).get("id"), { trigger : true });
+					}
+				}
 			});
 
 		 	// listen to the event when a device has been moved
@@ -280,6 +331,7 @@ define([
 
 		 /**
 		  * Return the name of the location where a device is located
+		  * 
 		  * @param device
 		  * @return Name of the location where the device is located
 		  */
@@ -289,6 +341,27 @@ define([
 			} catch (e) {
 				return "Non d&eacute;fini";
 			}
+		},
+		
+		/**
+		 * After removing a place from the collection, its devices need to be unlocated
+		 * 
+		 * @param place Place that has been removed
+		 */
+		postRemovePlace:function(place) {
+			var self = this;
+			
+			// devices located in the place are now unlocated
+			place.get("devices").forEach(function(deviceId) {
+				// update their attributes
+				var device = devices.get(deviceId);
+				if (typeof device !== "undefined") {
+					device.set({ placeId : -1 });
+				}
+
+				// add it to the unlocated devices array of the collection
+				self.get("-1").get("devices").push(deviceId);
+			});
 		},
 
 		/**
@@ -443,7 +516,8 @@ define([
 		 * Bind events of the DOM elements from the view to their callback
 		 */
 		events: {
-			"click span.previousDetailsLocation"	: "goBackToList"
+			"click span.previousDetailsLocation"	: "goBackToList",
+			"click button#delete-place-button"		: "deletePlace"
 		},
 
 		/**
@@ -505,6 +579,10 @@ define([
 		 */
 		goBackToList:function() {
 			window.history.back();
+		},
+		
+		deletePlace:function() {
+			locations.remove(this.model);
 		},
 
 		/**
