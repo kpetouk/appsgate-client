@@ -2,15 +2,44 @@ require([
     "domReady",
     "app"
 ], function (domReady, App) {
-
-    // add a close method to all the views for convenience - see appRouter for usage
+	/**
+	 * Encapsulate actions to perform before switching the view to avoid ghost views
+	 * @returns {undefined}
+	 */
     Backbone.View.prototype.close = function() {
+		// remove the view from the page
         this.remove();
+		
+		// unbind all the events associated to the view
         this.unbind();
+		
+		// unbind the events from external elements the view was listening to
+		if (typeof this.externalElements !== "undefined") {
+			this.externalElements.forEach(function(e) {
+				e.off();
+			});
+		}
     };
+	
+	/**
+	 * Bind an event on a dom element that is not contained in the view
+	 * 
+	 * @param callback Callback to invoke when the event has been triggered
+	 * @param domElement dom element that will trigger the event
+	 * @param event Event to bind
+	 */
+	Backbone.View.prototype.addExternalElement = function(domElements) {
+		// instantiate the array to store external dom elements binded to the view - used in close() to avoid ghost views
+		if (typeof this.externalElements === "undefined") {
+			this.externalElements = new Array();
+		}
+		
+		// add the domElement to the array containing all the external dom elements to the view
+		this.externalElements = this.externalElements.concat(domElements);
+	};
 
     // domReady is RequireJS plugin that triggers when DOM is ready
-    domReady(function () {
+    domReady(function() {
         function onDeviceReady(desktop) {
             // Initialize the application-wide event dispatcher
             App.initialize();
