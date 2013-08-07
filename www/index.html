@@ -66,14 +66,30 @@
 	</div>
 	
 	<!-- modal to add a new place -->
-	<div id="add-place-modal" class="modal hide fade active">
+	<div id="add-place-modal" class="modal hide fade">
 		<div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<button type="button" class="close" data-dismiss="modal">&times;</button>
 			<h3>Ajouter pi&egrave;ce</h3>
 		</div>
 		<div class="modal-body">
 			<input type="text" class="place-name input-block-level" placeholder="Nom de la pi&egrave;ce">
-			<p class="hide text-error">Nom de pi&egrave;ce d&eacute;ja existant</p>
+			<p class="hide text-error">Nom de pi&egrave;ce d&eacute;j&agrave; existant</p>
+		</div>
+		<div class="modal-footer">
+			<button class="btn" data-dismiss="modal">Annuler</button>
+			<button class="btn btn-primary valid-button">Valider</button>
+		</div>
+	</div>
+	
+	<!-- modal to edit the name of a place -->
+	<div id="edit-name-place-modal" class="modal hide fade">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal">&times;</button>
+			<h3>Renommer pi&egrave;ce</h3>
+		</div>
+		<div class="modal-body">
+			<input type="text" class="place-name input-block-level" placeholder="Nom de la pi&egrave;ce">
+			<p class="hide text-error">Nom de pi&egrave;ce d&eacute;j&agrave; existant</p>
 		</div>
 		<div class="modal-footer">
 			<button class="btn" data-dismiss="modal">Annuler</button>

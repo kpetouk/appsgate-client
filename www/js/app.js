@@ -19,23 +19,37 @@ define([
 
         // default route of the application
         index:function() {
-            this.showView(new Location.Views.List());
+			this.showMenuView(new Location.Views.Menu());
+			this.showView(new Location.Views.Details({ model : locations.at(0) }));
         },
 
+		// update the side menu w/ new content
+		showMenuView:function(menuView) {
+			// remove and unbind the current view for the menu
+			if (this.currentMenuView) {
+				this.currentMenuView.close();
+			}
+			
+			this.currentMenuView = menuView;
+			this.currentMenuView.render();
+			$(".aside-menu-content").html(this.currentMenuView.$el);
+		},
+
         showView:function(view) {
+			// remove and unbind the current view
             if (this.currentView) {
 				// manage raphaeljs objects
 				if (typeof colorWheel !== "undefined") {
 					colorWheel.remove();
 					delete colorWheel;
 				}
-				
-                this.currentView.remove();
-                this.currentView.unbind();
+                this.currentView.close();
             }
+			
+			$("#edit-device-modal").remove();
 
             this.currentView = view;
-			$(".body-content").html(this.currentView.el);
+			$(".body-content").html(this.currentView.$el);
 			this.currentView.render();
         }
     });
@@ -70,7 +84,6 @@ define([
         dispatcher.on("locationsReady", function() {
             dispatcher.on("devicesReady", function() {
                 // dispatcher.on("programsReady", function() {
-					console.log("ok");
                     window.appRouter = new AppRouter();
                     Backbone.history.start();
 
