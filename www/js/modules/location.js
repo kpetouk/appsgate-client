@@ -59,8 +59,11 @@ define([
 					self.get("devices").split();
 				}
 			}) */
+			
+			// remove potential duplicated entries and trigger a refresh of the list of places event
 			this.on("change:devices", function() {
 				self.set({ devices : _.uniq(self.get("devices")) });
+				dispatcher.trigger("refreshListPlaces");
 			});
 		},
 		
@@ -79,7 +82,7 @@ define([
 			// compute the average value of the sensors
 			var average = 0;
 			sensors.forEach(function(s) {
-				average += s.get("value");
+				average += parseInt(s.get("value"));
 			});
 			
 			return average / sensors.length;
@@ -258,7 +261,11 @@ define([
 				});
 				
 				// tell the menu for places to refresh
-				dispatcher.trigger("refreshListPlaces");
+				if (Backbone.history.fragment.indexOf("devices") !== -1) {
+					dispatcher.trigger("refreshListDevices");
+				} else {
+					dispatcher.trigger("refreshListPlaces");
+				}
 				
 				// display the first new place
 				appRouter.navigate("#locations/" + locations.at(0).get("id"), { trigger : true });
@@ -414,6 +421,11 @@ define([
 			
 			// refresh the menu containing the list of places when a new one is received
 			dispatcher.on("refreshListPlaces", function() {
+				appRouter.showMenuView(self);
+			});
+			
+			// refresh the menu when the devices have been updated
+			dispatcher.on("refreshListDevices", function() {
 				appRouter.showMenuView(self);
 			});
 			

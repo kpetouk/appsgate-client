@@ -240,10 +240,16 @@ define([
 			}
 		},
 		
+		/**
+		 * Send a remote call to turn on the lamp
+		 */
 		on:function() {
 			this.remoteCall("On", []);
 		},
 		
+		/**
+		 * Send a remote call to turn off the lamp
+		 */
 		off:function() {
 			this.remoteCall("Off", []);
 		}
@@ -260,6 +266,10 @@ define([
 		 */
 		initialize: function() {
 			var self = this;
+			
+			this.on("change", function() {
+				dispatcher.trigger("refreshListDevices");
+			});
 
 			// listen to the event when the list of devices is received
 			dispatcher.on("listDevices", function(devices) {
