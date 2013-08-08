@@ -564,6 +564,18 @@ define([
 				appRouter.showView(self);
 			});
 			
+			// refresh itself when one of these devices have been updated
+			this.model.get("devices").forEach(function(deviceId) {
+				if (typeof devices.get(deviceId) !== "undefined") {
+					devices.get(deviceId).on("change", function() {
+						console.log("locations/" + deviceId);
+						if (Backbone.history.fragment === "locations/" + self.model.get("id")) {
+							appRouter.showView(self);
+						}
+					});
+				}
+			});
+			
 			// save the external dom elements binded
 			this.addExternalElement([
 				$("#edit-name-place-modal .valid-button"),
