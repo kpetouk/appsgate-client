@@ -408,11 +408,7 @@ define([
 	Location.Views.Menu = Backbone.View.extend({
 		tplPlaceContainer	: _.template(placeContainerMenuTemplate),
 		tplAddPlaceButton	: _.template(addPlaceButtonTemplate),
-		
-		events: {
-			"switch-change .switch"	: "switchChange"
-		},
-		
+
 		/**
 		 * @constructor
 		 */
@@ -435,7 +431,7 @@ define([
 				$("#add-place-modal .place-name")
 			]);
 		},
-				
+		
 		/**
 		 * Check the current value of the input text and show a message error if needed
 		 * 
@@ -450,7 +446,7 @@ define([
 				return true;
 			}
 		},
-				
+
 		/**
 		 * Check if the name of the place does not already exist. If not, update the place
 		 * Hide the modal when done
@@ -494,7 +490,7 @@ define([
 				data.value ? lamp.on() : lamp.off();
 			});
 		},
-		
+
 		/**
 		 * Render the side menu
 		 */
@@ -516,8 +512,10 @@ define([
 			// "add place" button to the side menu
 			this.$el.append(this.tplAddPlaceButton());
 			
-			// create the switches
-			this.$el.find(".switch").bootstrapSwitch();
+			// create the switches and bind their events
+			this.$el.find(".switch")
+					.bootstrapSwitch()
+					.on("switch-change", this.switchChange);
 			
 			// bind the external elements
 			this.bindExternalElements();
