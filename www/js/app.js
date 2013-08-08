@@ -86,6 +86,8 @@ define([
         dispatcher.on("locationsReady", function() {
             dispatcher.on("devicesReady", function() {
                 // dispatcher.on("programsReady", function() {
+				
+					// remove potential duplicated entries of devices in a place
 					locations.forEach(function(l) {
 						l.set({ devices : _.uniq(l.get("devices")) });
 					});
@@ -134,28 +136,41 @@ define([
 		});
 		
 		// listen to the event coming from the valid button of the modal window for the settings
-		$("#settings-modal #valid-button").bind("click", function() {
-			
+		$("#settings-modal #valid-button").bind("click", onValidSettings);
+		$("#settings-modal .addr-server").bind("keyup", onValidSettings);
+		
+		// set current server address in the modal
+		$("#settings-modal .addr-server").val(communicator.getServerAddr());
+	}
+	
+	/**
+	 * Callback when the user has validated new settings
+	 * 
+	 * @param e JS event
+	 */
+	function onValidSettings(e) {
+		if (e.type === "keyup" && e.keyCode === 13 || e.type === "click") {
 			dispatcher.on("locationsReady", function() {
 				dispatcher.on("devicesReady", function() {
+					// remove potential duplicated entries of devices in a place
 					locations.forEach(function(l) {
 						l.set({ devices : _.uniq(l.get("devices")) });
 					});
-					
+
 					$("#settings-modal").modal("hide");
 					Backbone.history.stop();
 					Backbone.history.start();
 				});
 			});
-			
+
 			// set the new server address
 			communicator.close();
 			communicator.setServerAddr($("#settings-modal .addr-server").val());
 			communicator.initialize();
-		});
-		
-		// set current server address in the modal
-		$("#settings-modal .addr-server").val(communicator.getServerAddr());
+
+			// set current server address in the modal
+			$("#settings-modal .addr-server").val(communicator.getServerAddr());
+		}
 	}
 
 	return {
