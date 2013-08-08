@@ -133,7 +133,7 @@ define([
 		getTemperatureSensors:function() {
 			return this.getTypeSensors(0);
 		},
-			
+
 		/**
 		 * @return Array of illumination sensors in the place
 		 */
@@ -399,6 +399,10 @@ define([
 		tplPlaceContainer	: _.template(placeContainerMenuTemplate),
 		tplAddPlaceButton	: _.template(addPlaceButtonTemplate),
 		
+		events: {
+			"switch-change .switch"	: "switchChange"
+		},
+		
 		/**
 		 * @constructor
 		 */
@@ -458,6 +462,22 @@ define([
 			} else if (e.type === "keyup") {
 				this.checkPlace();
 			}
+		},
+		
+		/**
+		 * Callback for the switches of the menu. Send a message to turn on or off the lamps
+		 * 
+		 * @param e JS event automatically sent
+		 * @param data Data sent by the switch that contains its value
+		 */
+		switchChange:function(e, data) {
+			// retrieve the placeid
+			var placeId = $(e.target).parents(".place-menu-container").attr("id");
+			
+			// send the message to each lamp
+			locations.get(placeId).getPhilipsHueLamps().forEach(function(lamp) {
+				data.value ? lamp.on() : lamp.off();
+			});
 		},
 		
 		/**

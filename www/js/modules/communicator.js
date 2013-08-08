@@ -47,7 +47,7 @@ define([
 
 			if (jsonMessage.callId !== undefined) {
 				dispatcher.trigger(jsonMessage.callId, JSON.parse(jsonMessage.value));
-			} else if (jsonMessage.objectId !== undefined) {
+			} else if (typeof jsonMessage.objectId !== "undefined") {
 				var id = jsonMessage.objectId;
 				delete jsonMessage.objectId;
 				dispatcher.trigger(id, jsonMessage);

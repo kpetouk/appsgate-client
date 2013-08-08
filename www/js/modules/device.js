@@ -107,12 +107,7 @@ define([
 
 			// when the user update the name, send the notification to the server
 			this.on("change:name", function(model, name) {
-				communicator.sendMessage({
-					targetType: "1",
-					objectId: model.get("id").toString(),
-					method: "setUserObjectName",
-					args: [{type: "String", value: name}]
-				});
+				self.remoteCall("setUserObjectName", [{ type : "String", value : name }]);
 			});
 
 			// each device listens to the event whose id corresponds to its own id. This ensures to
@@ -121,6 +116,25 @@ define([
 				self.set(updatedVariableJSON.varName, updatedVariableJSON.value);
 			});
 		},
+		
+		/**
+		 * Send a message to the server to perform a remote call
+		 * 
+		 * @param method Remote method name to call
+		 * @param args Array containing the argument taken by the method. Each entry of the array has to be { type : "", value "" }
+		 */
+		remoteCall:function(method, args) {
+			// build the message
+			var messageJSON = {
+				targetType	: "1",
+				objectId	: this.get("id"),
+				method		: method,
+				args		: args
+			};
+			
+			// send the message
+			communicator.sendMessage(messageJSON);
+		}
 	});
 
 	/**
@@ -224,6 +238,14 @@ define([
 			if (this.get("name") === "") {
 				this.set("name", "Lampe Phillips Hue");
 			}
+		},
+		
+		on:function() {
+			this.remoteCall("On", []);
+		},
+		
+		off:function() {
+			this.remoteCall("Off", []);
 		}
 	});
 
@@ -296,7 +318,7 @@ define([
 					break;
 			}
 			
-			if (device.locationId === "-1") {
+			if (device.placeId === "-1") {
 				locations.get("-1").get("devices").push(device.id);
 			}
 	},
@@ -309,7 +331,7 @@ define([
 		
 		getUnlocatedDevices:function() {
 			return devices.filter(function(device) {
-				return device.get("locationId") === "-1";
+				return device.get("placeId") === "-1";
 			});
 		},
 		
@@ -336,7 +358,7 @@ define([
 		
 		// map the events and their callback
 		events: {
-			"click button.validEditDevice": "validEditDevice",
+			"click button.valid-button": "validEditDevice",
 			"keypress :input.deviceName": "validEditDevice",
 			"click .icon-chevron-left": "goBack",
 			"click #button-back": "goBack"
@@ -352,8 +374,8 @@ define([
 			this.model.on("change", function() {
 				self.$el.find(".device-name").html(self.model.get("name"));
 				
-				if (self.model.get("locationId") !== "-1") {
-					self.$el.find(".device-location").html(locations.get(self.model.get("locationId")).get("name"));
+				if (self.model.get("placeId") !== "-1") {
+					self.$el.find(".device-location").html(locations.get(self.model.get("placeId")).get("name"));
 				} else {
 					self.$el.find(".device-location").html("Non localis&eacute;");
 				}
@@ -473,6 +495,15 @@ define([
 				device: this.model,
 				locations: locations
 			}));
+			
+			// bind events of the edit device modal to the view
+			var modalView = {
+				model: this.model,
+				onClick: this.validEditDevice
+			};
+			_.bindAll(modalView, "onClick");
+			
+			$("#edit-device-modal .valid-button").bind("click", modalView.onClick);
 
 			return this;
 		},
@@ -486,15 +517,15 @@ define([
 
 				// retrieved the modified attributes
 				var name = $(".deviceName").val();
-				var locationId = parseInt($("select option:selected").val());
+				var placeId = parseInt($("select option:selected").val());
 
-				if (locationId !== -1) {
-					communicator.sendMessage({
+				if (placeId !== -1) {
+					/* communicator.sendMessage({
 						method: "moveDevice",
-						srcLocationId: this.model.get("locationId").toString(),
-						destLocationId: locationId.toString(),
+						srcPlaceId: this.model.get("deviceId").toString(),
+						destPlaceId: placeId.toString(),
 						deviceId: this.model.get("id").toString()
-					});
+					}); */
 				}
 
 				// move the device
@@ -723,7 +754,7 @@ define([
 				id: Math.round(Math.random() * 1000),
 				type: $(".scannedSensor").text(),
 				name: $("input.deviceName").val(),
-				locationId: parseInt(selectElement[selectElement.options.selectedIndex].value),
+				placeId: parseInt(selectElement[selectElement.options.selectedIndex].value),
 				status: 1
 			});
 
@@ -731,7 +762,7 @@ define([
 			$("#addDeviceModal").on("hidden", function() {
 				devices.add(device);
 
-				var location = locations.get(device.get("locationId"));
+				var location = locations.get(device.get("placeId"));
 				location.get("devices").push(device.get("id"));
 				location.save();
 			});
@@ -826,7 +857,7 @@ define([
 					typeName		: deviceTypesName[type],
 					devices			: types[type],
 					places			: locations,
-					unlocatedDevices: devices.filter(function(d) { return (d.get("locationId") === "-1" && d.get("type") == type) })
+					unlocatedDevices: devices.filter(function(d) { return (d.get("placeId") === "-1" && d.get("type") == type) })
 				}));
 			});
 			
