@@ -59,7 +59,7 @@ define([
         window.dispatcher = _.clone(Backbone.Events);
 
         // Setting the connection with the box
-		window.communicator = new Communicator('ws://prima22.inrialpes.fr:8080');
+		window.communicator = new Communicator('ws://prima16.inrialpes.fr:8080');
         // window.communicator = new Communicator("ws://placetouch-0c60a.local:8080");
         // window.communicator = new Communicator("ws://192.168.2.3:8080");
 		// window.communicator = new Communicator("ws://194.199.23.138:8080");
@@ -86,6 +86,10 @@ define([
         dispatcher.on("locationsReady", function() {
             dispatcher.on("devicesReady", function() {
                 // dispatcher.on("programsReady", function() {
+					locations.forEach(function(l) {
+						l.set({ devices : _.uniq(l.get("devices")) });
+					});
+					
                     window.appRouter = new AppRouter();
                     Backbone.history.start();
 
@@ -134,6 +138,10 @@ define([
 			
 			dispatcher.on("locationsReady", function() {
 				dispatcher.on("devicesReady", function() {
+					locations.forEach(function(l) {
+						l.set({ devices : _.uniq(l.get("devices")) });
+					});
+					
 					$("#settings-modal").modal("hide");
 					Backbone.history.stop();
 					Backbone.history.start();

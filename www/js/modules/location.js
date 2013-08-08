@@ -59,6 +59,9 @@ define([
 					self.get("devices").split();
 				}
 			}) */
+			this.on("change:devices", function() {
+				self.set({ devices : _.uniq(self.get("devices")) });
+			});
 		},
 		
 		/**
