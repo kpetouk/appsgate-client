@@ -75,6 +75,8 @@ define([
 
             // Initialize the collection of programs
             // window.programs = new Program.Collection();
+			
+			// dispatcher.off("WebSocketOpen");
         });
 
         // main router of the application
@@ -90,6 +92,9 @@ define([
                     if (navigator.splashscreen !== undefined) {
                         navigator.splashscreen.hide();
                     }
+					
+					dispatcher.off("locationsReady");
+					dispatcher.off("devicesReady");
                 // });
             });
         });
@@ -123,7 +128,26 @@ define([
 				}
 			);
 		});
-
+		
+		// listen to the event coming from the valid button of the modal window for the settings
+		$("#settings-modal #valid-button").bind("click", function() {
+			
+			dispatcher.on("locationsReady", function() {
+				dispatcher.on("devicesReady", function() {
+					$("#settings-modal").modal("hide");
+					Backbone.history.stop();
+					Backbone.history.start();
+				});
+			});
+			
+			// set the new server address
+			communicator.close();
+			communicator.setServerAddr($("#settings-modal .addr-server").val());
+			communicator.initialize();
+		});
+		
+		// set current server address in the modal
+		$("#settings-modal .addr-server").val(communicator.getServerAddr());
 	}
 
 	return {

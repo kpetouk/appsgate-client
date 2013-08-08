@@ -6,29 +6,25 @@ define([
 	 * @constructor
 	 */
 	function Communicator(serverAddr) {
+		var self = this;
+		
+		// cannot be called as a function...
 		if (!(this instanceof Communicator)) {
 			throw new TypeError("Communicator constructor cannot be called " +
 					"as a function");
 		}
 
+		// if websockets are not supported, return
 		if (!WebSocket) {
 			navigator.notification.alert("WebSocket is not supported...");
+			return;
 		}
+		
+		// save the address
+		this.serverAddr = serverAddr;
 
-		// open a websocket
-		this.webSocket = new WebSocket(serverAddr);
-
-		// socket opened event, broadcast an event to the application
-		this.webSocket.onopen = function() {
-			dispatcher.trigger("WebSocketOpen");
-		};
-
-		this.webSocket.onclose = function() {
-			console.log("socket is closed");
-		}
-
-		// message received on the socket
-		this.webSocket.onmessage = this.handleMessage;
+		// initialize the communicator callbacks
+		this.initialize();
 	}
 
 	/**
@@ -37,6 +33,45 @@ define([
 	 */
 	Communicator.prototype = {
 		constructor: Communicator,
+		
+		/**
+		 * Set the callback for the websocket connection
+		 */
+		initialize:function() {
+			// open a websocket
+			this.webSocket = new WebSocket(this.serverAddr);
+		
+			// socket opened event - broadcast an event to the application
+			this.webSocket.onopen = function() {
+				dispatcher.trigger("WebSocketOpen");
+			};
+			
+			// socket closed event - broadcast an event to the application
+			this.webSocket.onclose = function() {
+				dispatcher.trigger("WebSocketClose");
+			};
+			
+			// message received on the socket
+			this.webSocket.onmessage = this.handleMessage;
+		},
+		
+		/**
+		 * Getter for the address of the websocket address
+		 * 
+		 * @return Websocket address
+		 */
+		getServerAddr:function() {
+			return this.serverAddr;
+		},
+		
+		/**
+		 * Setter for the websocket server address
+		 * 
+		 * @param serverAddr Websocket address of the server
+		 */
+		setServerAddr:function(serverAddr) {
+			this.serverAddr = serverAddr;
+		},
 
 		/**
 		 * @method handleMessage
@@ -55,8 +90,6 @@ define([
 				var commandName = _.keys(jsonMessage)[0];
 				dispatcher.trigger(commandName, jsonMessage[commandName]);
 			}
-
-			console.log("received:", message.data);
 		},
 
 		/**
@@ -69,12 +102,12 @@ define([
 		 * @param targetType Parameter used by the server to route the message. 0: AbstractObject, 1: ApAM component
 		 */
 		sendMessage:function(message) {
-			console.log("sending:", JSON.stringify(message));
-
-			// send it
 			this.webSocket.send(JSON.stringify(message));
 		},
 
+		/**
+		 * Close the websocket connection
+		 */
 		close:function() {
 			this.webSocket.close();
 		}
