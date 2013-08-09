@@ -68,6 +68,23 @@
 		</div>
 	</div>
 	
+	<!-- modal to notify the user when the connection is lost -->
+	<div id="lost-connection-modal" class="modal hide fade" tabindex="-1" role="dialog">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal">&times;</button>
+			<h3>Erreur</h3>
+		</div>
+		<div class="modal-body">
+			<p class="text-error">La connexion a &eacute;t&eacute; interrompue.</p>
+			<p class="text-info">Connexion...</p>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn" data-dismiss="modal">Fermer</button>
+			<button type="button" id="change-addr-server" class="btn btn-info">Changer serveur</button>
+			<button type="button" id="reconnect-button" class="btn btn-primary">Se reconnecter</button>
+		</div>
+	</div>
+	
 	<!-- modal for the settings -->
 	<div id="settings-modal" class="modal hide fade">
 		<div class="modal-header">
@@ -76,7 +93,11 @@
 		</div>
 		<div class="modal-body">
 			<p>Adresse du serveur</p>
-			<input type="text" class="addr-server input-block-level" placeholder="Adresse du serveur">
+			<input type="text" class="addr-server input-xlarge" placeholder="Adresse du serveur">
+			:
+			<input type="text" class="port-server input-medium" placeholder="8080">
+			<p class="hide text-error">Serveur indisponible...</p>
+			<p class="hide text-info">Connexion...</p>
 		</div>
 		<div class="modal-footer">
 			<button class="btn" data-dismiss="modal">Annuler</button>

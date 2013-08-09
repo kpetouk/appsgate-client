@@ -57,13 +57,9 @@ define([
 	function initialize() {
 		// Initialize the application-wide event dispatcher
         window.dispatcher = _.clone(Backbone.Events);
-
-        // Setting the connection with the box
-		window.communicator = new Communicator('ws://prima16.inrialpes.fr:8080');
-        // window.communicator = new Communicator("ws://placetouch-0c60a.local:8080");
-        // window.communicator = new Communicator("ws://192.168.2.3:8080");
-		// window.communicator = new Communicator("ws://194.199.23.138:8080");
-		// window.communicator = new Communicator("ws://127.0.0.1:8080");
+		
+		// Setting the connection with the box
+		window.communicator = new Communicator('ws://prima16:8080');
 
         // Wait for the socket to be opened
         dispatcher.on("WebSocketOpen", function() {
@@ -136,11 +132,27 @@ define([
 		});
 		
 		// listen to the event coming from the valid button of the modal window for the settings
-		$("#settings-modal #valid-button").bind("click", onValidSettings);
-		$("#settings-modal .addr-server").bind("keyup", onValidSettings);
+		$("#settings-modal #valid-button").bind("click", onValidSettingsButton);
+		$("#settings-modal .addr-server").bind("keyup", onValidSettingsButton);
 		
-		// set current server address in the modal
-		$("#settings-modal .addr-server").val(communicator.getServerAddr());
+		// listen to the event coming from the modal to handle network errors
+		$("#lost-connection-modal #change-addr-server").bind("click", onChangeAddrServerButton);
+		$("#lost-connection-modal #reconnect-button").bind("click", onReconnectButton);
+		
+		// listen to the communicator event when the connection has been lost and display an alert
+		dispatcher.on("WebSocketClose", function() {
+			$("#lost-connection-modal p.text-info").hide();
+			$("#lost-connection-modal p.text-error").show();
+			$("#lost-connection-modal p.text-error").html("La connexion a &eacute;t&eacute; interrompue.");
+			$("#lost-connection-modal").modal("show");
+		});
+		
+		// set current server address and port in the modal for settings
+		$("#settings-modal .addr-server").val(communicator.getServerAddr().split("://")[1].split(":")[0]);
+		$("#settings-modal .port-server").val(communicator.getServerAddr().split(":")[2]);
+		
+		// Initialize the communication layer
+		communicator.initialize();
 	}
 	
 	/**
@@ -148,7 +160,7 @@ define([
 	 * 
 	 * @param e JS event
 	 */
-	function onValidSettings(e) {
+	function onValidSettingsButton(e) {
 		if (e.type === "keyup" && e.keyCode === 13 || e.type === "click") {
 			dispatcher.on("locationsReady", function() {
 				dispatcher.on("devicesReady", function() {
@@ -157,20 +169,61 @@ define([
 						l.set({ devices : _.uniq(l.get("devices")) });
 					});
 
+					// hide the modal windows
 					$("#settings-modal").modal("hide");
+					$("#lost-connection-modal").modal("hide");
+					
+					// hide the information message for the next time the modal will appear
+					$("#settings-modal p.text-info").hide();
+					
 					Backbone.history.stop();
 					Backbone.history.start();
 				});
 			});
+			
+			// hide the error message it is displayed
+			$("#settings-modal p.text-error").hide();
+			
+			// show the message to inform the user the connection is being established
+			$("#settings-modal p.text-info").show();
 
 			// set the new server address
-			communicator.close();
-			communicator.setServerAddr($("#settings-modal .addr-server").val());
-			communicator.initialize();
+			if ($("#settings-modal .addr-server") !== "") {
+				// build the server address from the information given by the user
+				var serverAddr = "ws://" + $("#settings-modal .addr-server").val() + ":";
+				serverAddr += $("#settings-modal .port-server").val() === "" ? "8080" : $("#settings-modal .port-server").val();
+				console.log(serverAddr);
+				
+				// set the new address
+				communicator.setServerAddr(serverAddr);
+			}
+			
+			// reconnect w/ to the new server
+			communicator.reconnect();
 
-			// set current server address in the modal
-			$("#settings-modal .addr-server").val(communicator.getServerAddr());
+			// set current server address and port in the modal
+			$("#settings-modal .addr-server").val(communicator.getServerAddr().split("://")[1].split(":")[0]);
+			$("#settings-modal .port-server").val(communicator.getServerAddr().split(":")[2]);
 		}
+	}
+	
+	/**
+	 * Callback when the user has clicked on the button to change the address of the server in the modal to manage network errors
+	 */
+	function onChangeAddrServerButton() {
+		$("#lost-connection-modal").modal("hide");
+		$("#settings-modal").modal("show");
+	}
+	
+	/**
+	 * Callback when the user has clicked on one of the buttons to try to reconnect to the server
+	 */
+	function onReconnectButton() {
+		// show in the modal error the information that the connection is being established
+		$("#lost-connection-modal p.text-error").hide();
+		$("#lost-connection-modal p.text-info").show();
+		
+		communicator.reconnect();
 	}
 
 	return {

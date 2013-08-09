@@ -22,9 +22,6 @@ define([
 		
 		// save the address
 		this.serverAddr = serverAddr;
-
-		// initialize the communicator callbacks
-		this.initialize();
 	}
 
 	/**
@@ -33,22 +30,34 @@ define([
 	 */
 	Communicator.prototype = {
 		constructor: Communicator,
-		
+
 		/**
 		 * Set the callback for the websocket connection
 		 */
 		initialize:function() {
+			var self = this;
+			
 			// open a websocket
 			this.webSocket = new WebSocket(this.serverAddr);
+			
+			// socket closed event or error occured during the connection - show the error in the modal settings
+			this.webSocket.onclose = function() {
+				$("#settings-modal p.text-info").hide();
+				$("#settings-modal p.text-error").show();
+				
+				$("#lost-connection-modal p.text-info").hide();
+				$("#lost-connection-modal p.text-error").show();
+				$("#lost-connection-modal p.text-error").html("Serveur indisponible...");
+			};
 		
 			// socket opened event - broadcast an event to the application
 			this.webSocket.onopen = function() {
 				dispatcher.trigger("WebSocketOpen");
-			};
-			
-			// socket closed event - broadcast an event to the application
-			this.webSocket.onclose = function() {
-				dispatcher.trigger("WebSocketClose");
+				
+				// when the connection is established, if an error occured then trigger an event to the application
+				self.webSocket.onclose = function() {
+					dispatcher.trigger("WebSocketClose");
+				};
 			};
 			
 			// message received on the socket
@@ -71,6 +80,25 @@ define([
 		 */
 		setServerAddr:function(serverAddr) {
 			this.serverAddr = serverAddr;
+		},
+		
+		/**
+		 * Close the current connection if needed and start a new connection
+		 */
+		reconnect:function() {
+			// if there is already a connection, close it
+			if (typeof this.webSocket !== "undefined") {
+				// disactivate the close event management
+				this.webSocket.onclose = null;
+				
+				// close the connection
+				this.webSocket.close();
+				
+				delete this.webSocket;
+			}
+			
+			// initialize the new connection
+			this.initialize();
 		},
 
 		/**
