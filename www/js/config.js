@@ -49,15 +49,6 @@ require.config({
 		},
         "jqueryui": {
             deps: [ "jquery" ]
-        },
-		/* "bootstrapSwitch": {
-			deps: ["bootstrap"]
-		},
-		"bootstrapSlider": {
-			deps: ["bootstrap"]
-		},
-		"bootstrapExtraPopover": {
-			deps: ["bootstrap"]
-		} */
+        }
     }
 });
