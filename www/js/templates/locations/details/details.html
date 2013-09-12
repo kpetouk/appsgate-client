@@ -1,313 +1,358 @@
-<div class="place-name-details lead">
-	<%= place.get("name") %>
-	<div class="pull-right">
-		<button type="button" data-target="#edit-name-place-modal" data-toggle="modal" class="btn">
-			<i class="icon-edit"></i> Renommer
-		</button>
-		<button type="button" id="delete-place-button" class="btn">
-			<i class="icon-trash"></i>
-		</button>
+<div class="lead">
+	<% if (place.get("name") !== "") { %>
+		<%= place.get("name") %>
+	<% } else { %>
+		<em>Pi&egrave;ce sans nom</em>
+	<% } %>
+	<% if (place.get("id") !== "-1") { %>
+		<div class="pull-right">
+			<button type="button" data-target="#edit-name-place-modal" data-toggle="modal" class="btn btn-default">
+				<i class="glyphicon glyphicon-edit"></i> Renommer
+			</button>
+			<button id="delete-popover" class="btn btn-default" rel="popover" data-content="<button type='button' class='btn btn-danger delete-place-button'>Supprimer</button>" data-placement="bottom">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</div>
+	<% } %>
 	</div>
 </div>
 
 <!-- temperature sensors -->
 <% if (place.getTemperatureSensors().length > 0) { %>
-<div class="box">
-	<div class="box-header">
-		<span class="device-name"><%= deviceTypes[0] %></span>
-		<div class="pull-right">
-			<%= place.getTemperatureSensors().length %>
-		</div>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">
+			<%= deviceTypes[0] %>
+			<span class="badge pull-right">
+				<%= place.getTemperatureSensors().length %>
+			</span>
+		</h3>
 	</div>
-	<div class="box-body">
-		<ul class="unstyled">
-			<% place.getTemperatureSensors().forEach(function(s) { %>
-			<li>
-				<a href="#devices/<%= s.get('id') %>">
-				<%= s.get("name") %>
+	<div class="list-group">
+		<% place.getTemperatureSensors().forEach(function(s) { %>
+			<a href="#devices/<%= s.get('id') %>" class="list-group-item">
+				<% if (s.get("name") !== "") { %>
+					<%= s.get("name") %>
+				<% } else { %>
+					<em>Dispositif sans nom</em>
+				<% } %>
 				<div class="pull-right">
-					<%= s.get("value") %>&deg;C
-					<i class="icon-chevron-right"></i>
+					<span class="label label-info"><%= s.get("value") %>&deg;C</span>
+					<i class="glyphicon glyphicon-chevron-right"></i>
 				</div>
-				<br />
-				<small>
-					<% if (s.get("status") === "0") { %>
-						D&eacute;connect&eacute;
-					<% } else if (s.get("status" === "1")) { %>
-						En attente
-					<% } else { %>
-						Connect&eacute;
-					<% } %>
-				</small>
-				</a>
-			</li>
-			<% }) %>
-		</ul>
+				<br>
+				<% if (s.get("status") === "0") { %>
+					<span class="label label-danger">D&eacute;connect&eacute;</span>
+				<% } else if (s.get("status" === "1")) { %>
+					<span class="label label-warning">En attente</span>
+				<% } else { %>
+					<span class="label label-success">Connect&eacute;</span>
+				<% } %>
+			</a>
+		<% }) %>
 	</div>
 </div>
 <% } %>
 
 <!-- illumination sensors -->
 <% if (place.getIlluminationSensors().length > 0) { %>
-<div class="box">
-	<div class="box-header">
-		<span class="device-name"><%= deviceTypes[1] %></span>
-		<div class="pull-right">
-			<%= place.getIlluminationSensors().length %>
-		</div>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">
+			<%= deviceTypes[1] %>
+			<span class="badge pull-right">
+				<%= place.getIlluminationSensors().length %>
+			</span>
+		</h3>
 	</div>
-	<div class="box-body">
-		<ul class="unstyled">
-			<% place.getIlluminationSensors().forEach(function(s) { %>
-			<li>
-				<a href="#devices/<%= s.get('id') %>">
-				<%= s.get("name") %>
+	<div class="list-group">
+		<% place.getIlluminationSensors().forEach(function(s) { %>
+			<a href="#devices/<%= s.get('id') %>" class="list-group-item">
+				<% if (s.get("name") !== "") { %>
+					<%= s.get("name") %>
+				<% } else { %>
+					<em>Dispositif sans nom</em>
+				<% } %>
 				<div class="pull-right">
-					<%= s.get("value") %> Lux
-					<i class="icon-chevron-right"></i>
+					<span class="label label-info"><%= s.get("value") %> Lux</span>
+					<i class="glyphicon glyphicon-chevron-right"></i>
 				</div>
-				<br />
-				<small>
-					<% if (s.get("status") === "0") { %>
-						D&eacute;connect&eacute;
-					<% } else if (s.get("status" === "1")) { %>
-						En attente
-					<% } else { %>
-						Connect&eacute;
-					<% } %>
-				</small>
-				</a>
-			</li>
-			<% }) %>
-		</ul>
+				<br>
+				<% if (s.get("status") === "0") { %>
+					<span class="label label-danger">D&eacute;connect&eacute;</span>
+				<% } else if (s.get("status" === "1")) { %>
+					<span class="label label-warning">En attente</span>
+				<% } else { %>
+					<span class="label label-success">Connect&eacute;</span>
+				<% } %>
+			</a>
+		<% }) %>
 	</div>
 </div>
 <% } %>
 
 <!-- switches -->
 <% if (place.getSwitches().length > 0) { %>
-<div class="box">
-	<div class="box-header">
-		<span class="device-name"><%= deviceTypes[2] %></span>
-		<div class="pull-right">
-			<%= place.getSwitches().length %>
-		</div>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">
+			<%= deviceTypes[2] %>
+			<span class="badge pull-right">
+				<%= place.getSwitches().length %>
+			</span>
+		</h3>
 	</div>
-	<div class="box-body">
-		<div class="box-body">
-		<ul class="unstyled">
-			<% place.getSwitches().forEach(function(s) { %>
-			<li>
-				<a href="#devices/<%= s.get('id') %>">
-				<%= s.get("name") %>
+	<div class="list-group">
+		<% place.getSwitches().forEach(function(s) { %>
+			<a href="#devices/<%= s.get('id') %>" class="list-group-item">
+				<% if (s.get("name") !== "") { %>
+					<%= s.get("name") %>
+				<% } else { %>
+					<em>Dispositif sans nom</em>
+				<% } %>
 				<div class="pull-right">
-					<i class="icon-chevron-right"></i>
-				</div>
-				<br />
-				<small>
-					<% if (s.get("status") === "0") { %>
-						D&eacute;connect&eacute;
-					<% } else if (s.get("status" === "1")) { %>
-						En attente
+					<% if (s.get("value") === "true") { %>
+						<span class="label label-info">Ouvert</span>
 					<% } else { %>
-						Connect&eacute;
+						<span class="label label-info">Ferm&eacute;</span>
 					<% } %>
-				</small>
-				</a>
-			</li>
-			<% }) %>
-		</ul>
-	</div>
+					<i class="glyphicon glyphicon-chevron-right"></i>
+				</div>
+				<br>
+				<% if (s.get("status") === "0") { %>
+					<span class="label label-danger">D&eacute;connect&eacute;</span>
+				<% } else if (s.get("status" === "1")) { %>
+					<span class="label label-warning">En attente</span>
+				<% } else { %>
+					<span class="label label-success">Connect&eacute;</span>
+				<% } %>
+			</a>
+		<% }) %>
 	</div>
 </div>
 <% } %>
 
 <!-- contact sensors -->
 <% if (place.getContactSensors().length > 0) { %>
-<div class="box">
-	<div class="box-header">
-		<span class="device-name"><%= deviceTypes[3] %></span>
-		<div class="pull-right">
-			<%= place.getContactSensors().length %>
-		</div>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">
+			<%= deviceTypes[3] %>
+			<span class="badge pull-right">
+				<%= place.getContactSensors().length %>
+			</span>
+		</h3>
 	</div>
-	<div class="box-body">
-		<div class="box-body">
-		<ul class="unstyled">
-			<% place.getContactSensors().forEach(function(s) { %>
-			<li>
-				<a href="#devices/<%= s.get('id') %>">
-				<%= s.get("name") %>
+	<div class="list-group">
+		<% place.getContactSensors().forEach(function(s) { %>
+			<a href="#devices/<%= s.get('id') %>" class="list-group-item">
+				<% if (s.get("name") !== "") { %>
+					<%= s.get("name") %>
+				<% } else { %>
+					<em>Dispositif sans nom</em>
+				<% } %>
 				<div class="pull-right">
-					<i class="icon-chevron-right"></i>
-				</div>
-				<br />
-				<small>
-					<% if (s.get("status") === "0") { %>
-						D&eacute;connect&eacute;
-					<% } else if (s.get("status" === "1")) { %>
-						En attente
+					<% if (s.get("contact") === "true") { %>
+						<span class="label label-info">Ferm&eacute;</span>
 					<% } else { %>
-						Connect&eacute;
+						<span class="label label-info">Ouvert</span>
 					<% } %>
-				</small>
-				</a>
-			</li>
-			<% }) %>
-		</ul>
-	</div>
+					<i class="glyphicon glyphicon-chevron-right"></i>
+				</div>
+				<br>
+				<% if (s.get("status") === "0") { %>
+					<span class="label label-danger">D&eacute;connect&eacute;</span>
+				<% } else if (s.get("status" === "1")) { %>
+					<span class="label label-warning">En attente</span>
+				<% } else { %>
+					<span class="label label-success">Connect&eacute;</span>
+				<% } %>
+			</a>
+		<% }) %>
 	</div>
 </div>
 <% } %>
 
 <!-- key-card readers -->
 <% if (place.getKeyCardReaders().length > 0) { %>
-<div class="box">
-	<div class="box-header">
-		<span class="device-name"><%= deviceTypes[4] %></span>
-		<div class="pull-right">
-			<%= place.getKeyCardReaders().length %>
-		</div>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">
+			<%= deviceTypes[4] %>
+			<span class="badge pull-right">
+				<%= place.getKeyCardReaders().length %>
+			</span>
+		</h3>
 	</div>
-	<div class="box-body">
-		<div class="box-body">
-		<ul class="unstyled">
-			<% place.getKeyCardReaders().forEach(function(s) { %>
-			<li>
-				<a href="#devices/<%= s.get('id') %>">
+	<div class="list-group">
+		<% place.getKeyCardReaders().forEach(function(s) { %>
+			<a href="#devices/<%= s.get('id') %>" class="list-group-item">
+			<% if (s.get("name") !== "") { %>
 				<%= s.get("name") %>
-				<div class="pull-right">
-					<i class="icon-chevron-right"></i>
-				</div>
-				<br />
-				<small>
-					<% if (s.get("status") === "0") { %>
-						D&eacute;connect&eacute;
-					<% } else if (s.get("status" === "1")) { %>
-						En attente
-					<% } else { %>
-						Connect&eacute;
-					<% } %>
-				</small>
-				</a>
-			</li>
-			<% }) %>
-		</ul>
-	</div>
+			<% } else { %>
+				<em>Dispositif sans nom</em>
+			<% } %>
+			<div class="pull-right">
+				<% if (s.get("inserted") === "true") { %>
+					<span class="label label-info">Carte ins&eacute;r&eacute;e</span>
+				<% } else { %>
+					<span class="label label-info">Pas de carte</span>
+				<% } %>
+				<i class="glyphicon glyphicon-chevron-right"></i>
+			</div>
+			<br>
+			<% if (s.get("status") === "0") { %>
+					<span class="label label-danger">D&eacute;connect&eacute;</span>
+				<% } else if (s.get("status" === "1")) { %>
+					<span class="label label-warning">En attente</span>
+				<% } else { %>
+					<span class="label label-success">Connect&eacute;</span>
+				<% } %>
+			</a>
+		<% }) %>
 	</div>
 </div>
 <% } %>
 
 <!-- movement sensors -->
 <% if (place.getMovementSensors().length > 0) { %>
-<div class="box">
-	<div class="box-header">
-		<span class="device-name"><%= deviceTypes[5] %></span>
-		<div class="pull-right">
-			<%= place.getMovementSensors().length %>
-		</div>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title"><%= deviceTypes[5] %>
+			<span class="badge pull-right">
+				<%= place.getMovementSensors().length %>
+			</span>
+		</h3>
 	</div>
-	<div class="box-body">
-		<div class="box-body">
-		<ul class="unstyled">
-			<% place.getMovementSensors().forEach(function(s) { %>
-			<li>
-				<a href="#devices/<%= s.get('id') %>">
-				<%= s.get("name") %>
+	<div class="list-group">
+		<% place.getMovementSensors().forEach(function(s) { %>
+			<a href="#devices/<%= s.get('id') %>" class="list-group-item">
+				<% if (s.get("name") !== "") { %>
+					<%= s.get("name") %>
+				<% } else { %>
+					<em>Dispositif sans nom</em>
+				<% } %>
 				<div class="pull-right">
-					<i class="icon-chevron-right"></i>
+					<i class="glyphicon glyphicon-chevron-right"></i>
 				</div>
-				<br />
-				<small>
-					<% if (s.get("status") === "0") { %>
-						D&eacute;connect&eacute;
-					<% } else if (s.get("status" === "1")) { %>
-						En attente
-					<% } else { %>
-						Connect&eacute;
-					<% } %>
-				</small>
-				</a>
-			</li>
-			<% }) %>
-		</ul>
-	</div>
+				<br>
+				<% if (s.get("status") === "0") { %>
+					<span class="label label-danger">D&eacute;connect&eacute;</span>
+				<% } else if (s.get("status" === "1")) { %>
+					<span class="label label-warning">En attente</span>
+				<% } else { %>
+					<span class="label label-success">Connect&eacute;</span>
+				<% } %>
+			</a>
+		<% }) %>
 	</div>
 </div>
 <% } %>
 
 <!-- plugs -->
 <% if (place.getPlugs().length > 0) { %>
-<div class="box">
-	<div class="box-header">
-		<span class="device-name"><%= deviceTypes[6] %></span>
-		<div class="pull-right">
-			<%= place.getPlugs().length %>
-		</div>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title"><%= deviceTypes[6] %>
+			<span class="badge pull-right">
+				<%= place.getPlugs().length %>
+			</span>
+		</h3>
 	</div>
-	<div class="box-body">
-		<div class="box-body">
-		<ul class="unstyled">
-			<% place.getPlugs().forEach(function(s) { %>
-			<li>
-				<a href="#devices/<%= s.get('id') %>">
-				<%= s.get("name") %>
+	<div class="list-group">
+		<% place.getPlugs().forEach(function(s) { %>
+			<a href="#devices/<%= s.get('id') %>" class="list-group-item">
+				<% if (s.get("name") !== "") { %>
+					<%= s.get("name") %>
+				<% } else { %>
+					<em>Dispositif sans nom</em>
+				<% } %>
 				<div class="pull-right">
-					<i class="icon-chevron-right"></i>
-				</div>
-				<br />
-				<small>
-					<% if (s.get("status") === "0") { %>
-						D&eacute;connect&eacute;
-					<% } else if (s.get("status" === "1")) { %>
-						En attente
+					<span class="label label-info"><%= s.get("consumption") %> Watt</span>
+					<% if (s.get("plugState") === "true" || s.get("plugState") === true) { %>
+					<button type="button" id="<%= s.get('id') %>" class="btn btn-info btn-sm toggle-plug-button">Eteindre</button>
 					<% } else { %>
-						Connect&eacute;
+						<button type="button" id="<%= s.get('id') %>" class="btn btn-info btn-sm toggle-plug-button">Allumer</button>
 					<% } %>
-				</small>
-				</a>
-			</li>
-			<% }) %>
-		</ul>
-	</div>
+					<i class="glyphicon glyphicon-chevron-right"></i>
+				</div>
+				<br>
+				<% if (s.get("status") === "0") { %>
+					<span class="label label-danger">D&eacute;connect&eacute;</span>
+				<% } else if (s.get("status" === "1")) { %>
+					<span class="label label-warning">En attente</span>
+				<% } else { %>
+					<span class="label label-success">Connect&eacute;</span>
+				<% } %>
+			</a>
+		<% }) %>
 	</div>
 </div>
 <% } %>
 
 <!-- philips hue -->
 <% if (place.getPhilipsHueLamps().length > 0) { %>
-<div class="box">
-	<div class="box-header">
-		<span class="device-name"><%= deviceTypes[7] %></span>
-		<div class="pull-right">
-			<%= place.getPhilipsHueLamps().length %>
-		</div>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title"><%= deviceTypes[7] %>
+			<div class="badge pull-right">
+				<%= place.getPhilipsHueLamps().length %>
+			</div>
+		</h3>
 	</div>
-	<div class="box-body">
-		<div class="box-body">
-		<ul class="unstyled">
-			<% place.getPhilipsHueLamps().forEach(function(s) { %>
-			<li>
-				<a href="#devices/<%= s.get('id') %>">
-				<%= s.get("name") %>
+	<div class="list-group">
+		<% place.getPhilipsHueLamps().forEach(function(s) { %>
+			<a href="#devices/<%= s.get('id') %>" class="list-group-item">
+				<% if (s.get("name") !== "") { %>
+					<%= s.get("name") %>
+				<% } else { %>
+					<em>Dispositif sans nom</em>
+				<% } %>
 				<div class="pull-right">
-					<i class="icon-chevron-right"></i>
-				</div>
-				<br />
-				<small>
-					<% if (s.get("status") === "0") { %>
-						D&eacute;connect&eacute;
-					<% } else if (s.get("status" === "1")) { %>
-						En attente
+					<% if (s.get("value") === "true" || s.get("value") === true) { %>
+					<button type="button" id="<%= s.get('id') %>" class="btn btn-info btn-sm toggle-lamp-button">Eteindre</button>
 					<% } else { %>
-						Connect&eacute;
+						<button type="button" id="<%= s.get('id') %>" class="btn btn-info btn-sm toggle-lamp-button">Allumer</button>
 					<% } %>
-				</small>
-				</a>
-			</li>
-			<% }) %>
-		</ul>
-	</div>
+					<i class="glyphicon glyphicon-chevron-right"></i>
+				</div>
+				<br>
+				<% if (s.get("status") === "0") { %>
+					<span class="label label-danger">D&eacute;connect&eacute;</span>
+				<% } else if (s.get("status" === "1")) { %>
+					<span class="label label-warning">En attente</span>
+				<% } else { %>
+					<span class="label label-success">Connect&eacute;</span>
+				<% } %>
+			</a>
+		<% }) %>
 	</div>
 </div>
 <% } %>
+
+<!-- if the place has no device, show a message -->
+<% if (place.get("devices").length === 0) { %>
+	<div class="alert alert-info">
+		Aucun dispositif n'est assign&eacute; dans cette pi&egrave;ce.
+	</div>
+<% } %>
+
+<!-- modal to edit the name of a place -->
+<div id="edit-name-place-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalEditPlace" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h3>Renommer pi&egrave;ce</h3>
+			</div>
+			<div class="modal-body">
+				<input type="text" class="form-control" placeholder="Nom de la pi&egrave;ce">
+				<p class="hide text-danger">Nom de pi&egrave;ce d&eacute;j&agrave; existant</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-default" data-dismiss="modal">Annuler</button>
+				<button class="btn btn-primary valid-button">Valider</button>
+			</div>
+		</div>
+	</div>
+</div>

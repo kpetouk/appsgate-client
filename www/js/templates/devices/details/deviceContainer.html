@@ -1,54 +1,95 @@
-<div id="<%= device.get('id') %>" class="device-container span12 box">
-	<div class="box-header inline">
-		<button id ="button-back" type="button" class="btn btn-primary"><i class="icon-chevron-left icon-white"></i></button>
-		<span class="device-details-name"><%= device.get("name") %></span>
-		<div class="pull-right">
-			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#edit-device-modal"><i class="icon-edit icon-white"></i></button>
-		</div>
+<div class="lead">
+	<button type="button" class="pull-left btn btn-default back-button">
+		<span class="glyphicon glyphicon-chevron-left"></span>
+	</button>&nbsp;
+	<% if (device.get("name") !== "") { %>
+		<%= device.get("name") %>
+	<% } else { %>
+		<em>Dispositif sans nom</em>
+	<% } %>
+	<div class="pull-right">
+		<button type="button" class="btn btn-default" data-target="#edit-device-modal" data-toggle="modal"><i class="glyphicon glyphicon-edit"></i> Editer</button>
 	</div>
-	<div class="box-body">
-		
-		<ul class="unstyled">
-			<% if (typeof sensorImg !== "undefined") { %>
-			<li>
-				<img class="img-polaroid" src="<%= sensorImg %>">
-			</li>
+</div>
+
+<ul class="list-group">
+	<% if (typeof sensorImg !== "undefined") { %>
+		<li class="list-group-item">
+			<img src="<%= sensorImg %>" class="img-responsive">
+		</li>
+	<% } %>
+
+	<li class="list-group-item">
+		<strong>Type</strong>
+		<div class="pull-right">
+			<%= sensorType %>
+		</div>
+	</li>
+	<li class="list-group-item">
+		<strong>Emplacement</strong>
+		<div class="pull-right">
+			<% if (device.get("placeId") === "-1") { %>
+				Non localis&eacute;
+			<% } else { %>
+				<%= locations.get(device.get("placeId")).get("name")%>
 			<% } %>
-			<li>
-				<strong>Type</strong>
-				<div class="pull-right">
-					<%= sensorType %>
-				</div>
-			</li>
-			<li>
-				<strong>Emplacement</strong>
-				<div class="device-location pull-right">
-				<% if (device.get("locationId") === "-1") { %>
-					Non localis&eacute;
-				<% } else { %>
-					<%= locations.get(device.get("locationId")).get("name")%>
-				<% } %>
-				</div>
-			</li>
-			<li>
-				<strong>Status</strong>
-				<div class="pull-right">
-					<% if (device.get("status") === "0") { %>
-						D&eacute;connect&eacute;
-					<% } else if (device.get("status" === "1")) { %>
-						En attente
+		</div>
+	</li>
+	<li class="list-group-item">
+		<strong>Statut</strong>
+		<div class="pull-right">
+			<% if (device.get("status") === "0") { %>
+				<span class="label label-danger">D&eacute;connect&eacute;</span>
+			<% } else if (device.get("status" === "1")) { %>
+				<span class="label label-warning">En attente</span>
+			<% } else { %>
+				<span class="label label-success">Connect&eacute;</span>
+			<% } %>
+		</div>
+	</li>
+	<%= deviceDetails({ device : device }) %>
+</ul>
+
+<!-- modal to edit a device -->
+<div id="edit-device-modal" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h3>
+					<% if (device.get("name") !== "") { %>
+						<%= device.get("name") %>
 					<% } else { %>
-						Connect&eacute;
+						<em>Dispositif sans nom</em>
 					<% } %>
-				</div>
-			</li>
-			<%= deviceDetails({ device : device }) %>
-			<!-- <li>
-				<span class="buttons">
-					<button class="btn btn-primary" data-toggle="modal" data-target="#edit-device-modal">Modifier</button>
-					<button class="btn">Supprimer</button>
-				</span>
-			</li> -->
-		</ul>
+				</h3>
+			</div>
+			<div class="modal-body">
+					<div class="row">
+						<div class="col-md-3">Nom</div>
+						<div class="col-md-9">
+							<input type="text" class="form-control" id="device-name" placeholder="Nom du dispositif">
+							<p class="hide text-danger">Nom de dispositif d&eacute;j&agrave; existant</p>
+						</div>
+					</div><br>
+					<div class="row">
+						<div class="col-md-3">Emplacement</div>
+						<div class="col-md-9">
+							<select id="device-place" class="form-control">
+								<% _.each(locations.models, function(location) { %>
+									<option value="<%= location.get('id') %>" <% if (location.get("id") === device.get("placeId")) { %>selected<% } %>>
+										<%= location.get("name") %>
+									</option>
+								<% }) %>
+							</select>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-default cancel-edit-device" data-dismiss="modal">Annuler</button>
+				<button class="btn btn-primary valid-button">Valider</button>
+			</div>
+		</div>
 	</div>
 </div>

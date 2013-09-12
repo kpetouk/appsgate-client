@@ -1,60 +1,78 @@
-<div class="device-type-name-details lead">
+<div class="lead">
 	<%= deviceTypeName %>
 </div>
 
 <!-- render located devices -->
 <% places.forEach(function(place) { %>
 <% if (place.getTypeSensors(typeId).length > 0) { %>
-<div class="box">
-	<div class="box-header">
-		<span class="place-name"><%= place.get("name") %></span>
-		<div class="pull-right">
-			<%= place.getTypeSensors(typeId).length %>
-		</div>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">
+			<% if (place.get("name") !== "") { %>
+				<%= place.get("name") %>
+			<% } else { %>
+				<em>Pi&egrave;ce sans nom</em>
+			<% } %>
+			<span class="badge pull-right">
+				<%= place.getTypeSensors(typeId).length %>
+			</span>
+		</h3>
 	</div>
-	<div class="box-body">
-		<ul class="unstyled">
-			<% place.getTypeSensors(typeId).forEach(function(s) { %>
-			<li>
-				<a href="#devices/<%= s.get('id') %>">
+	<div class="list-group">
+		<% place.getTypeSensors(typeId).forEach(function(s) { %>
+			<a href="#devices/<%= s.get('id') %>" class="list-group-item">
+				<% if (s.get("name") !== "") { %>
 					<%= s.get("name") %>
-					<div class="pull-right">
-						<% if (typeId === "0") { %>
-							<%= s.get("value") %>&deg;C
-						<% } else if (typeId === "1") {%>
-							<%= s.get("value") %> Lux
-						<% } else if (typeId === "3") { %>
-							<% if (s.get("value") === "true") { %>
-								Ouvert
-							<% } else { %>
-								Ferm&eacute;
-							<% } %>
-						<% } else if (typeId === "4") { %>
-							<% if (s.get("value") === "true") { %>
-								Pas de carte
-							<% } else { %>
-								Carte ins&eacute;r&eacute;e
-							<% } %>
-						<% } else if (typeId === "7") { %>
-							<div class="switch">
-								<input type="checkbox">
-							</div>
-						<% } %>
-						<i class="icon-chevron-right"></i>
-					</div><br />
-					<small>
-						<% if (s.get("status") === "0") { %>
-							D&eacute;connect&eacute;
-						<% } else if (s.get("status" === "1")) { %>
-							En attente
+				<% } else { %>
+					<em>Dispositif sans nom</em>
+				<% } %>
+				<div class="pull-right">
+					<% if (typeId === "6") { %>
+						<span class="label label-info"><%= s.get("consumption") %> Watt</span>
+						<% if (s.get("plugState") === "true" || s.get("plugState") === true) { %>
+							<button type="button" id="<%= s.get('id') %>" class="btn btn-info btn-sm toggle-plug-button">Eteindre</button>
 						<% } else { %>
-							Connect&eacute;
+							<button type="button" id="<%= s.get('id') %>" class="btn btn-info btn-sm toggle-plug-button">Allumer</button>
 						<% } %>
-					</small>
-				</a>
-			</li>
-			<% }) %>
-		</ul>
+					<% } else if (typeId === "7") { %>
+						<% if (s.get("value") === "true" || s.get("value") === true) { %>
+							<button type="button" id="<%= s.get('id') %>" class="btn btn-info btn-sm toggle-lamp-button">Eteindre</button>
+						<% } else { %>
+							<button type="button" id="<%= s.get('id') %>" class="btn btn-info btn-sm toggle-lamp-button">Allumer</button>
+						<% } %>
+					<% } else { %>
+						<span class="label label-info">
+							<% if (typeId === "0") { %>
+								<%= s.get("value") %>&deg;C
+							<% } else if (typeId === "1") { %>
+								<%= s.get("value") %> Lux
+							<% } else if (typeId === "2" || typeId === "3") { %>
+								<% if (s.get("value") === "true") { %>
+									Ouvert
+								<% } else { %>
+									Ferm&eacute;
+								<% } %>
+							<% } else if (typeId === "4") { %>
+								<% if (s.get("value") === "true") { %>
+									Pas de carte
+								<% } else { %>
+									Carte ins&eacute;r&eacute;e
+								<% } %>
+							<% } %>
+						</span>
+					<% } %>
+					<i class="glyphicon glyphicon-chevron-right"></i>
+				</div>
+				<br>
+				<% if (s.get("status") === "0") { %>
+					<span class="label label-danger">D&eacute;connect&eacute;</span>
+				<% } else if (s.get("status" === "1")) { %>
+					<span class="label label-warning">En attente</span>
+				<% } else { %>
+					<span class="label label-success">Connect&eacute;</span>
+				<% } %>
+			</a>
+		<% }) %>
 	</div>
 </div>
 <% } %>

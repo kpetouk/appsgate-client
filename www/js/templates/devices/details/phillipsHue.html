@@ -1,8 +1,14 @@
-<li style="height:30px">
+<li class="list-group-item">
 	<strong>Etat</strong>
-	<div class="switch pull-right">
-		<input class="device-value" type="checkbox" <% if (device.get("value") === "true") { %> checked <% } %>>
+	<div class="pull-right">
+		<button type="button" class="btn btn-info btn-sm toggle-lamp-button">
+			<% if (device.get("value") === "true" || device.get("value") === true) { %>
+				Eteindre
+			<% } else { %>
+				Allumer
+			<% } %>
+		</button>
 	</div>
 </li>
-<li id="color-picker">
+<li class="list-group-item color-picker">
 </li>

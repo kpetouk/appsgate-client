@@ -1,131 +1,131 @@
-<div id="<%= place.get('id') %>" class="place-menu-container">
-	
+<a href="#locations/<%= place.get('id') %>" class="list-group-item <% if (active) { %> active <% } %>">
 	<!-- header -->
-	<div class="header">
-		<a href="#locations/<%= place.get('id') %>">
-		<%= place.get("name") %>
-		<span class="pull-right">
+	<p class="list-group-item-heading lead">
+		<% if (place.get("name") !== "") { %>
+			<%= place.get("name") %>
+		<% } else { %>
+			<em>Pi&egrave;ce sans nom</em>
+		<% } %>
+		<span class="pull-right badge">
 			<%= place.get("devices").length %>
-			<i class="icon-chevron-right icon-white"></i>
 		</span>
-		</a>
-	</div>
+	</p>
 	
 	<!-- body -->
-	<div class="body">
-		
-		<!-- temperature sensors -->
-		<% if (place.getTemperatureSensors().length > 0) { %>
-		<div class="inline">
-			<span class="label">
-				<%= place.getTemperatureSensors().length %>
-			</span>
-			Temp&eacute;rature
-			<div class="pull-right">
-				<%= place.getAverageTemperature() %>&degC
-			</div>
-		</div>
-		<% } %>
-		
-		<!-- illumination sensors -->
-		<% if (place.getIlluminationSensors().length > 0) { %>
-		<div class="inline">
-			<span class="label">
-				<%= place.getIlluminationSensors().length %>
-			</span>
-			Luminosit&eacute;
-			<div class="pull-right">
-				<%= place.getAverageIllumination() %> Lux
-			</div>
-		</div>
-		<% } %>
-		
-		<!-- switches -->
-		<% if (place.getSwitches().length > 0) { %>
-		<div class="inline">
-			<span class="label">
-				<%= place.getSwitches().length %>
-			</span>
-			<% if (place.getSwitches().length === 1) { %>
-			Interrupteur
-			<% } else { %>
-			Interrupteurs
+	<p class="list-group-item-text">
+		<ul class="list-unstyled">
+			<!-- temperature sensors -->
+			<% if (place.getTemperatureSensors().length > 0) { %>
+			<li> 
+				Temp&eacute;rature
+				<span class="label label-info">
+					<%= place.getAverageTemperature() %>&degC
+				</span>
+				<span class="pull-right badge">
+					<%= place.getTemperatureSensors().length %>
+				</span>
+			</li>
 			<% } %>
-		</div>
-		<% } %>
-		
-		<!-- contact sensors -->
-		<% if (place.getContactSensors().length > 0) { %>
-		<div class="inline">
-			<span class="label">
-				<%= place.getContactSensors().length %>
-			</span>
-			<% if (place.getContactSensors().length === 1) { %>
-			Capteur de contact
-			<% } else { %>
-			Capteurs de contact
+			
+			<!-- illumination sensors -->
+			<% if (place.getIlluminationSensors().length > 0) { %>
+			<li>
+				Luminosit&eacute;
+				<div class="label label-info">
+					<%= place.getAverageIllumination() %> Lux
+				</div>
+				<span class="pull-right badge">
+					<%= place.getIlluminationSensors().length %>
+				</span>
+			</li>
 			<% } %>
-		</div>
-		<% } %>
-		
-		<!-- key-card readers -->
-		<% if (place.getKeyCardReaders().length > 0) { %>
-		<div class="inline">
-			<span class="label">
-				<%= place.getKeyCardReaders().length %>
-			</span>
-			<% if (place.getKeyCardReaders().length === 1) { %>
-			Lecteur de carte
-			<% } else { %>
-			Lecteurs de carte
+			
+			<!-- switches -->
+			<% if (place.getSwitches().length > 0) { %>
+			<li>
+				<% if (place.getSwitches().length === 1) { %>
+				Interrupteur
+				<% } else { %>
+				Interrupteurs
+				<% } %>
+				<span class="pull-right badge">
+					<%= place.getSwitches().length %>
+				</span>
+			</li>
 			<% } %>
-		</div>
-		<% } %>
-		
-		<!-- movement sensors -->
-		<% if (place.getMovementSensors().length > 0) { %>
-		<div class="inline">
-			<span class="label">
-				<%= place.getMovementSensors().length %>
-			</span>
-			<% if (place.getMovementSensors().length === 1) { %>
-			Capteur de mouvement
-			<% } else { %>
-			Capteurs de mouvement
+			
+			<!-- contact sensors -->
+			<% if (place.getContactSensors().length > 0) { %>
+			<li>
+				<% if (place.getContactSensors().length === 1) { %>
+				Capteur de contact
+				<% } else { %>
+				Capteurs de contact
+				<% } %>
+				<span class="pull-right badge">
+					<%= place.getContactSensors().length %>
+				</span>
+			</li>
 			<% } %>
-		</div>
-		<% } %>
-		
-		<!-- plugs -->
-		<% if (place.getPlugs().length > 0) { %>
-		<div class="inline">
-			<span class="label">
-				<%= place.getPlugs().length %>
-			</span>
-			<% if (place.getPlugs().length === 1) { %>
-			Prise gigogne
-			<% } else { %>
-			Prises gigogne
+			
+			<!-- key-card readers -->
+			<% if (place.getKeyCardReaders().length > 0) { %>
+			<li>
+				<% if (place.getKeyCardReaders().length === 1) { %>
+				Lecteur de carte
+				<% } else { %>
+				Lecteurs de carte
+				<% } %>
+				<span class="pull-right badge">
+					<%= place.getKeyCardReaders().length %>
+				</span>
+			</li>
 			<% } %>
-		</div>
-		<% } %>
-		
-		<!-- philips hue lamps -->
-		<% if (place.getPhilipsHueLamps().length > 0) { %>
-		<div class="inline switch-container">
-			<span class="label">
-				<%= place.getPhilipsHueLamps().length %>
-			</span>
-			<div class="switch pull-right">
-				<input type="checkbox">
-			</div>
-			<% if (place.getPhilipsHueLamps().length === 1) { %>
-			Lampe Philips Hue
-			<% } else { %>
-			Lampes Philips Hue
+			
+			<!-- movement sensors -->
+			<% if (place.getMovementSensors().length > 0) { %>
+			<li>
+				<% if (place.getMovementSensors().length === 1) { %>
+				Capteur de mouvement
+				<% } else { %>
+				Capteurs de mouvement
+				<% } %>
+				<span class="pull-right badge">
+					<%= place.getMovementSensors().length %>
+				</span>
+			</li>
 			<% } %>
-		</div>
-		<% } %>
-		
-	</div>
-</div>
+			
+			<!-- plugs -->
+			<% if (place.getPlugs().length > 0) { %>
+			<li>
+				<% if (place.getPlugs().length === 1) { %>
+				Prise gigogne
+				<% } else { %>
+				Prises gigogne
+				<% } %>
+				<span class="label label-info">
+					<%= place.getAverageConsumption() %> Watt
+				</span>
+				<span class="pull-right badge">
+					<%= place.getPlugs().length %>
+				</span>
+			</li>
+			<% } %>
+			
+			<!-- philips hue lamps -->
+			<% if (place.getPhilipsHueLamps().length > 0) { %>
+			<li>
+				<% if (place.getPhilipsHueLamps().length === 1) { %>
+				Lampe Philips Hue
+				<% } else { %>
+				Lampes Philips Hue
+				<% } %>
+				<span class="pull-right badge">
+					<%= place.getPhilipsHueLamps().length %>
+				</span>
+			</li>
+			<% } %>
+		</ul>
+	</p>
+</a>
