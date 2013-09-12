@@ -1,0 +1,101 @@
+<textarea></textarea><br>
+<span id="error-area"></span><br>
+<span id="ast"></span>
+<div class="program">
+	<div class="program-header">
+		<span class="programName">mon programme </span>
+		<span class="keyword">fait par </span>
+		<span class="author">Bob</span>
+	</div>
+	<div class="program-body">
+		<div class="seqRules">
+			<div class="seqAndRules">
+				<!-- rule 1 -->
+				<div class="rule">
+					<div class="nodeIf">
+						<span class="keyword">si</span>
+						
+						<div class="cond">
+							<span class="device">la porte</span>
+							<span class="state">est ouverte</span>
+						</div>
+						
+						<span class="keyword">alors</span>
+						
+						<div class="seqRulesTrue">
+							<div class="seqRules">
+								<div class="seqAndRules">
+									<div class="rule">
+										<div class="nodeAction">
+											<span class="keyword">allumer</span>
+											<span class="device">L1</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<div class="seqRulesFalse"></div>
+					</div>
+				</div>
+				
+				<span class="keyword">puis</span>
+				
+				<!-- rule 2 -->
+				<div class="rule">
+					<div class="nodeAction">
+						<span class="keyword">&eacute;teindre</span>
+						<span class="device">L2</span>
+					</div>
+				</div>
+				
+			</div>
+			
+			<span class="keyword">et</span>
+			
+			<div class="seqAndRules">
+				<!-- rule 1 -->
+				<div class="rule">
+					<div class="nodeIf">
+						<span class="keyword">si</span>
+						
+						<div class="cond">
+							<span class="device">la porte</span>
+							<span class="state">est ouverte</span>
+						</div>
+						
+						<span class="keyword">alors</span>
+						
+						<div class="seqRulesTrue">
+							<div class="seqRules">
+								<div class="seqAndRules">
+									
+									<div class="rule">
+										<div class="nodeAction">
+											<span class="keyword">allumer</span>
+											<span class="device">L1</span>
+										</div>
+									</div>
+									
+									<span class="keyword">puis</span>
+									
+									<div class="rule">
+										<div class="nodeAction">
+											<span class="keyword">&eacute;teindre</span>
+											<span class="device">L2</span>
+										</div>
+									</div>
+									
+								</div>
+							</div>
+						</div>
+						
+						<div class="seqRulesFalse"></div>
+					</div>
+				</div>
+				
+			</div>
+			
+		</div>
+	</div>
+</div>
