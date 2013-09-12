@@ -42,22 +42,12 @@ define([
 			
 			// socket closed event or error occured during the connection - show the error in the modal settings
 			this.webSocket.onclose = function() {
-				$("#settings-modal p.text-info").hide();
-				$("#settings-modal p.text-error").show();
-				
-				$("#lost-connection-modal p.text-info").hide();
-				$("#lost-connection-modal p.text-error").show();
-				$("#lost-connection-modal p.text-error").html("Serveur indisponible...");
+				dispatcher.trigger("WebSocketClose");
 			};
 		
 			// socket opened event - broadcast an event to the application
 			this.webSocket.onopen = function() {
 				dispatcher.trigger("WebSocketOpen");
-				
-				// when the connection is established, if an error occured then trigger an event to the application
-				self.webSocket.onclose = function() {
-					dispatcher.trigger("WebSocketClose");
-				};
 			};
 			
 			// message received on the socket
@@ -107,9 +97,13 @@ define([
 		handleMessage:function(message) {
 			// rebuild the message for the application
 			var jsonMessage = JSON.parse(message.data);
+			console.log("received", message.data);
 
 			if (jsonMessage.callId !== undefined) {
-				dispatcher.trigger(jsonMessage.callId, JSON.parse(jsonMessage.value));
+				if (typeof jsonMessage.value === "string") {
+					jsonMessage.value = JSON.parse(jsonMessage.value);
+				}
+				dispatcher.trigger(jsonMessage.callId, jsonMessage.value);
 			} else if (typeof jsonMessage.objectId !== "undefined") {
 				var id = jsonMessage.objectId;
 				delete jsonMessage.objectId;
@@ -130,6 +124,7 @@ define([
 		 * @param targetType Parameter used by the server to route the message. 0: AbstractObject, 1: ApAM component
 		 */
 		sendMessage:function(message) {
+			console.log("sending", message);
 			this.webSocket.send(JSON.stringify(message));
 		},
 

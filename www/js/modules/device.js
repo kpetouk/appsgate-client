@@ -3,39 +3,27 @@ define([
 	"underscore",
 	"backbone",
 	"raphael",
-	"text!templates/devices/list/list.html",
-	"text!templates/devices/list/deviceContainer.html",
-	"text!templates/devices/list/contact.html",
-	"text!templates/devices/list/illumination.html",
-	"text!templates/devices/list/keyCard.html",
-	"text!templates/devices/list/switch.html",
-	"text!templates/devices/list/temperature.html",
-	"text!templates/devices/list/phillipsHue.html",
+	"text!templates/devices/menu/deviceContainer.html",
 	"text!templates/devices/list/deviceListByCategory.html",
 	"text!templates/devices/details/deviceContainer.html",
-	"text!templates/devices/details/editModal.html",
 	"text!templates/devices/details/contact.html",
 	"text!templates/devices/details/illumination.html",
 	"text!templates/devices/details/keyCard.html",
 	"text!templates/devices/details/switch.html",
 	"text!templates/devices/details/temperature.html",
+	"text!templates/devices/details/plug.html",
 	"text!templates/devices/details/phillipsHue.html",
-	"jqueryui",
-	"bootstrapSwitch",
-	"bootstrapSlider",
 	"colorWheel"
-], function($, _, Backbone, Raphael, deviceListTemplate, deviceContainerListTemplate,
-		contactListTemplate, illuminationListTemplate, keyCardListTemplate,
-		switchListTemplate, temperatureListTemplate, phillipsHueListTemplate,
+], function($, _, Backbone, Raphael, deviceContainerMenuTemplate, 
 		deviceListByCategoryTemplate,
-		deviceDetailsTemplate, editModalTemplate,
+		deviceDetailsTemplate,
 		contactDetailTemplate, illuminationDetailTemplate,
 		keyCardDetailTemplate, switchDetailTemplate, temperatureDetailTemplate,
-		phillipsHueDetailTemplate) {
+		plugDetailTemplate, phillipsHueDetailTemplate) {
 	
 	// initialize the module
 	var Device = {};
-	
+
 	// global variables concerning the devices
 	window.deviceTypesName = {
 		0	: "Capteur de temp&eacute;rature",
@@ -46,6 +34,372 @@ define([
 		5	: "Capteur de mouvement",
 		6	: "Prise gigogne",
 		7	: "Lampe Philips Hue"
+	};
+	
+	// define the grammar for each type of device
+	window.deviceTypesGrammar = {
+		0	: {
+			eventAnchor		: "eventTemperature",
+			statusAnchor	: "statusTemperature",
+			listAnchor		: "{{listOfTemperatureSensors}}",
+			rules			: [
+				"eventTemperature = temperatureName:T ' indique ' temperature:number ' degres'\n\
+				{\n\
+					var nodeEvent = {};\n\
+					nodeEvent.type = 'NodeEvent';\n\
+					nodeEvent.sourceType = 'device';\n\
+					nodeEvent.sourceId = devices.where({ name : temperatureName })[0].get('id');\n\
+					nodeEvent.eventName = 'value';\n\
+					nodeEvent.eventValue = temperature;\n\
+					\n\
+					return nodeEvent;\n\
+				}",
+				"statusTemperature = temperatureName:T ' indique ' temperature:number ' degres'\n\
+				{\n\
+					var nodeRelationBool = {};\n\
+					nodeRelationBool.type = 'NodeRelationBool';\n\
+					nodeRelationBool.operator = '==';\n\
+					\n\
+					nodeRelationBool.leftOperand = {};\n\
+					nodeRelationBool.leftOperand.deviceId = devices.where({ name : temperatureName })[0].get('id');\n\
+					nodeRelationBool.leftOperand.methodName = getTemperature;\n\
+					nodeRelationBool.leftOperand.returnType = 'number';\n\
+					nodeRelationBool.leftOperand.args = [];\n\
+					\n\
+					nodeRelationBool.rightOperand = {};\n\
+					nodeRelationBool.rightOperand.type = 'number';\n\
+					nodeRelationBool.rightOperand.value = temperature;\n\
+					\n\
+					return nodeRelationBool;\n\
+				}",
+				"T = {{listOfTemperatureSensors}}"
+			]
+		},
+		1	: {
+			eventAnchor		: "eventIllumination",
+			statusAnchor	: "statusIllumination",
+			listAnchor		: "{{listOfIlluminationSensors}}",
+			rules			: [
+				"eventIllumination = illuminationName:I ' indique ' illumination:number ' Lux'\n\
+				{\n\
+					var nodeEvent = {};\n\
+					nodeEvent.type = 'NodeEvent';\n\
+					nodeEvent.sourceType = 'device';\n\
+					nodeEvent.sourceId = devices.where({ name : illuminationName })[0].get('id');\n\
+					nodeEvent.eventName = 'value';\n\
+					nodeEvent.eventValue = illumination;\n\
+					\n\
+					return nodeEvent;\n\
+				}",
+				"statusIllumination = illuminationName:L ' indique ' illumination:number ' Lux'\n\
+				{\n\
+					var nodeRelationBool = {};\n\
+					nodeRelationBool.type = 'NodeRelationBool';\n\
+					nodeRelationBool.operator = '==';\n\
+					\n\
+					nodeRelationBool.leftOperand = {};\n\
+					nodeRelationBool.leftOperand.deviceId = devices.where({ name : illuminationName })[0].get('id');\n\
+					nodeRelationBool.leftOperand.methodName = 'getIllumination';\n\
+					nodeRelationBool.leftOperand.returnType = 'number';\n\
+					nodeRelationBool.leftOperand.args = [];\n\
+					\n\
+					nodeRelationBool.rightOperand = {};\n\
+					nodeRelationBool.rightOperand.type = 'number';\n\
+					nodeRelationBool.rightOperand.value = illumination;\n\
+					\n\
+					return nodeRelationBool;\n\
+				}",
+				"I = {{listOfIlluminationSensors}}"
+			]
+		},
+		2	: {
+			eventAnchor		: "eventSwitch",
+			listAnchor		: "{{listOfSwitches}}",
+			rules			: [
+				"eventSwitch = pushedSwitchEvent / releasedSwitchEvent",
+				"pushedSwitchEvent = 'on appuie sur ' switchName:S\n\
+				{\n\
+					var nodeEvent = {};\n\
+					nodeEvent.type = 'NodeEvent';\n\
+					nodeEvent.sourceType = 'device';\n\
+					nodeEvent.sourceId = devices.where({ name : switchName })[0].get('id');\n\
+					nodeEvent.eventName = 'buttonStatus';\n\
+					nodeEvent.eventValue = 'true';\n\
+					\n\
+					return nodeEvent;\n\
+				}",
+				"releasedSwitchEvent = 'on relache ' switchName:S\n\
+				{\n\
+					var nodeEvent = {};\n\
+					nodeEvent.type = 'NodeEvent';\n\
+					nodeEvent.sourceType = 'device';\n\
+					nodeEvent.sourceId = devices.where({ name : switchName })[0].get('id');\n\
+					nodeEvent.eventName = 'buttonStatus';\n\
+					nodeEvent.eventValue = 'false';\n\
+					\n\
+					return nodeEvent;\n\
+				}",
+				"S = {{listOfSwitches}}"
+			]
+		},
+		3	: {
+			eventAnchor		: "eventContact",
+			statusAnchor	: "statusContact",
+			listAnchor		: "{{listOfContactSensors}}",
+			rules			: [
+				"eventContact = openedContactEvent / assembledContactEvent / closedContactEvent / disassembledContactEvent",
+				"openedContactEvent = 'on ouvre ' contactName:C\n\
+				{\n\
+					var nodeEvent = {};\n\
+					nodeEvent.type = {};\n\
+					nodeEvent.sourceType = 'device';\n\
+					nodeEvent.sourceId = devices.where({ name : contactName })[0].get('id');\n\
+					nodeEvent.eventName = 'contact';\n\
+					nodeEvent.eventValue = 'false';\n\
+					\n\
+					return nodeEvent;\n\
+				}",
+				"assembledContactEvent = 'le capteur de contact de ' contactName:C ' se desassemble'\n\
+				{\n\
+					var nodeEvent = {};\n\
+					nodeEvent.type = 'NodeEvent';\n\
+					nodeEvent.sourceType = 'device';\n\
+					nodeEvent.sourceId = devices.where({ name : contactName })[0].get('id');\n\
+					nodeEvent.eventName = 'contact';\n\
+					nodeEvent.eventValue = 'false';\n\
+					\n\
+					return nodeEvent;\n\
+				}",
+				"closedContactEvent = 'on ferme ' contactName:C\n\
+				{\n\
+					var nodeEvent = {};\n\
+					nodeEvent.type = 'NodeEvent';\n\
+					nodeEvent.sourceType = 'device';\n\
+					nodeEvent.sourceId = devices.where({ name : contactName })[0].get('id');\n\
+					nodeEvent.eventName = 'contact';\n\
+					nodeEvent.eventValue = 'true';\n\
+					\n\
+					return nodeEvent;\n\
+				}",
+				"disassembledContactEvent = 'le capteur de contact de ' C ' s assemble'\n\
+				{\n\
+					var nodeEvent = {};\n\
+					nodeEvent.type = 'NodeEvent';\n\
+					nodeEvent.sourceType = 'device';\n\
+					nodeEvent.sourceId = devices.get({ name : contactName })[0].get('id');\n\
+					nodeEvent.eventName = 'contact';\n\
+					nodeEvent.eventValue = 'true';\n\
+					\n\
+					return nodeEvent;\n\
+				}",
+				"statusContact = closedContactStatus / assembledContactStatus / openedContactStatus / disassembledContactStatus",
+				"closedContactStatus = contactName:C ' est ferme'\n\
+				{\n\
+					var nodeRelationBool = {};\n\
+					nodeRelationBool.type = 'NodeRelationBool';\n\
+					nodeRelationBool.operator = '==';\n\
+					\n\
+					nodeRelationBool.leftOperand = {};\n\
+					nodeRelationBool.leftOperand.deviceId = devices.where({ name : contactName })[0].get('id');\n\
+					nodeRelationBool.leftOperand.methodName = 'getContactStatus';\n\
+					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
+					nodeRelationBool.leftOperand.args = [];\n\
+					\n\
+					nodeRelationBool.rightOperand = {};\n\
+					nodeRelationBool.rightOperand.type = 'boolean';\n\
+					nodeRelationBool.rightOperand.value = 'true';\n\
+					\n\
+					return nodeRelationBool;\n\
+				}",
+				"assembledContactStatus = 'le capteur de contact de ' contactName:C ' est assemble'\n\
+				{\n\
+					var nodeRelationBool = {};\n\
+					nodeRelationBool.type = 'NodeRelationBool';\n\
+					nodeRelationBool.operator = '==';\n\
+					\n\
+					nodeRelationBool.leftOperand = {};\n\
+					nodeRelationBool.leftOperand.deviceId = devices.where({ name : contactName })[0].get('id');\n\
+					nodeRelationBool.leftOperand.methodName = 'getContactStatus';\n\
+					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
+					nodeRelationBool.leftOperand.args = [];\n\
+					\n\
+					nodeRelationBool.rightOperand = {};\n\
+					nodeRelationBool.rightOperand.type = 'boolean';\n\
+					nodeRelationBool.rightOperand.value = 'true';\n\
+					\n\
+					return nodeRelationBool;\n\
+				}",
+				"openedContactStatus = contactName:C ' est ouvert'\n\
+				{\n\
+					var nodeRelationBool = {};\n\
+					nodeRelationBool.type = 'NodeRelationBool';\n\
+					nodeRelationBool.operator = '==';\n\
+					\n\
+					nodeRelationBool.leftOperand = {};\n\
+					nodeRelationBool.leftOperand.deviceId = devices.where({ name : contactName })[0].get('id');\n\
+					nodeRelationBool.leftOperand.methodName = 'getContactStatus';\n\
+					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
+					nodeRelationBool.leftOperand.args = [];\n\
+					\n\
+					nodeRelationBool.rightOperand = {};\n\
+					nodeRelationBool.rightOperand.type = 'boolean';\n\
+					nodeRelationBool.rightOperand.value = 'false';\n\
+					\n\
+					return nodeRelationBool;\n\
+				}",
+				"disassembledContactStatus = 'le capteur de contact de ' contactName:C ' est desassemble'\n\
+				{\n\
+					var nodeRelationBool = {};\n\
+					nodeRelationBool.type = 'NodeRelationBool';\n\
+					nodeRelationBool.operator = '==';\n\
+					\n\
+					nodeRelationBool.leftOperand = {};\n\
+					nodeRelationBool.leftOperand.deviceId = devices.where({ name : contactName })[0].get('id');\n\
+					nodeRelationBool.leftOperand.methodName = 'getContactStatus';\n\
+					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
+					nodeRelationBool.leftOperand.args = [];\n\
+					\n\
+					nodeRelationBool.rightOperand = {};\n\
+					nodeRelationBool.rightOperand.type = 'boolean';\n\
+					nodeRelationBool.rightOperand.value = 'false';\n\
+					\n\
+					return nodeRelationBool;\n\
+				}",
+				"C = {{listOfContactSensors}}"
+			]
+		},
+		4	: {
+			eventAnchor		: "eventKeyCardReader",
+			statusAnchor	: "statusKeyCardReader",
+			listAnchor		: "{{listOfKeyCardReaders}}",
+			rules			: [
+				"eventKeyCardReader = insertedKCREvent / removedKCREvent",
+				"insertedKCREvent = 'on insere une carte dans ' KCRName:KCR\n\
+				{\n\
+					var nodeEvent = {};\n\
+					nodeEvent.type = 'NodeEvent';\n\
+					nodeEvent.sourceType = 'device';\n\
+					nodeEvent.sourceId = devices.where({ name : KCRName })[0].get('id');\n\
+					nodeEvent.eventName = 'inserted';\n\
+					nodeEvent.eventValue = 'true';\n\
+					\n\
+					return nodeEvent;\n\
+				}",
+				"removedKCREvent = 'on retire une carte de ' KCRName:KCR\n\
+				{\n\
+					var nodeEvent = {};\n\
+					nodeEvent.type = 'NodeEvent';\n\
+					nodeEvent.sourceType = 'device';\n\
+					nodeEvent.sourceId = devices.where({ name : KCRName }).get('id');\n\
+					nodeEvent.eventName = 'inserted';\n\
+					nodeEvent.eventValue = 'false';\n\
+					\n\
+					return nodeEvent;\n\
+				}",
+				"statusKeyCardReader = cardInsertedKCRStatus / cardRemovedKCRStatus",
+				"cardInsertedKCRStatus = 'une carte est inseree dans ' KCRName:KCR\n\
+				{\n\
+					var nodeRelationBool = {};\n\
+					nodeRelationBool.type = 'NodeRelationBool';\n\
+					nodeRelationBool.operator = '==';\n\
+					\n\
+					nodeRelationBool.leftOperand = {};\n\
+					nodeRelationBool.leftOperand.deviceId = devices.where({ name : KCRName })[0].get('id');\n\
+					nodeRelationBool.leftOperand.methodName = 'getKeyCardSensorStatus';\n\
+					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
+					nodeRelationBool.leftOperand.args = [];\n\
+					\n\
+					nodeRelationBool.rightOperand = {};\n\
+					nodeRelationBool.rightOperand.type = 'boolean';\n\
+					nodeRelationBool.rightOperand.value = 'true';\n\
+					\n\
+					return nodeRelationBool;\n\
+				}",
+				"cardRemovedKCRStatus = 'aucune carte n est inseree dans ' KCRName:KCR\n\
+				{\n\
+					var nodeRelationBool = {};\n\
+					nodeRelationBool.type = 'NodeRelationBool';\n\
+					nodeRelationBool.operator = '==';\n\
+					\n\
+					nodeRelationBool.leftOperator = {};\n\
+					nodeRelationBool.leftOperator.deviceId = devices.where({ name : KCRName })[0].get('id');\n\
+					nodeRelationBool.leftOperator.methodName = 'getKeyCardSensorStatus';\n\
+					nodeRelationBool.leftOperator.returnType = 'boolean';\n\
+					nodeRelationBool.leftOperator.args = [];\n\
+					\n\
+					nodeRelationBool.rightOperator = {};\n\
+					nodeRelationBool.rightOperator.type = 'boolean';\n\
+					nodeRelationBool.rightOperator.value = 'false';\n\
+					\n\
+					return nodeRelationBool;\n\
+				}",
+				"KCR = {{listOfKeyCardReaders}}"
+			]
+		},
+		6	: {
+			eventAnchor		: "eventPlug",
+			statusAnchor	: "statusPlug",
+			actionAnchor	: "actionPlug",
+			listAnchor		: "{{listOfPlugs}}",
+			rules			: [
+				"eventPlug = 'on allume ' PL / 'on eteint ' PL",
+				"statusPlug = PL ' est allume' / PL ' est eteint'",
+				"actionPlug = onPlugAction / offPlugAction",
+				"onPlugAction = 'allumer ' plugName:PL\n\
+				{\n\
+					var nodeAction = {};\n\
+					nodeAction.type = 'nodeAction';\n\
+					nodeAction.deviceId = devices.where({ name : plugName })[0].get('id');\n\
+					nodeAction.methodName = 'on';\n\
+					nodeAction.args = [];\n\
+					\n\
+					return nodeAction;\n\
+				}",
+				"offPlugAction = 'eteindre ' plugName:PL\n\
+				{\n\
+					var nodeAction = {};\n\
+					nodeAction.type = 'nodeAction';\n\
+					nodeAction.deviceId = devices.where({ name : plugName })[0].get('id');\n\
+					nodeAction.methodName = 'off';\n\
+					nodeAction.args = [];\n\
+					\n\
+					return nodeAction;\n\
+				}",
+				"PL = {{listOfPlugs}}"
+			]
+		},
+		7	: {
+			eventAnchor		: "eventLamp",
+			statusAnchor	: "statusLamp",
+			actionAnchor	: "actionLamp",
+			listAnchor		: "{{listOfLamps}}",
+			rules			: [
+				"eventLamp	= 'on allume ' L / 'on eteint ' L",
+				"statusLamp	= L ' est allumee' / L ' est eteinte'",
+				"actionLamp = onLampAction / offLampAction",
+				"onLampAction = 'allumer ' lampName:L\n\
+				{\n\
+					var nodeAction = {};\n\
+					nodeAction.type = 'nodeAction';\n\
+					nodeAction.deviceId = devices.where({ name : lampName })[0].get('id');\n\
+					nodeAction.methodName = 'On';\n\
+					nodeAction.args = [];\n\
+					\n\
+					return nodeAction;\n\
+				}",
+				"offLampAction = 'eteindre ' lampName:L\n\
+				{\n\
+					var nodeAction = {};\n\
+					nodeAction.type = 'nodeAction';\n\
+					nodeAction.deviceId = devices.where({ name : lampName })[0].get('id');\n\
+					nodeAction.methodName = 'Off';\n\
+					nodeAction.args = [];\n\
+					\n\
+					return nodeAction;\n\
+				}",
+				"L = {{listOfLamps}}"
+			]
+		}
 	};
 
 	/**
@@ -62,18 +416,27 @@ define([
 		},
 
 		/**
-		 * @constructor
-		 */
-		initialize: function() {
-		},
-
-		/**
 		 * @method list Show the list of devices
 		 */
 		list: function() {
-			appRouter.showView(new Device.Views.List());
+			// display the side menu
+			appRouter.showMenuView(new Device.Views.Menu());
+			
+			// set active the first element - displayed by default
+			$($(".aside-menu .list-group-item")[0]).addClass("active");
+			
+			// display the first category of devices
+			appRouter.showView(new Device.Views.DevicesByType({ id: $($(".aside-menu .list-group-item")[0]).attr("id").split("side-")[1] }));
+			
+			// update the url
+			appRouter.navigate("#devices/types/1");
 		},
 		
+		/**
+		 * Display all the devices of a given type
+		 * 
+		 * @param typeId id of the device category to show
+		 */
 		deviceByType:function(typeId) {
 			appRouter.showView(new Device.Views.DevicesByType({ id: typeId }));
 		},
@@ -105,11 +468,22 @@ define([
 		initialize: function() {
 			var self = this;
 
-			// when the user update the name, send the notification to the server
+			// when the user updated the name, send the notification to the server
 			this.on("change:name", function(model, name) {
-				self.remoteCall("setUserObjectName", [{ type : "String", value : name }]);
+				// build the message
+				var messageJSON = {
+					method	: "setUserObjectName",
+					args	: [
+						{ type : "String", value : self.get("id") },
+						{ type : "String", value : "" },
+						{ type : "String", value : name }
+					]
+				};
+				
+				// send the message
+				communicator.sendMessage(messageJSON);
 			});
-
+			
 			// each device listens to the event whose id corresponds to its own id. This ensures to
 			// receive only relevant events
 			dispatcher.on(this.get("id"), function(updatedVariableJSON) {
@@ -134,6 +508,33 @@ define([
 			
 			// send the message
 			communicator.sendMessage(messageJSON);
+		},
+		
+		/**
+		 * Override its synchronization method to send a notification on the network
+		 */
+		sync:function(method, model) {
+			if (model.changedAttributes()) {
+				switch (method) {
+					case "update":
+						_.keys(model.changedAttributes()).forEach(function(attribute) {
+							if (attribute === "plugState") {
+								model.sendPlugState();
+							} else if (attribute === "value" && (model.get("type") === "7" || model.get("type") === 7)) {
+								model.sendValue();
+							} else if (attribute === "color" && (model.get("type") === "7" || model.get("type") === 7)) {
+								model.sendColor();
+							} else if (attribute === "saturation" && (model.get("type") === "7" || model.get("type") === 7)) {
+								model.sendSaturation();
+							}else if (attribute === "brightness" && (model.get("type") === "7" || model.get("type") === 7)) {
+								model.sendBrightness();
+							}
+						});
+						break;
+					default:
+						break;
+				}
+			}
 		}
 	});
 
@@ -150,9 +551,6 @@ define([
 		 */
 		initialize: function() {
 			Device.TemperatureSensor.__super__.initialize.apply(this, arguments);
-			if (this.get("name") === "") {
-				this.set("name", "Capteur temp&eacute;rature");
-			}
 		}
 
 	});
@@ -171,9 +569,6 @@ define([
 		 */
 		initialize: function() {
 			Device.SwitchSensor.__super__.initialize.apply(this, arguments);
-			if (this.get("name") === "") {
-				this.set("name", "Interrupteur");
-			}
 		}
 
 	});
@@ -188,9 +583,6 @@ define([
 		 */
 		initialize: function() {
 			Device.IlluminationSensor.__super__.initialize.apply(this, arguments);
-			if (this.get("name") === "") {
-				this.set("name", "Capteur luminosit&eacute;");
-			}
 		}
 
 	});
@@ -204,9 +596,6 @@ define([
 		 */
 		initialize: function() {
 			Device.KeyCardSensor.__super__.initialize.apply(this, arguments);
-			if (this.get("name") === "") {
-				this.set("name", "Lecteur de carte");
-			}
 		}
 	});
 
@@ -219,14 +608,35 @@ define([
 		 */
 		initialize: function() {
 			Device.ContactSensor.__super__.initialize.apply(this, arguments);
-			if (this.get("name") === "") {
-				this.set("name", "Capteur contact");
+		}
+	});
+	
+	/**
+	 * @class Device.Plug
+	 */
+	Device.Plug = Device.Model.extend({
+		/**
+		 * @constructor
+		 */
+		initialize:function() {
+			Device.Plug.__super__.initialize.apply(this, arguments);
+		},
+		
+		/**
+		 * Send a message to the backend to update the attribute plugState
+		 */
+		sendPlugState:function() {
+			if (this.get("plugState") === "true") {
+				this.remoteCall("on", []);
+			} else {
+				this.remoteCall("off", []);
 			}
 		}
 	});
 
 	/**
 	 * Implementation of the Phillips Hue lamp
+	 * 
 	 * @class Device.PhillipsHue
 	 */
 	Device.PhillipsHue = Device.Model.extend({
@@ -235,23 +645,38 @@ define([
 		 */
 		initialize: function() {
 			Device.PhillipsHue.__super__.initialize.apply(this, arguments);
-			if (this.get("name") === "") {
-				this.set("name", "Lampe Phillips Hue");
+		},
+		
+		/**
+		 * Send a message to the backend to update the attribute value
+		 */
+		sendValue:function() {
+			if (this.get("value") === "true") {
+				this.remoteCall("On", []);
+			} else {
+				this.remoteCall("Off", []);
 			}
 		},
 		
 		/**
-		 * Send a remote call to turn on the lamp
+		 * Send a message to the backend to update the attribute color
 		 */
-		on:function() {
-			this.remoteCall("On", []);
+		sendColor:function() {
+			this.remoteCall("setColor", [{ type : "long", value : this.get("color") }]);
 		},
 		
 		/**
-		 * Send a remote call to turn off the lamp
+		 * Send a message to the backend to update the attribute saturation
 		 */
-		off:function() {
-			this.remoteCall("Off", []);
+		sendSaturation:function() {
+			this.remoteCall("setSaturation", [{ type : "int", value : this.get("saturation") }]);
+		},
+		
+		/**
+		 * Send a message to the backend to update the attribute brightness
+		 */
+		sendBrightness:function() {
+			this.remoteCall("setColor", [{ type : "long", value : this.get("brightness") }]);
 		}
 	});
 
@@ -266,10 +691,6 @@ define([
 		 */
 		initialize: function() {
 			var self = this;
-			
-			this.on("change", function() {
-				dispatcher.trigger("refreshListDevices");
-			});
 
 			// listen to the event when the list of devices is received
 			dispatcher.on("listDevices", function(devices) {
@@ -297,11 +718,7 @@ define([
 		 * 
 		 * @param device
 		 */
-		addDevice:function(device) {
-			if (device.name === null) {
-				device.name = "Non d&eacute;fini";
-			}
-			
+		addDevice:function(device) {		
 			device.type = parseInt(device.type);
 			
 			switch (device.type) {
@@ -320,31 +737,90 @@ define([
 				case 4:
 					this.add(new Device.KeyCardSensor(device));
 					break;
+				case 6:
+					this.add(new Device.Plug(device));
+					break;
 				case 7:
 					this.add(new Device.PhillipsHue(device));
 					break;
 				default:
-					console.log("unknown type");
+					console.log("unknown type", device);
 					break;
 			}
 			
-			if (device.placeId === "-1") {
-				locations.get("-1").get("devices").push(device.id);
-			}
-	},
+			locations.get(device.placeId).get("devices").push(device.id);
+		},
 		
+		/**
+		 * @return Array of the devices of a given type
+		 */
 		getDevicesByType:function() {
-			return devices.groupBy(function(device) {
+			return this.groupBy(function(device) {
 				return device.get("type");
 			});
 		},
 		
+		/**
+		 * @return Array of the temperature sensors
+		 */
+		getTemperatureSensors:function() {
+			return devices.where({ type : 0 });
+		},
+		
+		/**
+		 * @return Array of the illumination sensors
+		 */
+		getIlluminationSensors:function() {
+			return devices.where({ type : 1 });
+		},
+		
+		/**
+		 * @return Array of the switches
+		 */
+		getSwitches:function() {
+			return devices.where({ type : 2 });
+		},
+		
+		/**
+		 * @return Array of the contact sensors
+		 */
+		getContactSensors:function() {
+			return devices.where({ type : 3 });
+		},
+		
+		/**
+		 * @return Array of the key-card readers
+		 */
+		getKeyCardReaders:function() {
+			return devices.where({ type : 4 });
+		},
+		
+		/**
+		 * @return Array of the plugs
+		 */
+		getPlugs:function() {
+			return devices.where({ type : 6 });
+		},
+		
+		/**
+		 * @return Array of the lamps
+		 */
+		getLamps:function() {
+			return devices.where({ type : 7 });
+		},
+		
+		/**
+		 * @return Array of the unlocated devices
+		 */
 		getUnlocatedDevices:function() {
-			return devices.filter(function(device) {
+			return this.filter(function(device) {
 				return device.get("placeId") === "-1";
 			});
 		},
 		
+		/**
+		 * @return Dictionnary of the devices sorted by their type - key is the type id, value - array of devices corresponding the type
+		 */
 		getUnlocatedDevicesByType:function() {
 			return _.groupBy(this.getUnlocatedDevices(), function(device) {
 				return device.get("type");
@@ -352,60 +828,282 @@ define([
 		}
 	});
 
-	// views
+	/**
+	 * Namespace for the views
+	 */
 	Device.Views = {};
+	
+	/**
+	 * Render the side menu for the devices
+	 */
+	Device.Views.Menu = Backbone.View.extend({
+		tagName		: "div",
+		className	: "list-group",
+		tplDeviceContainer:	_.template(deviceContainerMenuTemplate),
+		
+		/**
+		 * Bind events of the DOM elements from the view to their callback
+		 */
+		events: {
+			"click a.list-group-item"	: "updateSideMenu"
+		},
+		
+		/**
+		 * Listen to the updates on devices and update if any
+		 * 
+		 * @constructor
+		 */
+		initialize:function() {
+			this.listenTo(devices, "add", this.render);
+			this.listenTo(devices, "change", this.render);
+			this.listenTo(devices, "remove", this.render);
+		},
+		
+		/**
+		 * Update the side menu to set the correct active element
+		 * 
+		 * @param e JS click event
+		 */
+		updateSideMenu:function(e) {
+			_.forEach($("a.list-group-item"), function(item) {
+				$(item).removeClass("active");
+			});
+			
+			if (typeof e !== "undefined") {
+				$(e.currentTarget).addClass("active");
+			} else {
+				if (Backbone.history.fragment === "devices") {
+					$($(".navbar li")[0]).addClass("active");
+				} else if (Backbone.history.fragment.split("/")[1] === "types") {
+					$("#side-" + Backbone.history.fragment.split("/")[2]).addClass("active");
+				} else {
+					var deviceId = Backbone.history.fragment.split("/")[1];
+					$("#side-" + devices.get(deviceId).get("type")).addClass("active");
+				}
+			}
+		},
+		
+		/**
+		 * Render the side menu
+		 */
+		 render:function() {
+			 var self = this;
+			 
+			 // initialize the content
+			 this.$el.html("");
+			 
+			 // for each category of devices, add a menu item
+			 var types = devices.getDevicesByType();
+			 _.forEach(_.keys(types), function(type) {
+				self.$el.append(self.tplDeviceContainer({
+					type	: type,
+					typeName	: deviceTypesName[type],
+					devices		: types[type],
+					places		: locations,
+					unlocatedDevices: devices.filter(function(d) { return (d.get("placeId") === "-1" && d.get("type") === type) }),
+					active		: Backbone.history.fragment.split("devices/types/")[1] === type ? true : false
+				}));
+			 });
+			 
+			 // set active the current item menu
+			 this.updateSideMenu();
+			 
+			 return this;
+		 }
+	});
 
 	// detailled view of a device
 	Device.Views.Details = Backbone.View.extend({
 		template: _.template(deviceDetailsTemplate),
-		tplEditModal: _.template(editModalTemplate),
 		tplContact: _.template(contactDetailTemplate),
 		tplIllumination: _.template(illuminationDetailTemplate),
 		tplKeyCard: _.template(keyCardDetailTemplate),
 		tplSwitch: _.template(switchDetailTemplate),
 		tplTemperature: _.template(temperatureDetailTemplate),
+		tplPlug: _.template(plugDetailTemplate),
 		tplPhillipsHue: _.template(phillipsHueDetailTemplate),
 		
 		// map the events and their callback
 		events: {
-			"click button.valid-button": "validEditDevice",
-			"keypress :input.deviceName": "validEditDevice",
-			"click .icon-chevron-left": "goBack",
-			"click #button-back": "goBack"
+			"click button.back-button"						: "onBackButton",
+			"click button.toggle-lamp-button"				: "onToggleLampButton",
+			"click button.toggle-plug-button"				: "onTogglePlugButton",
+			"show.bs.modal #edit-device-modal"				: "initializeModal",
+			"click #edit-device-modal button.valid-button"	: "validEditDevice",
+			"keyup #edit-device-modal input"				: "validEditDevice",
+			"change #edit-device-modal select"				: "checkDevice"
+		},
+
+		/**
+		 * Listen to the device update and refresh if any
+		 * 
+		 * @constructor
+		 */
+		initialize:function() {
+			this.listenTo(this.model, "change", this.render);
 		},
 		
 		/**
-		 * @constructor
+		 * Return to the previous view
 		 */
-		initialize: function() {
+		onBackButton:function() {
+			window.history.back();
+		},
+		
+		/**
+		 * Callback to toggle a lamp - used when the displayed device is a lamp (!)
+		 */
+		onToggleLampButton:function() {
+			// value can be string or boolean
+			// string
+			if (typeof this.model.get("value") === "string") {
+				if (this.model.get("value") === "true") {
+					this.model.set("value", "false");
+					this.$el.find(".toggle-lamp-button").text("Allumer");
+				} else {
+					this.model.set("value", "true");
+					this.$el.find(".toggle-lamp-button").text("Eteindre");
+				}
+			// boolean
+			} else {
+				if (this.model.get("value")) {
+					this.model.set("value", "false");
+					this.$el.find(".toggle-lamp-button").text("Allumer");
+				} else {
+					this.model.set("value", "true");
+					this.$el.find(".toggle-lamp-button").text("Eteindre");
+				}
+			}
+			
+			// send the message to the backend
+			this.model.save();
+		},
+		
+		/**
+		 * Callback to toggle a plug - used when the displayed device is a plug (!)
+		 */
+		onTogglePlugButton:function() {
+			// value can be string or boolean
+			// string
+			if (typeof this.model.get("plugState") === "string") {
+				if (this.model.get("plugState") === "true") {
+					this.model.set("plugState", "false");
+					this.$el.find(".toggle-plug-button").text("Allumer");
+				} else {
+					this.model.set("plugState", "true");
+					this.$el.find(".toggle-plug-button").text("Eteindre");
+				}
+			// boolean
+			} else {
+				if (this.model.get("plugState")) {
+					this.model.set("plugState", "false");
+					this.$el.find(".toggle-plug-button").text("Allumer");
+				} else {
+					this.model.set("plugState", "true");
+					this.$el.find(".toggle-plug-button").text("Eteindre");
+				}
+			}
+			
+			// send the message to the backend
+			this.model.save();
+		},
+				
+		/**
+		 * Clear the input text, hide the error message and disable the valid button by default
+		 */
+		initializeModal:function() {
+			$("#edit-device-modal input").val(this.model.get("name").replace(/&eacute;/g, "é").replace(/&egrave;/g, "è"));
+			$("#edit-device-modal .text-danger").addClass("hide");
+			$("#edit-device-modal .valid-button").addClass("disabled");
+		},
+		
+		/**
+		 * Check the current value given by the user - show an error message if needed
+		 * 
+		 * @return false if the information are not correct, true otherwise
+		 */
+		checkDevice:function() {
+			// name already exists
+			if (devices.where({ name : $("#edit-device-modal input").val() }).length > 0) {
+				if (devices.where({ name : $("#edit-device-modal input").val() })[0].get("id") !== this.model.get("id")) {
+					$("#edit-device-modal .text-danger").removeClass("hide");
+					$("#edit-device-modal .text-danger").text("Nom déjà existant");
+					$("#edit-device-modal .valid-button").addClass("disabled");
+					
+					return false;
+				} else {
+					$("#edit-device-modal .text-danger").addClass("hide");
+					$("#edit-device-modal .valid-button").removeClass("disabled");
+					
+					return true;
+				}
+			}
+			
+			// ok
+			$("#edit-device-modal .text-danger").addClass("hide");
+			$("#edit-device-modal .valid-button").removeClass("disabled");
+			
+			return true;
+		},
+				
+		/**
+		 * Save the edits of the device
+		 */
+		validEditDevice: function(e) {
 			var self = this;
 			
-			// when the model is updated, update the view
-			this.model.on("change", function() {
-				self.$el.find(".device-name").html(self.model.get("name"));
+			if (e.type === "keyup" && e.keyCode === 13 || e.type === "click") {
+				e.preventDefault();
 				
-				if (self.model.get("placeId") !== "-1") {
-					self.$el.find(".device-location").html(locations.get(self.model.get("placeId")).get("name"));
-				} else {
-					self.$el.find(".device-location").html("Non localis&eacute;");
+				// update if information are ok
+				if (this.checkDevice()) {
+					var destPlaceId = $("#edit-device-modal select option:selected").val();
+					
+					this.$el.find("#edit-device-modal").on("hidden.bs.modal", function() {
+						// set the new name to the device
+						self.model.set("name", $("#edit-device-modal input").val());
+						
+						// move the device
+						locations.moveDevice(self.model.get("placeId"), destPlaceId, self.model.get("id"), true);
+						
+						return false;
+					});
+					
+					// hide the modal
+					$("#edit-device-modal").modal("hide");
 				}
-				
-				// update the value of the device
-				if (self.model.get("type") === 7) { // philips hue
-					if (self.model.get("value") === "true") {
-						$(".switch").bootstrapSwitch("setState", true);
-					} else {
-						$(".switch").bootstrapSwitch("setState", false);
-					}
-				}
-			});
+			}  else if (e.type === "keyup") {
+				this.checkDevice();
+			}
+		},
+		
+		/**
+		 * Set the new color to the lamp
+		 * 
+		 * @param e JS mouse event
+		 */
+		onChangeColor: function(e) {
+			var lamp = devices.get(Backbone.history.fragment.split("/")[1]);
+			var rgb = Raphael.getRGB(colorWheel.color());
+			var hsl = Raphael.rgb2hsl(rgb);
+			
+			// hue
+			lamp.set("color", Math.floor(hsl.h * 65535));
+			lamp.save();
+			
+			// saturation
+			lamp.set("saturation", Math.floor(hsl.s * 255));
+			lamp.save();
+			
+			// brightness
+			lamp.set("brightness", Math.floor(hsl.l * 255));
+			lamp.save();
 		},
 
 		/**
 		 * Render the detailled view of a device
 		 */
 		render: function() {
-
 			switch (this.model.get("type")) {
 				case 0: // temperature sensor
 					this.$el.html(this.template({
@@ -456,6 +1154,16 @@ define([
 						deviceDetails: this.tplKeyCard
 					}));
 					break;
+				
+				case 6: // plug
+					this.$el.html(this.template({
+						device: this.model,
+						sensorImg: "styles/img/sensors/plug.jpg",
+						sensorType: deviceTypesName[6],
+						locations: locations,
+						deviceDetails: this.tplPlug
+					}));
+					break;
 
 				case 7: // phillips hue
 					this.$el.html(this.template({
@@ -464,502 +1172,154 @@ define([
 						locations: locations,
 						deviceDetails: this.tplPhillipsHue
 					}));
-
-					// create the switches and bind their events
-					this.$el.find(".switch")
-							.bootstrapSwitch()
-							.on("switch-change", this.switchChange);
 					
-					// create the color picker
-					// compute its size
-					var wheelRadius = Math.min(
-							this.$el.find("#color-picker").width(),
-							$(window).height()
-					);
-					wheelRadius -= 200;
-				
-					// instantiate the color wheel
-					window.colorWheel = Raphael.colorwheel(
-							this.$el.find("#color-picker").position().left + (this.$el.find("#color-picker").width() - wheelRadius) / 2,
-							this.$el.find("#color-picker").position().top + 5,
-							wheelRadius,
-							"#F00");
-					
-					// bind the events
-					// mobile -> touch
-					if (navigator.userAgent.toLowerCase().match(/(ipad|ipod|iphone|android)/)) {
-						window.colorWheel.onchange = this.changeIpadColor;
-					} else { // desktop -> drag w/ the mouse
-						window.colorWheel.ring.node.onmouseup = this.changeColor;
-						window.colorWheel.square.node.onmouseup = this.changeColor;
+					// if the color wheel is not already displayed
+					if (typeof window.colorWheel === "undefined") {
+						this.renderColorWheel();
 					}
 					
 					// update the size of the color picker container
-					this.$el.find("#color-picker").height(wheelRadius);
+					this.$el.find(".color-picker").height(colorWheel.size2 * 2);
 
 					break;
 			}
-			
-			// this.$el.find(".popover-delete").popover();
-			$("body").append(this.tplEditModal({
-				device: this.model,
-				locations: locations
-			}));
-			
-			// bind events of the edit device modal to the view
-			var modalView = {
-				model: this.model,
-				onClick: this.validEditDevice
-			};
-			_.bindAll(modalView, "onClick");
-			
-			$("#edit-device-modal .valid-button").bind("click", modalView.onClick);
 
 			return this;
 		},
-
+		
 		/**
-		 * Save the edits of the device
+		 * Render the color wheel for the Philips Hue
 		 */
-		validEditDevice: function(e) {
-			if (e.type === "keypress" && e.keyCode === 13 || e.type === "click") {
-				e.preventDefault();
+		renderColorWheel:function() {
+			// create the color picker
+			// compute its size
+			var wheelRadius = Math.min(
+				$(".body-content").width(),
+				$(document).height() - this.$el.find(".color-picker").position().top
+			);
+			wheelRadius -= wheelRadius / 10 + 80;
 
-				// retrieved the modified attributes
-				var name = $(".deviceName").val();
-				var placeId = parseInt($("select option:selected").val());
+			// instantiate the color wheel
+			window.colorWheel = Raphael.colorwheel(
+				$(".body-content").position().left + ($(".body-content").width() - wheelRadius) / 2,
+				this.$el.find(".color-picker").position().top + 80,
+				wheelRadius,
+				"#F00"
+			);
 
-				if (placeId !== -1) {
-					/* communicator.sendMessage({
-						method: "moveDevice",
-						srcPlaceId: this.model.get("deviceId").toString(),
-						destPlaceId: placeId.toString(),
-						deviceId: this.model.get("id").toString()
-					}); */
-				}
-
-				// move the device
-				/* dispatcher.trigger("moveDevice", {
-				 srcLocationId: this.model.get("locationId"),
-				 destLocationId: locationId,
-				 deviceId: id
-				 }); */
-
-				this.model.set("name", name);
-
-				// go back to the previous view
-				$("#editDeviceModal").modal("hide");
-
-				return false;
+			// bind the events
+			// mobile -> touch
+			if (navigator.userAgent.toLowerCase().match(/(ipad|ipod|iphone|android)/)) {
+				// window.colorWheel.onchange = this.onChangeColor;
+				window.colorWheel.ring.node.ontouchend = this.onChangeColor;
+				window.colorWheel.square.node.ontouchend = this.onChangeColor;
+			} else { // desktop -> drag w/ the mouse
+				window.colorWheel.ring.node.onmouseup = this.onChangeColor;
+				window.colorWheel.square.node.onmouseup = this.onChangeColor;
 			}
-		},
-		
-		/**
-		 * Show the modal window to edit the information about the device
-		 */
-		editDevice: function() {
-			$("#editDeviceModal").modal("show");
-		},
-
-		/**
-		 * Callback when the user changed the switch
-		 * 
-		 * @param e Event triggered
-		 * @param data Contains the value of the switch
-		 */
-		switchChange: function(e, data) {
-			// build the message
-			var messageJSON = {
-				targetType: "1",
-				objectId: $(".box").attr("id"),
-				args: []
-			};
-			messageJSON.method = (data.value ? "On" : "Off");
-
-			// send the message
-			communicator.sendMessage(messageJSON);
-		},
-		
-		/**
-		 * Send the new color to the lamp
-		 * 
-		 * @param color Color to send to the lamp in RGB hexadecimal format
-		 */
-		changeIpadColor: function(color) {
-			// retrieve the lamp id and format the color
-			var lampId = $(".box").attr("id");
-			var rgb = Raphael.getRGB(color);
-			var hsl = Raphael.rgb2hsl(rgb);
-			
-			// hue
-			// build the message
-			var messageJSON = {
-				targetType : "1",
-				objectId: $(".box").attr("id"),
-				method: "setColor",
-				args: [{ type: "long", value: Math.floor(hsl.h * 65535) }]
-			}
-			
-			// send the message 
-			communicator.sendMessage(messageJSON);
-			
-			// saturation
-			// build the message
-			messageJSON.method = "setSaturation";
-			messageJSON.args = [{ type : "int", value : Math.floor(hsl.s * 255) }];
-			
-			// send the message
-			communicator.sendMessage(messageJSON);
-			
-			// luminosity
-			// build the message
-			messageJSON.method = "setBrightness";
-			messageJSON.args = [{ type : "long", value : Math.floor(hsl.l * 255) }];
-			
-			// send the message
-			communicator.sendMessage(messageJSON);
-		},
-		
-		changeColor: function(e) {
-			var lampId = $(".box").attr("id");
-			var rgb = Raphael.getRGB(colorWheel.color());
-			var hsl = Raphael.rgb2hsl(rgb);
-
-			// hue
-			// build the message
-			var messageJSON = {
-				targetType : "1",
-				objectId: $(".box").attr("id"),
-				method: "setColor",
-				args: [{ type: "long", value: Math.floor(hsl.h * 65535) }]
-			}
-
-			// send the message 
-			communicator.sendMessage(messageJSON);
-
-			// saturation
-			// build the message
-			messageJSON.method = "setSaturation";
-			messageJSON.args = [{ type : "int", value : Math.floor(hsl.s * 255) }];
-			
-			// send the message
-			communicator.sendMessage(messageJSON);
-
-			// luminosity
-			// build the message
-			messageJSON.method = "setBrightness";
-			messageJSON.args = [{ type : "long", value : Math.floor(hsl.l * 255) }];
-
-			// send the message
-			communicator.sendMessage(messageJSON);
-		},
-		
-		goBack:function() {
-			history.back();
 		}
 	});
 	
+	/**
+	 * Render the list of devices of a given type
+	 */
 	Device.Views.DevicesByType = Backbone.View.extend({
 		tpl: _.template(deviceListByCategoryTemplate),
 		
-		render:function() {
+		events: {
+			"click button.toggle-plug-button"	: "onTogglePlugButton",
+			"click button.toggle-lamp-button"	: "onToggleLampButton"
+		},
+		
+		/**
+		 * Listen to the updates on the devices of the category and refresh if any
+		 * 
+		 * @constructor
+		 */
+		initialize:function() {
 			var self = this;
+
+			devices.getDevicesByType()[this.id].forEach(function(device) {
+				self.listenTo(device, "change", self.render);
+				self.listenTo(device, "remove", self.render);
+			});
+		},
+		
+		/**
+		 * Callback to toggle a plug
+		 * 
+		 * @param e JS mouse event
+		 */
+		onTogglePlugButton:function(e) {
+			e.preventDefault();
 			
+			var plug = devices.get($(e.currentTarget).attr("id"));
+			
+			// value can be string or boolean
+			// string
+			if (typeof plug.get("plugState") === "string") {
+				if (plug.get("plugState") === "true") {
+					plug.set("plugState", "false");
+				} else {
+					plug.set("plugState", "true");
+				}
+			// boolean
+			} else {
+				if (plug.get("plugState")) {
+					plug.set("plugState", "false");
+				} else {
+					plug.set("plugState", "true");
+				}
+			}
+			
+			// send the message to the backend
+			plug.save();
+			
+			return false;
+		},
+				
+		/**
+		 * Callback to toggle a lamp
+		 * 
+		 * @param e JS mouse event
+		 */
+		onToggleLampButton:function(e) {
+			e.preventDefault();
+			
+			var lamp = devices.get($(e.currentTarget).attr("id"));
+			// value can be string or boolean
+			// string
+			if (typeof lamp.get("value") === "string") {
+				if (lamp.get("value") === "true") {
+					lamp.set("value", "false");
+				} else {
+					lamp.set("value", "true");
+				}
+			// boolean
+			} else {
+				if (lamp.get("value")) {
+					lamp.set("value", "false");
+				} else {
+					lamp.set("value", "true");
+				}
+			}
+			
+			// send the message to the backend
+			lamp.save();
+			
+			return false;
+		},
+		
+		/**
+		 * Render the list
+		 */
+		render:function() {
 			this.$el.html(this.tpl({
 				typeId			: this.id,
 				deviceTypeName	: deviceTypesName[this.id],
 				places			: locations
 			}));
 			
-			this.$el.find(".switch").bootstrapSwitch();
-			
-			return this;
-		}
-	});
-
-	// render the list of all the available devices
-	Device.Views.List = Backbone.View.extend({
-		tpl: _.template(deviceListTemplate),
-		tplDeviceContainer: _.template(deviceContainerListTemplate),
-		tplContact: _.template(contactListTemplate),
-		tplIllumination: _.template(illuminationListTemplate),
-		tplKeyCard: _.template(keyCardListTemplate),
-		tplSwitch: _.template(switchListTemplate),
-		tplTemperature: _.template(temperatureListTemplate),
-		tplPhillipsHue: _.template(phillipsHueListTemplate),
-		className: "span12",
-
-		events: {
-			"click span.scan": "scanQRCode",
-			"click button.validDeviceInstall": "installDevice",
-			"click button#flashDeviceButton": "flashDevice"
-		},
-
-		initialize: function() {
-			var self = this;
-
-			devices.on("change", function() {
-				// refresh only when the list is currently displayed
-				if (Backbone.history.fragment === "devices") {
-					appRouter.showView(self);
-				}
-			});
-
-			devices.on("add", function() {
-				if (Backbone.history.fragment === "devices") {
-					appRouter.showView(self);
-				}
-			});
-		},
-
-		// launch the interface to scan a QR code
-		scanQRCode: function() {
-			if (!navigator.camera) {
-				alert("camera is not supported");
-				return;
-			}
-
-			window.plugins.barcodeScanner.scan(
-					function(result) {
-						if (result.cancelled)
-							console.log("the user cancelled the scan");
-						else
-							$(".scannedSensor").text(result.text);
-					},
-					function(error) {
-						console.log("scanning failed: " + error);
-					}
-			);
-
-			return false;
-		},
-		
-		flashDevice: function() {
-			if (!navigator.camera) {
-				alert("camera is not supported");
-				return;
-			}
-
-			window.plugins.barcodeScanner.scan(
-					function(result) {
-						if (result.cancelled) {
-							console.log("the user cancelled the scan");
-						} else {
-							$(".scannedSensor").text(result.text);
-							appRouter.navigate("#devices/" + result.text, { trigger : true });
-						}
-					},
-					function(error) {
-						console.log("scanning failed: " + error);
-					}
-			);
-		},
-
-		// check the validity of the data and send to the backend the information to configure the device
-		installDevice: function(e) {
-			var selectElement = $("select")[0];
-
-			// retrieve data from the form
-			var device = new Device.Model({
-				id: Math.round(Math.random() * 1000),
-				type: $(".scannedSensor").text(),
-				name: $("input.deviceName").val(),
-				placeId: parseInt(selectElement[selectElement.options.selectedIndex].value),
-				status: 1
-			});
-
-			// add the new device to the collection of devices, update the location and refresh the list view once the modal is hidden
-			$("#addDeviceModal").on("hidden", function() {
-				devices.add(device);
-
-				var location = locations.get(device.get("placeId"));
-				location.get("devices").push(device.get("id"));
-				location.save();
-			});
-
-			// hide the modal
-			$("#addDeviceModal").modal("hide");
-
-			// notify the backend
-			communicator.sendMessage("newDevice", device.toJSON());
-		},
-
-		// user turns on or off a lamp
-		switchChange: function(e, data) {
-			// retrieve information about action to perform
-			var lampId = $($(e.currentTarget).parents("li")[0]).attr("id");
-			var value = data.value;
-
-			// build the message
-			var messageJSON = {
-				targetType: "1",
-				objectId: lampId,
-				args: []
-			};
-			messageJSON.method = (value ? "On" : "Off");
-
-			// send the message
-			communicator.sendMessage(messageJSON);
-		},
-
-		// user changes the brightness of the lamp
-		brightnessChange: function(e) {
-			var lampId = $($(e.currentTarget).parents("article")[0]).attr("id");
-
-			// build the message
-			var messageJSON = {
-				targetType: "1",
-				objectId: lampId,
-				method: "setBrightness",
-				args: [{type: "long", value: e.value}]
-			};
-
-			// send the message
-			communicator.sendMessage(messageJSON);
-		},
-
-		saturationChange: function(e) {
-			var lampId = $($(e.currentTarget).parents("article")[0]).attr("id");
-			console.log(lampId, e.value);
-
-			// build the message
-			var messageJSON = {
-				targetType: "1",
-				objectId: lampId,
-				method: "setSaturation",
-				args: [{type: "int", value: e.value}]
-			};
-
-			// send the message
-			communicator.sendMessage(messageJSON);
-		},
-
-		colorChange: function(e) {
-			var lampId = $($(e.srcElement).parents("article")[0]).attr("id");
-			var methodName = $(e.srcElement).val();
-
-			// build the message
-			var messageJSON = {
-				targetType: "1",
-				objectId: lampId,
-				method: methodName,
-				args: []
-			};
-
-			// send the message
-			communicator.sendMessage(messageJSON);
-		},
-
-		// render the list of devices
-		render: function() {
-			var self = this;
-			
-			// render the side menu
-			$(".aside-menu-title").html("Dispositifs");
-			$(".aside-menu-content").html("");
-			
-			// group the devices by type
-			var types = devices.getDevicesByType();
-			
-			_.forEach(_.keys(types), function(type) {
-				$(".aside-menu-content").append(self.tplDeviceContainer({
-					type			: type,
-					typeName		: deviceTypesName[type],
-					devices			: types[type],
-					places			: locations,
-					unlocatedDevices: devices.filter(function(d) { return (d.get("placeId") === "-1" && d.get("type") == type) })
-				}));
-			});
-			
-			// render the first device type by default
-			appRouter.showView(new Device.Views.DevicesByType({ id: _.keys(types)[0] }));
-			
-			/* this.$el.html(this.tpl());
-			
-			// compute the number of rows - 1 row contains 2 categories
-			var nbRows = _.keys(types).length;
-			if (nbRows % 2 === 1) {
-				nbRows++;
-			}
-			
-			// render each row
-			for (var i = 0; i < nbRows; i += 2) {
-				var rowContent = "<div class='row-fluid'>";
-				
-				var t = [_.keys(types)[i], _.keys(types)[i + 1]];
-				for (type in t) {
-					switch (t[type]) {
-						case "0": // temperature sensor
-							rowContent += this.tplDeviceContainer({
-								type: "Temp&eacute;rature",
-								devices: types[t[type]],
-								nbDevices: types[t[type]].length,
-								liDeviceTemplate: this.tplTemperature,
-								locations: locations
-							});
-							break;
-						case "1": // illumination sensor
-							rowContent += this.tplDeviceContainer({
-								type: "Luminosit&eacute;",
-								devices: types[t[type]],
-								nbDevices: types[t[type]].length,
-								liDeviceTemplate: this.tplIllumination,
-								locations: locations
-							});
-							break;
-						case "2": // switch sensor
-							rowContent += this.tplDeviceContainer({
-								type: "Interrupteur",
-								devices: types[t[type]],
-								nbDevices: types[t[type]].length,
-								liDeviceTemplate: this.tplSwitch,
-								locations: locations
-							});
-							break;
-						case "3": // contact sensor
-							rowContent += this.tplDeviceContainer({
-								type: "Contact",
-								devices: types[t[type]],
-								nbDevices: types[t[type]].length,
-								liDeviceTemplate: this.tplContact,
-								locations: locations
-							});
-							break;
-						case "4": // key card sensor
-							rowContent += this.tplDeviceContainer({
-								type: "Lecteur carte",
-								devices: types[t[type]],
-								nbDevices: types[t[type]].length,
-								liDeviceTemplate: this.tplKeyCard,
-								locations: locations
-							});
-							break;
-						case "7": // phillips hue
-							rowContent += this.tplDeviceContainer({
-								type: "Phillips Hue",
-								devices: types[t[type]],
-								nbDevices: types[t[type]].length,
-								liDeviceTemplate: this.tplPhillipsHue,
-								locations: locations
-							});
-							break;
-					}
-				}
-				rowContent += "</div>";
-				this.$el.find(".devices").append(rowContent);
-			} */
-
-			// disable the possibility to launch the installation interface with no camera is detected
-			// (user has to scan a qr code while installing a sensor)
-			if (!navigator.camera) {
-				$("button.showDeviceInstallModal").hide();
-			}
-
-			// create the switches and bind their events
-			$(".aside-menu-content .switch")
-					.bootstrapSwitch()
-					.on("switch-change", this.switchChange);
-
 			return this;
 		}
 	});

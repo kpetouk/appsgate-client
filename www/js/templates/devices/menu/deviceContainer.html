@@ -1,0 +1,36 @@
+<a href="#devices/types/<%= type %>" class="list-group-item <% if (active) { %> active <% } %>" id="side-<%= type %>">
+	<!-- header -->
+	<p class="list-group-item-heading lead">
+		<%= typeName %>
+		<span class="pull-right badge">
+			<%= devices.length %>
+		</span>
+	</p>
+	
+	<!-- body -->
+	<p class="list-group-item-text">
+		<ul class="list-unstyled">
+			<% places.forEach(function(place) { %>
+				<% if (place.getTypeSensors(type).length > 0) { %>
+					<li>
+						<% if (place.get("name") !== "") { %>
+							<%= place.get("name") %>
+						<% } else { %>
+							<em>Pi&egrave;ce sans nom</em>
+						<% } %>
+						<% if (type === "0") { %>
+							<span class="label label-info"><%= place.getAverageTemperature() %>&deg;C</span>
+						<% } else if (type === "1") { %>
+							<span class="label label-info"><%= place.getAverageIllumination() %> Lux</span>
+						<% } else if (type === "6") { %>
+							<span class="label label-info"><%= place.getAverageConsumption() %> Watt</span>
+						<% } %>
+						<span class="pull-right badge">
+							<%= place.getTypeSensors(type).length %>
+						</span>
+					</li>
+				<% } %>
+			<% }) %>
+		</ul>
+	</p>
+</a>

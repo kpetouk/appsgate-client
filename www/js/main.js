@@ -14,13 +14,13 @@ require([
         this.unbind();
 		
 		// unbind the events from external elements the view was listening to
-		if (typeof this.externalElements !== "undefined") {
+		/* if (typeof this.externalElements !== "undefined") {
 			this.externalElements.forEach(function(e) {
 				e.off();
 			});
-		}
+		} */
     };
-	
+
 	/**
 	 * Bind an event on a dom element that is not contained in the view
 	 * 

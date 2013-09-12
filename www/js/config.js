@@ -11,25 +11,24 @@ require.config({
         // jQuery UI
         jqueryui: "libs/jquery/jquery-ui-1.10.0.min",
         // bootstrap
-        bootstrap: "libs/bootstrap/js/bs3/bootstrap.min",
-		// bootstrap switch
-		bootstrapSwitch: "libs/bootstrap/js/bootstrap-switch",
-		// bootstrap slider
-		bootstrapSlider: "libs/bootstrap/js/bootstrap-slider",
+        bootstrap: "libs/bootstrap/js/bootstrap.min",
         // underscore library
         underscore: "libs/underscore/underscore",
         // Backbone.js library
-        backbone: "libs/backbone/backbone",
+        backbone: "libs/backbone/backbone-1.0.0.min",
 		// Raphael.js library
 		raphael: "libs/raphael/raphael.2.1.0.amd",
 		// Color wheel Raphael.js plugin
 		colorWheel: "libs/raphael/plugins/colorwheel",
+		// parser generator
+		peg: "libs/peg/peg-0.7.min",
         // Modules
         communicator: "modules/communicator",
         location: "modules/location",
         device: "modules/device",
         program: "modules/program",
-        home: "modules/home"
+        home: "modules/home",
+		grammar: "modules/grammar"
     },
     shim: {
         "bootstrap": {
@@ -51,11 +50,14 @@ require.config({
         "jqueryui": {
             deps: [ "jquery" ]
         },
-		"bootstrapSwitch": {
+		/* "bootstrapSwitch": {
 			deps: ["bootstrap"]
 		},
 		"bootstrapSlider": {
 			deps: ["bootstrap"]
-		}
+		},
+		"bootstrapExtraPopover": {
+			deps: ["bootstrap"]
+		} */
     }
 });

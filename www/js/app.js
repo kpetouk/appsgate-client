@@ -2,25 +2,30 @@ define([
 	"jquery",
 	"underscore",
 	"backbone",
-	"raphael",
 	"communicator",
-	"home",
 	"device",
     "location",
     "program",
 	"bootstrap"
-], function($, _, Backbone, Raphael, Communicator, Home, Device, Location, Program) {
+], function($, _, Backbone, Communicator, Device, Location, Program) {
 
 	// define the application router
 	var AppRouter = Backbone.Router.extend({
         routes: {
-            "" : "index"
+            ""		: "index",
+			"reset" : "index"
         },
 
         // default route of the application
         index:function() {
 			this.showMenuView(new Location.Views.Menu());
 			this.showView(new Location.Views.Details({ model : locations.at(0) }));
+			
+			// set active the first item of the navbar - displayed by default
+			$($(".navbar li")[0]).addClass("active");
+			
+			// set active the first element of the aside menu - displayed by default
+			$($(".aside-menu .list-group-item")[0]).addClass("active");
         },
 
 		// update the side menu w/ new content
@@ -32,74 +37,130 @@ define([
 			
 			this.currentMenuView = menuView;
 			this.currentMenuView.render();
-			$(".aside-menu-content").html(this.currentMenuView.$el);
+			$(".aside-menu").html(this.currentMenuView.$el);
+			
+			// update the navbar - the navbar only needs to be updated when the users changed the views (places, devices or programs) so that the side menu
+			// has to be updated
+			// remove active class
+			_.forEach($(".navbar-nav > li"), function(navItem) {
+				$(navItem).removeClass("active");
+			});
+			// add active class to the correct menu item
+			if (Backbone.history.fragment.indexOf("locations") !== -1) {
+				$($(".navbar-nav > li")[0]).addClass("active");
+			} else if (Backbone.history.fragment.indexOf("devices") !== -1) {
+				$($(".navbar-nav > li")[1]).addClass("active");
+			} else if (Backbone.history.fragment.indexOf("programs") !== -1) {
+				$($(".navbar-nav > li")[2]).addClass("active");
+			}
 		},
 
         showView:function(view) {
 			// remove and unbind the current view
-            if (this.currentView) {
+			if (this.currentView) {
 				// manage raphaeljs objects
 				if (typeof colorWheel !== "undefined") {
 					colorWheel.remove();
 					delete colorWheel;
 				}
-                this.currentView.close();
-            }
-			
-			$("#edit-device-modal").remove();
+				this.currentView.close();
+			}
 
-            this.currentView = view;
+			// update the content
+			this.currentView = view;
 			$(".body-content").html(this.currentView.$el);
 			this.currentView.render();
         }
     });
 
+	/**
+	 * Initialize the application and make the bindings for the navigation bar
+	 */
 	function initialize() {
 		// Initialize the application-wide event dispatcher
         window.dispatcher = _.clone(Backbone.Events);
 		
 		// Setting the connection with the box
-		window.communicator = new Communicator('ws://prima16:8080');
+		window.communicator = new Communicator('ws://194.199.23.158:8080');
 
         // Wait for the socket to be opened
         dispatcher.on("WebSocketOpen", function() {
-            // Initialize the collection of locations
+			// delete the current collections if any - in case of a reconnection
+			if (typeof devices !== "undefined") {
+				devices.reset();
+				delete devices;
+			}
+			if (typeof locations !== "undefined") {
+				locations.reset();
+				delete locations;
+			}
+			if (typeof programs !== "undefined") {
+				programs.reset();
+				delete programs;
+			}
+
+			// wait for the data before launching the user interface
+			var placesReady = false;
+			var devicesReady = false;
+			var programsReady = false;
+
+			// places
+			dispatcher.on("locationsReady", function() {
+				placesReady = true;
+				if (placesReady && devicesReady && programsReady) {
+					dispatcher.trigger("dataReady");
+				}
+			});
+
+			// devices
+			dispatcher.on("devicesReady", function() {
+				devicesReady = true;
+				if (placesReady && devicesReady && programsReady) {
+					dispatcher.trigger("dataReady");
+				}
+			});
+
+			// programs
+			dispatcher.on("programsReady", function() {
+				programsReady = true;
+				if (placesReady && devicesReady && programsReady) {
+					dispatcher.trigger("dataReady");
+				}
+			});
+
+			// all data have been received, launch the user interface
+			dispatcher.on("dataReady", function() {
+				$("#lost-connection-modal").modal("hide");
+				$("#settings-modal").modal("hide");
+
+				// remove potential duplicated entries of devices in a place
+				locations.forEach(function(l) {
+					l.set({ devices : _.uniq(l.get("devices")) });
+				});
+
+				if (navigator.splashscreen !== undefined) {
+					navigator.splashscreen.hide();
+				}
+				
+				// initialize the history management
+				try { Backbone.history.start(); } catch(e) {}
+				
+				// navigate to the entry point of the application
+				appRouter.navigate("reset", { trigger : true });
+			});
+			
+			// Initialize the collection of locations
             window.locations = new Location.Collection();
 
             // Initialize the collection of devices
             window.devices = new Device.Collection();
 
             // Initialize the collection of programs
-            // window.programs = new Program.Collection();
-			
-			// dispatcher.off("WebSocketOpen");
+            window.programs = new Program.Collection();
         });
 
         // main router of the application
-        window.appRouter; // = new AppRouter();
-
-    	// application router
-        dispatcher.on("locationsReady", function() {
-            dispatcher.on("devicesReady", function() {
-                // dispatcher.on("programsReady", function() {
-				
-					// remove potential duplicated entries of devices in a place
-					locations.forEach(function(l) {
-						l.set({ devices : _.uniq(l.get("devices")) });
-					});
-					
-                    window.appRouter = new AppRouter();
-                    Backbone.history.start();
-
-                    if (navigator.splashscreen !== undefined) {
-                        navigator.splashscreen.hide();
-                    }
-					
-					dispatcher.off("locationsReady");
-					dispatcher.off("devicesReady");
-                // });
-            });
-        });
+        window.appRouter = new AppRouter();
 		
 		// hide the button to flash devices if there is no camera
 		if (!navigator.camera) {
@@ -141,9 +202,9 @@ define([
 		
 		// listen to the communicator event when the connection has been lost and display an alert
 		dispatcher.on("WebSocketClose", function() {
-			$("#lost-connection-modal p.text-info").hide();
-			$("#lost-connection-modal p.text-error").show();
-			$("#lost-connection-modal p.text-error").html("La connexion a &eacute;t&eacute; interrompue.");
+			$("#lost-connection-modal .text-info").hide();
+			$("#lost-connection-modal .text-danger").show();
+			$("#lost-connection-modal .text-danger").html("La connexion a &eacute;t&eacute; interrompue.");
 			$("#lost-connection-modal").modal("show");
 		});
 		
@@ -161,49 +222,23 @@ define([
 	 * @param e JS event
 	 */
 	function onValidSettingsButton(e) {
-		if (e.type === "keyup" && e.keyCode === 13 || e.type === "click") {
-			dispatcher.on("locationsReady", function() {
-				dispatcher.on("devicesReady", function() {
-					// remove potential duplicated entries of devices in a place
-					locations.forEach(function(l) {
-						l.set({ devices : _.uniq(l.get("devices")) });
-					});
-
-					// hide the modal windows
-					$("#settings-modal").modal("hide");
-					$("#lost-connection-modal").modal("hide");
-					
-					// hide the information message for the next time the modal will appear
-					$("#settings-modal p.text-info").hide();
-					
-					Backbone.history.stop();
-					Backbone.history.start();
-				});
-			});
-			
+		if ((e.type === "keyup" && e.keyCode === 13 || e.type === "click") && $("#settings-modal .addr-server") !== "") {
 			// hide the error message it is displayed
-			$("#settings-modal p.text-error").hide();
+			$("#settings-modal .text-danger").hide();
 			
 			// show the message to inform the user the connection is being established
-			$("#settings-modal p.text-info").show();
+			$("#settings-modal .text-info").show();
 
 			// set the new server address
-			if ($("#settings-modal .addr-server") !== "") {
-				// build the server address from the information given by the user
-				var serverAddr = "ws://" + $("#settings-modal .addr-server").val() + ":";
-				serverAddr += $("#settings-modal .port-server").val() === "" ? "8080" : $("#settings-modal .port-server").val();
-				console.log(serverAddr);
-				
-				// set the new address
-				communicator.setServerAddr(serverAddr);
-			}
-			
+			// build the server address from the information given by the user
+			var serverAddr = "ws://" + $("#settings-modal .addr-server").val() + ":";
+			serverAddr += $("#settings-modal .port-server").val() === "" ? "8080" : $("#settings-modal .port-server").val();
+
+			// set the new address
+			communicator.setServerAddr(serverAddr);
+
 			// reconnect w/ to the new server
 			communicator.reconnect();
-
-			// set current server address and port in the modal
-			$("#settings-modal .addr-server").val(communicator.getServerAddr().split("://")[1].split(":")[0]);
-			$("#settings-modal .port-server").val(communicator.getServerAddr().split(":")[2]);
 		}
 	}
 	
@@ -220,8 +255,8 @@ define([
 	 */
 	function onReconnectButton() {
 		// show in the modal error the information that the connection is being established
-		$("#lost-connection-modal p.text-error").hide();
-		$("#lost-connection-modal p.text-info").show();
+		$("#lost-connection-modal .text-danger").hide();
+		$("#lost-connection-modal .text-info").show();
 		
 		communicator.reconnect();
 	}

@@ -2,10 +2,11 @@ define([
 	"jquery",
 	"underscore",
 	"backbone",
+	"text!templates/locations/menu/menu.html",
 	"text!templates/locations/menu/placeContainer.html",
 	"text!templates/locations/menu/addButton.html",
 	"text!templates/locations/details/details.html"
-], function($, _, Backbone, placeContainerMenuTemplate, addPlaceButtonTemplate, locationDetailsTemplate) {
+], function($, _, Backbone, placeMenuTemplate, placeContainerMenuTemplate, addPlaceButtonTemplate, locationDetailsTemplate) {
 	// initialize the module
 	var Location = {};
 
@@ -18,8 +19,17 @@ define([
 
 		// list all the locations
 		list:function() {
+			// display the side menu
 			appRouter.showMenuView(new Location.Views.Menu());
+			
+			// set active the first element - displayed by default
+			$($(".aside-menu .list-group-item")[0]).addClass("active");
+			
+			// display the first place
 			appRouter.showView(new Location.Views.Details({ model : locations.at(0) }));
+			
+			// update the url
+			appRouter.navigate("#locations/" + locations.at(0).get("id"));
 		},
 
 		// show the details of a locations (i.e. list of devices in this location)
@@ -39,31 +49,10 @@ define([
 		 */
 		initialize:function() {
 			var self = this;
-
-			// listen to the event when one or several attributes have been updated
-		 	/* dispatcher.on("updatePlace", function(location) {
-		 		if (location.id === self.get("id")) {
-		 			self.set(location);
-		 		}
-		 	}); */
-
-			// listen to update from the backend
-			/* dispatcher.on("updateLocation", function(location) {
-				if (location.id == self.get("id")) {
-					self.set("name", location.name),
-					self.set("devices", location.devices);
-				}
-			}); */
-			/* dispatcher.on("moveDevice", function(messageData) {
-				if (messageData.srcLocationId == self.get("id")) {
-					self.get("devices").split();
-				}
-			}) */
 			
 			// remove potential duplicated entries and trigger a refresh of the list of places event
 			this.on("change:devices", function() {
 				self.set({ devices : _.uniq(self.get("devices")) });
-				dispatcher.trigger("refreshListPlaces");
 			});
 		},
 		
@@ -82,7 +71,11 @@ define([
 			// compute the average value of the sensors
 			var average = 0;
 			sensors.forEach(function(s) {
-				average += parseInt(s.get("value"));
+				if (typeof s.get("value") !== "undefined") {
+					average += parseInt(s.get("value"));
+				} else {
+					average += parseInt(s.get("consumption"));
+				}
 			});
 			
 			return average / sensors.length;
@@ -104,6 +97,15 @@ define([
 		 */
 		getAverageIllumination:function() {
 			return this.getAverageValue(this.getIlluminationSensors());
+		},
+		
+		/**
+		 * Compute the average consumption of the place from the plugs in the place
+		 * 
+		 * @return Average consumption of the place if any consumption sensor, null otherwise
+		 */
+		getAverageConsumption:function() {
+			return this.getAverageValue(this.getPlugs());
 		},
 		
 		/**
@@ -188,15 +190,38 @@ define([
 		getPhilipsHueLamps:function() {
 			return this.getTypeSensors(7);
 		},
+		
+		/**
+		 * Send a message to the server to perform a remote call
+		 * 
+		 * @param method Remote method name to call
+		 * @param args Array containing the argument taken by the method. Each entry of the array has to be { type : "", value "" }
+		 */
+		remoteCall:function(method, args) {
+			communicator.sendMessage({
+				method	: method,
+				args	: args
+			});
+		},
 
 		/**
 		 * Override its synchronization method to send a notification on the network
 		 */
 		sync:function(method, model) {
-			communicator.sendMessage({
-				method:	"updatePlace",
-				args: [{ type : "JSONObject", value : model.toJSON() }]
-			});
+			switch (method) {
+				case "delete":
+					this.remoteCall("removePlace", [{ type : "String", value : model.get("id") }]);
+					break;
+				case "create":
+					model.set("id", Math.round(Math.random() * 1000));
+					this.remoteCall("newPlace", [{ type : "JSONObject", value : model.toJSON() }]);
+					break;
+				case "update":
+					this.remoteCall("updatePlace", [{ type : "JSONObject", value : model.toJSON() }]);
+					break;
+				default:
+					break;
+			}
 		},
 
 		/**
@@ -234,65 +259,28 @@ define([
 				name: "Non localis&eacute;",
 				devices: []
 			});
-
-		 	// when a location has been created and added by the user, notify the backend
-		 	this.on("add", function(location) {
-		 		communicator.sendMessage({
-		 			method : "newPlace",
-					args: [{
-						type	: "JSONObject",
-						value	: location.toJSON()
-					}]
-		 		});
-		 	});
 			
-			// when a place has been deleted from the interface, update the devices located inside and notify the backend
+			// a place has been removed - put its devices as unlocated
 			this.on("remove", function(place) {
-				// update the devices of the place to be unlocated
-				self.postRemovePlace(place);
-				
-				// notify the backend
-				communicator.sendMessage({
-					method	: "removePlace",
-					args	: [{
-						type	: "String",
-						value	: place.get("id")
-					}]
-				});
-				
-				// tell the menu for places to refresh
-				if (Backbone.history.fragment.indexOf("devices") !== -1) {
-					dispatcher.trigger("refreshListDevices");
-				} else {
-					dispatcher.trigger("refreshListPlaces");
-				}
-				
-				// display the first new place
-				appRouter.navigate("#locations/" + locations.at(0).get("id"), { trigger : true });
+				self.updateDevicesRemovedPlace(place);
 			});
 
 		 	// listen to the event when the list of locations is received
 		 	dispatcher.on("listPlaces", function(locations) {
 		 		_.each(locations, function(location) {
-		 			self.add(location, { silent : true });
+		 			self.add(location);
 		 		});
 		 		dispatcher.trigger("locationsReady");
 		 	});
 
 		 	// listen to the event when a location appears and add it
 		 	dispatcher.on("newPlace", function(location) {
-		 		// location is added silently because we dont want to fire the event 'add' on the collection
-		 		// which notifies the backend for a new location
-		 		self.add(location, { silent : true });
-				
-		 		// tell the list to refresh
-		 		dispatcher.trigger("refreshListPlaces");
+		 		self.add(location);
 		 	});
 
 			// listen to the event when a place has been updated
 			dispatcher.on("updatePlace", function(place) {
 				locations.get(place.id).set(place);
-				dispatcher.trigger("refreshListPlaces");
 			});
 			
 			// listen to the event when a place has been removed
@@ -301,34 +289,23 @@ define([
 				
 				// check if the place exists in the collection
 				if (typeof removedPlace !== "undefined") {
-					// save the previous first id for checking when refreshing the view
-					var oldFirstId = locations.at(0).get("id");
 					
 					// remove the place from the collection
-					locations.remove(removedPlace, { silent : true });
+					locations.remove(removedPlace);
 
 					// update the devices of the place
-					self.postRemovePlace(removedPlace);
-
-					// refresh the the menu if the places are displayed
-					if (Backbone.history.fragment.indexOf("locations") !== -1 || Backbone.history.fragment === "") {
-						dispatcher.trigger("refreshListPlaces");
-					}
+					self.updateDevicesRemovedPlace(removedPlace);
 
 					// refresh the content if the details of the removed place was displayed
-					if (Backbone.history.fragment === "locations/" + placeId ||
-							Backbone.history.fragment === "locations" && placeId === "0" ||
-							Backbone.history.fragment === "" && placeId === oldFirstId ||
-							Backbone.history.fragment === "locations/-1") {
-						appRouter.navigate("#locations/" + locations.at(0).get("id"), { trigger : true });
+					if (Backbone.history.fragment === "locations/" + placeId) {
+						appRouter.navigate("#locations", { trigger : true });
 					}
 				}
 			});
 
 		 	// listen to the event when a device has been moved
 		 	dispatcher.on("moveDevice", function(messageData) {
-		 		self.moveDevice(messageData.srcPlaceId, messageData.destPlaceId, messageData.deviceId);
-		 		dispatcher.trigger("refreshListPlaces");
+		 		self.moveDevice(messageData.srcLocationId, messageData.destLocationId, messageData.deviceId, false);
 		 	});
 
 		 	// send the request to fetch the locations
@@ -356,13 +333,13 @@ define([
 		/**
 		 * After removing a place from the collection, its devices need to be unlocated
 		 * 
-		 * @param place Place that has been removed
+		 * @param removedPlace Place that has been removed
 		 */
-		postRemovePlace:function(place) {
+		updateDevicesRemovedPlace:function(removedPlace) {
 			var self = this;
 			
 			// devices located in the place are now unlocated
-			place.get("devices").forEach(function(deviceId) {
+			removedPlace.get("devices").forEach(function(deviceId) {
 				// update their attributes
 				var device = devices.get(deviceId);
 				if (typeof device !== "undefined") {
@@ -380,20 +357,40 @@ define([
 		 * @param srcPlaceId
 		 * @param destPlaceId
 		 * @param deviceId
+		 * @param movedByUser
 		 */
-		moveDevice:function(srcPlaceId, destPlaceId, deviceId) {
+		moveDevice:function(srcPlaceId, destPlaceId, deviceId, movedByUser) {
+			console.log(srcPlaceId, destPlaceId, deviceId);
 			var srcLocation = locations.get(srcPlaceId);
 		 	var destLocation = locations.get(destPlaceId);
+			
 		 	// remove the device from the old location
 		 	if (srcLocation !== undefined && srcLocation.get("devices").indexOf(deviceId) > -1) {
 		 		srcLocation.get("devices").splice(srcLocation.get("devices").indexOf(deviceId), 1);
 		 	}
+			
 		 	// add the device to the new location
 		 	if (destLocation !== undefined && destLocation.get("devices").indexOf(deviceId) === -1) {
 		 		destLocation.get("devices").push(deviceId);
 		 	}
+			
 		 	// update the device itself
 		 	devices.get(deviceId).set({ "placeId" : destPlaceId });
+			
+			// if the device has been moved by the user, send a notification to the backend
+			if (movedByUser) {
+				var messageJSON = {
+					method	: "moveDevice",
+					args	: [
+						{ type : "String", value : deviceId },
+						{ type : "String", value : srcPlaceId },
+						{ type : "String", value : destPlaceId }
+					]
+				};
+				
+				// send the message
+				communicator.sendMessage(messageJSON);
+			}
 		}
 	});
 
@@ -406,50 +403,89 @@ define([
 	 * Render the side menu for the places
 	 */
 	Location.Views.Menu = Backbone.View.extend({
+		tpl					: _.template(placeMenuTemplate),
 		tplPlaceContainer	: _.template(placeContainerMenuTemplate),
 		tplAddPlaceButton	: _.template(addPlaceButtonTemplate),
-
+		
 		/**
-		 * @constructor
+		 * Bind events of the DOM elements from the view to their callback
 		 */
-		initialize:function() {
-			var self = this;
-			
-			// refresh the menu containing the list of places when a new one is received
-			dispatcher.on("refreshListPlaces", function() {
-				appRouter.showMenuView(self);
-			});
-			
-			// refresh the menu when the devices have been updated
-			dispatcher.on("refreshListDevices", function() {
-				appRouter.showMenuView(self);
-			});
-			
-			// save the external dom elements binded
-			this.addExternalElement([
-				$("#add-place-modal .valid-button"),
-				$("#add-place-modal .place-name")
-			]);
+		events: {
+			"click a.list-group-item"						: "updateSideMenu",
+			"show.bs.modal #add-place-modal"				: "initializeModal",
+			"click #add-place-modal button.valid-button"	: "validEditName",
+			"keyup #add-place-modal input"					: "validEditName"
 		},
 		
 		/**
-		 * Check the current value of the input text and show a message error if needed
+		 * Listen to the places collection update and refresh if any
+		 * 
+		 * @constructor
+		 */
+		initialize:function() {
+			this.listenTo(locations, "add", this.render);
+			this.listenTo(locations, "change", this.render);
+			this.listenTo(locations, "remove", this.render);
+			this.listenTo(devices, "change", this.render);
+		},
+		
+		/**
+		 * Update the side menu to set the correct active element
+		 * 
+		 * @param e JS click event
+		 */
+		updateSideMenu:function(e) {
+			_.forEach($("a.list-group-item"), function(item) {
+				$(item).removeClass("active");
+			});
+			$(e.currentTarget).addClass("active");
+		},
+		
+		/**
+		 * Clear the input text, hide the error message and disable the valid button by default
+		 */
+		initializeModal:function() {
+			$("#add-place-modal input").val("");
+			$("#add-place-modal .text-danger").addClass("hide");
+			$("#add-place-modal .valid-button").addClass("disabled");
+		},
+		
+		/**
+		 * Check the current value of the input text and show an error message if needed
 		 * 
 		 * @return false if the typed name already exists, true otherwise
 		 */
 		checkPlace:function() {
-			if (locations.where({ name : $("#add-place-modal .place-name").val() }).length > 0) {
-				$("#add-place-modal p.text-error").show();
+			// name is empty
+			if ($("#add-place-modal input").val() === "") {
+				$("#add-place-modal .text-danger").removeClass("hide");
+				$("#add-place-modal .text-danger").text("Le nom de la pièce doit être renseigné");
+				$("#add-place-modal .valid-button").addClass("disabled");
+				
 				return false;
-			} else {
-				$("#add-place-modal p.text-error").hide();
-				return true;
 			}
+			
+			// name already exists
+			if (locations.where({ name : $("#add-place-modal input").val() }).length > 0) {
+				$("#add-place-modal .text-danger").removeClass("hide")
+				$("#add-place-modal .text-danger").text("Nom déjà existant");
+				$("#add-place-modal .valid-button").addClass("disabled");
+				
+				return false;
+			}
+			
+			// ok
+			$("#add-place-modal .text-danger").addClass("hide");
+			$("#add-place-modal .valid-button").removeClass("disabled");
+			
+			return true;
 		},
 
 		/**
 		 * Check if the name of the place does not already exist. If not, update the place
 		 * Hide the modal when done
+		 * 
+		 * @param e JS event
 		 */
 		validEditName:function(e) {
 			if (e.type === "keyup" && e.keyCode === 13 || e.type === "click") {
@@ -458,14 +494,15 @@ define([
 					
 					// instantiate a model for the new place
 					var place = new Location.Model({
-						id		: Math.round(Math.random() * 1000),
-						name	: $("#add-place-modal .place-name").val(),
+						name	: $("#add-place-modal input").val(),
 						devices	: []
 					});
 					
+					// send the place to the backend
+					place.save();
+					
 					// add it to the collection
 					locations.add(place);
-					
 				}
 
 				// hide the modal
@@ -474,22 +511,6 @@ define([
 				this.checkPlace();
 			}
 		},
-		
-		/**
-		 * Callback for the switches of the menu. Send a message to turn on or off the lamps
-		 * 
-		 * @param e JS event automatically sent
-		 * @param data Data sent by the switch that contains its value
-		 */
-		switchChange:function(e, data) {
-			// retrieve the placeid
-			var placeId = $(e.target).parents(".place-menu-container").attr("id");
-			
-			// send the message to each lamp
-			locations.get(placeId).getPhilipsHueLamps().forEach(function(lamp) {
-				data.value ? lamp.on() : lamp.off();
-			});
-		},
 
 		/**
 		 * Render the side menu
@@ -497,45 +518,21 @@ define([
 		render:function() {
 			var self = this;
 			
-			// clear the content
-			this.$el.html("");
+			// initialize the content
+			this.$el.html(this.tpl());
 			
 			// for each location, add a menu item
 			locations.forEach(function(location) {
-				if (location.get("id") !== "-1" || location.get("id") === "-1" && location.get("devices").length > 0) {
-					self.$el.append(self.tplPlaceContainer({
-						place : location
-					}));
-				}
+				self.$el.find(".list-group").append(self.tplPlaceContainer({
+					place : location,
+					active	: Backbone.history.fragment.split("/")[1] === location.get("id") ? true : false
+				}));
 			});
 			
 			// "add place" button to the side menu
 			this.$el.append(this.tplAddPlaceButton());
 			
-			// create the switches and bind their events
-			this.$el.find(".switch")
-					.bootstrapSwitch()
-					.on("switch-change", this.switchChange);
-			
-			// bind the external elements
-			this.bindExternalElements();
-			
 			return this;
-		},
-
-		/**
-		 * Bind dom elements that are not in the view
-		 */
-		bindExternalElements:function() {
-			// bind events of the edit modal to the view
-			var modalAdd = {
-				checkPlace			: this.checkPlace,
-				onClickValidButton	: this.validEditName,
-				onKeyUpInput		: this.validEditName
-			};
-			_.bindAll(modalAdd, "checkPlace", "onClickValidButton", "onKeyUpInput");
-			$("#add-place-modal .valid-button").on("click", modalAdd.onClickValidButton);
-			$("#add-place-modal .place-name").on("keyup", modalAdd.onKeyUpInput);
 		}
 	});
 
@@ -549,38 +546,43 @@ define([
 		 * Bind events of the DOM elements from the view to their callback
 		 */
 		events: {
-			"click span.previousDetailsLocation"	: "goBackToList",
-			"click button#delete-place-button"		: "deletePlace"
+			"show.bs.modal #edit-name-place-modal"				: "initializeModal",
+			"click #edit-name-place-modal button.valid-button"	: "validEditName",
+			"keyup #edit-name-place-modal input"				: "validEditName",
+			"click button.delete-place-button"					: "deletePlace",
+			"click button.toggle-plug-button"					: "onTogglePlugButton",
+			"click button.toggle-lamp-button"					: "onToggleLampButton"
 		},
-
+		
 		/**
+		 * Listen to the model update and refresh if any
+		 * 
 		 * @constructor
 		 */
 		initialize:function() {
 			var self = this;
 			
-			// refresh itself when the place has been updated
-			this.model.on("change", function() {
-				appRouter.showView(self);
-			});
+			// listen to update on its model...
+			this.listenTo(this.model, "change", this.render);
 			
-			// refresh itself when one of these devices have been updated
+			// ... and on all its devices
 			this.model.get("devices").forEach(function(deviceId) {
-				if (typeof devices.get(deviceId) !== "undefined") {
-					devices.get(deviceId).on("change", function() {
-						console.log("locations/" + deviceId);
-						if (Backbone.history.fragment === "locations/" + self.model.get("id")) {
-							appRouter.showView(self);
-						}
-					});
+				var device = devices.get(deviceId);
+				
+				// if the device has been found in the collection
+				if (typeof device !== "undefined") {
+					self.listenTo(devices.get(deviceId), "change", self.render);
 				}
 			});
-			
-			// save the external dom elements binded
-			this.addExternalElement([
-				$("#edit-name-place-modal .valid-button"),
-				$("#edit-name-place-modal .place-name")
-			]);
+		},
+
+		/**
+		 * Clear the input text, hide the error message and disable the valid button by default
+		 */
+		initializeModal:function() {
+			$("#edit-name-place-modal input").val(this.model.get("name"));
+			$("#edit-name-place-modal .text-danger").addClass("hide");
+			$("#edit-name-place-modal .valid-button").addClass("disabled");
 		},
 
 		/**
@@ -589,13 +591,29 @@ define([
 		 * @return false if the typed name already exists, true otherwise
 		 */
 		checkPlace:function() {
-			if (locations.where({ name : $("#edit-name-place-modal .place-name").val() }).length > 0) {
-				$("#edit-name-place-modal p.text-error").show();
+			// name is empty
+			if ($("#edit-name-place-modal input").val() === "") {
+				$("#edit-name-place-modal .text-danger").removeClass("hide");
+				$("#edit-name-place-modal .text-danger").text("Le nom de la pièce doit être renseigné");
+				$("#edit-name-place-modal .valid-button").addClass("disabled");
+				
 				return false;
-			} else {
-				$("#edit-name-place-modal p.text-error").hide();
-				return true;
 			}
+			
+			// name already existing
+			if (locations.where({ name : $("#edit-name-place-modal input").val() }).length > 0) {
+				$("#edit-name-place-modal .text-danger").removeClass("hide")
+				$("#edit-name-place-modal .text-danger").text("Nom déjà existant");
+				$("#edit-name-place-modal .valid-button").addClass("disabled");
+				
+				return false;
+			}
+			
+			//ok
+			$("#edit-name-place-modal .text-danger").addClass("hide");
+			$("#edit-name-place-modal .valid-button").removeClass("disabled");
+			
+			return true;
 		},
 				
 		/**
@@ -603,31 +621,104 @@ define([
 		 * Hide the modal when done
 		 */
 		validEditName:function(e) {
+			var self = this;
+			
 			if (e.type === "keyup" && e.keyCode === 13 || e.type === "click") {
+				e.preventDefault();
+				
 				// update the name if it is ok
 				if (this.checkPlace()) {
-					this.model.set("name", $("#edit-name-place-modal .place-name").val());
+					this.$el.find("#edit-name-place-modal").on("hidden.bs.modal", function() {
+						// set the new name to the place
+						self.model.set("name", $("#edit-name-place-modal input").val());
+						
+						// send the update to the backend
+						self.model.save();
+						
+						return false;
+					});
+					
+					// hide the modal
+					$("#edit-name-place-modal").modal("hide");
 				}
-				
-				// send the update to the backend
-				this.model.save();
-
-				// hide the modal
-				$("#edit-name-place-modal").modal("hide");
 			} else if (e.type === "keyup") {
 				this.checkPlace();
 			}
 		},
-
+		
 		/**
-		 * Return to the list of places
+		 * Callback when the user has clicked on the button to remove a place. Remove the place
 		 */
-		goBackToList:function() {
-			window.history.back();
+		deletePlace:function() {
+			// delete the place
+			this.model.destroy();
+			
+			// navigate to the list of locations
+			appRouter.navigate("#locations", { trigger : true });
 		},
 		
-		deletePlace:function() {
-			locations.remove(this.model);
+		/**
+		 * Callback to toggle a plug
+		 * 
+		 * @param e JS mouse event
+		 */
+		onTogglePlugButton:function(e) {
+			e.preventDefault();
+			
+			var plug = devices.get($(e.currentTarget).attr("id"));
+			// value can be string or boolean
+			// string
+			if (typeof plug.get("plugState") === "string") {
+				if (plug.get("plugState") === "true") {
+					plug.set("plugState", "false");
+				} else {
+					plug.set("plugState", "true");
+				}
+			// boolean
+			} else {
+				if (plug.get("plugState")) {
+					plug.set("plugState", "false");
+				} else {
+					plug.set("plugState", "true");
+				}
+			}
+			
+			// send the message to the backend
+			plug.save();
+			
+			return false;
+		},
+		
+		/**
+		 * Callback to toggle a lamp
+		 * 
+		 * @param e JS mouse event
+		 */
+		onToggleLampButton:function(e) {
+			e.preventDefault();
+			
+			var lamp = devices.get($(e.currentTarget).attr("id"));
+			// value can be string or boolean
+			// string
+			if (typeof lamp.get("value") === "string") {
+				if (lamp.get("value") === "true") {
+					lamp.set("value", "false");
+				} else {
+					lamp.set("value", "true");
+				}
+			// boolean
+			} else {
+				if (lamp.get("value")) {
+					lamp.set("value", "false");
+				} else {
+					lamp.set("value", "true");
+				}
+			}
+			
+			// send the message to the backend
+			lamp.save();
+			
+			return false;
 		},
 
 		/**
@@ -644,28 +735,12 @@ define([
 			$("#edit-name-place-modal .place-name").val(this.model.get("name"));
 			
 			// hide the error message
-			$("#edit-name-place-modal p.text-error").hide();
+			$("#edit-name-place-modal .text-error").hide();
 			
-			// bind dom elements outside of the view
-			this.bindExternalElements();
+			// initialize the popover
+			this.$el.find("#delete-popover").popover({ html : true });
 			
 			return this;
-		},
-		
-		/**
-		 * Bind dom elements that are not in the view
-		 */
-		bindExternalElements:function() {
-			// bind events of the edit modal to the view
-			var modalEdit = {
-				model				: this.model,
-				checkPlace			: this.checkPlace,
-				onClickValidButton	: this.validEditName,
-				onKeyUpInput		: this.validEditName
-			};
-			_.bindAll(modalEdit, "checkPlace", "onClickValidButton", "onKeyUpInput");
-			$("#edit-name-place-modal .valid-button").on("click", modalEdit.onClickValidButton);
-			$("#edit-name-place-modal .place-name").on("keyup", modalEdit.onKeyUpInput);
 		}
 	});
 
