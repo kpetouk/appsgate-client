@@ -1,11 +1,22 @@
-<div id="<% program.get('name') %>" class="program-menu-container">
+<a href="#programs/<%= program.get('name') %>" class="list-group-item <% if (active) { %> active <% } %>">
 	<!-- header -->
-	<div class="header">
-		<a href="#programs/<%= program.get('name') %>">
-			<%= program.get("name") %>
-			<span class="pull-right">
-				<i class="icon-chevron-right icon-white"></i>
-			</span>
-		</a>
-	</div>
-</div>
+	<p class="list-group-item-heading lead">
+		<% if (program.get("name") !== "") { %>
+		<%= program.get("name") %>
+		<% } else { %>
+			<em>Programme sans nom</em>
+		<% } %>
+	</p>
+	
+	<!-- body -->
+	<p class="list-group-item-text">
+		<ul class="list-unstyled">
+			<li>
+				Statut
+				<span class="pull-right label label-success">
+					Actif
+				</span>
+			</li>
+		</ul>
+	</p>
+</a>
