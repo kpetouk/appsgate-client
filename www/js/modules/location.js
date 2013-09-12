@@ -209,12 +209,12 @@ define([
 		 */
 		sync:function(method, model) {
 			switch (method) {
-				case "delete":
-					this.remoteCall("removePlace", [{ type : "String", value : model.get("id") }]);
-					break;
 				case "create":
 					model.set("id", Math.round(Math.random() * 1000));
 					this.remoteCall("newPlace", [{ type : "JSONObject", value : model.toJSON() }]);
+					break;
+				case "delete":
+					this.remoteCall("removePlace", [{ type : "String", value : model.get("id") }]);
 					break;
 				case "update":
 					this.remoteCall("updatePlace", [{ type : "JSONObject", value : model.toJSON() }]);
@@ -458,8 +458,9 @@ define([
 		checkPlace:function() {
 			// name is empty
 			if ($("#add-place-modal input").val() === "") {
-				$("#add-place-modal .text-danger").removeClass("hide");
-				$("#add-place-modal .text-danger").text("Le nom de la pièce doit être renseigné");
+				$("#add-place-modal .text-danger")
+						.text("Le nom de la pièce doit être renseigné.")
+						.removeClass("hide");
 				$("#add-place-modal .valid-button").addClass("disabled");
 				
 				return false;
@@ -467,8 +468,9 @@ define([
 			
 			// name already exists
 			if (locations.where({ name : $("#add-place-modal input").val() }).length > 0) {
-				$("#add-place-modal .text-danger").removeClass("hide")
-				$("#add-place-modal .text-danger").text("Nom déjà existant");
+				$("#add-place-modal .text-danger")
+						.text("Nom déjà existant")
+						.removeClass("hide");
 				$("#add-place-modal .valid-button").addClass("disabled");
 				
 				return false;
@@ -492,21 +494,24 @@ define([
 				// create the place if the name is ok
 				if (this.checkPlace()) {
 					
-					// instantiate a model for the new place
-					var place = new Location.Model({
-						name	: $("#add-place-modal input").val(),
-						devices	: []
+					// instantiate the place and add it to the collection after the modal has been hidden
+					$("#add-place-modal").on("hidden.bs.modal", function() {
+						// instantiate a model for the new place
+						var place = new Location.Model({
+							name	: $("#add-place-modal input").val(),
+							devices	: []
+						});
+
+						// send the place to the backend
+						place.save();
+
+						// add it to the collection
+						locations.add(place);
 					});
 					
-					// send the place to the backend
-					place.save();
-					
-					// add it to the collection
-					locations.add(place);
+					// hide the modal
+					$("#add-place-modal").modal("hide");
 				}
-
-				// hide the modal
-				$("#add-place-modal").modal("hide");
 			} else if (e.type === "keyup") {
 				this.checkPlace();
 			}
