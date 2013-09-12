@@ -3,3 +3,4 @@ android/bin/*
 ios/build/*
 ios/CordovaLib/build/*
 ios/cordova/console.log
+ios/AppsGate.xcodeproj/project.xcworkspace/xcuserdata/*
