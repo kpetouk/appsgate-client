@@ -15,7 +15,7 @@ define([
 	Program.Router = Backbone.Router.extend({
 		routes : {
 			"programs"			: "list",
-			"programs/:name"	: "details"
+			"programs/:id"	: "details"
 		},
 
 		list:function() {
@@ -29,11 +29,11 @@ define([
 			appRouter.showView(new Program.Views.Editor({ model : programs.at(0) }));
 			
 			// update the url
-			appRouter.navigate("#programs/" + programs.at(0).get("name"));
+			appRouter.navigate("#programs/" + programs.at(0).get("id"));
 		},
 		
-		details:function(name) {
-			appRouter.showView(new Program.Views.Editor({ model : programs.findWhere({ name : name }) }));
+		details:function(id) {
+			appRouter.showView(new Program.Views.Editor({ model : programs.get(id) }));
 		}
 	});
 
@@ -42,7 +42,9 @@ define([
 
 	// model
 	Program.Model = Backbone.Model.extend({
+		// default values
 		defaults: {
+			runningState : "DEPLOYED",
 			source : {
 				programName : "",
 				seqParameters : [],
@@ -57,20 +59,35 @@ define([
 		},
 		
 		/**
-		 * Initialize the attributes of the programs and the source
+		 * Extract the name and the daemon attributes from the source to simplify their usage w/ backbone and in the templates
 		 * 
 		 * @constructor
 		 */
 		initialize:function() {
-			if (this.get("source").programName === "") {
+			var self = this;
+			
+			// name
+			if (typeof this.get("name") === "undefined") {
+				this.set("name", this.get("source").programName);
+			} else {
 				this.get("source").programName = this.get("name");
 			}
 			
-			if (typeof this.get("daemon") !== "undefined") {
-				this.get("daemon") ? this.get("source").daemon = "true" : this.get("source").daemon = "false";
-			} else {
-				this.get("source").daemon === "true" ? this.set("daemon", true) : this.set("daemon", false);
+			// daemon
+			if (typeof this.get("daemon") === "undefined") {
+				this.set("daemon", this.get("source").daemon);
 			}
+			
+			// when the source has been updated, update the attributes of the program model
+			this.on("change:source", function() {
+				this.set("name", this.get("source").programName);
+				this.set("daemon", this.get("source").daemon);
+			});
+			
+			// each program listens to the event whose id corresponds to its own id
+			dispatcher.on(this.get("id"), function(updatedVariableJSON) {
+				self.set(updatedVariableJSON.varName, updatedVariableJSON.value);
+			});
 		},
 		
 		/**
@@ -90,17 +107,47 @@ define([
 		sync:function(method, model) {
 			switch (method) {
 				case "create":
-					if (programs.where({ name : model.get("name") }).length > 0) {
-						this.remoteCall("updateProgram", [{ type : "JSONObject", value : model.get("source") }]);
-					} else {
-						this.remoteCall("addProgram", [{ type : "JSONObject", value : model.get("source") }]);
-					}
+					// create an id to the program
+					var id;
+					do {
+						id = "program-" + Math.round(Math.random() * 10000).toString();
+					} while (programs.where({ id : id }).length > 0);
+					model.set("id", id);
+					
+					this.remoteCall("addProgram", [{ type : "JSONObject", value : model.toJSON() }]);
 					break;
 				case "delete":
-					this.remoteCall("removeProgram", [{ type : "String", value : model.get("name") }]);
+					this.remoteCall("removeProgram", [{ type : "String", value : model.get("id") }]);
 					break;
 				case "update":
+					if (model.changedAttributes()) {
+						_.keys(model.changedAttributes()).forEach(function(attribute) {
+							if (attribute === "runningState") {
+								if (model.get("runningState") === "STARTED") {
+									model.remoteCall("callProgram", [{ type : "String", value : model.get("id") }]);
+								} else {
+									model.remoteCall("stopProgram", [{ type : "String", value : model.get("id") }]);
+								}
+							} else {
+								model.remoteCall("updateProgram", [{ type : "JSONObject", value : model.toJSON() }]);
+							}
+						});
+					} else {
+						model.remoteCall("updateProgram", [{ type : "JSONObject", value : model.toJSON() }]);
+					}
 					break;
+			}
+		},
+		
+		/**
+		 * Converts the model to its JSON representation
+		 */
+		toJSON:function() {
+			return {
+				id				: this.get("id"),
+				runningState	: this.get("runningState"),
+				source			: this.get("source"),
+				userInputSource	: this.get("userInputSource")
 			}
 		}
 	});
@@ -123,20 +170,18 @@ define([
 
 			// listen to the event when a program appears and add it
 			dispatcher.on("newProgram", function(program) {
-				if (programs.where({ name : program.name }).length === 0) {
-					self.add(program);
-				}
+				self.add(program);
 			});
 			
 			// listen to the event when a program has been removed
-			dispatcher.on("removeProgram", function(programName) {
-				var removedProgram = programs.findWhere({ name : programName });
+			dispatcher.on("removeProgram", function(programId) {
+				var removedProgram = programs.findWhere({ id : programId });
 				programs.remove(removedProgram);
 			});
 			
 			// listen to the event when a program has been updated
 			dispatcher.on("updateProgram", function(program) {
-				programs.findWhere({ name : program.name }).set(program);
+				programs.get(program.id).set(program);
 			});
 
 			// send the request to fetch the programs
@@ -168,7 +213,9 @@ define([
 			"click a.list-group-item"						: "updateSideMenu",
 			"show.bs.modal #add-program-modal"				: "initializeModal",
 			"click #add-program-modal button.valid-button"	: "validAddProgram",
-			"keyup #add-program-modal input:text"			: "validAddProgram"
+			"keyup #add-program-modal input:text"			: "validAddProgram",
+			"click button.start-program-button"				: "onStartProgramButton",
+			"click button.stop-program-button"				: "onStopProgramButton"
 		},
 		
 		/**
@@ -179,7 +226,7 @@ define([
 		initialize:function() {
 			this.listenTo(programs, "add", this.render);
 			this.listenTo(programs, "remove", this.render);
-			this.listenTo(programs, "update", this.render);
+			this.listenTo(programs, "change", this.render);
 		},
 		
 		/**
@@ -191,7 +238,12 @@ define([
 			_.forEach($("a.list-group-item"), function(item) {
 				$(item).removeClass("active");
 			});
-			$(e.currentTarget).addClass("active");
+			
+			if (typeof e !== "undefined") {
+				$(e.currentTarget).addClass("active");
+			} else {
+				$("#side-" + Backbone.history.fragment.split("/")[1]).addClass("active");
+			}
 		},
 		
 		/**
@@ -272,6 +324,46 @@ define([
 		},
 		
 		/**
+		 * Callback to start a program
+		 * 
+		 * @param e JS mouse event
+		 */
+		onStartProgramButton:function(e) {
+			e.preventDefault();
+			
+			// get the program to start
+			var program = programs.get($(e.currentTarget).attr("id"));
+			
+			// change its running state
+			program.set("runningState", "STARTED");
+			
+			// send modification to the backend
+			program.save();
+			
+			return false;
+		},
+		
+		/**
+		 * Callback to stop a program
+		 * 
+		 * @param e JS mouse event
+		 */
+		onStopProgramButton:function(e) {
+			e.preventDefault();
+			
+			// get the program to stop
+			var program = programs.get($(e.currentTarget).attr("id"))
+			
+			// change its running state
+			program.set("runningState", "STOPPED");
+			
+			// send modification to the backend
+			program.save();
+			
+			return false;
+		},
+		
+		/**
 		 * Render the side menu
 		 */
 		render:function() {
@@ -291,6 +383,9 @@ define([
 			// "add program" button to the side menu
 			this.$el.append(this.tplAddProgramButton());
 			
+			// set active the current menu item
+			this.updateSideMenu();
+			
 			return this;
 		}
 
@@ -303,8 +398,11 @@ define([
 		tplEditor : _.template(programEditorTemplate),
 		
 		events : {
-			"click button.delete-program-button"	: "deleteProgram",
-			"click button.save-program-button"		: "saveProgram"
+			"click button.daemon-program-button"	: "onDaemonProgramButton",
+			"click button.save-program-button"		: "onSaveProgramButton",
+			"click button.delete-program-button"	: "onDeleteProgramButton",
+			"keyup textarea"						: "onKeyUpTextarea",
+			"click button.completion-button"		: "onClickCompletionButton"
 		},
 		
 		/**
@@ -315,32 +413,87 @@ define([
 		},
 		
 		/**
+		 * Callback when the user has clicked on the button to toggle the daemon state of a program
+		 */
+		onDaemonProgramButton:function() {
+			// update the attribute of the program and the source
+			if (this.model.get("daemon")) {
+				this.model.set("daemon", false);
+				this.model.get("source").daemon = "false";
+				$(".daemon-program-button")
+						.removeClass("btn-info")
+						.addClass("btn-default")
+						.html("<i class='glyphicon glyphicon-unchecked'></i> Daemon");
+			} else {
+				this.model.set("daemon", true);
+				this.model.get("source").daemon = "true";
+				$(".daemon-program-button")
+						.removeClass("btn-default")
+						.addClass("btn-info")
+						.html("<i class='glyphicon glyphicon-check'></i> Daemon");
+			}
+		},
+		
+		/**
+		 * Callback when the user has clicked on the button to save modifications done on a program. Send the update to the server
+		 */
+		onSaveProgramButton:function() {
+			this.model.save();
+		},
+		
+		/**
 		 * Callback when the user has clicked on the button to remove a program. Remove the program
 		 */
-		deleteProgram:function() {
+		onDeleteProgramButton:function() {
 			// delete the program
-			// fake an id so that backbone does not refuse to delete it (because a model is considered new when it has no ids)
-			this.model.set("id", -1);
 			this.model.destroy();
 			
 			// navigate to the list of programs
 			appRouter.navigate("#programs", { trigger : true });
 		},
 		
-		/**
-		 * Callback when the user has clicked on the button to save modifications done on a program. Send the update to the server
-		 */
-		saveProgram:function() {
-			this.model.save();
+		onKeyUpTextarea:function() {
+			this.compileProgram();
+		},
+		
+		onClickCompletionButton:function(e) {
+			if ($(e.currentTarget).text() === "espace") {
+				$("textarea").val($("textarea").val() + " ");
+			} else {
+				$("textarea").val($("textarea").val() + $(e.currentTarget).text());
+			}
+			this.compileProgram();
+		},
+		
+		compileProgram:function() {
+			// build the beginning of the user input source to be given to the parser
+			var programInput = this.model.get("name") + " ecrit par Bob pour Alice ";
+			programInput += $("textarea").val();
 			
+			// clear the error span
+			$(".expected-elements").html("");
+			
+			try {
+				var ast = this.grammar.parse(programInput);
+				$(".alert-danger").addClass("hide");
+				$(".alert-success").removeClass("hide");
+				
+				this.model.set("source", ast);
+				this.model.set("userInputSource", $("textarea").val());
+			} catch(e) {
+				$(".alert-danger").removeClass("hide");
+				$(".alert-success").addClass("hide");
+				
+				e.expected.forEach(function(nextPossibility) {
+					$(".expected-elements").append("<button class='btn btn-default completion-button'>" + nextPossibility.replace(/"/g, "") + "</button>&nbsp;");
+				});
+			}
 		},
 		
 		/**
 		 * Render the editor view
 		 */
 		render:function() {
-			console.log(this.model);
-			
 			// render the editor with the program
 			this.$el.html(this.tplEditor({
 				program : this.model

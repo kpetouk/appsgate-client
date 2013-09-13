@@ -1,4 +1,4 @@
-<a href="#programs/<%= program.get('name') %>" class="list-group-item <% if (active) { %> active <% } %>">
+<a href="#programs/<%= program.get('id') %>" class="list-group-item <% if (active) { %> active <% } %>" id="side-<%= program.get('id') %>">
 	<!-- header -->
 	<p class="list-group-item-heading lead">
 		<% if (program.get("name") !== "") { %>
@@ -13,8 +13,20 @@
 		<ul class="list-unstyled">
 			<li>
 				Statut
-				<span class="pull-right label label-success">
-					Actif
+				<span class="pull-right">
+					<% if (program.get("runningState") === "DEPLOYED") { %>
+						<button type="button" id="<%= program.get('id') %>" class="btn btn-sm btn-info start-program-button"><i class="glyphicon glyphicon-play"></i></button>
+					<% } else if (program.get("runningState") === "STARTED") { %>
+						<button type="button" id="<%= program.get('id') %>" class="btn btn-sm btn-info stop-program-button"><i class="glyphicon glyphicon-stop"></i></button>
+					<!-- <% } else if (program.get("runningState") === "PAUSED") { %>
+						<button type="button" id="<%= program.get('id') %>" class="btn btn-sm btn-info stop-program-button"><i class="glyphicon glyphicon-stop"></i></button>
+						<button type="button" id="<%= program.get('id') %>" class="btn btn-sm btn-info start-program-button"><i class="glyphicon glyphicon-play"></i></button> -->
+					<% } else if (program.get("runningState") === "STOPPED") { %>
+						<button type="button" id="<%= program.get('id') %>" class="btn btn-sm btn-info start-program-button"><i class="glyphicon glyphicon-play"></i></button>
+					<% } else if (program.get("runningState") === "FAILED") { %>
+						<span class="label label-danger">Erreur</span>
+						<button type="button" id="<%= program.get('id') %>" class="btn btn-sm btn-info start-program-button"><i class="glyphicon glyphicon-play"></i></button>
+					<% } %>
 				</span>
 			</li>
 		</ul>

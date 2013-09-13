@@ -7,11 +7,11 @@
 
 	<div class="pull-right">
 		<% if (program.get("daemon")) { %>
-			<button type="button" class="btn btn-info">
+			<button type="button" class="btn btn-info daemon-program-button checked">
 				<i class="glyphicon glyphicon-check"></i> Daemon
 			</button>
 		<% } else { %>
-			<button type="button" class="btn btn-default">
+			<button type="button" class="btn btn-default daemon-program-button unchecked">
 				<i class="glyphicon glyphicon-unchecked"></i> Daemon
 			</button>
 		<% } %>
@@ -27,4 +27,14 @@
 	</div>
 </div>
 
-<textarea class="form-control" rows="20"><%= JSON.stringify(program.get("source")) %></textarea>
+<div class="alert alert-success hide">
+	Programme valide
+</div>
+
+<div class="alert alert-danger hide">
+	Programme invalide
+</div>
+
+<textarea class="form-control" rows="20"><%= program.get("userInputSource") %></textarea>
+<br>
+<div class="expected-elements"></div>
