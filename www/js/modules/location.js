@@ -210,7 +210,13 @@ define([
 		sync:function(method, model) {
 			switch (method) {
 				case "create":
-					model.set("id", Math.round(Math.random() * 1000));
+					// create an id to the place
+					var id;
+					do {
+						id = "place-" + Math.round(Math.random() * 10000).toString();
+					} while (locations.where({ id : id }).length > 0);
+					model.set("id", id);
+					
 					this.remoteCall("newPlace", [{ type : "JSONObject", value : model.toJSON() }]);
 					break;
 				case "delete":
