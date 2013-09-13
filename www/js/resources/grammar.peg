@@ -1,5 +1,5 @@
 start = nodeProgram
-nodeProgram = pgmName:programName " ecrit par " author:userName (" pour " target:target)? ("\n")? seqRules:seqRules
+nodeProgram = pgmName:programName sep "ecrit par" sep author:userName sep ("pour" sep target:target sep)? seqRules:seqRules
 {
 	var ast = {};
 	ast.programName = pgmName;
@@ -53,7 +53,7 @@ seqAndRules = rule1:rule rule2:(opAndRule rule)*
 rule = nodeWhen / nodeIf / nodeAction
 
 /* basic nodes */
-nodeWhen = "au moment ou " seqEvents:seqEvents (opEventBool expBool)* " alors " seqRules:seqRules "fin de au moment ou"
+nodeWhen = "au moment ou" sep seqEvents:seqEvents (opEventBool expBool)* sep "alors" sep seqRules:seqRules sep "fin de au moment ou"
 {
 	var nodeWhen = {};
 	nodeWhen.type = "NodeWhen";
@@ -62,7 +62,7 @@ nodeWhen = "au moment ou " seqEvents:seqEvents (opEventBool expBool)* " alors " 
 	return nodeWhen;
 }
 
-nodeIf = "si " expBool:expBool " alors " seqRulesTrue:seqRules seqRulesFalse:(" sinon " seqRules)? "fin du si"
+nodeIf = "si" sep expBool:expBool sep "alors" sep seqRulesTrue:seqRules seqRulesFalse:(sep "sinon" sep seqRules)? sep "fin du si"
 {
 	var nodeIf = {};
 	nodeIf.type = "NodeIf";
@@ -158,7 +158,8 @@ status = {{listOfStatus}}
 
 /* programs */
 actionProgram = actionProgramActivate / actionProgramDisactivate
-actionProgramActivate = "activer " programName:P
+actionProgramActivate /* "<button class='btn btn-default'>activer</button>" */
+	= "activer" sep programName:P
 {
 	var nodeAction = {};
 	nodeAction.type = "NodeAction";
@@ -170,7 +171,8 @@ actionProgramActivate = "activer " programName:P
 	return nodeAction;
 }
 
-actionProgramDisactivate = "desactiver " programName:P
+actionProgramDisactivate /* "<button class='btn btn-default'>desactiver</button>" */
+	= "desactiver" sep programName:P
 {
 	var nodeAction = {};
 	nodeAction.type = "NodeAction";
@@ -182,14 +184,14 @@ actionProgramDisactivate = "desactiver " programName:P
 	return nodeAction;
 }
 
-eventProgram = P " est active" / P " est desactive"
-statusProgram = P " est actif" / P " est inactif"
+eventProgram = P sep "est active" / P sep "est desactive"
+statusProgram = P sep "est actif" / P sep "est inactif"
 P = {{listOfPrograms}}
 
 /* operators */
 opEvent = " et "
 opEventBool = " et "
-opAndRule = " et apres"
+opAndRule = " et "
 opThenRule = " puis "
 opOrBool = " ou "
 opAndBool = " et "
@@ -205,3 +207,7 @@ string "Chaine de caract&egrave;res"
 boolean = true / false
 true = "vrai" { return true; }
 false = "faux" { return false; }
+
+/* separators */
+sep "espace"
+	= ' '+

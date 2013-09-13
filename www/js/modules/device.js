@@ -43,7 +43,7 @@ define([
 			statusAnchor	: "statusTemperature",
 			listAnchor		: "{{listOfTemperatureSensors}}",
 			rules			: [
-				"eventTemperature = temperatureName:T ' indique ' temperature:number ' degres'\n\
+				"eventTemperature = temperatureName:T sep 'indique' sep temperature:number sep 'degres'\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = 'NodeEvent';\n\
@@ -54,7 +54,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}",
-				"statusTemperature = temperatureName:T ' indique ' temperature:number ' degres'\n\
+				"statusTemperature = temperatureName:T sep 'indique' sep temperature:number sep 'degres'\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = 'NodeRelationBool';\n\
@@ -80,7 +80,7 @@ define([
 			statusAnchor	: "statusIllumination",
 			listAnchor		: "{{listOfIlluminationSensors}}",
 			rules			: [
-				"eventIllumination = illuminationName:I ' indique ' illumination:number ' Lux'\n\
+				"eventIllumination = illuminationName:I sep 'indique' sep illumination:number sep 'Lux'\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = 'NodeEvent';\n\
@@ -91,7 +91,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}",
-				"statusIllumination = illuminationName:L ' indique ' illumination:number ' Lux'\n\
+				"statusIllumination = illuminationName:L sep 'indique' sep illumination:number sep 'Lux'\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = 'NodeRelationBool';\n\
@@ -117,7 +117,7 @@ define([
 			listAnchor		: "{{listOfSwitches}}",
 			rules			: [
 				"eventSwitch = pushedSwitchEvent / releasedSwitchEvent",
-				"pushedSwitchEvent = 'on appuie sur ' switchName:S\n\
+				"pushedSwitchEvent = 'on appuie sur' sep switchName:S\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = 'NodeEvent';\n\
@@ -128,7 +128,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}",
-				"releasedSwitchEvent = 'on relache ' switchName:S\n\
+				"releasedSwitchEvent = 'on relache' sep switchName:S\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = 'NodeEvent';\n\
@@ -148,7 +148,7 @@ define([
 			listAnchor		: "{{listOfContactSensors}}",
 			rules			: [
 				"eventContact = openedContactEvent / assembledContactEvent / closedContactEvent / disassembledContactEvent",
-				"openedContactEvent = 'on ouvre ' contactName:C\n\
+				"openedContactEvent = 'on ouvre' sep contactName:C\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = {};\n\
@@ -159,7 +159,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}",
-				"assembledContactEvent = 'le capteur de contact de ' contactName:C ' se desassemble'\n\
+				"assembledContactEvent = 'le capteur de contact de' sep contactName:C sep 'se desassemble'\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = 'NodeEvent';\n\
@@ -170,7 +170,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}",
-				"closedContactEvent = 'on ferme ' contactName:C\n\
+				"closedContactEvent = 'on ferme' sep contactName:C\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = 'NodeEvent';\n\
@@ -181,7 +181,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}",
-				"disassembledContactEvent = 'le capteur de contact de ' C ' s assemble'\n\
+				"disassembledContactEvent = 'le capteur de contact de' sep C sep 's assemble'\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = 'NodeEvent';\n\
@@ -193,7 +193,7 @@ define([
 					return nodeEvent;\n\
 				}",
 				"statusContact = closedContactStatus / assembledContactStatus / openedContactStatus / disassembledContactStatus",
-				"closedContactStatus = contactName:C ' est ferme'\n\
+				"closedContactStatus = contactName:C sep 'est ferme'\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = 'NodeRelationBool';\n\
@@ -211,7 +211,7 @@ define([
 					\n\
 					return nodeRelationBool;\n\
 				}",
-				"assembledContactStatus = 'le capteur de contact de ' contactName:C ' est assemble'\n\
+				"assembledContactStatus = 'le capteur de contact de' sep contactName:C sep 'est assemble'\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = 'NodeRelationBool';\n\
@@ -229,7 +229,7 @@ define([
 					\n\
 					return nodeRelationBool;\n\
 				}",
-				"openedContactStatus = contactName:C ' est ouvert'\n\
+				"openedContactStatus = contactName:C sep 'est ouvert'\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = 'NodeRelationBool';\n\
@@ -247,7 +247,7 @@ define([
 					\n\
 					return nodeRelationBool;\n\
 				}",
-				"disassembledContactStatus = 'le capteur de contact de ' contactName:C ' est desassemble'\n\
+				"disassembledContactStatus = 'le capteur de contact de' sep contactName:C sep 'est desassemble'\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = 'NodeRelationBool';\n\
@@ -274,7 +274,7 @@ define([
 			listAnchor		: "{{listOfKeyCardReaders}}",
 			rules			: [
 				"eventKeyCardReader = insertedKCREvent / removedKCREvent",
-				"insertedKCREvent = 'on insere une carte dans ' KCRName:KCR\n\
+				"insertedKCREvent = 'on insere une carte dans' sep KCRName:KCR\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = 'NodeEvent';\n\
@@ -285,7 +285,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}",
-				"removedKCREvent = 'on retire une carte de ' KCRName:KCR\n\
+				"removedKCREvent = 'on retire une carte de' sep KCRName:KCR\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = 'NodeEvent';\n\
@@ -297,7 +297,7 @@ define([
 					return nodeEvent;\n\
 				}",
 				"statusKeyCardReader = cardInsertedKCRStatus / cardRemovedKCRStatus",
-				"cardInsertedKCRStatus = 'une carte est inseree dans ' KCRName:KCR\n\
+				"cardInsertedKCRStatus = 'une carte est inseree dans' sep KCRName:KCR\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = 'NodeRelationBool';\n\
@@ -315,7 +315,7 @@ define([
 					\n\
 					return nodeRelationBool;\n\
 				}",
-				"cardRemovedKCRStatus = 'aucune carte n est inseree dans ' KCRName:KCR\n\
+				"cardRemovedKCRStatus = 'aucune carte n est inseree dans' sep KCRName:KCR\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = 'NodeRelationBool';\n\
@@ -342,10 +342,10 @@ define([
 			actionAnchor	: "actionPlug",
 			listAnchor		: "{{listOfPlugs}}",
 			rules			: [
-				"eventPlug = 'on allume ' PL / 'on eteint ' PL",
-				"statusPlug = PL ' est allume' / PL ' est eteint'",
+				"eventPlug = 'on allume' sep PL / 'on eteint' sep PL",
+				"statusPlug = PL sep 'est allume' / PL sep 'est eteint'",
 				"actionPlug = onPlugAction / offPlugAction",
-				"onPlugAction = 'allumer ' plugName:PL\n\
+				"onPlugAction = 'allumer' sep plugName:PL\n\
 				{\n\
 					var nodeAction = {};\n\
 					nodeAction.type = 'nodeAction';\n\
@@ -355,7 +355,7 @@ define([
 					\n\
 					return nodeAction;\n\
 				}",
-				"offPlugAction = 'eteindre ' plugName:PL\n\
+				"offPlugAction = 'eteindre' sep plugName:PL\n\
 				{\n\
 					var nodeAction = {};\n\
 					nodeAction.type = 'nodeAction';\n\
@@ -374,10 +374,10 @@ define([
 			actionAnchor	: "actionLamp",
 			listAnchor		: "{{listOfLamps}}",
 			rules			: [
-				"eventLamp	= 'on allume ' L / 'on eteint ' L",
-				"statusLamp	= L ' est allumee' / L ' est eteinte'",
+				"eventLamp	= 'on allume' sep L / 'on eteint' sep L",
+				"statusLamp	= L sep 'est allumee' / L sep 'est eteinte'",
 				"actionLamp = onLampAction / offLampAction",
-				"onLampAction = 'allumer ' lampName:L\n\
+				"onLampAction = 'allumer' sep lampName:L\n\
 				{\n\
 					var nodeAction = {};\n\
 					nodeAction.type = 'nodeAction';\n\
@@ -387,7 +387,7 @@ define([
 					\n\
 					return nodeAction;\n\
 				}",
-				"offLampAction = 'eteindre ' lampName:L\n\
+				"offLampAction = 'eteindre' sep lampName:L\n\
 				{\n\
 					var nodeAction = {};\n\
 					nodeAction.type = 'nodeAction';\n\
