@@ -286,9 +286,9 @@ define([
 
 			// listen to the event when a place has been updated
 			dispatcher.on("updatePlace", function(place) {
-				locations.get(place.id).set(place);
+				locations.get(place.id).set("name", place.name);
 			});
-			
+
 			// listen to the event when a place has been removed
 			dispatcher.on("removePlace", function(placeId) {
 				var removedPlace = locations.get(placeId);
