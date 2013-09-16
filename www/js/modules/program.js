@@ -45,6 +45,7 @@ define([
 		// default values
 		defaults: {
 			runningState : "DEPLOYED",
+			userInputSource : "",
 			source : {
 				programName : "",
 				seqParameters : [],
@@ -409,7 +410,7 @@ define([
 		 * @constructor
 		 */
 		initialize:function() {
-			this.grammar = new Grammar();
+			window.grammar = new Grammar();
 		},
 		
 		/**
@@ -468,13 +469,20 @@ define([
 		compileProgram:function() {
 			// build the beginning of the user input source to be given to the parser
 			var programInput = this.model.get("name") + " ecrit par Bob pour Alice ";
+			if (this.model.get("daemon") === true || this.model.get("daemon") === "true") {
+				programInput += "daemon ";
+			} else {
+				programInput += "notDaemon ";
+			}
 			programInput += $("textarea").val();
+			console.log(programInput);
 			
 			// clear the error span
 			$(".expected-elements").html("");
 			
 			try {
-				var ast = this.grammar.parse(programInput);
+				var ast = grammar.parse(programInput);
+				console.log(ast);
 				$(".alert-danger").addClass("hide");
 				$(".alert-success").removeClass("hide");
 				

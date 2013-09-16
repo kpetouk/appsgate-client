@@ -6,7 +6,7 @@
 	<% } %>
 
 	<div class="pull-right">
-		<% if (program.get("daemon")) { %>
+		<% if (program.get("daemon") === true || program.get("daemon") === "true") { %>
 			<button type="button" class="btn btn-info daemon-program-button checked">
 				<i class="glyphicon glyphicon-check"></i> Daemon
 			</button>

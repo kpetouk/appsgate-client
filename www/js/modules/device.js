@@ -48,7 +48,7 @@ define([
 					var nodeEvent = {};\n\
 					nodeEvent.type = 'NodeEvent';\n\
 					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.where({ name : temperatureName })[0].get('id');\n\
+					nodeEvent.sourceId = devices.findWhere({ name : temperatureName }).get('id');\n\
 					nodeEvent.eventName = 'value';\n\
 					nodeEvent.eventValue = temperature;\n\
 					\n\
@@ -61,8 +61,9 @@ define([
 					nodeRelationBool.operator = '==';\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
-					nodeRelationBool.leftOperand.deviceId = devices.where({ name : temperatureName })[0].get('id');\n\
-					nodeRelationBool.leftOperand.methodName = getTemperature;\n\
+					nodeRelationBool.leftOperand.targetType = 'device';\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : temperatureName }).get('id');\n\
+					nodeRelationBool.leftOperand.methodName = 'getTemperature';\n\
 					nodeRelationBool.leftOperand.returnType = 'number';\n\
 					nodeRelationBool.leftOperand.args = [];\n\
 					\n\
@@ -85,20 +86,21 @@ define([
 					var nodeEvent = {};\n\
 					nodeEvent.type = 'NodeEvent';\n\
 					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.where({ name : illuminationName })[0].get('id');\n\
+					nodeEvent.sourceId = devices.findWhere({ name : illuminationName }).get('id');\n\
 					nodeEvent.eventName = 'value';\n\
 					nodeEvent.eventValue = illumination;\n\
 					\n\
 					return nodeEvent;\n\
 				}",
-				"statusIllumination = illuminationName:L sep 'indique' sep illumination:number sep 'Lux'\n\
+				"statusIllumination = illuminationName:I sep 'indique' sep illumination:number sep 'Lux'\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = 'NodeRelationBool';\n\
 					nodeRelationBool.operator = '==';\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
-					nodeRelationBool.leftOperand.deviceId = devices.where({ name : illuminationName })[0].get('id');\n\
+					nodeRelationBool.leftOperand.targetType = 'device';\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : illuminationName }).get('id');\n\
 					nodeRelationBool.leftOperand.methodName = 'getIllumination';\n\
 					nodeRelationBool.leftOperand.returnType = 'number';\n\
 					nodeRelationBool.leftOperand.args = [];\n\
@@ -122,7 +124,7 @@ define([
 					var nodeEvent = {};\n\
 					nodeEvent.type = 'NodeEvent';\n\
 					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.where({ name : switchName })[0].get('id');\n\
+					nodeEvent.sourceId = devices.findWhere({ name : switchName }).get('id');\n\
 					nodeEvent.eventName = 'buttonStatus';\n\
 					nodeEvent.eventValue = 'true';\n\
 					\n\
@@ -133,7 +135,7 @@ define([
 					var nodeEvent = {};\n\
 					nodeEvent.type = 'NodeEvent';\n\
 					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.where({ name : switchName })[0].get('id');\n\
+					nodeEvent.sourceId = devices.findWhere({ name : switchName }).get('id');\n\
 					nodeEvent.eventName = 'buttonStatus';\n\
 					nodeEvent.eventValue = 'false';\n\
 					\n\
@@ -153,18 +155,18 @@ define([
 					var nodeEvent = {};\n\
 					nodeEvent.type = {};\n\
 					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.where({ name : contactName })[0].get('id');\n\
+					nodeEvent.sourceId = devices.findWhere({ name : contactName }).get('id');\n\
 					nodeEvent.eventName = 'contact';\n\
 					nodeEvent.eventValue = 'false';\n\
 					\n\
 					return nodeEvent;\n\
 				}",
-				"assembledContactEvent = 'le capteur de contact de' sep contactName:C sep 'se desassemble'\n\
+				"disassembledContactEvent = 'le capteur de contact de' sep contactName:C sep 'se desassemble'\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = 'NodeEvent';\n\
 					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.where({ name : contactName })[0].get('id');\n\
+					nodeEvent.sourceId = devices.findWhere({ name : contactName }).get('id');\n\
 					nodeEvent.eventName = 'contact';\n\
 					nodeEvent.eventValue = 'false';\n\
 					\n\
@@ -175,18 +177,18 @@ define([
 					var nodeEvent = {};\n\
 					nodeEvent.type = 'NodeEvent';\n\
 					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.where({ name : contactName })[0].get('id');\n\
+					nodeEvent.sourceId = devices.findWhere({ name : contactName }).get('id');\n\
 					nodeEvent.eventName = 'contact';\n\
 					nodeEvent.eventValue = 'true';\n\
 					\n\
 					return nodeEvent;\n\
 				}",
-				"disassembledContactEvent = 'le capteur de contact de' sep C sep 's assemble'\n\
+				"assembledContactEvent = 'le capteur de contact de' sep contactName:C sep 's assemble'\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = 'NodeEvent';\n\
 					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.get({ name : contactName })[0].get('id');\n\
+					nodeEvent.sourceId = devices.findWhere({ name : contactName }).get('id');\n\
 					nodeEvent.eventName = 'contact';\n\
 					nodeEvent.eventValue = 'true';\n\
 					\n\
@@ -200,7 +202,8 @@ define([
 					nodeRelationBool.operator = '==';\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
-					nodeRelationBool.leftOperand.deviceId = devices.where({ name : contactName })[0].get('id');\n\
+					nodeRelationBool.leftOperand.targetType = 'device';\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : contactName }).get('id');\n\
 					nodeRelationBool.leftOperand.methodName = 'getContactStatus';\n\
 					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
 					nodeRelationBool.leftOperand.args = [];\n\
@@ -218,7 +221,8 @@ define([
 					nodeRelationBool.operator = '==';\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
-					nodeRelationBool.leftOperand.deviceId = devices.where({ name : contactName })[0].get('id');\n\
+					nodeRelationBool.leftOperand.targetType = 'device';\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : contactName }).get('id');\n\
 					nodeRelationBool.leftOperand.methodName = 'getContactStatus';\n\
 					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
 					nodeRelationBool.leftOperand.args = [];\n\
@@ -236,7 +240,8 @@ define([
 					nodeRelationBool.operator = '==';\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
-					nodeRelationBool.leftOperand.deviceId = devices.where({ name : contactName })[0].get('id');\n\
+					nodeRelationBool.leftOperand.targetType = 'device';\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : contactName }).get('id');\n\
 					nodeRelationBool.leftOperand.methodName = 'getContactStatus';\n\
 					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
 					nodeRelationBool.leftOperand.args = [];\n\
@@ -254,7 +259,8 @@ define([
 					nodeRelationBool.operator = '==';\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
-					nodeRelationBool.leftOperand.deviceId = devices.where({ name : contactName })[0].get('id');\n\
+					nodeRelationBool.leftOperand.targetType = 'device';\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : contactName }).get('id');\n\
 					nodeRelationBool.leftOperand.methodName = 'getContactStatus';\n\
 					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
 					nodeRelationBool.leftOperand.args = [];\n\
@@ -279,7 +285,7 @@ define([
 					var nodeEvent = {};\n\
 					nodeEvent.type = 'NodeEvent';\n\
 					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.where({ name : KCRName })[0].get('id');\n\
+					nodeEvent.sourceId = devices.findWhere({ name : KCRName }).get('id');\n\
 					nodeEvent.eventName = 'inserted';\n\
 					nodeEvent.eventValue = 'true';\n\
 					\n\
@@ -290,7 +296,7 @@ define([
 					var nodeEvent = {};\n\
 					nodeEvent.type = 'NodeEvent';\n\
 					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.where({ name : KCRName }).get('id');\n\
+					nodeEvent.sourceId = devices.findWhere({ name : KCRName }).get('id');\n\
 					nodeEvent.eventName = 'inserted';\n\
 					nodeEvent.eventValue = 'false';\n\
 					\n\
@@ -304,7 +310,8 @@ define([
 					nodeRelationBool.operator = '==';\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
-					nodeRelationBool.leftOperand.deviceId = devices.where({ name : KCRName })[0].get('id');\n\
+					nodeRelationBool.leftOperand.targetType = 'device';\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : KCRName }).get('id');\n\
 					nodeRelationBool.leftOperand.methodName = 'getKeyCardSensorStatus';\n\
 					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
 					nodeRelationBool.leftOperand.args = [];\n\
@@ -322,14 +329,15 @@ define([
 					nodeRelationBool.operator = '==';\n\
 					\n\
 					nodeRelationBool.leftOperator = {};\n\
-					nodeRelationBool.leftOperator.deviceId = devices.where({ name : KCRName })[0].get('id');\n\
-					nodeRelationBool.leftOperator.methodName = 'getKeyCardSensorStatus';\n\
-					nodeRelationBool.leftOperator.returnType = 'boolean';\n\
-					nodeRelationBool.leftOperator.args = [];\n\
+					nodeRelationBool.leftOperand.targetType = 'device';\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : KCRName }).get('id');\n\
+					nodeRelationBool.leftOperand.methodName = 'getKeyCardSensorStatus';\n\
+					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
+					nodeRelationBool.leftOperand.args = [];\n\
 					\n\
-					nodeRelationBool.rightOperator = {};\n\
-					nodeRelationBool.rightOperator.type = 'boolean';\n\
-					nodeRelationBool.rightOperator.value = 'false';\n\
+					nodeRelationBool.rightOperand = {};\n\
+					nodeRelationBool.rightOperand.type = 'boolean';\n\
+					nodeRelationBool.rightOperand.value = 'false';\n\
 					\n\
 					return nodeRelationBool;\n\
 				}",
@@ -348,8 +356,8 @@ define([
 				"onPlugAction = 'allumer' sep plugName:PL\n\
 				{\n\
 					var nodeAction = {};\n\
-					nodeAction.type = 'nodeAction';\n\
-					nodeAction.deviceId = devices.where({ name : plugName })[0].get('id');\n\
+					nodeAction.type = 'NodeAction';\n\
+					nodeAction.deviceId = devices.findWhere({ name : plugName }).get('id');\n\
 					nodeAction.methodName = 'on';\n\
 					nodeAction.args = [];\n\
 					\n\
@@ -358,8 +366,8 @@ define([
 				"offPlugAction = 'eteindre' sep plugName:PL\n\
 				{\n\
 					var nodeAction = {};\n\
-					nodeAction.type = 'nodeAction';\n\
-					nodeAction.deviceId = devices.where({ name : plugName })[0].get('id');\n\
+					nodeAction.type = 'NodeAction';\n\
+					nodeAction.deviceId = devices.findWhere({ name : plugName }).get('id');\n\
 					nodeAction.methodName = 'off';\n\
 					nodeAction.args = [];\n\
 					\n\
@@ -380,18 +388,20 @@ define([
 				"onLampAction = 'allumer' sep lampName:L\n\
 				{\n\
 					var nodeAction = {};\n\
-					nodeAction.type = 'nodeAction';\n\
-					nodeAction.deviceId = devices.where({ name : lampName })[0].get('id');\n\
+					nodeAction.type = 'NodeAction';\n\
+					nodeAction.targetType = 'device';\n\
+					nodeAction.targetId = devices.findWhere({ name : lampName }).get('id');\n\
 					nodeAction.methodName = 'On';\n\
 					nodeAction.args = [];\n\
 					\n\
 					return nodeAction;\n\
-				}",
+				}", 
 				"offLampAction = 'eteindre' sep lampName:L\n\
 				{\n\
 					var nodeAction = {};\n\
-					nodeAction.type = 'nodeAction';\n\
-					nodeAction.deviceId = devices.where({ name : lampName })[0].get('id');\n\
+					nodeAction.type = 'NodeAction';\n\
+					nodeAction.targetType = 'device';\n\
+					nodeAction.targetId = devices.findWhere({ name : lampName }).get('id');\n\
 					nodeAction.methodName = 'Off';\n\
 					nodeAction.args = [];\n\
 					\n\
@@ -467,28 +477,30 @@ define([
 		 */
 		initialize: function() {
 			var self = this;
-
-			// when the user updated the name, send the notification to the server
-			this.on("change:name", function(model, name) {
-				// build the message
-				var messageJSON = {
-					method	: "setUserObjectName",
-					args	: [
-						{ type : "String", value : self.get("id") },
-						{ type : "String", value : "" },
-						{ type : "String", value : name }
-					]
-				};
-				
-				// send the message
-				communicator.sendMessage(messageJSON);
-			});
 			
 			// each device listens to the event whose id corresponds to its own id. This ensures to
 			// receive only relevant events
 			dispatcher.on(this.get("id"), function(updatedVariableJSON) {
 				self.set(updatedVariableJSON.varName, updatedVariableJSON.value);
 			});
+		},
+		
+		/**
+		 * Send the name of the device to the server
+		 */
+		sendName:function() {
+			// build the message
+			var messageJSON = {
+				method	: "setUserObjectName",
+				args	: [
+					{ type : "String", value : this.get("id") },
+					{ type : "String", value : "" },
+					{ type : "String", value : this.get("name") }
+				]
+			};
+
+			// send the message
+			communicator.sendMessage(messageJSON);
 		},
 		
 		/**
@@ -518,7 +530,9 @@ define([
 				switch (method) {
 					case "update":
 						_.keys(model.changedAttributes()).forEach(function(attribute) {
-							if (attribute === "plugState") {
+							if (attribute === "name") {
+								model.sendName();
+							} else if (attribute === "plugState") {
 								model.sendPlugState();
 							} else if (attribute === "value" && (model.get("type") === "7" || model.get("type") === 7)) {
 								model.sendValue();
@@ -526,7 +540,7 @@ define([
 								model.sendColor();
 							} else if (attribute === "saturation" && (model.get("type") === "7" || model.get("type") === 7)) {
 								model.sendSaturation();
-							}else if (attribute === "brightness" && (model.get("type") === "7" || model.get("type") === 7)) {
+							} else if (attribute === "brightness" && (model.get("type") === "7" || model.get("type") === 7)) {
 								model.sendBrightness();
 							}
 						});
@@ -1062,6 +1076,9 @@ define([
 					this.$el.find("#edit-device-modal").on("hidden.bs.modal", function() {
 						// set the new name to the device
 						self.model.set("name", $("#edit-device-modal input").val());
+						
+						// send the updates to the server
+						self.model.save();
 						
 						// move the device
 						locations.moveDevice(self.model.get("placeId"), destPlaceId, self.model.get("id"), true);

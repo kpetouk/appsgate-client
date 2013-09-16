@@ -1,11 +1,12 @@
 start = nodeProgram
-nodeProgram = pgmName:programName sep "ecrit par" sep author:userName sep ("pour" sep target:target sep)? seqRules:seqRules
+nodeProgram = pgmName:programName sep "ecrit par" sep author:userName sep ("pour" sep target:target sep)? daemon:daemonStatus sep seqRules:seqRules
 {
 	var ast = {};
 	ast.programName = pgmName;
 	ast.seqParameters = [];
 	ast.author = author;
-	ast.daemon = false;
+	ast.target = "alice";
+	ast.daemon = daemon;
 	ast.seqDefinitions = [];
 	ast.seqRules = seqRules;
 	return ast;
@@ -19,6 +20,17 @@ userName "Nom de l'auteur"
 
 target "Destinataire"
 	= chars:([^" \r\n]+) { return chars.join(""); }
+
+daemonStatus = isDaemon / isNotDaemon
+isDaemon = "daemon"
+{
+	return true;
+}
+
+isNotDaemon = "notDaemon"
+{
+	return false;
+}
 
 /* sequence of rules */
 seqRules = seqAndRules1:seqAndRules seqAndRules2:(opThenRule seqAndRules)*
@@ -68,8 +80,8 @@ nodeIf = "si" sep expBool:expBool sep "alors" sep seqRulesTrue:seqRules seqRules
 	nodeIf.type = "NodeIf";
 	nodeIf.expBool = expBool;
 	nodeIf.seqRulesTrue = seqRulesTrue;
-	if (typeof seqRulesFalse !== "undefined") {
-		nodeIf.seqRulesFalse = seqRulesFalse[1];
+	if (seqRulesFalse !== "") {
+		nodeIf.seqRulesFalse = seqRulesFalse[3];
 	} else {
 		nodeIf.seqRulesFalse = [];
 	}
@@ -80,7 +92,20 @@ nodeIf = "si" sep expBool:expBool sep "alors" sep seqRulesTrue:seqRules seqRules
 nodeAction = {{listOfActions}}
 
 /* events */
-seqEvents = event (opEvent event)*
+seqEvents = event1:event event2:(opEvent event)*
+{
+	var nodeSeqEvents = new Array();
+	nodeSeqEvents.push(event1);
+
+	if (typeof event2 !== "undefined") {
+		event2.forEach(function(event) {
+			nodeSeqEvents.push(event2[1]);
+		});
+	}
+
+	return nodeSeqEvents;
+}
+
 event = {{listOfEvents}}
 
 /* boolean and arithmetic expression */
