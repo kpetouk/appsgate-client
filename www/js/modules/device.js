@@ -328,7 +328,7 @@ define([
 					nodeRelationBool.type = 'NodeRelationBool';\n\
 					nodeRelationBool.operator = '==';\n\
 					\n\
-					nodeRelationBool.leftOperator = {};\n\
+					nodeRelationBool.leftOperand = {};\n\
 					nodeRelationBool.leftOperand.targetType = 'device';\n\
 					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : KCRName }).get('id');\n\
 					nodeRelationBool.leftOperand.methodName = 'getKeyCardSensorStatus';\n\
@@ -350,8 +350,69 @@ define([
 			actionAnchor	: "actionPlug",
 			listAnchor		: "{{listOfPlugs}}",
 			rules			: [
-				"eventPlug = 'on allume' sep PL / 'on eteint' sep PL",
-				"statusPlug = PL sep 'est allume' / PL sep 'est eteint'",
+				"eventPlug = turnedOnPlugEvent / turnedOffPlugEvent",
+				"turnedOnPlugEvent = 'on allume' sep plugName:PL\n\
+				{\n\
+					var nodeEvent = {};\n\
+					nodeEvent.type = 'NodeEvent';\n\
+					nodeEvent.sourceType = 'device';\n\
+					nodeEvent.sourceId = devices.findWhere({ name : plugName }).get('id');\n\
+					nodeEvent.eventName = 'plugState';\n\
+					nodeEvent.eventValue = 'true';\n\
+					\n\
+					return nodeEvent;\n\
+				}",
+				"turnedOffPlugEvent = 'on eteint' sep plugName:PL\n\
+				{\n\
+					var nodeEvent = {};\n\
+					nodeEvent.type = 'NodeEvent';\n\
+					nodeEvent.sourceType = 'device';\n\
+					nodeEvent.sourceId = devices.findWhere({ name : plugName }).get('id');\n\
+					nodeEvent.eventName = 'plugState';\n\
+					nodeEvent.eventValue = 'false';\n\
+					\n\
+					return nodeEvent;\n\
+				}",
+				"statusPlug = isOnPlugStatus / isOffPlugStatus",
+				"isOnPlugStatus = plugName:PL sep 'est allume'\n\
+				{\n\
+					var nodeRelationBool = {};\n\
+					nodeRelationBool.type = 'NodeRelationBool';\n\
+					nodeRelationBool.operator = '==';\n\
+					\n\
+					nodeRelationBool.leftOperand = {};\n\
+					nodeRelationBool.leftOperand.targetType = 'device';\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : plugName }).get('id');\n\
+					nodeRelationBool.leftOperand.methodName = 'getRelayState';\n\
+					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
+					nodeRelationBool.leftOperand.args = [];\n\
+					\n\
+					nodeRelationBool.rightOperand = {};\n\
+					nodeRelationBool.rightOperand.type = 'boolean';\n\
+					nodeRelationBool.rightOperand.value = 'true';\n\
+					\n\
+					return nodeRelationBool;\n\
+				}",
+				"isOffPlugStatus = plugName:PL sep 'est eteint'\n\
+				{\n\
+					var nodeRelationBool = {};\n\
+					nodeRelationBool.type = 'NodeRelationBool';\n\
+					nodeRelationBool.operator = '==';\n\
+					\n\
+					nodeRelationBool.leftOperand = {};\n\
+					nodeRelationBool.leftOperand.targetType = 'device';\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : plugName }).get('id');\n\
+					nodeRelationBool.leftOperand.methodName = 'getRelayState';\n\
+					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
+					nodeRelationBool.leftOperand.args = [];\n\
+					\n\
+					nodeRelationBool.rightOperand = {};\n\
+					nodeRelationBool.rightOperand.type = 'boolean';\n\
+					nodeRelationBool.rightOperand.value = 'false';\n\
+					\n\
+					return nodeRelationBool;\n\
+				}\n\
+				",
 				"actionPlug = onPlugAction / offPlugAction",
 				"onPlugAction = 'allumer' sep plugName:PL\n\
 				{\n\
@@ -382,8 +443,68 @@ define([
 			actionAnchor	: "actionLamp",
 			listAnchor		: "{{listOfLamps}}",
 			rules			: [
-				"eventLamp	= 'on allume' sep L / 'on eteint' sep L",
-				"statusLamp	= L sep 'est allumee' / L sep 'est eteinte'",
+				"eventLamp	= turnedOnLampEvent / turnedOffLampEvent",
+				"turnedOnLampEvent = 'on allume' sep lampName:L\n\
+				{\n\
+					var nodeEvent = {};\n\
+					nodeEvent.type = 'NodeEvent';\n\
+					nodeEvent.sourceType = 'device';\n\
+					nodeEvent.sourceId = devices.findWhere({ name : lampName }).get('id');\n\
+					nodeEvent.eventName = 'value';\n\
+					nodeEvent.eventValue = 'true';\n\
+					\n\
+					return nodeEvent;\n\
+				}",
+				"turnedOffLampEvent = 'on eteint' sep lampName:L\n\
+				{\n\
+					var nodeEvent = {};\n\
+					nodeEvent.type = 'NodeEvent';\n\
+					nodeEvent.sourceType = 'device';\n\
+					nodeEvent.sourceId = devices.findWhere({ name : lampName }).get('id');\n\
+					nodeEvent.eventName = 'value';\n\
+					nodeEvent.eventValue = 'false';\n\
+					\n\
+					return nodeEvent;\n\
+				}",
+				"statusLamp	= isOnLampStatus / isOffLampStatus",
+				"isOnLampStatus = lampName:L sep 'est allumee'\n\
+				{\n\
+					var nodeRelationBool = {};\n\
+					nodeRelationBool.type = 'NodeRelationBool';\n\
+					nodeRelationBool.operator = '==';\n\
+					\n\
+					nodeRelationBool.leftOperand = {};\n\
+					nodeRelationBool.leftOperand.targetType = 'device';\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : lampName }).get('id');\n\
+					nodeRelationBool.leftOperand.methodName = 'getCurrentState';\n\
+					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
+					nodeRelationBool.leftOperand.args = [];\n\
+					\n\
+					nodeRelationBool.rightOperand = {};\n\
+					nodeRelationBool.rightOperand.type = 'boolean';\n\
+					nodeRelationBool.rightOperand.value = 'true';\n\
+					\n\
+					return nodeRelationBool;\n\
+				}",
+				"isOffLampStatus = lampName:L sep 'est eteinte'\n\
+				{\n\
+					var nodeRelationBool = {};\n\
+					nodeRelationBool.type = 'NodeRelationBool';\n\
+					nodeRelationBool.operator = '==';\n\
+					\n\
+					nodeRelationBool.leftOperand = {};\n\
+					nodeRelationBool.leftOperand.targetType = 'device';\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : lampName }).get('id');\n\
+					nodeRelationBool.leftOperand.methodName = 'getCurrentState';\n\
+					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
+					nodeRelationBool.leftOperand.args = [];\n\
+					\n\
+					nodeRelationBool.rightOperand = {};\n\
+					nodeRelationBool.rightOperand.type = 'boolean';\n\
+					nodeRelationBool.rightOperand.value = 'false';\n\
+					\n\
+					return nodeRelationBool;\n\
+				}",
 				"actionLamp = onLampAction / offLampAction",
 				"onLampAction = 'allumer' sep lampName:L\n\
 				{\n\
