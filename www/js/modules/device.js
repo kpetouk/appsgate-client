@@ -811,7 +811,7 @@ define([
 		 * Send a message to the backend to update the attribute brightness
 		 */
 		sendBrightness:function() {
-			this.remoteCall("setColor", [{ type : "long", value : this.get("brightness") }]);
+			this.remoteCall("setBrightness", [{ type : "long", value : this.get("brightness") }]);
 		}
 	});
 
