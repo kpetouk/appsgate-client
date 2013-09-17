@@ -410,7 +410,7 @@ define([
 		 * @constructor
 		 */
 		initialize:function() {
-			window.grammar = new Grammar();
+			this.grammar = new Grammar();
 		},
 		
 		/**
@@ -475,13 +475,12 @@ define([
 				programInput += "notDaemon ";
 			}
 			programInput += $("textarea").val();
-			console.log(programInput);
 			
 			// clear the error span
 			$(".expected-elements").html("");
 			
 			try {
-				var ast = grammar.parse(programInput);
+				var ast = this.grammar.parse(programInput);
 				console.log(ast);
 				$(".alert-danger").addClass("hide");
 				$(".alert-success").removeClass("hide");
