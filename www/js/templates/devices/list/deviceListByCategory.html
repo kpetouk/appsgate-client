@@ -53,10 +53,10 @@
 									Ferm&eacute;
 								<% } %>
 							<% } else if (typeId === "4") { %>
-								<% if (s.get("value") === "true") { %>
-									Pas de carte
-								<% } else { %>
+								<% if (s.get("inserted") === "true") { %>
 									Carte ins&eacute;r&eacute;e
+								<% } else { %>
+									Pas de carte
 								<% } %>
 							<% } %>
 						</span>
