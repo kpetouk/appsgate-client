@@ -60,12 +60,12 @@ define([
 		 * Compute the average value of given sensors
 		 * 
 		 * @param sensors Array of sensors
-		 * @return Average value of the sensors if any, null otherwise
+		 * @return Average value of the sensors if any, undefined otherwise
 		 */
 		getAverageValue:function(sensors) {
 			// return null if there is no temperature sensors in the room
 			if (sensors.length === 0) {
-				return null;
+				return undefined;
 			}
 			
 			// compute the average value of the sensors
@@ -84,7 +84,7 @@ define([
 		/**
 		 * Compute the average temperature of the place from the temperature sensors in the place
 		 * 
-		 * @return Average temperature of the place if any temperature sensor, null otherwise
+		 * @return Average temperature of the place if any temperature sensor, undefined otherwise
 		 */
 		getAverageTemperature:function() {
 			return this.getAverageValue(this.getTemperatureSensors());
@@ -93,7 +93,7 @@ define([
 		/**
 		 * Compute the average illumination of the place from the illumination sensors in the place
 		 * 
-		 * @return Average illumination of the place if any illumination sensor, null otherwise
+		 * @return Average illumination of the place if any illumination sensor, undefined otherwise
 		 */
 		getAverageIllumination:function() {
 			return this.getAverageValue(this.getIlluminationSensors());
@@ -102,7 +102,7 @@ define([
 		/**
 		 * Compute the average consumption of the place from the plugs in the place
 		 * 
-		 * @return Average consumption of the place if any consumption sensor, null otherwise
+		 * @return Average consumption of the place if any consumption sensor, undefined otherwise
 		 */
 		getAverageConsumption:function() {
 			return this.getAverageValue(this.getPlugs());
