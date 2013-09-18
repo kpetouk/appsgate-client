@@ -262,7 +262,7 @@ define([
 			// add the location w/ id -1 for the unlocated devices
 			this.add({
 				id : "-1",
-				name: "Non localis&eacute;",
+				name: "Dispositifs non localis&eacute;s",
 				devices: []
 			});
 			
@@ -534,11 +534,20 @@ define([
 			
 			// for each location, add a menu item
 			locations.forEach(function(location) {
-				self.$el.find(".list-group").append(self.tplPlaceContainer({
-					place : location,
-					active	: Backbone.history.fragment.split("/")[1] === location.get("id") ? true : false
-				}));
+				if (location.get("id") !== "-1") {
+					self.$el.find(".list-group").append(self.tplPlaceContainer({
+						place : location,
+						active	: Backbone.history.fragment.split("/")[1] === location.get("id") ? true : false
+					}));
+				}
 			});
+			
+			// put the unlocated devices into a separate group list
+			this.$el.append(this.tpl());
+			$(this.$el.find(".list-group")[1]).append(this.tplPlaceContainer({
+				place	: locations.get("-1"),
+				active	: Backbone.history.fragment.split("/")[1] === "-1" ? true : false
+			}));
 			
 			// "add place" button to the side menu
 			this.$el.append(this.tplAddPlaceButton());
