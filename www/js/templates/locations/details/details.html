@@ -1,4 +1,4 @@
-<div class="lead">
+<div class="lead inline">
 	<% if (place.get("name") !== "") { %>
 		<%= place.get("name") %>
 	<% } else { %>
@@ -14,6 +14,34 @@
 			</button>
 		</div>
 	<% } %>
+</div>
+
+<!-- place status area -->
+<div class="panel panel-default">
+	<div class="panel-body">
+		Nombre de dispositifs
+		<span class="label label-info pull-right"><%= place.get("devices").length %></span>
+		<br>
+		Temp&eacute;rature
+		<% if (typeof place.getAverageTemperature() !== "undefined") { %>
+			<span class="label label-info pull-right"><%= place.getAverageTemperature() %>&deg;C</span>
+		<% } else { %>
+			<span class="label label-info pull-right">Non d&eacute;fini</span>
+		<% } %>
+		<br>
+		Luminosit&eacute
+		<% if (typeof place.getAverageIllumination() !== "undefined") { %>
+			<span class="label label-info pull-right"><%= place.getAverageIllumination() %> Lux</span>
+		<% } else { %>
+			<span class="label label-info pull-right">Non d&eacute;fini</span>
+		<% } %>
+		<br>
+		Consommation
+		<% if (typeof place.getAverageConsumption() !== "undefined") { %>
+			<span class="label label-info pull-right"><%= place.getAverageConsumption() %> W</span>
+		<% } else { %>
+			<span class="label label-info pull-right">Non d&eacute;fini</span>
+		<% } %>
 	</div>
 </div>
 
@@ -268,7 +296,7 @@
 					<em>Dispositif sans nom</em>
 				<% } %>
 				<div class="pull-right">
-					<span class="label label-info"><%= s.get("consumption") %> Watt</span>
+					<span class="label label-info"><%= s.get("consumption") %> W</span>
 					<% if (s.get("plugState") === "true" || s.get("plugState") === true) { %>
 					<button type="button" id="<%= s.get('id') %>" class="btn btn-info btn-sm toggle-plug-button">Eteindre</button>
 					<% } else { %>
