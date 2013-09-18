@@ -1,10 +1,10 @@
 <li class="list-group-item">
 	<strong>Etat</strong>
 	<div class="pull-right label label-info">
-		<% if (device.get("value") === "true") { %>
-			Ouvert
-		<% } else { %>
+		<% if (device.get("contact") === "true") { %>
 			Ferm&eacute;
+		<% } else { %>
+			Ouvert
 		<% } %>
 	</div>
 </li>

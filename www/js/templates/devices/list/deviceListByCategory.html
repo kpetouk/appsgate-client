@@ -46,11 +46,17 @@
 								<%= s.get("value") %>&deg;C
 							<% } else if (typeId === "1") { %>
 								<%= s.get("value") %> Lux
-							<% } else if (typeId === "2" || typeId === "3") { %>
+							<% } else if (typeId === "2") { %>
 								<% if (s.get("value") === "true") { %>
 									Ouvert
 								<% } else { %>
 									Ferm&eacute;
+								<% } %>
+							<% } else if (typeId === "3") { %>
+								<% if (s.get("contact") === "true") { %>
+									Ferm&eacute;
+								<% } else { %>
+									Ouvert
 								<% } %>
 							<% } else if (typeId === "4") { %>
 								<% if (s.get("inserted") === "true") { %>
