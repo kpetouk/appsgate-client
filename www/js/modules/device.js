@@ -26,14 +26,38 @@ define([
 
 	// global variables concerning the devices
 	window.deviceTypesName = {
-		0	: "Capteur de temp&eacute;rature",
-		1	: "Capteur de luminosit&eacute;",
-		2	: "Interrupteur",
-		3	: "Capteur de contact",
-		4	: "Lecteur de carte",
-		5	: "Capteur de mouvement",
-		6	: "Prise gigogne",
-		7	: "Lampe Philips Hue"
+		0 : {
+			singular	: "Capteur de temp&eacute;rature",
+			plural		: "Capteurs de temp&eacute;rature"
+		},
+		1 : {
+			singular	: "Capteur de luminosit&eacute;",
+			plural		: "Capteurs de luminosit&eacute;"
+		},
+		2 : {
+			singular	: "Interrupteur",
+			plural		: "Interrupteurs"
+		},
+		3 : {
+			singular	: "Capteur de contact",
+			plural		: "Capteurs de contact"
+		},
+		4 : {
+			singular	: "Lecteur de carte",
+			plural		: "Lecteurs de carte"
+		},
+		5 : {
+			singular	: "Capteur de mouvement",
+			plural		: "Capteurs de mouvement"
+		},
+		6 : {
+			singular	: "Prise gigogne",
+			plural		: "Prises gigogne"
+		},
+		7 : {
+			singular	: "Lampe Philips Hue",
+			plural		: "Lampes Philips Hue"
+		}
 	};
 	
 	// define the grammar for each type of device
@@ -1032,7 +1056,7 @@ define([
 			 _.forEach(_.keys(types), function(type) {
 				self.$el.append(self.tplDeviceContainer({
 					type	: type,
-					typeName	: deviceTypesName[type],
+					typeName	: deviceTypesName[type].plural,
 					devices		: types[type],
 					places		: locations,
 					unlocatedDevices: devices.filter(function(d) { return (d.get("placeId") === "-1" && d.get("type") === type) }),
@@ -1247,7 +1271,7 @@ define([
 					this.$el.html(this.template({
 						device: this.model,
 						sensorImg: "styles/img/sensors/temperature.jpg",
-						sensorType: deviceTypesName[0],
+						sensorType: deviceTypesName[0].singular,
 						locations: locations,
 						deviceDetails: this.tplTemperature
 					}));
@@ -1257,7 +1281,7 @@ define([
 					this.$el.html(this.template({
 						device: this.model,
 						sensorImg: "styles/img/sensors/illumination.jpg",
-						sensorType: deviceTypesName[1],
+						sensorType: deviceTypesName[1].singular,
 						locations: locations,
 						deviceDetails: this.tplIllumination
 					}));
@@ -1267,7 +1291,7 @@ define([
 					this.$el.html(this.template({
 						device: this.model,
 						sensorImg: "styles/img/sensors/doubleSwitch.jpg",
-						sensorType: deviceTypesName[2],
+						sensorType: deviceTypesName[2].singular,
 						locations: locations,
 						deviceDetails: this.tplSwitch
 					}));
@@ -1277,7 +1301,7 @@ define([
 					this.$el.html(this.template({
 						device: this.model,
 						sensorImg: "styles/img/sensors/contact.jpg",
-						sensorType: deviceTypesName[3],
+						sensorType: deviceTypesName[3].singular,
 						locations: locations,
 						deviceDetails: this.tplContact
 					}));
@@ -1287,7 +1311,7 @@ define([
 					this.$el.html(this.template({
 						device: this.model,
 						sensorImg: "styles/img/sensors/keycard.jpg",
-						sensorType: deviceTypesName[4],
+						sensorType: deviceTypesName[4].singular,
 						locations: locations,
 						deviceDetails: this.tplKeyCard
 					}));
@@ -1297,7 +1321,7 @@ define([
 					this.$el.html(this.template({
 						device: this.model,
 						sensorImg: "styles/img/sensors/plug.jpg",
-						sensorType: deviceTypesName[6],
+						sensorType: deviceTypesName[6].singular,
 						locations: locations,
 						deviceDetails: this.tplPlug
 					}));
@@ -1306,7 +1330,7 @@ define([
 				case 7: // phillips hue
 					this.$el.html(this.template({
 						device: this.model,
-						sensorType: deviceTypesName[7],
+						sensorType: deviceTypesName[7].singular,
 						locations: locations,
 						deviceDetails: this.tplPhillipsHue
 					}));
@@ -1454,7 +1478,7 @@ define([
 		render:function() {
 			this.$el.html(this.tpl({
 				typeId			: this.id,
-				deviceTypeName	: deviceTypesName[this.id],
+				deviceTypeName	: devices.getDevicesByType()[this.id].length === 1 ? deviceTypesName[this.id].singular : deviceTypesName[this.id].plural,
 				places			: locations
 			}));
 			

@@ -50,7 +50,11 @@
 <div class="panel panel-default">
 	<div class="panel-heading">
 		<h3 class="panel-title">
-			<%= deviceTypes[0] %>
+			<% if (place.getTemperatureSensors().length === 1) { %>
+				<%= deviceTypes[0].singular %>
+			<% } else { %>
+				<%= deviceTypes[0].plural %>
+			<% } %>
 			<span class="badge pull-right">
 				<%= place.getTemperatureSensors().length %>
 			</span>
@@ -87,7 +91,11 @@
 <div class="panel panel-default">
 	<div class="panel-heading">
 		<h3 class="panel-title">
-			<%= deviceTypes[1] %>
+			<% if (place.getIlluminationSensors().length === 1) { %>
+				<%= deviceTypes[1].singular %>
+			<% } else { %>
+				<%= deviceTypes[1].plural %>
+			<% } %>
 			<span class="badge pull-right">
 				<%= place.getIlluminationSensors().length %>
 			</span>
@@ -124,7 +132,11 @@
 <div class="panel panel-default">
 	<div class="panel-heading">
 		<h3 class="panel-title">
-			<%= deviceTypes[2] %>
+			<% if (place.getSwitches().length === 1) { %>
+				<%= deviceTypes[2].singular %>
+			<% } else { %>
+				<%= deviceTypes[2].plural %>
+			<% } %>
 			<span class="badge pull-right">
 				<%= place.getSwitches().length %>
 			</span>
@@ -165,7 +177,11 @@
 <div class="panel panel-default">
 	<div class="panel-heading">
 		<h3 class="panel-title">
-			<%= deviceTypes[3] %>
+			<% if (place.getContactSensors().length === 1) { %>
+				<%= deviceTypes[3].singular %>
+			<% } else { %>
+				<%= deviceTypes[3].plural %>
+			<% } %>
 			<span class="badge pull-right">
 				<%= place.getContactSensors().length %>
 			</span>
@@ -206,7 +222,11 @@
 <div class="panel panel-default">
 	<div class="panel-heading">
 		<h3 class="panel-title">
-			<%= deviceTypes[4] %>
+			<% if (place.getKeyCardReaders().length === 1) { %>
+				<%= deviceTypes[4].singular %>
+			<% } else { %>
+				<%= deviceTypes[4].plural %>
+			<% } %>
 			<span class="badge pull-right">
 				<%= place.getKeyCardReaders().length %>
 			</span>
@@ -246,7 +266,12 @@
 <% if (place.getMovementSensors().length > 0) { %>
 <div class="panel panel-default">
 	<div class="panel-heading">
-		<h3 class="panel-title"><%= deviceTypes[5] %>
+		<h3 class="panel-title">
+			<% if (place.getMovementSensors().length === 1) { %>
+				<%= deviceTypes[5].singular %>
+			<% } else { %>
+				<%= deviceTypes[5].plural %>
+			<% } %>
 			<span class="badge pull-right">
 				<%= place.getMovementSensors().length %>
 			</span>
@@ -281,7 +306,12 @@
 <% if (place.getPlugs().length > 0) { %>
 <div class="panel panel-default">
 	<div class="panel-heading">
-		<h3 class="panel-title"><%= deviceTypes[6] %>
+		<h3 class="panel-title">
+			<% if (place.getPlugs().length === 1) { %>
+				<%= deviceTypes[6].singular %>
+			<% } else { %>
+				<%= deviceTypes[6].plural %>
+			<% } %>
 			<span class="badge pull-right">
 				<%= place.getPlugs().length %>
 			</span>
@@ -322,7 +352,12 @@
 <% if (place.getPhilipsHueLamps().length > 0) { %>
 <div class="panel panel-default">
 	<div class="panel-heading">
-		<h3 class="panel-title"><%= deviceTypes[7] %>
+		<h3 class="panel-title">
+			<% if (place.getPhilipsHueLamps().length === 1) { %>
+				<%= deviceTypes[7].singular %>
+			<% } else { %>
+				<%= deviceTypes[7].plural %>
+			<% } %>
 			<div class="badge pull-right">
 				<%= place.getPhilipsHueLamps().length %>
 			</div>
