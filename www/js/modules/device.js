@@ -312,7 +312,7 @@ define([
 					nodeRelationBool.leftOperand = {};\n\
 					nodeRelationBool.leftOperand.targetType = 'device';\n\
 					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : KCRName }).get('id');\n\
-					nodeRelationBool.leftOperand.methodName = 'getKeyCardSensorStatus';\n\
+					nodeRelationBool.leftOperand.methodName = 'getCardState';\n\
 					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
 					nodeRelationBool.leftOperand.args = [];\n\
 					\n\
@@ -331,7 +331,7 @@ define([
 					nodeRelationBool.leftOperand = {};\n\
 					nodeRelationBool.leftOperand.targetType = 'device';\n\
 					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : KCRName }).get('id');\n\
-					nodeRelationBool.leftOperand.methodName = 'getKeyCardSensorStatus';\n\
+					nodeRelationBool.leftOperand.methodName = 'getCardState';\n\
 					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
 					nodeRelationBool.leftOperand.args = [];\n\
 					\n\
