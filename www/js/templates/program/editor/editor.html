@@ -1,40 +1,51 @@
-<div class="lead">
-	<% if (program.get("name") !== "") { %>
-		<%= program.get("name") %>
-	<% } else { %>
-		<em>Programme sans nom</em>
-	<% } %>
-
-	<div class="pull-right">
-		<% if (program.get("daemon") === true || program.get("daemon") === "true") { %>
-			<button type="button" class="btn btn-info daemon-program-button checked">
-				<i class="glyphicon glyphicon-check"></i> Daemon
-			</button>
-		<% } else { %>
-			<button type="button" class="btn btn-default daemon-program-button unchecked">
-				<i class="glyphicon glyphicon-unchecked"></i> Daemon
-			</button>
-		<% } %>
-		<button type="button" class="btn btn-default">
-			<i class="glyphicon glyphicon-edit"></i> Renommer
-		</button>
-		<button type="button" class="btn btn-default save-program-button">
-			<i class="glyphicon glyphicon-save"></i> Sauvegarder
-		</button>
-		<button id="delete-popover" class="btn btn-default" rel="popover" data-content="<button type='button' class='btn btn-danger delete-program-button'>Supprimer</button>" data-placement="bottom">
-			<i class="glyphicon glyphicon-trash"></i>
-		</button>
+<% if (typeof program === "undefined") { %>
+	<div class="lead">
+		Editeur de programme
 	</div>
-</div>
+	<div class="alert alert-info">
+		Aucun programme
+	</div>
+<% } else { %>
 
-<div class="alert alert-success hide">
-	Programme valide
-</div>
+	<div class="lead">
+		<% if (program.get("name") !== "") { %>
+			<%= program.get("name") %>
+		<% } else { %>
+			<em>Programme sans nom</em>
+		<% } %>
 
-<div class="alert alert-danger hide">
-	Programme invalide
-</div>
+		<div class="pull-right">
+			<% if (program.get("daemon") === true || program.get("daemon") === "true") { %>
+				<button type="button" class="btn btn-info daemon-program-button checked">
+					<i class="glyphicon glyphicon-check"></i> Daemon
+				</button>
+			<% } else { %>
+				<button type="button" class="btn btn-default daemon-program-button unchecked">
+					<i class="glyphicon glyphicon-unchecked"></i> Daemon
+				</button>
+			<% } %>
+			<button type="button" class="btn btn-default">
+				<i class="glyphicon glyphicon-edit"></i> Renommer
+			</button>
+			<button type="button" class="btn btn-default save-program-button">
+				<i class="glyphicon glyphicon-save"></i> Sauvegarder
+			</button>
+			<button id="delete-popover" class="btn btn-default" rel="popover" data-content="<button type='button' class='btn btn-danger delete-program-button'>Supprimer</button>" data-placement="bottom">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</div>
+	</div>
 
-<textarea class="form-control" rows="20"><%= program.get("userInputSource") %></textarea>
-<br>
-<div class="expected-elements"></div>
+	<div class="alert alert-success hide">
+		Programme valide
+	</div>
+
+	<div class="alert alert-danger hide">
+		Programme invalide
+	</div>
+
+	<textarea class="form-control" rows="20"><%= program.get("userInputSource") %></textarea>
+	<br>
+	<div class="expected-elements"></div>
+
+<% } %>

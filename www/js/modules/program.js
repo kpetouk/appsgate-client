@@ -15,7 +15,7 @@ define([
 	Program.Router = Backbone.Router.extend({
 		routes : {
 			"programs"			: "list",
-			"programs/:id"	: "details"
+			"programs/:id"		: "details"
 		},
 
 		list:function() {
@@ -28,8 +28,10 @@ define([
 			// display the first program
 			appRouter.showView(new Program.Views.Editor({ model : programs.at(0) }));
 			
-			// update the url
-			appRouter.navigate("#programs/" + programs.at(0).get("id"));
+			// update the url if there is at least one program
+			if (programs.length > 0) {
+				appRouter.navigate("#programs/" + programs.at(0).get("id"));
+			}
 		},
 		
 		details:function(id) {
