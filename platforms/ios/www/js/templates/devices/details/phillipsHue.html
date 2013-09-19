@@ -1,0 +1,14 @@
+<li class="list-group-item">
+	<strong>Etat</strong>
+	<div class="pull-right">
+		<button type="button" class="btn btn-info btn-sm toggle-lamp-button">
+			<% if (device.get("value") === "true" || device.get("value") === true) { %>
+				Eteindre
+			<% } else { %>
+				Allumer
+			<% } %>
+		</button>
+	</div>
+</li>
+<li class="list-group-item color-picker">
+</li>

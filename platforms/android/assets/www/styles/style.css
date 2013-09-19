@@ -1,0 +1,9 @@
+body {
+	padding-top: 70px;
+}
+
+.list-group-item > img {
+	width: 50%;
+	height: auto;
+	margin-left: 25%;
+}

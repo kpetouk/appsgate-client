@@ -1,0 +1,239 @@
+start = nodeProgram
+nodeProgram = pgmName:programName sep "ecrit par" sep author:userName sep ("pour" sep target:target sep)? daemon:daemonStatus sep seqRules:seqRules
+{
+	var ast = {};
+	ast.programName = pgmName;
+	ast.seqParameters = [];
+	ast.author = author;
+	ast.target = "alice";
+	ast.daemon = daemon;
+	ast.seqDefinitions = [];
+	ast.seqRules = seqRules;
+	return ast;
+}
+
+programName "<input type='text'>"
+	= chars:([^" \r\n]+) { return chars.join(""); }
+
+userName "Nom de l'auteur"
+	= chars:([^" \r\n]+) { return chars.join(""); }
+
+target "Destinataire"
+	= chars:([^" \r\n]+) { return chars.join(""); }
+
+daemonStatus = isDaemon / isNotDaemon
+isDaemon = "daemon"
+{
+	return true;
+}
+
+isNotDaemon = "notDaemon"
+{
+	return false;
+}
+
+/* sequence of rules */
+seqRules = seqAndRules1:seqAndRules seqAndRules2:(opThenRule seqAndRules)*
+{
+	var nodeSeqRules = new Array();
+	nodeSeqRules.push(seqAndRules1);
+
+	if (typeof seqAndRules2 !== "undefined") {
+		seqAndRules2.forEach(function(seqAndRules) {
+			nodeSeqRules.push(seqAndRules[1]);
+		});
+	}
+	
+	return nodeSeqRules;
+}
+
+seqAndRules = rule1:rule rule2:(opAndRule rule)*
+{
+	var nodeSeqAndRules = new Array();
+	nodeSeqAndRules.push(rule1);
+
+	if (typeof rule2 !== "undefined") {
+		rule2.forEach(function(r) {
+			nodeSeqAndRules.push(r[1]);
+		});
+	}
+
+	return nodeSeqAndRules;
+}
+
+/* basic rule */
+rule = nodeWhen / nodeIf / nodeAction
+
+/* basic nodes */
+nodeWhen = "au moment ou" sep seqEvents:seqEvents (opEventBool expBool)* sep "alors" sep seqRules:seqRules sep "fin de au moment ou"
+{
+	var nodeWhen = {};
+	nodeWhen.type = "NodeWhen";
+	nodeWhen.events = seqEvents;
+	nodeWhen.seqRulesThen = seqRules;
+	return nodeWhen;
+}
+
+nodeIf = "si" sep expBool:expBool sep "alors" sep seqRulesTrue:seqRules seqRulesFalse:(sep "sinon" sep seqRules)? sep "fin du si"
+{
+	var nodeIf = {};
+	nodeIf.type = "NodeIf";
+	nodeIf.expBool = expBool;
+	nodeIf.seqRulesTrue = seqRulesTrue;
+	if (seqRulesFalse !== "") {
+		nodeIf.seqRulesFalse = seqRulesFalse[3];
+	} else {
+		nodeIf.seqRulesFalse = [];
+	}
+
+	return nodeIf;
+}
+
+nodeAction = {{listOfActions}}
+
+/* events */
+seqEvents = event1:event event2:(opEvent event)*
+{
+	var nodeSeqEvents = new Array();
+	nodeSeqEvents.push(event1);
+
+	if (typeof event2 !== "undefined") {
+		event2.forEach(function(event) {
+			nodeSeqEvents.push(event2[1]);
+		});
+	}
+
+	return nodeSeqEvents;
+}
+
+event = {{listOfEvents}}
+
+/* boolean and arithmetic expression */
+expBool = seqAndBool1:seqAndBool seqAndBool2:(opOrBool seqAndBool)*
+{
+	var nodeExpBool = new Array();
+	nodeExpBool.push(seqAndBool1);
+
+	if (typeof seqAndBool2 !== "undefined") {
+		seqAndBool2.forEach(function(seqAndBool) {
+			nodeExpBool.push(seqAndBool[1]);
+		});
+	}
+
+	return nodeExpBool;
+}
+
+seqAndBool = relation1:relation relation2:(opAndBool relation)*
+{
+	var nodeSeqAndBool = new Array();
+	nodeSeqAndBool.push(relation1);
+
+	if (typeof relation2 !== "undefined") {
+		relation2.forEach(function(relation) {
+			nodeSeqAndBool.push(relation[1]);
+		});
+	}
+
+	return nodeSeqAndBool;
+}
+
+relation = status:status / term1:term operator:opComparison term2:term
+{
+	if (typeof status !== "undefined") {
+		return status;
+	}
+
+	var nodeRelationBool = {};
+	nodeRelationBool.type = "NodeRelationBool";
+	nodeRelationBool.operator = operator;
+
+	nodeRelationBool.leftOperand = term1;
+	nodeRelationBool.rightOperand = term2;
+
+	return nodeRelationBool;
+}
+
+term = nodeAction / termString / termNumber / termBoolean
+termString = value:string
+{
+	var nodeTerm = {};
+	nodeTerm.type = "string";
+	nodeTerm.value = value;
+
+	return nodeTerm;
+}
+termNumber = value:number
+{
+	var nodeTerm = {};
+	nodeTerm.type = "number";
+	nodeTerm.value = value;
+
+	return nodeTerm;
+}
+termBoolean = value:boolean
+{
+	var nodeTerm = {};
+	nodeTerm.type = "boolean";
+	nodeTerm.value = value;
+
+	return nodeTerm;
+}
+
+status = {{listOfStatus}}
+
+/* programs */
+actionProgram = actionProgramActivate / actionProgramDisactivate
+actionProgramActivate
+/* "<button class='btn btn-default'>activer</button>" */
+	= "activer" sep programName:P
+{
+	var nodeAction = {};
+	nodeAction.type = "NodeAction";
+	nodeAction.targetType = "program";
+	nodeAction.targetId = programName;
+	nodeAction.methodName = "callProgram";
+	nodeAction.args = [];
+
+	return nodeAction;
+}
+
+actionProgramDisactivate /* "<button class='btn btn-default'>desactiver</button>" */
+	= "desactiver" sep programName:P
+{
+	var nodeAction = {};
+	nodeAction.type = "NodeAction";
+	nodeAction.targetType = "program";
+	nodeAction.targetId = programName;
+	nodeAction.methodName = "stopProgram";
+	nodeAction.args = [];
+
+	return nodeAction;
+}
+
+eventProgram = P sep "est active" / P sep "est desactive"
+statusProgram = P sep "est actif" / P sep "est inactif"
+P = {{listOfPrograms}}
+
+/* operators */
+opEvent = " et "
+opEventBool = " et "
+opAndRule = " et "
+opThenRule = " puis "
+opOrBool = " ou "
+opAndBool = " et "
+opComparison = "==" / "!="
+opAdd = "+" / "-"
+opMult = "*" / "/"
+
+/* basic types */
+number "Nombre"
+	= digits:[0-9]+ { return parseInt(digits.join(""), 10); }
+string "Chaine de caract&egrave;res"
+	= chars:([^" \r\n]+) { return chars.join(""); }
+boolean = true / false
+true = "vrai" { return true; }
+false = "faux" { return false; }
+
+/* separators */
+sep "espace"
+	= ' '+

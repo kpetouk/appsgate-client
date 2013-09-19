@@ -1,0 +1,421 @@
+<div class="lead inline">
+	<% if (place.get("name") !== "") { %>
+		<%= place.get("name") %>
+	<% } else { %>
+		<em>Pi&egrave;ce sans nom</em>
+	<% } %>
+	<% if (place.get("id") !== "-1") { %>
+		<div class="pull-right">
+			<button type="button" data-target="#edit-name-place-modal" data-toggle="modal" class="btn btn-default">
+				<i class="glyphicon glyphicon-edit"></i> Renommer
+			</button>
+			<button id="delete-popover" class="btn btn-default" rel="popover" data-content="<button type='button' class='btn btn-danger delete-place-button'>Supprimer</button>" data-placement="bottom">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</div>
+	<% } %>
+</div>
+
+<!-- place status area -->
+<div class="panel panel-default">
+	<div class="panel-body">
+		Nombre de dispositifs
+		<span class="label label-info pull-right"><%= place.get("devices").length %></span>
+		<br>
+		Temp&eacute;rature
+		<% if (typeof place.getAverageTemperature() !== "undefined") { %>
+			<span class="label label-info pull-right"><%= place.getAverageTemperature() %>&deg;C</span>
+		<% } else { %>
+			<span class="label label-info pull-right">Non d&eacute;fini</span>
+		<% } %>
+		<br>
+		Luminosit&eacute
+		<% if (typeof place.getAverageIllumination() !== "undefined") { %>
+			<span class="label label-info pull-right"><%= place.getAverageIllumination() %> Lux</span>
+		<% } else { %>
+			<span class="label label-info pull-right">Non d&eacute;fini</span>
+		<% } %>
+		<br>
+		Consommation
+		<% if (typeof place.getAverageConsumption() !== "undefined") { %>
+			<span class="label label-info pull-right"><%= place.getAverageConsumption() %> W</span>
+		<% } else { %>
+			<span class="label label-info pull-right">Non d&eacute;fini</span>
+		<% } %>
+	</div>
+</div>
+
+<!-- temperature sensors -->
+<% if (place.getTemperatureSensors().length > 0) { %>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">
+			<% if (place.getTemperatureSensors().length === 1) { %>
+				<%= deviceTypes[0].singular %>
+			<% } else { %>
+				<%= deviceTypes[0].plural %>
+			<% } %>
+			<span class="badge pull-right">
+				<%= place.getTemperatureSensors().length %>
+			</span>
+		</h3>
+	</div>
+	<div class="list-group">
+		<% place.getTemperatureSensors().forEach(function(s) { %>
+			<a href="#devices/<%= s.get('id') %>" class="list-group-item">
+				<% if (s.get("name") !== "") { %>
+					<%= s.get("name") %>
+				<% } else { %>
+					<em>Dispositif sans nom</em>
+				<% } %>
+				<div class="pull-right">
+					<span class="label label-info"><%= s.get("value") %>&deg;C</span>
+					<i class="glyphicon glyphicon-chevron-right"></i>
+				</div>
+				<br>
+				<% if (s.get("status") === "0") { %>
+					<span class="label label-danger">D&eacute;connect&eacute;</span>
+				<% } else if (s.get("status" === "1")) { %>
+					<span class="label label-warning">En attente</span>
+				<% } else { %>
+					<span class="label label-success">Connect&eacute;</span>
+				<% } %>
+			</a>
+		<% }) %>
+	</div>
+</div>
+<% } %>
+
+<!-- illumination sensors -->
+<% if (place.getIlluminationSensors().length > 0) { %>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">
+			<% if (place.getIlluminationSensors().length === 1) { %>
+				<%= deviceTypes[1].singular %>
+			<% } else { %>
+				<%= deviceTypes[1].plural %>
+			<% } %>
+			<span class="badge pull-right">
+				<%= place.getIlluminationSensors().length %>
+			</span>
+		</h3>
+	</div>
+	<div class="list-group">
+		<% place.getIlluminationSensors().forEach(function(s) { %>
+			<a href="#devices/<%= s.get('id') %>" class="list-group-item">
+				<% if (s.get("name") !== "") { %>
+					<%= s.get("name") %>
+				<% } else { %>
+					<em>Dispositif sans nom</em>
+				<% } %>
+				<div class="pull-right">
+					<span class="label label-info"><%= s.get("value") %> Lux</span>
+					<i class="glyphicon glyphicon-chevron-right"></i>
+				</div>
+				<br>
+				<% if (s.get("status") === "0") { %>
+					<span class="label label-danger">D&eacute;connect&eacute;</span>
+				<% } else if (s.get("status" === "1")) { %>
+					<span class="label label-warning">En attente</span>
+				<% } else { %>
+					<span class="label label-success">Connect&eacute;</span>
+				<% } %>
+			</a>
+		<% }) %>
+	</div>
+</div>
+<% } %>
+
+<!-- switches -->
+<% if (place.getSwitches().length > 0) { %>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">
+			<% if (place.getSwitches().length === 1) { %>
+				<%= deviceTypes[2].singular %>
+			<% } else { %>
+				<%= deviceTypes[2].plural %>
+			<% } %>
+			<span class="badge pull-right">
+				<%= place.getSwitches().length %>
+			</span>
+		</h3>
+	</div>
+	<div class="list-group">
+		<% place.getSwitches().forEach(function(s) { %>
+			<a href="#devices/<%= s.get('id') %>" class="list-group-item">
+				<% if (s.get("name") !== "") { %>
+					<%= s.get("name") %>
+				<% } else { %>
+					<em>Dispositif sans nom</em>
+				<% } %>
+				<div class="pull-right">
+					<% if (s.get("value") === "true") { %>
+						<span class="label label-info">Ouvert</span>
+					<% } else { %>
+						<span class="label label-info">Ferm&eacute;</span>
+					<% } %>
+					<i class="glyphicon glyphicon-chevron-right"></i>
+				</div>
+				<br>
+				<% if (s.get("status") === "0") { %>
+					<span class="label label-danger">D&eacute;connect&eacute;</span>
+				<% } else if (s.get("status" === "1")) { %>
+					<span class="label label-warning">En attente</span>
+				<% } else { %>
+					<span class="label label-success">Connect&eacute;</span>
+				<% } %>
+			</a>
+		<% }) %>
+	</div>
+</div>
+<% } %>
+
+<!-- contact sensors -->
+<% if (place.getContactSensors().length > 0) { %>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">
+			<% if (place.getContactSensors().length === 1) { %>
+				<%= deviceTypes[3].singular %>
+			<% } else { %>
+				<%= deviceTypes[3].plural %>
+			<% } %>
+			<span class="badge pull-right">
+				<%= place.getContactSensors().length %>
+			</span>
+		</h3>
+	</div>
+	<div class="list-group">
+		<% place.getContactSensors().forEach(function(s) { %>
+			<a href="#devices/<%= s.get('id') %>" class="list-group-item">
+				<% if (s.get("name") !== "") { %>
+					<%= s.get("name") %>
+				<% } else { %>
+					<em>Dispositif sans nom</em>
+				<% } %>
+				<div class="pull-right">
+					<% if (s.get("contact") === "true") { %>
+						<span class="label label-info">Ferm&eacute;</span>
+					<% } else { %>
+						<span class="label label-info">Ouvert</span>
+					<% } %>
+					<i class="glyphicon glyphicon-chevron-right"></i>
+				</div>
+				<br>
+				<% if (s.get("status") === "0") { %>
+					<span class="label label-danger">D&eacute;connect&eacute;</span>
+				<% } else if (s.get("status" === "1")) { %>
+					<span class="label label-warning">En attente</span>
+				<% } else { %>
+					<span class="label label-success">Connect&eacute;</span>
+				<% } %>
+			</a>
+		<% }) %>
+	</div>
+</div>
+<% } %>
+
+<!-- key-card readers -->
+<% if (place.getKeyCardReaders().length > 0) { %>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">
+			<% if (place.getKeyCardReaders().length === 1) { %>
+				<%= deviceTypes[4].singular %>
+			<% } else { %>
+				<%= deviceTypes[4].plural %>
+			<% } %>
+			<span class="badge pull-right">
+				<%= place.getKeyCardReaders().length %>
+			</span>
+		</h3>
+	</div>
+	<div class="list-group">
+		<% place.getKeyCardReaders().forEach(function(s) { %>
+			<a href="#devices/<%= s.get('id') %>" class="list-group-item">
+			<% if (s.get("name") !== "") { %>
+				<%= s.get("name") %>
+			<% } else { %>
+				<em>Dispositif sans nom</em>
+			<% } %>
+			<div class="pull-right">
+				<% if (s.get("inserted") === "true") { %>
+					<span class="label label-info">Carte ins&eacute;r&eacute;e</span>
+				<% } else { %>
+					<span class="label label-info">Pas de carte</span>
+				<% } %>
+				<i class="glyphicon glyphicon-chevron-right"></i>
+			</div>
+			<br>
+			<% if (s.get("status") === "0") { %>
+					<span class="label label-danger">D&eacute;connect&eacute;</span>
+				<% } else if (s.get("status" === "1")) { %>
+					<span class="label label-warning">En attente</span>
+				<% } else { %>
+					<span class="label label-success">Connect&eacute;</span>
+				<% } %>
+			</a>
+		<% }) %>
+	</div>
+</div>
+<% } %>
+
+<!-- movement sensors -->
+<% if (place.getMovementSensors().length > 0) { %>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">
+			<% if (place.getMovementSensors().length === 1) { %>
+				<%= deviceTypes[5].singular %>
+			<% } else { %>
+				<%= deviceTypes[5].plural %>
+			<% } %>
+			<span class="badge pull-right">
+				<%= place.getMovementSensors().length %>
+			</span>
+		</h3>
+	</div>
+	<div class="list-group">
+		<% place.getMovementSensors().forEach(function(s) { %>
+			<a href="#devices/<%= s.get('id') %>" class="list-group-item">
+				<% if (s.get("name") !== "") { %>
+					<%= s.get("name") %>
+				<% } else { %>
+					<em>Dispositif sans nom</em>
+				<% } %>
+				<div class="pull-right">
+					<i class="glyphicon glyphicon-chevron-right"></i>
+				</div>
+				<br>
+				<% if (s.get("status") === "0") { %>
+					<span class="label label-danger">D&eacute;connect&eacute;</span>
+				<% } else if (s.get("status" === "1")) { %>
+					<span class="label label-warning">En attente</span>
+				<% } else { %>
+					<span class="label label-success">Connect&eacute;</span>
+				<% } %>
+			</a>
+		<% }) %>
+	</div>
+</div>
+<% } %>
+
+<!-- plugs -->
+<% if (place.getPlugs().length > 0) { %>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">
+			<% if (place.getPlugs().length === 1) { %>
+				<%= deviceTypes[6].singular %>
+			<% } else { %>
+				<%= deviceTypes[6].plural %>
+			<% } %>
+			<span class="badge pull-right">
+				<%= place.getPlugs().length %>
+			</span>
+		</h3>
+	</div>
+	<div class="list-group">
+		<% place.getPlugs().forEach(function(s) { %>
+			<a href="#devices/<%= s.get('id') %>" class="list-group-item">
+				<% if (s.get("name") !== "") { %>
+					<%= s.get("name") %>
+				<% } else { %>
+					<em>Dispositif sans nom</em>
+				<% } %>
+				<div class="pull-right">
+					<span class="label label-info"><%= s.get("consumption") %> W</span>
+					<% if (s.get("plugState") === "true" || s.get("plugState") === true) { %>
+					<button type="button" id="<%= s.get('id') %>" class="btn btn-info btn-sm toggle-plug-button">Eteindre</button>
+					<% } else { %>
+						<button type="button" id="<%= s.get('id') %>" class="btn btn-info btn-sm toggle-plug-button">Allumer</button>
+					<% } %>
+					<i class="glyphicon glyphicon-chevron-right"></i>
+				</div>
+				<br>
+				<% if (s.get("status") === "0") { %>
+					<span class="label label-danger">D&eacute;connect&eacute;</span>
+				<% } else if (s.get("status" === "1")) { %>
+					<span class="label label-warning">En attente</span>
+				<% } else { %>
+					<span class="label label-success">Connect&eacute;</span>
+				<% } %>
+			</a>
+		<% }) %>
+	</div>
+</div>
+<% } %>
+
+<!-- philips hue -->
+<% if (place.getPhilipsHueLamps().length > 0) { %>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">
+			<% if (place.getPhilipsHueLamps().length === 1) { %>
+				<%= deviceTypes[7].singular %>
+			<% } else { %>
+				<%= deviceTypes[7].plural %>
+			<% } %>
+			<div class="badge pull-right">
+				<%= place.getPhilipsHueLamps().length %>
+			</div>
+		</h3>
+	</div>
+	<div class="list-group">
+		<% place.getPhilipsHueLamps().forEach(function(s) { %>
+			<a href="#devices/<%= s.get('id') %>" class="list-group-item">
+				<% if (s.get("name") !== "") { %>
+					<%= s.get("name") %>
+				<% } else { %>
+					<em>Dispositif sans nom</em>
+				<% } %>
+				<div class="pull-right">
+					<% if (s.get("value") === "true" || s.get("value") === true) { %>
+					<button type="button" id="<%= s.get('id') %>" class="btn btn-info btn-sm toggle-lamp-button">Eteindre</button>
+					<% } else { %>
+						<button type="button" id="<%= s.get('id') %>" class="btn btn-info btn-sm toggle-lamp-button">Allumer</button>
+					<% } %>
+					<i class="glyphicon glyphicon-chevron-right"></i>
+				</div>
+				<br>
+				<% if (s.get("status") === "0") { %>
+					<span class="label label-danger">D&eacute;connect&eacute;</span>
+				<% } else if (s.get("status" === "1")) { %>
+					<span class="label label-warning">En attente</span>
+				<% } else { %>
+					<span class="label label-success">Connect&eacute;</span>
+				<% } %>
+			</a>
+		<% }) %>
+	</div>
+</div>
+<% } %>
+
+<!-- if the place has no device, show a message -->
+<% if (place.get("devices").length === 0) { %>
+	<div class="alert alert-info">
+		Aucun dispositif n'est assign&eacute; dans cette pi&egrave;ce.
+	</div>
+<% } %>
+
+<!-- modal to edit the name of a place -->
+<div id="edit-name-place-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalEditPlace" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h3>Renommer pi&egrave;ce</h3>
+			</div>
+			<div class="modal-body">
+				<input type="text" class="form-control" placeholder="Nom de la pi&egrave;ce">
+				<p class="hide text-danger">Nom de pi&egrave;ce d&eacute;j&agrave; existant</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-default" data-dismiss="modal">Annuler</button>
+				<button class="btn btn-primary valid-button">Valider</button>
+			</div>
+		</div>
+	</div>
+</div>

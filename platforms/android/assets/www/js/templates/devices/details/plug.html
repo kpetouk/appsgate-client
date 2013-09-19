@@ -1,0 +1,19 @@
+<!-- {"varName":"consumption","objectId":"fe80::ff:ff00:2d01","value":"6"} -->
+<li class="list-group-item">
+	<strong>Consommation</strong>
+	<div class="pull-right label label-info">
+		<%= device.get("consumption") %> Watt
+	</div>
+</li>
+<li class="list-group-item">
+	<strong>Etat</strong>
+	<div class="pull-right">
+		<button type="button" class="btn btn-info btn-sm toggle-plug-button">
+			<% if (device.get("plugState") === "true" || device.get("plugState") === true) { %>
+				Eteindre
+			<% } else { %>
+				Allumer
+			<% } %>
+		</button>
+	</div>
+</li>

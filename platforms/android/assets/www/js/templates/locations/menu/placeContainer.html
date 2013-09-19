@@ -1,0 +1,146 @@
+<a href="#locations/<%= place.get('id') %>" class="list-group-item <% if (active) { %> active <% } %>">
+	<!-- header -->
+	<p class="list-group-item-heading lead">
+		<% if (place.get("name") !== "") { %>
+			<%= place.get("name") %>
+		<% } else { %>
+			<em>Pi&egrave;ce sans nom</em>
+		<% } %>
+		<span class="pull-right badge">
+			<%= place.get("devices").length %>
+		</span>
+	</p>
+	
+	<!-- body -->
+	<p class="list-group-item-text">
+		<ul class="list-unstyled">
+			<!-- temperature sensors -->
+			<% if (place.getTemperatureSensors().length > 0) { %>
+			<li>
+				<% if (place.getTemperatureSensors().length === 1) { %>
+					Capteur
+				<% } else { %>
+					Capteurs
+				<% } %>
+				de temp&eacute;rature
+				<span class="label label-info">
+					<%= place.getAverageTemperature() %>&degC
+				</span>
+				<span class="pull-right badge">
+					<%= place.getTemperatureSensors().length %>
+				</span>
+			</li>
+			<% } %>
+			
+			<!-- illumination sensors -->
+			<% if (place.getIlluminationSensors().length > 0) { %>
+			<li>
+				<% if (place.getIlluminationSensors().length === 1) { %>
+					Capteur
+				<% } else { %>
+					Capteurs
+				<% } %>
+				de luminosit&eacute;
+				<div class="label label-info">
+					<%= place.getAverageIllumination() %> Lux
+				</div>
+				<span class="pull-right badge">
+					<%= place.getIlluminationSensors().length %>
+				</span>
+			</li>
+			<% } %>
+			
+			<!-- switches -->
+			<% if (place.getSwitches().length > 0) { %>
+			<li>
+				<% if (place.getSwitches().length === 1) { %>
+					Interrupteur
+				<% } else { %>
+					Interrupteurs
+				<% } %>
+				<span class="pull-right badge">
+					<%= place.getSwitches().length %>
+				</span>
+			</li>
+			<% } %>
+			
+			<!-- contact sensors -->
+			<% if (place.getContactSensors().length > 0) { %>
+			<li>
+				<% if (place.getContactSensors().length === 1) { %>
+					Capteur
+				<% } else { %>
+					Capteurs
+				<% } %>
+				de contact
+				<span class="pull-right badge">
+					<%= place.getContactSensors().length %>
+				</span>
+			</li>
+			<% } %>
+			
+			<!-- key-card readers -->
+			<% if (place.getKeyCardReaders().length > 0) { %>
+			<li>
+				<% if (place.getKeyCardReaders().length === 1) { %>
+					Lecteur
+				<% } else { %>
+					Lecteurs
+				<% } %>
+				de carte
+				<span class="pull-right badge">
+					<%= place.getKeyCardReaders().length %>
+				</span>
+			</li>
+			<% } %>
+			
+			<!-- movement sensors -->
+			<% if (place.getMovementSensors().length > 0) { %>
+			<li>
+				<% if (place.getMovementSensors().length === 1) { %>
+					Capteur
+				<% } else { %>
+					Capteurs
+				<% } %>
+				de mouvement
+				<span class="pull-right badge">
+					<%= place.getMovementSensors().length %>
+				</span>
+			</li>
+			<% } %>
+			
+			<!-- plugs -->
+			<% if (place.getPlugs().length > 0) { %>
+			<li>
+				<% if (place.getPlugs().length === 1) { %>
+					Prise
+				<% } else { %>
+					Prises
+				<% } %>
+				gigogne
+				<span class="label label-info">
+					<%= place.getAverageConsumption() %> Watt
+				</span>
+				<span class="pull-right badge">
+					<%= place.getPlugs().length %>
+				</span>
+			</li>
+			<% } %>
+			
+			<!-- philips hue lamps -->
+			<% if (place.getPhilipsHueLamps().length > 0) { %>
+			<li>
+				<% if (place.getPhilipsHueLamps().length === 1) { %>
+					Lampe
+				<% } else { %>
+					Lampes
+				<% } %>
+				Philips Hue
+				<span class="pull-right badge">
+					<%= place.getPhilipsHueLamps().length %>
+				</span>
+			</li>
+			<% } %>
+		</ul>
+	</p>
+</a>
