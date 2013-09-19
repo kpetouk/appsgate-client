@@ -15,18 +15,6 @@
 		<% } %>
 
 		<div class="pull-right">
-			<% if (program.get("daemon") === true || program.get("daemon") === "true") { %>
-				<button type="button" class="btn btn-info daemon-program-button checked">
-					<i class="glyphicon glyphicon-check"></i> Daemon
-				</button>
-			<% } else { %>
-				<button type="button" class="btn btn-default daemon-program-button unchecked">
-					<i class="glyphicon glyphicon-unchecked"></i> Daemon
-				</button>
-			<% } %>
-			<button type="button" class="btn btn-default">
-				<i class="glyphicon glyphicon-edit"></i> Renommer
-			</button>
 			<button type="button" class="btn btn-default save-program-button">
 				<i class="glyphicon glyphicon-save"></i> Sauvegarder
 			</button>
@@ -44,8 +32,11 @@
 		Programme invalide
 	</div>
 
-	<textarea class="form-control" rows="20"><%= program.get("userInputSource") %></textarea>
+	<textarea class="form-control" rows="1"><%= program.get("userInputSource") %></textarea>
 	<br>
+	
+	<div class="programInput"></div>
+	
 	<div class="expected-elements"></div>
 
 <% } %>

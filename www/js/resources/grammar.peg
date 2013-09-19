@@ -6,7 +6,7 @@ nodeProgram = pgmName:programName sep "ecrit par" sep author:userName sep ("pour
 	ast.seqParameters = [];
 	ast.author = author;
 	ast.target = "alice";
-	ast.daemon = daemon;
+	ast.daemon = (seqRules[0][0].type === "NodeWhen");
 	ast.seqDefinitions = [];
 	ast.seqRules = seqRules;
 	return ast;
@@ -99,7 +99,7 @@ seqEvents = event1:event event2:(opEvent event)*
 
 	if (typeof event2 !== "undefined") {
 		event2.forEach(function(event) {
-			nodeSeqEvents.push(event2[1]);
+			nodeSeqEvents.push(event[1]);
 		});
 	}
 
@@ -183,13 +183,14 @@ status = {{listOfStatus}}
 
 /* programs */
 actionProgram = actionProgramActivate / actionProgramDisactivate
-actionProgramActivate /* "<button class='btn btn-default'>activer</button>" */
+actionProgramActivate
+/* "<button class='btn btn-default'>activer</button>" */
 	= "activer" sep programName:P
 {
 	var nodeAction = {};
 	nodeAction.type = "NodeAction";
 	nodeAction.targetType = "program";
-	nodeAction.targetId = programName;
+	nodeAction.targetId = programs.findWhere({ name : programName }).get("id");
 	nodeAction.methodName = "callProgram";
 	nodeAction.args = [];
 
@@ -202,15 +203,45 @@ actionProgramDisactivate /* "<button class='btn btn-default'>desactiver</button>
 	var nodeAction = {};
 	nodeAction.type = "NodeAction";
 	nodeAction.targetType = "program";
-	nodeAction.targetId = programName;
+	nodeAction.targetId = programs.findWhere({ name : programName }).get("id");
 	nodeAction.methodName = "stopProgram";
 	nodeAction.args = [];
 
 	return nodeAction;
 }
 
-eventProgram = P sep "est active" / P sep "est desactive"
-statusProgram = P sep "est actif" / P sep "est inactif"
+eventProgram = activatedProgramEvent / disactivatedProgramEvent
+activatedProgramEvent = programName:P sep "est active"
+{
+	var nodeEvent = {};
+	nodeEvent.type = "NodeEvent";
+	nodeEvent.sourceType = "program";
+	nodeEvent.sourceId = programs.findWhere({ name : programName }).get("id");
+	nodeEvent.eventName = "runningState";
+	nodeEvent.eventValue = "true";
+
+	return nodeEvent;
+}
+
+disactivatedProgramEvent = programName:P sep "est desactive"
+{
+	var nodeEvent = {};
+	nodeEvent.type = "NodeEvent";
+	nodeEvent.sourceType = "program";
+	nodeEvent.sourceId = programs.findWhere({ name : programName }).get("id");
+	nodeEvent.eventName = "runningState";
+	nodeEvent.eventValue = "true";
+
+	return nodeEvent;
+}
+
+statusProgram = isActivatedProgramStatus / isDisactivatedProgramStatus
+isActivatedProgramStatus = programName:P sep "est actif"
+{
+}
+isDisactivatedProgramStatus = programName:P sep "est inactif"
+{
+}
 P = {{listOfPrograms}}
 
 /* operators */
