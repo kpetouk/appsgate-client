@@ -1093,7 +1093,7 @@ define([
 			 _.forEach(_.keys(types), function(type) {
 				self.$el.append(self.tplDeviceContainer({
 					type	: type,
-					typeName	: deviceTypesName[type].plural,
+					typeName	: devices.getDevicesByType()[type].length === 1 ? deviceTypesName[type].singular : deviceTypesName[type].plural,
 					devices		: types[type],
 					places		: locations,
 					unlocatedDevices: devices.filter(function(d) { return (d.get("placeId") === "-1" && d.get("type") === type) }),

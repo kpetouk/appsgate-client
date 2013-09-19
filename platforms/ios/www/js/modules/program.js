@@ -343,6 +343,9 @@ define([
 			// send modification to the backend
 			program.save();
 			
+			// refresh the menu
+			this.render();
+			
 			return false;
 		},
 		
@@ -362,6 +365,9 @@ define([
 			
 			// send modification to the backend
 			program.save();
+			
+			// refresh the menu
+			this.render();
 			
 			return false;
 		},
@@ -401,7 +407,6 @@ define([
 		tplEditor : _.template(programEditorTemplate),
 		
 		events : {
-			"click button.daemon-program-button"	: "onDaemonProgramButton",
 			"click button.save-program-button"		: "onSaveProgramButton",
 			"click button.delete-program-button"	: "onDeleteProgramButton",
 			"keyup textarea"						: "onKeyUpTextarea",
@@ -413,28 +418,6 @@ define([
 		 */
 		initialize:function() {
 			this.grammar = new Grammar();
-		},
-		
-		/**
-		 * Callback when the user has clicked on the button to toggle the daemon state of a program
-		 */
-		onDaemonProgramButton:function() {
-			// update the attribute of the program and the source
-			if (this.model.get("daemon")) {
-				this.model.set("daemon", false);
-				this.model.get("source").daemon = "false";
-				$(".daemon-program-button")
-						.removeClass("btn-info")
-						.addClass("btn-default")
-						.html("<i class='glyphicon glyphicon-unchecked'></i> Daemon");
-			} else {
-				this.model.set("daemon", true);
-				this.model.get("source").daemon = "true";
-				$(".daemon-program-button")
-						.removeClass("btn-default")
-						.addClass("btn-info")
-						.html("<i class='glyphicon glyphicon-check'></i> Daemon");
-			}
 		},
 		
 		/**
@@ -462,8 +445,10 @@ define([
 		onClickCompletionButton:function(e) {
 			if ($(e.currentTarget).text() === "espace") {
 				$("textarea").val($("textarea").val() + " ");
+				// $(".programInput").append(" ");
 			} else {
 				$("textarea").val($("textarea").val() + $(e.currentTarget).text());
+				//$(".programInput").append
 			}
 			this.compileProgram();
 		},
@@ -483,12 +468,13 @@ define([
 			
 			try {
 				var ast = this.grammar.parse(programInput);
-				console.log(ast);
 				$(".alert-danger").addClass("hide");
 				$(".alert-success").removeClass("hide");
 				
 				this.model.set("source", ast);
 				this.model.set("userInputSource", $("textarea").val());
+				
+				console.log(ast);
 			} catch(e) {
 				$(".alert-danger").removeClass("hide");
 				$(".alert-success").addClass("hide");
@@ -498,7 +484,7 @@ define([
 				});
 			}
 		},
-		
+	
 		/**
 		 * Render the editor view
 		 */
@@ -510,6 +496,9 @@ define([
 			
 			// initialize the popover
 			this.$el.find("#delete-popover").popover({ html : true });
+			
+			// try to compile the program to show the potential errors
+			this.compileProgram();
 			
 			return this;
 		}

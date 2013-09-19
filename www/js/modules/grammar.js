@@ -3,10 +3,6 @@ define([
 	"text!resources/grammar.peg",
 	"peg"
 ], function(_, grammar) {
-
-	// define the default root grammar
-	var rootGrammar = "";
-
 	/**
 	 * @constructor
 	 */

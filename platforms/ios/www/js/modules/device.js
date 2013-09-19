@@ -529,7 +529,7 @@ define([
 					\n\
 					return nodeRelationBool;\n\
 				}",
-				"actionLamp = onLampAction / offLampAction",
+				"actionLamp = onLampAction / offLampAction / changeColorLampAction",
 				"onLampAction = 'allumer' sep lampName:L\n\
 				{\n\
 					var nodeAction = {};\n\
@@ -540,7 +540,7 @@ define([
 					nodeAction.args = [];\n\
 					\n\
 					return nodeAction;\n\
-				}", 
+				}",
 				"offLampAction = 'eteindre' sep lampName:L\n\
 				{\n\
 					var nodeAction = {};\n\
@@ -552,6 +552,43 @@ define([
 					\n\
 					return nodeAction;\n\
 				}",
+				"changeColorLampAction = 'changer la couleur de' sep lampName:L sep 'en' sep color:lampColor\n\
+				{\n\
+					var nodeAction = {};\n\
+					nodeAction.type = 'NodeAction';\n\
+					nodeAction.targetType = 'device';\n\
+					nodeAction.targetId = devices.findWhere({ name : lampName }).get('id');\n\
+					switch (color) {\n\
+						case 'rouge':\n\
+							nodeAction.methodName = 'setRed';\n\
+							break;\n\
+						case 'bleu':\n\
+							nodeAction.methodName = 'setBlue';\n\
+							break;\n\
+						case 'vert':\n\
+							nodeAction.methodName = 'setGreen';\n\
+							break;\n\
+						case 'jaune':\n\
+							nodeAction.methodName = 'setYellow';\n\
+							break;\n\
+						case 'orange':\n\
+							nodeAction.methodName = 'setOrange';\n\
+							break;\n\
+						case 'violet':\n\
+							nodeAction.methodName = 'setPurple';\n\
+							break;\n\
+						case 'rose':\n\
+							nodeAction.methodName = 'setPink';\n\
+							break;\n\
+						default:\n\
+							nodeAction.methodName = 'setDefault';\n\
+							break;\n\
+					}\n\
+					nodeAction.args = [];\n\
+					\n\
+					return nodeAction;\n\
+				}",
+				"lampColor = 'rouge' / 'bleu' / 'vert' / 'jaune' / 'orange' / 'violet' / 'rose'",
 				"L = {{listOfLamps}}"
 			]
 		}
@@ -1056,7 +1093,7 @@ define([
 			 _.forEach(_.keys(types), function(type) {
 				self.$el.append(self.tplDeviceContainer({
 					type	: type,
-					typeName	: deviceTypesName[type].plural,
+					typeName	: devices.getDevicesByType()[type].length === 1 ? deviceTypesName[type].singular : deviceTypesName[type].plural,
 					devices		: types[type],
 					places		: locations,
 					unlocatedDevices: devices.filter(function(d) { return (d.get("placeId") === "-1" && d.get("type") === type) }),

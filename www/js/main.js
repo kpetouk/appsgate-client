@@ -12,13 +12,6 @@ require([
 		
 		// unbind all the events associated to the view
         this.unbind();
-		
-		// unbind the events from external elements the view was listening to
-		/* if (typeof this.externalElements !== "undefined") {
-			this.externalElements.forEach(function(e) {
-				e.off();
-			});
-		} */
     };
 
 	/**

@@ -12,15 +12,15 @@
 
     <script type="text/javascript">
     // load ios specific js files
-    if (navigator.userAgent.toLowerCase().match(/(ipad|ipod|iphone)/)) {
+    if (navigator.userAgent.toLowerCase().match(/(ipad|ipod|iphone|android)/)) {
         document.write("<script type='text/javascript' src='phonegap.js'><\/script>");
         // document.write("<script type='text/javascript' src='js/libs/cordova/ios/plugins/barcodescanner.js'><\/script>");
     // load android specific js files
-    } else if (navigator.userAgent.toLowerCase().match(/(android)/)) {
-        document.write("<script type='text/javascript' src='js/libs/cordova/android/cordova-2.3.0.js'><\/script>");
-        document.write("<script type='text/javascript' src='js/libs/cordova/android/plugins/websocket.js'><\/script>");
-        document.write("<script type='text/javascript' src='js/libs/cordova/android/plugins/barcodescanner.js'><\/script>");
-    }
+    }/*  else if (navigator.userAgent.toLowerCase().match(/(android)/)) {
+        document.write("<script type='text/javascript' src='phonegap.js'><\/script>");
+        // document.write("<script type='text/javascript' src='js/libs/cordova/android/plugins/websocket.js'><\/script>");
+        // document.write("<script type='text/javascript' src='js/libs/cordova/android/plugins/barcodescanner.js'><\/script>");
+    } */
     </script>
 
     <script data-main="js/config" src="js/libs/require/require.js"></script>

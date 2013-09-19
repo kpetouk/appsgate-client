@@ -343,6 +343,9 @@ define([
 			// send modification to the backend
 			program.save();
 			
+			// refresh the menu
+			this.render();
+			
 			return false;
 		},
 		

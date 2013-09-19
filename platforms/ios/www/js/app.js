@@ -81,7 +81,7 @@ define([
         window.dispatcher = _.clone(Backbone.Events);
 		
 		// Setting the connection with the box
-		window.communicator = new Communicator('ws://194.199.23.158:8080');
+		window.communicator = new Communicator('ws://194.199.23.174:8080');
 
         // Wait for the socket to be opened
         dispatcher.on("WebSocketOpen", function() {
