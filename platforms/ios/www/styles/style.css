@@ -7,3 +7,38 @@ body {
 	height: auto;
 	margin-left: 25%;
 }
+
+.programInput span:hover {
+	background-color: lightgrey;
+}
+
+.keyword {
+	color: #31b0d5;
+}
+
+.action-name {
+	color: red;
+}
+
+.status {
+	color: darkseagreen;
+}
+
+.prev-seqrules:after {
+	content: "\A";
+	white-space: pre;
+}
+
+.prev-seqrules + span {
+	margin-left: 10px;
+}
+
+.end-of-block:before {
+	content: "\A";
+	white-space: pre;
+}
+
+.deleted-elements {
+	font-style: italic;
+	text-decoration: line-through;
+}

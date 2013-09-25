@@ -31,12 +31,11 @@
 	<div class="alert alert-danger hide">
 		Programme invalide
 	</div>
-
-	<textarea class="form-control" rows="1"><%= program.get("userInputSource") %></textarea>
-	<br>
 	
-	<div class="programInput"></div>
+	<div class="programInput"><%= program.get("userInputSource") %></div>
 	
 	<div class="expected-elements"></div>
+	
+	<div class="deleted-elements"></div>
 
 <% } %>

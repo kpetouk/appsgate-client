@@ -1,5 +1,5 @@
 start = nodeProgram
-nodeProgram = pgmName:programName sep "ecrit par" sep author:userName sep ("pour" sep target:target sep)? daemon:daemonStatus sep seqRules:seqRules
+nodeProgram = pgmName:programName sep "ecrit par" sep author:userName sep ("pour" sep target:target sep)? seqRules:seqRules
 {
 	var ast = {};
 	ast.programName = pgmName;
@@ -20,17 +20,6 @@ userName "Nom de l'auteur"
 
 target "Destinataire"
 	= chars:([^" \r\n]+) { return chars.join(""); }
-
-daemonStatus = isDaemon / isNotDaemon
-isDaemon = "daemon"
-{
-	return true;
-}
-
-isNotDaemon = "notDaemon"
-{
-	return false;
-}
 
 /* sequence of rules */
 seqRules = seqAndRules1:seqAndRules seqAndRules2:(opThenRule seqAndRules)*
@@ -65,7 +54,7 @@ seqAndRules = rule1:rule rule2:(opAndRule rule)*
 rule = nodeWhen / nodeIf / nodeAction
 
 /* basic nodes */
-nodeWhen = "au moment ou" sep seqEvents:seqEvents (opEventBool expBool)* sep "alors" sep seqRules:seqRules sep "fin de au moment ou"
+nodeWhen = "<span class='keyword'>au moment ou</span>" sep seqEvents:seqEvents (opEventBool expBool)* sep "<span class='keyword prev-seqrules'>alors</span>" sep seqRules:seqRules sep "<span class='keyword end-of-block'>fin de au moment ou</span>"
 {
 	var nodeWhen = {};
 	nodeWhen.type = "NodeWhen";
@@ -74,7 +63,7 @@ nodeWhen = "au moment ou" sep seqEvents:seqEvents (opEventBool expBool)* sep "al
 	return nodeWhen;
 }
 
-nodeIf = "si" sep expBool:expBool sep "alors" sep seqRulesTrue:seqRules seqRulesFalse:(sep "sinon" sep seqRules)? sep "fin du si"
+nodeIf = "<span class='keyword'>si</span>" sep expBool:expBool sep "<span class='keyword prev-seqrules'>alors</span>" sep seqRulesTrue:seqRules seqRulesFalse:(sep "<span class='keyword end-of-block prev-seqrules'>sinon</span>" sep seqRules)? sep "<span class='keyword end-of-block'>fin du si</span>"
 {
 	var nodeIf = {};
 	nodeIf.type = "NodeIf";
@@ -153,7 +142,7 @@ relation = status:status / term1:term operator:opComparison term2:term
 	return nodeRelationBool;
 }
 
-term = nodeAction / termString / termNumber / termBoolean
+term = termString / termNumber / termBoolean
 termString = value:string
 {
 	var nodeTerm = {};
@@ -183,27 +172,24 @@ status = {{listOfStatus}}
 
 /* programs */
 actionProgram = actionProgramActivate / actionProgramDisactivate
-actionProgramActivate
-/* "<button class='btn btn-default'>activer</button>" */
-	= "activer" sep programName:P
+actionProgramActivate = "<span class='action-name'>activer le programme</span>" sep programName:P
 {
 	var nodeAction = {};
 	nodeAction.type = "NodeAction";
 	nodeAction.targetType = "program";
-	nodeAction.targetId = programs.findWhere({ name : programName }).get("id");
+	nodeAction.targetId = programs.findWhere({ name : $(programName).text() }).get("id");
 	nodeAction.methodName = "callProgram";
 	nodeAction.args = [];
 
 	return nodeAction;
 }
 
-actionProgramDisactivate /* "<button class='btn btn-default'>desactiver</button>" */
-	= "desactiver" sep programName:P
+actionProgramDisactivate = "<span class='action-name'>desactiver le programme</span>" sep programName:P
 {
 	var nodeAction = {};
 	nodeAction.type = "NodeAction";
 	nodeAction.targetType = "program";
-	nodeAction.targetId = programs.findWhere({ name : programName }).get("id");
+	nodeAction.targetId = programs.findWhere({ name : $(programName).text() }).get("id");
 	nodeAction.methodName = "stopProgram";
 	nodeAction.args = [];
 
@@ -216,7 +202,7 @@ activatedProgramEvent = programName:P sep "est active"
 	var nodeEvent = {};
 	nodeEvent.type = "NodeEvent";
 	nodeEvent.sourceType = "program";
-	nodeEvent.sourceId = programs.findWhere({ name : programName }).get("id");
+	nodeEvent.sourceId = programs.findWhere({ name : $(programName).text() }).get("id");
 	nodeEvent.eventName = "runningState";
 	nodeEvent.eventValue = "true";
 
@@ -228,7 +214,7 @@ disactivatedProgramEvent = programName:P sep "est desactive"
 	var nodeEvent = {};
 	nodeEvent.type = "NodeEvent";
 	nodeEvent.sourceType = "program";
-	nodeEvent.sourceId = programs.findWhere({ name : programName }).get("id");
+	nodeEvent.sourceId = programs.findWhere({ name : $(programName).text() }).get("id");
 	nodeEvent.eventName = "runningState";
 	nodeEvent.eventValue = "true";
 
@@ -236,28 +222,32 @@ disactivatedProgramEvent = programName:P sep "est desactive"
 }
 
 statusProgram = isActivatedProgramStatus / isDisactivatedProgramStatus
-isActivatedProgramStatus = programName:P sep "est actif"
+isActivatedProgramStatus = programName:P sep "<span class='status'>est actif</span>"
 {
 }
-isDisactivatedProgramStatus = programName:P sep "est inactif"
+isDisactivatedProgramStatus = programName:P sep "<span class='status'>est inactif</span>"
 {
 }
 P = {{listOfPrograms}}
 
 /* operators */
-opEvent = " et "
-opEventBool = " et "
-opAndRule = " et "
-opThenRule = " puis "
-opOrBool = " ou "
-opAndBool = " et "
+opEvent = " <span class='keyword'>et</span> "
+opEventBool = " <span class='keyword'>et</span> "
+opAndRule = " <span class='keyword prev-seqrules'>et</span> "
+opThenRule = " <span class='keyword prev-seqrules'>puis</span> "
+opOrBool = " <span class='keyword'>ou</span> "
+opAndBool = " <span class='keyword'>et</span> "
 opComparison = "==" / "!="
 opAdd = "+" / "-"
 opMult = "*" / "/"
 
 /* basic types */
-number "Nombre"
-	= digits:[0-9]+ { return parseInt(digits.join(""), 10); }
+number "<form class='form-inline'><div class='form-group'><input type='text' class='form-control'></div><button type='button' class='btn btn-primary valid-value'>Valider</button></form>"
+	= "<span class='value'>" digits:[0-9]+ "</span>"
+{
+	return parseInt(digits.join(""), 10);
+}
+
 string "Chaine de caract&egrave;res"
 	= chars:([^" \r\n]+) { return chars.join(""); }
 boolean = true / false

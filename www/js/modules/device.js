@@ -67,36 +67,36 @@ define([
 			statusAnchor	: "statusTemperature",
 			listAnchor		: "{{listOfTemperatureSensors}}",
 			rules			: [
-				"eventTemperature = temperatureName:T sep 'indique' sep temperature:number sep 'degres'\n\
+				'eventTemperature = temperatureName:T sep "<span class=' + "'event'" + '>indique</span>" sep temperature:number sep "<span class=' + "'event'" + '>degres C</span>"\n\
 				{\n\
 					var nodeEvent = {};\n\
-					nodeEvent.type = 'NodeEvent';\n\
-					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.findWhere({ name : temperatureName }).get('id');\n\
-					nodeEvent.eventName = 'value';\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.findWhere({ name : $(temperatureName).text() }).get("id");\n\
+					nodeEvent.eventName = "value";\n\
 					nodeEvent.eventValue = temperature;\n\
 					\n\
 					return nodeEvent;\n\
-				}",
-				"statusTemperature = temperatureName:T sep 'indique' sep temperature:number sep 'degres'\n\
+				}',
+				'statusTemperature = temperatureName:T sep "<span class=' + "'status'" + '>indique</span>" sep temperature:number sep "<span class=' + "'status'" + '>degres C</span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
-					nodeRelationBool.type = 'NodeRelationBool';\n\
-					nodeRelationBool.operator = '==';\n\
+					nodeRelationBool.type = "NodeRelationBool";\n\
+					nodeRelationBool.operator = "==";\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
-					nodeRelationBool.leftOperand.targetType = 'device';\n\
-					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : temperatureName }).get('id');\n\
-					nodeRelationBool.leftOperand.methodName = 'getTemperature';\n\
-					nodeRelationBool.leftOperand.returnType = 'number';\n\
+					nodeRelationBool.leftOperand.targetType = "device";\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : $(temperatureName).text() }).get("id");\n\
+					nodeRelationBool.leftOperand.methodName = "getTemperature";\n\
+					nodeRelationBool.leftOperand.returnType = "number";\n\
 					nodeRelationBool.leftOperand.args = [];\n\
 					\n\
 					nodeRelationBool.rightOperand = {};\n\
-					nodeRelationBool.rightOperand.type = 'number';\n\
+					nodeRelationBool.rightOperand.type = "number";\n\
 					nodeRelationBool.rightOperand.value = temperature;\n\
 					\n\
 					return nodeRelationBool;\n\
-				}",
+				}',
 				"T = {{listOfTemperatureSensors}}"
 			]
 		},
@@ -105,36 +105,36 @@ define([
 			statusAnchor	: "statusIllumination",
 			listAnchor		: "{{listOfIlluminationSensors}}",
 			rules			: [
-				"eventIllumination = illuminationName:I sep 'indique' sep illumination:number sep 'Lux'\n\
+				'eventIllumination = illuminationName:I sep "<span class=' + "'event'" + '>indique</span>" sep illumination:number sep "<span class=' + "'event'" + '>Lux</span>"\n\
 				{\n\
 					var nodeEvent = {};\n\
-					nodeEvent.type = 'NodeEvent';\n\
-					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.findWhere({ name : illuminationName }).get('id');\n\
-					nodeEvent.eventName = 'value';\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.findWhere({ name : $(illuminationName).text() }).get("id");\n\
+					nodeEvent.eventName = "value";\n\
 					nodeEvent.eventValue = illumination;\n\
 					\n\
 					return nodeEvent;\n\
-				}",
-				"statusIllumination = illuminationName:I sep 'indique' sep illumination:number sep 'Lux'\n\
+				}',
+				'statusIllumination = illuminationName:I sep "<span class=' + "'status'" + '>indique</span>" sep illumination:number sep "<span class=' + "'status'" + '>Lux</span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
-					nodeRelationBool.type = 'NodeRelationBool';\n\
-					nodeRelationBool.operator = '==';\n\
+					nodeRelationBool.type = "NodeRelationBool";\n\
+					nodeRelationBool.operator = "==";\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
-					nodeRelationBool.leftOperand.targetType = 'device';\n\
-					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : illuminationName }).get('id');\n\
-					nodeRelationBool.leftOperand.methodName = 'getIllumination';\n\
-					nodeRelationBool.leftOperand.returnType = 'number';\n\
+					nodeRelationBool.leftOperand.targetType = "device";\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : $(illuminationName).text() }).get("id");\n\
+					nodeRelationBool.leftOperand.methodName = "getIllumination";\n\
+					nodeRelationBool.leftOperand.returnType = "number";\n\
 					nodeRelationBool.leftOperand.args = [];\n\
 					\n\
 					nodeRelationBool.rightOperand = {};\n\
-					nodeRelationBool.rightOperand.type = 'number';\n\
+					nodeRelationBool.rightOperand.type = "number";\n\
 					nodeRelationBool.rightOperand.value = illumination;\n\
 					\n\
 					return nodeRelationBool;\n\
-				}",
+				}',
 				"I = {{listOfIlluminationSensors}}"
 			]
 		},
@@ -143,28 +143,28 @@ define([
 			listAnchor		: "{{listOfSwitches}}",
 			rules			: [
 				"eventSwitch = pushedSwitchEvent / releasedSwitchEvent",
-				"pushedSwitchEvent = 'on appuie sur' sep switchName:S\n\
+				'pushedSwitchEvent = "<span class=' + "'event'" + '>on appuie sur</span>" sep switchName:S\n\
 				{\n\
 					var nodeEvent = {};\n\
-					nodeEvent.type = 'NodeEvent';\n\
-					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.findWhere({ name : switchName }).get('id');\n\
-					nodeEvent.eventName = 'buttonStatus';\n\
-					nodeEvent.eventValue = 'true';\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.findWhere({ name : $(switchName).text() }).get("id");\n\
+					nodeEvent.eventName = "buttonStatus";\n\
+					nodeEvent.eventValue = "true";\n\
 					\n\
 					return nodeEvent;\n\
-				}",
-				"releasedSwitchEvent = 'on relache' sep switchName:S\n\
+				}',
+				'releasedSwitchEvent = "<span class=' + "'event'" + '>on relache</span>" sep switchName:S\n\
 				{\n\
 					var nodeEvent = {};\n\
-					nodeEvent.type = 'NodeEvent';\n\
-					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.findWhere({ name : switchName }).get('id');\n\
-					nodeEvent.eventName = 'buttonStatus';\n\
-					nodeEvent.eventValue = 'false';\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.findWhere({ name : $(switchName).text() }).get("id");\n\
+					nodeEvent.eventName = "buttonStatus";\n\
+					nodeEvent.eventValue = "false";\n\
 					\n\
 					return nodeEvent;\n\
-				}",
+				}',
 				"S = {{listOfSwitches}}"
 			]
 		},
@@ -174,127 +174,127 @@ define([
 			listAnchor		: "{{listOfContactSensors}}",
 			rules			: [
 				"eventContact = openedContactEvent / assembledContactEvent / closedContactEvent / disassembledContactEvent",
-				"openedContactEvent = 'on ouvre' sep contactName:C\n\
+				'openedContactEvent = "<span class=' + "'event'" + '>on ouvre</span>" sep contactName:C\n\
 				{\n\
 					var nodeEvent = {};\n\
-					nodeEvent.type = {};\n\
-					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.findWhere({ name : contactName }).get('id');\n\
-					nodeEvent.eventName = 'contact';\n\
-					nodeEvent.eventValue = 'false';\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.findWhere({ name : $(contactName).text() }).get("id");\n\
+					nodeEvent.eventName = "contact";\n\
+					nodeEvent.eventValue = "false";\n\
 					\n\
 					return nodeEvent;\n\
-				}",
-				"disassembledContactEvent = 'le capteur de contact de' sep contactName:C sep 'se desassemble'\n\
+				}',
+				'disassembledContactEvent = "<span class=' + "'event'" + '>le capteur de contact de</span>" sep contactName:C sep "<span class= ' + "'event'" + '>se desassemble</span>"\n\
 				{\n\
 					var nodeEvent = {};\n\
-					nodeEvent.type = 'NodeEvent';\n\
-					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.findWhere({ name : contactName }).get('id');\n\
-					nodeEvent.eventName = 'contact';\n\
-					nodeEvent.eventValue = 'false';\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.findWhere({ name : $(contactName).text() }).get("id");\n\
+					nodeEvent.eventName = "contact";\n\
+					nodeEvent.eventValue = "false";\n\
 					\n\
 					return nodeEvent;\n\
-				}",
-				"closedContactEvent = 'on ferme' sep contactName:C\n\
+				}',
+				'closedContactEvent = "<span class=' + "'event'" + '>on ferme</span>" sep contactName:C\n\
 				{\n\
 					var nodeEvent = {};\n\
-					nodeEvent.type = 'NodeEvent';\n\
-					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.findWhere({ name : contactName }).get('id');\n\
-					nodeEvent.eventName = 'contact';\n\
-					nodeEvent.eventValue = 'true';\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.findWhere({ name : $(contactName).text() }).get("id");\n\
+					nodeEvent.eventName = "contact";\n\
+					nodeEvent.eventValue = "true";\n\
 					\n\
 					return nodeEvent;\n\
-				}",
-				"assembledContactEvent = 'le capteur de contact de' sep contactName:C sep 's assemble'\n\
+				}',
+				'assembledContactEvent = "<span class=' + "'event'" + '>le capteur de contact de</span>" sep contactName:C sep "<span class=' + "'event'" + '>s assemble</span>"\n\
 				{\n\
 					var nodeEvent = {};\n\
-					nodeEvent.type = 'NodeEvent';\n\
-					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.findWhere({ name : contactName }).get('id');\n\
-					nodeEvent.eventName = 'contact';\n\
-					nodeEvent.eventValue = 'true';\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.findWhere({ name : $(contactName).text() }).get("id");\n\
+					nodeEvent.eventName = "contact";\n\
+					nodeEvent.eventValue = "true";\n\
 					\n\
 					return nodeEvent;\n\
-				}",
+				}',
 				"statusContact = closedContactStatus / assembledContactStatus / openedContactStatus / disassembledContactStatus",
-				"closedContactStatus = contactName:C sep 'est ferme'\n\
+				'closedContactStatus = contactName:C sep "<span class=' + "'status'" + '>est ferme</span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
-					nodeRelationBool.type = 'NodeRelationBool';\n\
-					nodeRelationBool.operator = '==';\n\
+					nodeRelationBool.type = "NodeRelationBool";\n\
+					nodeRelationBool.operator = "==";\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
-					nodeRelationBool.leftOperand.targetType = 'device';\n\
-					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : contactName }).get('id');\n\
-					nodeRelationBool.leftOperand.methodName = 'getContactStatus';\n\
-					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
+					nodeRelationBool.leftOperand.targetType = "device";\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : $(contactName).text() }).get("id");\n\
+					nodeRelationBool.leftOperand.methodName = "getContactStatus";\n\
+					nodeRelationBool.leftOperand.returnType = "boolean";\n\
 					nodeRelationBool.leftOperand.args = [];\n\
 					\n\
 					nodeRelationBool.rightOperand = {};\n\
-					nodeRelationBool.rightOperand.type = 'boolean';\n\
-					nodeRelationBool.rightOperand.value = 'true';\n\
+					nodeRelationBool.rightOperand.type = "boolean";\n\
+					nodeRelationBool.rightOperand.value = "true";\n\
 					\n\
 					return nodeRelationBool;\n\
-				}",
-				"assembledContactStatus = 'le capteur de contact de' sep contactName:C sep 'est assemble'\n\
+				}',
+				'assembledContactStatus = "<span class=' + "'status'" + '>le capteur de contact de</span>" sep contactName:C sep "<span class=' + "'status'" + '>est assemble</span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
-					nodeRelationBool.type = 'NodeRelationBool';\n\
-					nodeRelationBool.operator = '==';\n\
+					nodeRelationBool.type = "NodeRelationBool";\n\
+					nodeRelationBool.operator = "==";\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
-					nodeRelationBool.leftOperand.targetType = 'device';\n\
-					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : contactName }).get('id');\n\
-					nodeRelationBool.leftOperand.methodName = 'getContactStatus';\n\
-					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
+					nodeRelationBool.leftOperand.targetType = "device";\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : $(contactName).text() }).get("id");\n\
+					nodeRelationBool.leftOperand.methodName = "getContactStatus";\n\
+					nodeRelationBool.leftOperand.returnType = "boolean";\n\
 					nodeRelationBool.leftOperand.args = [];\n\
 					\n\
 					nodeRelationBool.rightOperand = {};\n\
-					nodeRelationBool.rightOperand.type = 'boolean';\n\
-					nodeRelationBool.rightOperand.value = 'true';\n\
+					nodeRelationBool.rightOperand.type = "boolean";\n\
+					nodeRelationBool.rightOperand.value = "true";\n\
 					\n\
 					return nodeRelationBool;\n\
-				}",
-				"openedContactStatus = contactName:C sep 'est ouvert'\n\
+				}',
+				'openedContactStatus = contactName:C sep "<span class=' + "'status'" + '>est ouvert</span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
-					nodeRelationBool.type = 'NodeRelationBool';\n\
-					nodeRelationBool.operator = '==';\n\
+					nodeRelationBool.type = "NodeRelationBool";\n\
+					nodeRelationBool.operator = "==";\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
-					nodeRelationBool.leftOperand.targetType = 'device';\n\
-					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : contactName }).get('id');\n\
-					nodeRelationBool.leftOperand.methodName = 'getContactStatus';\n\
-					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
+					nodeRelationBool.leftOperand.targetType = "device";\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : $(contactName).text() }).get("id");\n\
+					nodeRelationBool.leftOperand.methodName = "getContactStatus";\n\
+					nodeRelationBool.leftOperand.returnType = "boolean";\n\
 					nodeRelationBool.leftOperand.args = [];\n\
 					\n\
 					nodeRelationBool.rightOperand = {};\n\
-					nodeRelationBool.rightOperand.type = 'boolean';\n\
-					nodeRelationBool.rightOperand.value = 'false';\n\
+					nodeRelationBool.rightOperand.type = "boolean";\n\
+					nodeRelationBool.rightOperand.value = "false";\n\
 					\n\
 					return nodeRelationBool;\n\
-				}",
-				"disassembledContactStatus = 'le capteur de contact de' sep contactName:C sep 'est desassemble'\n\
+				}',
+				'disassembledContactStatus = "<span class=' + "'status'" + '>le capteur de contact de</span>" sep contactName:C sep "<span class=' + "'status'" + '>est desassemble</span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
-					nodeRelationBool.type = 'NodeRelationBool';\n\
-					nodeRelationBool.operator = '==';\n\
+					nodeRelationBool.type = "NodeRelationBool";\n\
+					nodeRelationBool.operator = "==";\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
-					nodeRelationBool.leftOperand.targetType = 'device';\n\
-					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : contactName }).get('id');\n\
-					nodeRelationBool.leftOperand.methodName = 'getContactStatus';\n\
-					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
+					nodeRelationBool.leftOperand.targetType = "device";\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : $(contactName).text() }).get("id");\n\
+					nodeRelationBool.leftOperand.methodName = "getContactStatus";\n\
+					nodeRelationBool.leftOperand.returnType = "boolean";\n\
 					nodeRelationBool.leftOperand.args = [];\n\
 					\n\
 					nodeRelationBool.rightOperand = {};\n\
-					nodeRelationBool.rightOperand.type = 'boolean';\n\
-					nodeRelationBool.rightOperand.value = 'false';\n\
+					nodeRelationBool.rightOperand.type = "boolean";\n\
+					nodeRelationBool.rightOperand.value = "false";\n\
 					\n\
 					return nodeRelationBool;\n\
-				}",
+				}',
 				"C = {{listOfContactSensors}}"
 			]
 		},
@@ -304,67 +304,67 @@ define([
 			listAnchor		: "{{listOfKeyCardReaders}}",
 			rules			: [
 				"eventKeyCardReader = insertedKCREvent / removedKCREvent",
-				"insertedKCREvent = 'on insere une carte dans' sep KCRName:KCR\n\
+				'insertedKCREvent = "<span class=' + "'event'" + '>on insere une carte dans</span>" sep KCRName:KCR\n\
 				{\n\
 					var nodeEvent = {};\n\
-					nodeEvent.type = 'NodeEvent';\n\
-					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.findWhere({ name : KCRName }).get('id');\n\
-					nodeEvent.eventName = 'inserted';\n\
-					nodeEvent.eventValue = 'true';\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.findWhere({ name : $(KCRName).text() }).get("id");\n\
+					nodeEvent.eventName = "inserted";\n\
+					nodeEvent.eventValue = "true";\n\
 					\n\
 					return nodeEvent;\n\
-				}",
-				"removedKCREvent = 'on retire une carte de' sep KCRName:KCR\n\
+				}',
+				'removedKCREvent = "<span class=' + "'event'" + '>on retire une carte de</span>" sep KCRName:KCR\n\
 				{\n\
 					var nodeEvent = {};\n\
-					nodeEvent.type = 'NodeEvent';\n\
-					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.findWhere({ name : KCRName }).get('id');\n\
-					nodeEvent.eventName = 'inserted';\n\
-					nodeEvent.eventValue = 'false';\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.findWhere({ name : $(KCRName).text() }).get("id");\n\
+					nodeEvent.eventName = "inserted";\n\
+					nodeEvent.eventValue = "false";\n\
 					\n\
 					return nodeEvent;\n\
-				}",
+				}',
 				"statusKeyCardReader = cardInsertedKCRStatus / cardRemovedKCRStatus",
-				"cardInsertedKCRStatus = 'une carte est inseree dans' sep KCRName:KCR\n\
+				'cardInsertedKCRStatus = "<span class=' + "'status'" + '>une carte est inseree dans</span>" sep KCRName:KCR\n\
 				{\n\
 					var nodeRelationBool = {};\n\
-					nodeRelationBool.type = 'NodeRelationBool';\n\
-					nodeRelationBool.operator = '==';\n\
+					nodeRelationBool.type = "NodeRelationBool";\n\
+					nodeRelationBool.operator = "==";\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
-					nodeRelationBool.leftOperand.targetType = 'device';\n\
-					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : KCRName }).get('id');\n\
-					nodeRelationBool.leftOperand.methodName = 'getCardState';\n\
-					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
+					nodeRelationBool.leftOperand.targetType = "device";\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : $(KCRName).text() }).get("id");\n\
+					nodeRelationBool.leftOperand.methodName = "getCardState";\n\
+					nodeRelationBool.leftOperand.returnType = "boolean";\n\
 					nodeRelationBool.leftOperand.args = [];\n\
 					\n\
 					nodeRelationBool.rightOperand = {};\n\
-					nodeRelationBool.rightOperand.type = 'boolean';\n\
-					nodeRelationBool.rightOperand.value = 'true';\n\
+					nodeRelationBool.rightOperand.type = "boolean";\n\
+					nodeRelationBool.rightOperand.value = "true";\n\
 					\n\
 					return nodeRelationBool;\n\
-				}",
-				"cardRemovedKCRStatus = 'aucune carte n est inseree dans' sep KCRName:KCR\n\
+				}',
+				'cardRemovedKCRStatus = "<span class=' + "'status'" + '>aucune carte n est inseree dans</span>" sep KCRName:KCR\n\
 				{\n\
 					var nodeRelationBool = {};\n\
-					nodeRelationBool.type = 'NodeRelationBool';\n\
-					nodeRelationBool.operator = '==';\n\
+					nodeRelationBool.type = "NodeRelationBool";\n\
+					nodeRelationBool.operator = "==";\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
-					nodeRelationBool.leftOperand.targetType = 'device';\n\
-					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : KCRName }).get('id');\n\
-					nodeRelationBool.leftOperand.methodName = 'getCardState';\n\
-					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
+					nodeRelationBool.leftOperand.targetType = "device";\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : $(KCRName).text() }).get("id");\n\
+					nodeRelationBool.leftOperand.methodName = "getCardState";\n\
+					nodeRelationBool.leftOperand.returnType = "boolean";\n\
 					nodeRelationBool.leftOperand.args = [];\n\
 					\n\
 					nodeRelationBool.rightOperand = {};\n\
-					nodeRelationBool.rightOperand.type = 'boolean';\n\
-					nodeRelationBool.rightOperand.value = 'false';\n\
+					nodeRelationBool.rightOperand.type = "boolean";\n\
+					nodeRelationBool.rightOperand.value = "false";\n\
 					\n\
 					return nodeRelationBool;\n\
-				}",
+				}',
 				"KCR = {{listOfKeyCardReaders}}"
 			]
 		},
@@ -375,89 +375,91 @@ define([
 			listAnchor		: "{{listOfPlugs}}",
 			rules			: [
 				"eventPlug = turnedOnPlugEvent / turnedOffPlugEvent",
-				"turnedOnPlugEvent = 'on allume' sep plugName:PL\n\
+				'turnedOnPlugEvent = "<span class=' + "'event'" + '>on allume</span>" sep plugName:PL\n\
 				{\n\
 					var nodeEvent = {};\n\
-					nodeEvent.type = 'NodeEvent';\n\
-					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.findWhere({ name : plugName }).get('id');\n\
-					nodeEvent.eventName = 'plugState';\n\
-					nodeEvent.eventValue = 'true';\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.findWhere({ name : $(plugName).text() }).get("id");\n\
+					nodeEvent.eventName = "plugState";\n\
+					nodeEvent.eventValue = "true";\n\
 					\n\
 					return nodeEvent;\n\
-				}",
-				"turnedOffPlugEvent = 'on eteint' sep plugName:PL\n\
+				}',
+				'turnedOffPlugEvent = "<span class=' + "'event'" + '>on eteint</span>" sep plugName:PL\n\
 				{\n\
 					var nodeEvent = {};\n\
-					nodeEvent.type = 'NodeEvent';\n\
-					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.findWhere({ name : plugName }).get('id');\n\
-					nodeEvent.eventName = 'plugState';\n\
-					nodeEvent.eventValue = 'false';\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.findWhere({ name : $(plugName).text() }).get("id");\n\
+					nodeEvent.eventName = "plugState";\n\
+					nodeEvent.eventValue = "false";\n\
 					\n\
 					return nodeEvent;\n\
-				}",
+				}',
 				"statusPlug = isOnPlugStatus / isOffPlugStatus",
-				"isOnPlugStatus = plugName:PL sep 'est allume'\n\
+				'isOnPlugStatus = plugName:PL sep "<span class=' + "'status'" + '>est allumee</span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
-					nodeRelationBool.type = 'NodeRelationBool';\n\
-					nodeRelationBool.operator = '==';\n\
+					nodeRelationBool.type = "NodeRelationBool";\n\
+					nodeRelationBool.operator = "==";\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
-					nodeRelationBool.leftOperand.targetType = 'device';\n\
-					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : plugName }).get('id');\n\
-					nodeRelationBool.leftOperand.methodName = 'getRelayState';\n\
-					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
+					nodeRelationBool.leftOperand.targetType = "device";\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : $(plugName).text() }).get("id");\n\
+					nodeRelationBool.leftOperand.methodName = "getRelayState";\n\
+					nodeRelationBool.leftOperand.returnType = "boolean";\n\
 					nodeRelationBool.leftOperand.args = [];\n\
 					\n\
 					nodeRelationBool.rightOperand = {};\n\
-					nodeRelationBool.rightOperand.type = 'boolean';\n\
-					nodeRelationBool.rightOperand.value = 'true';\n\
+					nodeRelationBool.rightOperand.type = "boolean";\n\
+					nodeRelationBool.rightOperand.value = "true";\n\
 					\n\
 					return nodeRelationBool;\n\
-				}",
-				"isOffPlugStatus = plugName:PL sep 'est eteint'\n\
+				}',
+				'isOffPlugStatus = plugName:PL sep "<span class=' + "'status'" + '>est eteinte</span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
-					nodeRelationBool.type = 'NodeRelationBool';\n\
-					nodeRelationBool.operator = '==';\n\
+					nodeRelationBool.type = "NodeRelationBool";\n\
+					nodeRelationBool.operator = "==";\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
-					nodeRelationBool.leftOperand.targetType = 'device';\n\
-					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : plugName }).get('id');\n\
-					nodeRelationBool.leftOperand.methodName = 'getRelayState';\n\
-					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
+					nodeRelationBool.leftOperand.targetType = "device";\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : $(plugName).text() }).get("id");\n\
+					nodeRelationBool.leftOperand.methodName = "getRelayState";\n\
+					nodeRelationBool.leftOperand.returnType = "boolean";\n\
 					nodeRelationBool.leftOperand.args = [];\n\
 					\n\
 					nodeRelationBool.rightOperand = {};\n\
-					nodeRelationBool.rightOperand.type = 'boolean';\n\
-					nodeRelationBool.rightOperand.value = 'false';\n\
+					nodeRelationBool.rightOperand.type = "boolean";\n\
+					nodeRelationBool.rightOperand.value = "false";\n\
 					\n\
 					return nodeRelationBool;\n\
 				}\n\
-				",
+				',
 				"actionPlug = onPlugAction / offPlugAction",
-				"onPlugAction = 'allumer' sep plugName:PL\n\
+				'onPlugAction = "<span class=' + "'action-name'" + '>allumer</span>" sep plugName:PL\n\
 				{\n\
 					var nodeAction = {};\n\
-					nodeAction.type = 'NodeAction';\n\
-					nodeAction.deviceId = devices.findWhere({ name : plugName }).get('id');\n\
-					nodeAction.methodName = 'on';\n\
+					nodeAction.type = "NodeAction";\n\
+					nodeAction.targetType = "device";\n\
+					nodeAction.targetId = devices.findWhere({ name : $(plugName).text() }).get("id");\n\
+					nodeAction.methodName = "on";\n\
 					nodeAction.args = [];\n\
 					\n\
 					return nodeAction;\n\
-				}",
-				"offPlugAction = 'eteindre' sep plugName:PL\n\
+				}',
+				'offPlugAction = "<span class=' + "'action-name'" + '>eteindre</span>" sep plugName:PL\n\
 				{\n\
 					var nodeAction = {};\n\
-					nodeAction.type = 'NodeAction';\n\
-					nodeAction.deviceId = devices.findWhere({ name : plugName }).get('id');\n\
-					nodeAction.methodName = 'off';\n\
+					nodeAction.type = "NodeAction";\n\
+					nodeAction.targetType = "device";\n\
+					nodeAction.targetId = devices.findWhere({ name : $(plugName).text() }).get("id");\n\
+					nodeAction.methodName = "off";\n\
 					nodeAction.args = [];\n\
 					\n\
 					return nodeAction;\n\
-				}",
+				}',
 				"PL = {{listOfPlugs}}"
 			]
 		},
@@ -468,127 +470,127 @@ define([
 			listAnchor		: "{{listOfLamps}}",
 			rules			: [
 				"eventLamp	= turnedOnLampEvent / turnedOffLampEvent",
-				"turnedOnLampEvent = 'on allume' sep lampName:L\n\
+				'turnedOnLampEvent = "<span class=' + "'event'" + '>on allume</span>" sep lampName:L\n\
 				{\n\
 					var nodeEvent = {};\n\
-					nodeEvent.type = 'NodeEvent';\n\
-					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.findWhere({ name : lampName }).get('id');\n\
-					nodeEvent.eventName = 'value';\n\
-					nodeEvent.eventValue = 'true';\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.findWhere({ name : $(lampName).text() }).get("id");\n\
+					nodeEvent.eventName = "value";\n\
+					nodeEvent.eventValue = "true";\n\
 					\n\
 					return nodeEvent;\n\
-				}",
-				"turnedOffLampEvent = 'on eteint' sep lampName:L\n\
+				}',
+				'turnedOffLampEvent = "<span class=' + "'event'" + '>on eteint</span>" sep lampName:L\n\
 				{\n\
 					var nodeEvent = {};\n\
-					nodeEvent.type = 'NodeEvent';\n\
-					nodeEvent.sourceType = 'device';\n\
-					nodeEvent.sourceId = devices.findWhere({ name : lampName }).get('id');\n\
-					nodeEvent.eventName = 'value';\n\
-					nodeEvent.eventValue = 'false';\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.findWhere({ name : $(lampName).text() }).get("id");\n\
+					nodeEvent.eventName = "value";\n\
+					nodeEvent.eventValue = "false";\n\
 					\n\
 					return nodeEvent;\n\
-				}",
+				}',
 				"statusLamp	= isOnLampStatus / isOffLampStatus",
-				"isOnLampStatus = lampName:L sep 'est allumee'\n\
+				'isOnLampStatus = lampName:L sep "<span class=' + "'status'" + '>est allumee</span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
-					nodeRelationBool.type = 'NodeRelationBool';\n\
-					nodeRelationBool.operator = '==';\n\
+					nodeRelationBool.type = "NodeRelationBool";\n\
+					nodeRelationBool.operator = "==";\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
-					nodeRelationBool.leftOperand.targetType = 'device';\n\
-					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : lampName }).get('id');\n\
-					nodeRelationBool.leftOperand.methodName = 'getCurrentState';\n\
-					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
+					nodeRelationBool.leftOperand.targetType = "device";\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : $(lampName).text() }).get("id");\n\
+					nodeRelationBool.leftOperand.methodName = "getCurrentState";\n\
+					nodeRelationBool.leftOperand.returnType = "boolean";\n\
 					nodeRelationBool.leftOperand.args = [];\n\
 					\n\
 					nodeRelationBool.rightOperand = {};\n\
-					nodeRelationBool.rightOperand.type = 'boolean';\n\
-					nodeRelationBool.rightOperand.value = 'true';\n\
+					nodeRelationBool.rightOperand.type = "boolean";\n\
+					nodeRelationBool.rightOperand.value = "true";\n\
 					\n\
 					return nodeRelationBool;\n\
-				}",
-				"isOffLampStatus = lampName:L sep 'est eteinte'\n\
+				}',
+				'isOffLampStatus = lampName:L sep "<span class=' + "'status'" + '>est eteinte</span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
-					nodeRelationBool.type = 'NodeRelationBool';\n\
-					nodeRelationBool.operator = '==';\n\
+					nodeRelationBool.type = "NodeRelationBool";\n\
+					nodeRelationBool.operator = "==";\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
-					nodeRelationBool.leftOperand.targetType = 'device';\n\
-					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : lampName }).get('id');\n\
-					nodeRelationBool.leftOperand.methodName = 'getCurrentState';\n\
-					nodeRelationBool.leftOperand.returnType = 'boolean';\n\
+					nodeRelationBool.leftOperand.targetType = "device";\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : $(lampName).text() }).get("id");\n\
+					nodeRelationBool.leftOperand.methodName = "getCurrentState";\n\
+					nodeRelationBool.leftOperand.returnType = "boolean";\n\
 					nodeRelationBool.leftOperand.args = [];\n\
 					\n\
 					nodeRelationBool.rightOperand = {};\n\
-					nodeRelationBool.rightOperand.type = 'boolean';\n\
-					nodeRelationBool.rightOperand.value = 'false';\n\
+					nodeRelationBool.rightOperand.type = "boolean";\n\
+					nodeRelationBool.rightOperand.value = "false";\n\
 					\n\
 					return nodeRelationBool;\n\
-				}",
+				}',
 				"actionLamp = onLampAction / offLampAction / changeColorLampAction",
-				"onLampAction = 'allumer' sep lampName:L\n\
+				'onLampAction = "<span class=' + "'action-name'" + '>allumer</span>" sep lampName:L\n\
 				{\n\
 					var nodeAction = {};\n\
-					nodeAction.type = 'NodeAction';\n\
-					nodeAction.targetType = 'device';\n\
-					nodeAction.targetId = devices.findWhere({ name : lampName }).get('id');\n\
-					nodeAction.methodName = 'On';\n\
+					nodeAction.type = "NodeAction";\n\
+					nodeAction.targetType = "device";\n\
+					nodeAction.targetId = devices.findWhere({ name : $(lampName).text() }).get("id");\n\
+					nodeAction.methodName = "On";\n\
 					nodeAction.args = [];\n\
 					\n\
 					return nodeAction;\n\
-				}",
-				"offLampAction = 'eteindre' sep lampName:L\n\
+				}',
+				'offLampAction = "<span class=' + "'action-name'" + '>eteindre</span>" sep lampName:L\n\
 				{\n\
 					var nodeAction = {};\n\
-					nodeAction.type = 'NodeAction';\n\
-					nodeAction.targetType = 'device';\n\
-					nodeAction.targetId = devices.findWhere({ name : lampName }).get('id');\n\
-					nodeAction.methodName = 'Off';\n\
+					nodeAction.type = "NodeAction";\n\
+					nodeAction.targetType = "device";\n\
+					nodeAction.targetId = devices.findWhere({ name : $(lampName).text() }).get("id");\n\
+					nodeAction.methodName = "Off";\n\
 					nodeAction.args = [];\n\
 					\n\
 					return nodeAction;\n\
-				}",
-				"changeColorLampAction = 'changer la couleur de' sep lampName:L sep 'en' sep color:lampColor\n\
+				}',
+				'changeColorLampAction = "<span class=' + "'action-name'" + '>changer la couleur de</span>" sep lampName:L sep "<span class=' + "'action-name'" + '>en</span>" sep color:lampColor\n\
 				{\n\
 					var nodeAction = {};\n\
-					nodeAction.type = 'NodeAction';\n\
-					nodeAction.targetType = 'device';\n\
-					nodeAction.targetId = devices.findWhere({ name : lampName }).get('id');\n\
-					switch (color) {\n\
-						case 'rouge':\n\
-							nodeAction.methodName = 'setRed';\n\
+					nodeAction.type = "NodeAction";\n\
+					nodeAction.targetType = "device";\n\
+					nodeAction.targetId = devices.findWhere({ name : $(lampName).text() }).get("id");\n\
+					switch ($(color).text()) {\n\
+						case "rouge":\n\
+							nodeAction.methodName = "setRed";\n\
 							break;\n\
-						case 'bleu':\n\
-							nodeAction.methodName = 'setBlue';\n\
+						case "bleu":\n\
+							nodeAction.methodName = "setBlue";\n\
 							break;\n\
-						case 'vert':\n\
-							nodeAction.methodName = 'setGreen';\n\
+						case "vert":\n\
+							nodeAction.methodName = "setGreen";\n\
 							break;\n\
-						case 'jaune':\n\
-							nodeAction.methodName = 'setYellow';\n\
+						case "jaune":\n\
+							nodeAction.methodName = "setYellow";\n\
 							break;\n\
-						case 'orange':\n\
-							nodeAction.methodName = 'setOrange';\n\
+						case "orange":\n\
+							nodeAction.methodName = "setOrange";\n\
 							break;\n\
-						case 'violet':\n\
-							nodeAction.methodName = 'setPurple';\n\
+						case "violet":\n\
+							nodeAction.methodName = "setPurple";\n\
 							break;\n\
-						case 'rose':\n\
-							nodeAction.methodName = 'setPink';\n\
+						case "rose":\n\
+							nodeAction.methodName = "setPink";\n\
 							break;\n\
-						default:\n\
-							nodeAction.methodName = 'setDefault';\n\
+						case "blanc":\n\
+							nodeAction.methodName = "setDefault";\n\
 							break;\n\
 					}\n\
 					nodeAction.args = [];\n\
 					\n\
 					return nodeAction;\n\
-				}",
-				"lampColor = 'rouge' / 'bleu' / 'vert' / 'jaune' / 'orange' / 'violet' / 'rose'",
+				}',
+				'lampColor = "<span class=' + "'value'" + '>blanc<span>" / "<span class=' + "'value'" + '>rouge</span>" / "<span class=' + "'value'" + '>bleu</span>" / "<span class=' + "'value'" + '>vert</span>" / "<span class=' + "'value'" + '>jaune</span>" / "<span class=' + "'value'" + '>orange</span>" / "<span class=' + "'value'" + '>violet</span>" / "<span class=' + "'value'" + '>rose</span>"',
 				"L = {{listOfLamps}}"
 			]
 		}

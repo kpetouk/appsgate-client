@@ -13,13 +13,13 @@
 		<ul class="list-unstyled">
 			<li>
 				<% if (program.get("runningState") === "DEPLOYED") { %>
-					<label class="label label-info">D&eacute;ploy&eacute;</label>
+					<label class="label label-default">D&eacute;ploy&eacute;</label>
 					<button type="button" id="<%= program.get('id') %>" class="btn btn-sm btn-info pull-right start-program-button">D&eacute;marrer</button>
 				<% } else if (program.get("runningState") === "STARTED") { %>
 					<label class="label label-success">D&eacute;marr&eacute;</label>
 					<button type="button" id="<%= program.get('id') %>" class="btn btn-sm btn-info pull-right stop-program-button">Arr&ecirc;ter</button>
 				<% } else if (program.get("runningState") === "STOPPED") { %>
-					<label class="label label-info">Arr&ecirc;t&eacute;</label>
+					<label class="label label-warning">Arr&ecirc;t&eacute;</label>
 					<button type="button" id="<%= program.get('id') %>" class="btn btn-sm btn-info pull-right start-program-button">D&eacute;marrer</button>
 				<% } else if (program.get("runningState") === "FAILED") { %>
 					<label class="label label-danger">Erreur</label>

@@ -410,14 +410,17 @@ define([
 			"click button.save-program-button"		: "onSaveProgramButton",
 			"click button.delete-program-button"	: "onDeleteProgramButton",
 			"keyup textarea"						: "onKeyUpTextarea",
-			"click button.completion-button"		: "onClickCompletionButton"
+			"click button.completion-button"		: "onClickCompletionButton",
+			"click .programInput span"				: "onClickSourceElement",
+			"click button.valid-value"				: "onValidValueButton"
 		},
 		
 		/**
 		 * @constructor
 		 */
 		initialize:function() {
-			this.grammar = new Grammar();
+			window.grammar = new Grammar();
+			this.userInputSource = this.model.get("name") + " ecrit par Bob pour Alice ";
 		},
 		
 		/**
@@ -444,47 +447,89 @@ define([
 		
 		onClickCompletionButton:function(e) {
 			if ($(e.currentTarget).text() === "espace") {
-				$("textarea").val($("textarea").val() + " ");
-				// $(".programInput").append(" ");
+				$(".programInput").append(" ");
 			} else {
-				$("textarea").val($("textarea").val() + $(e.currentTarget).text());
-				//$(".programInput").append
+				$(".programInput").append($(e.currentTarget).html());
 			}
 			this.compileProgram();
 		},
+
+		onClickSourceElement:function(e) {
+			var i = $(".programInput").children().toArray().indexOf(e.currentTarget);
+			// var before = $(".programInput").children().splice(0, i);
+			var after = $(".programInput").children().splice(i, $(".programInput").children().length);
+			
+			$(".deleted-elements").html("");
+			
+			after.forEach(function(element) {
+				$(".deleted-elements").append(element);
+			});
+			
+			this.compileProgram();
+		},
 		
+		onValidValueButton:function() {
+			$(".programInput").append("<span class='value'>" + $(".expected-elements input").val() + "</span> ");
+			this.compileProgram();
+		},
+
 		compileProgram:function() {
 			// build the beginning of the user input source to be given to the parser
 			var programInput = this.model.get("name") + " ecrit par Bob pour Alice ";
-			if (this.model.get("daemon") === true || this.model.get("daemon") === "true") {
-				programInput += "daemon ";
-			} else {
-				programInput += "notDaemon ";
-			}
-			programInput += $("textarea").val();
-			
+			programInput += $(".programInput").html();
+			programInput = programInput.replace(/"/g, "'");
+			console.log(programInput);
+
 			// clear the error span
 			$(".expected-elements").html("");
-			
+
 			try {
-				var ast = this.grammar.parse(programInput);
+				var ast = grammar.parse(programInput);
 				$(".alert-danger").addClass("hide");
 				$(".alert-success").removeClass("hide");
-				
+
 				this.model.set("source", ast);
-				this.model.set("userInputSource", $("textarea").val());
-				
+				this.model.set("userInputSource", $(".programInput").html());
+
 				console.log(ast);
+				// include a syntax error to the program input to get the next possibilities if the user wants to add rules
+				try {
+					grammar.parse(programInput + " ");
+				} catch(e) {
+					e.expected.forEach(function(nextPossibility) {
+						if (nextPossibility.indexOf("input") === -1) {
+							$(".expected-elements").append("<button class='btn btn-default completion-button'>" + nextPossibility.replace(/"/g, "").replace(/\\/g, "") + "</button>&nbsp;");
+						} else {
+							$(".expected-elements").append(nextPossibility);
+						}
+					});
+				}
 			} catch(e) {
 				$(".alert-danger").removeClass("hide");
 				$(".alert-success").addClass("hide");
-				
-				e.expected.forEach(function(nextPossibility) {
-					$(".expected-elements").append("<button class='btn btn-default completion-button'>" + nextPossibility.replace(/"/g, "") + "</button>&nbsp;");
-				});
+
+				if (e.expected.length === 1) {
+					if (e.expected[0] === "espace") {
+						$(".programInput").append(" ");
+						this.compileProgram();
+					} else if (e.expected[0].indexOf("input") === -1) {
+						$(".programInput").append(e.expected[0].replace(/"/g, ""));
+						this.compileProgram();
+					} else {
+						$(".expected-elements").html(e.expected[0]);
+					}
+				} else {
+					e.expected.forEach(function(nextPossibility) {
+						if (nextPossibility.indexOf("input") === -1) {
+							$(".expected-elements").append("<button class='btn btn-default completion-button'>" + nextPossibility.replace(/"/g, "").replace(/\\/g, "") + "</button>&nbsp;");
+						} else {
+							$(".expected-elements").append(nextPossibility);
+						}
+					});
+				}
 			}
 		},
-	
+
 		/**
 		 * Render the editor view
 		 */
