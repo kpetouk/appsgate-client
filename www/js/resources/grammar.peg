@@ -197,7 +197,7 @@ actionProgramDisactivate = "<span class='action-name'>desactiver le programme</s
 }
 
 eventProgram = activatedProgramEvent / disactivatedProgramEvent
-activatedProgramEvent = programName:P sep "est active"
+activatedProgramEvent = programName:P sep "<span class='event'>est active</span>"
 {
 	var nodeEvent = {};
 	nodeEvent.type = "NodeEvent";
@@ -209,7 +209,7 @@ activatedProgramEvent = programName:P sep "est active"
 	return nodeEvent;
 }
 
-disactivatedProgramEvent = programName:P sep "est desactive"
+disactivatedProgramEvent = programName:P sep "<span class='event'>est desactive</span>"
 {
 	var nodeEvent = {};
 	nodeEvent.type = "NodeEvent";

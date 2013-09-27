@@ -556,6 +556,9 @@ define([
 		 * Render the editor view
 		 */
 		render:function() {
+			delete window.grammar;
+			window.grammar = new Grammar();
+			
 			// render the editor with the program
 			this.$el.html(this.tplEditor({
 				program : this.model
