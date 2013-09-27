@@ -343,6 +343,9 @@ define([
 			// send modification to the backend
 			program.save();
 			
+			// refresh the menu
+			this.render();
+			
 			return false;
 		},
 		
@@ -362,6 +365,9 @@ define([
 			
 			// send modification to the backend
 			program.save();
+			
+			// refresh the menu
+			this.render();
 			
 			return false;
 		},
@@ -401,40 +407,20 @@ define([
 		tplEditor : _.template(programEditorTemplate),
 		
 		events : {
-			"click button.daemon-program-button"	: "onDaemonProgramButton",
 			"click button.save-program-button"		: "onSaveProgramButton",
 			"click button.delete-program-button"	: "onDeleteProgramButton",
 			"keyup textarea"						: "onKeyUpTextarea",
-			"click button.completion-button"		: "onClickCompletionButton"
+			"click button.completion-button"		: "onClickCompletionButton",
+			"click .programInput span"				: "onClickSourceElement",
+			"click button.valid-value"				: "onValidValueButton"
 		},
 		
 		/**
 		 * @constructor
 		 */
 		initialize:function() {
-			this.grammar = new Grammar();
-		},
-		
-		/**
-		 * Callback when the user has clicked on the button to toggle the daemon state of a program
-		 */
-		onDaemonProgramButton:function() {
-			// update the attribute of the program and the source
-			if (this.model.get("daemon")) {
-				this.model.set("daemon", false);
-				this.model.get("source").daemon = "false";
-				$(".daemon-program-button")
-						.removeClass("btn-info")
-						.addClass("btn-default")
-						.html("<i class='glyphicon glyphicon-unchecked'></i> Daemon");
-			} else {
-				this.model.set("daemon", true);
-				this.model.get("source").daemon = "true";
-				$(".daemon-program-button")
-						.removeClass("btn-default")
-						.addClass("btn-info")
-						.html("<i class='glyphicon glyphicon-check'></i> Daemon");
-			}
+			window.grammar = new Grammar();
+			this.userInputSource = this.model.get("name") + " ecrit par Bob pour Alice ";
 		},
 		
 		/**
@@ -461,44 +447,89 @@ define([
 		
 		onClickCompletionButton:function(e) {
 			if ($(e.currentTarget).text() === "espace") {
-				$("textarea").val($("textarea").val() + " ");
+				$(".programInput").append(" ");
 			} else {
-				$("textarea").val($("textarea").val() + $(e.currentTarget).text());
+				$(".programInput").append($(e.currentTarget).html());
 			}
 			this.compileProgram();
 		},
+
+		onClickSourceElement:function(e) {
+			var i = $(".programInput").children().toArray().indexOf(e.currentTarget);
+			// var before = $(".programInput").children().splice(0, i);
+			var after = $(".programInput").children().splice(i, $(".programInput").children().length);
+			
+			$(".deleted-elements").html("");
+			
+			after.forEach(function(element) {
+				$(".deleted-elements").append(element);
+			});
+			
+			this.compileProgram();
+		},
 		
+		onValidValueButton:function() {
+			$(".programInput").append("<span class='value'>" + $(".expected-elements input").val() + "</span> ");
+			this.compileProgram();
+		},
+
 		compileProgram:function() {
 			// build the beginning of the user input source to be given to the parser
 			var programInput = this.model.get("name") + " ecrit par Bob pour Alice ";
-			if (this.model.get("daemon") === true || this.model.get("daemon") === "true") {
-				programInput += "daemon ";
-			} else {
-				programInput += "notDaemon ";
-			}
-			programInput += $("textarea").val();
-			
+			programInput += $(".programInput").html();
+			programInput = programInput.replace(/"/g, "'");
+			console.log(programInput);
+
 			// clear the error span
 			$(".expected-elements").html("");
-			
+
 			try {
-				var ast = this.grammar.parse(programInput);
-				console.log(ast);
+				var ast = grammar.parse(programInput);
 				$(".alert-danger").addClass("hide");
 				$(".alert-success").removeClass("hide");
-				
+
 				this.model.set("source", ast);
-				this.model.set("userInputSource", $("textarea").val());
+				this.model.set("userInputSource", $(".programInput").html());
+
+				console.log(ast);
+				// include a syntax error to the program input to get the next possibilities if the user wants to add rules
+				try {
+					grammar.parse(programInput + " ");
+				} catch(e) {
+					e.expected.forEach(function(nextPossibility) {
+						if (nextPossibility.indexOf("input") === -1) {
+							$(".expected-elements").append("<button class='btn btn-default completion-button'>" + nextPossibility.replace(/"/g, "").replace(/\\/g, "") + "</button>&nbsp;");
+						} else {
+							$(".expected-elements").append(nextPossibility);
+						}
+					});
+				}
 			} catch(e) {
 				$(".alert-danger").removeClass("hide");
 				$(".alert-success").addClass("hide");
-				
-				e.expected.forEach(function(nextPossibility) {
-					$(".expected-elements").append("<button class='btn btn-default completion-button'>" + nextPossibility.replace(/"/g, "") + "</button>&nbsp;");
-				});
+
+				if (e.expected.length === 1) {
+					if (e.expected[0] === "espace") {
+						$(".programInput").append(" ");
+						this.compileProgram();
+					} else if (e.expected[0].indexOf("input") === -1) {
+						$(".programInput").append(e.expected[0].replace(/"/g, ""));
+						this.compileProgram();
+					} else {
+						$(".expected-elements").html(e.expected[0]);
+					}
+				} else {
+					e.expected.forEach(function(nextPossibility) {
+						if (nextPossibility.indexOf("input") === -1) {
+							$(".expected-elements").append("<button class='btn btn-default completion-button'>" + nextPossibility.replace(/"/g, "").replace(/\\/g, "") + "</button>&nbsp;");
+						} else {
+							$(".expected-elements").append(nextPossibility);
+						}
+					});
+				}
 			}
 		},
-		
+
 		/**
 		 * Render the editor view
 		 */
@@ -510,6 +541,9 @@ define([
 			
 			// initialize the popover
 			this.$el.find("#delete-popover").popover({ html : true });
+			
+			// try to compile the program to show the potential errors
+			this.compileProgram();
 			
 			return this;
 		}

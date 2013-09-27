@@ -17,24 +17,32 @@
 		<li class="list-group-item">
 			<img src="<%= sensorImg %>" class="img-responsive">
 		</li>
+	<% } else if (device.get("type") === "21" || device.get("type") === 21) { %>
+		<li class="list-group-item">
+			<h1 class="text-center">
+				<i class="glyphicon glyphicon-time"></i>
+				<%= device.get("hour") %>:<%= device.get("minute") %>
+			</h1>
+		</li>
 	<% } %>
-
 	<li class="list-group-item">
 		<strong>Type</strong>
 		<div class="pull-right">
 			<%= sensorType %>
 		</div>
 	</li>
-	<li class="list-group-item">
-		<strong>Emplacement</strong>
-		<div class="pull-right">
-			<% if (device.get("placeId") === "-1") { %>
-				Non localis&eacute;
-			<% } else { %>
-				<%= locations.get(device.get("placeId")).get("name")%>
-			<% } %>
-		</div>
-	</li>
+	<% if (device.get("type") !== "21" && device.get("type") !== 21) { %>
+		<li class="list-group-item">
+			<strong>Emplacement</strong>
+			<div class="pull-right">
+				<% if (device.get("placeId") === "-1") { %>
+					Non localis&eacute;
+				<% } else { %>
+					<%= locations.get(device.get("placeId")).get("name")%>
+				<% } %>
+			</div>
+		</li>
+	<% } %>
 	<li class="list-group-item">
 		<strong>Statut</strong>
 		<div class="pull-right">
@@ -72,18 +80,49 @@
 							<p class="hide text-danger">Nom de dispositif d&eacute;j&agrave; existant</p>
 						</div>
 					</div><br>
-					<div class="row">
-						<div class="col-md-3">Emplacement</div>
-						<div class="col-md-9">
-							<select id="device-place" class="form-control">
-								<% _.each(locations.models, function(location) { %>
-									<option value="<%= location.get('id') %>" <% if (location.get("id") === device.get("placeId")) { %>selected<% } %>>
-										<%= location.get("name") %>
-									</option>
-								<% }) %>
-							</select>
+					<% if (device.get("type") !== "21" && device.get("type") !== 21) { %>
+						<div class="row">
+							<div class="col-md-3">Emplacement</div>
+							<div class="col-md-9">
+								<select id="device-place" class="form-control">
+									<% _.each(locations.models, function(location) { %>
+										<option value="<%= location.get('id') %>" <% if (location.get("id") === device.get("placeId")) { %>selected<% } %>>
+											<%= location.get("name") %>
+										</option>
+									<% }) %>
+								</select>
+							</div>
 						</div>
-					</div>
+					<% } else { %>
+						<div class="row">
+							<div class="col-md-3">Heure</div>
+							<div class="col-md-9">
+								<div class="row">
+									<div class="col-md-4">
+										<select id="hour" class="form-control">
+											<% _.each(hours, function(h) { %>
+												<option value="<%= h %>"><%= h %></option>
+											<% }); %>
+										</select>
+									</div>
+									<div class="col-md-1">:</div>
+									<div class="col-md-4">
+										<select id="minute" class="form-control">
+											<% _.each(minutes, function(m) { %>
+												<option value="<%= m %>"><%= m %></option>
+											<% }); %>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div><br>
+						<div class="row">
+							<div class="col-md-3">Vitesse</div>
+							<div class="col-md-9">
+								<input type="text" class="form-control" id="time-flow-rate">
+							</div>
+						</div>
+					<% } %>
 				</form>
 			</div>
 			<div class="modal-footer">

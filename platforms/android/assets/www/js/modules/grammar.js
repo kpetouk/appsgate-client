@@ -3,10 +3,6 @@ define([
 	"text!resources/grammar.peg",
 	"peg"
 ], function(_, grammar) {
-
-	// define the default root grammar
-	var rootGrammar = "";
-
 	/**
 	 * @constructor
 	 */
@@ -21,6 +17,7 @@ define([
 		// strings for the list of events and actions
 		var listOfEvents = "eventProgram";
 		var listOfStatus = "statusProgram";
+		
 		var listOfActions = "actionProgram";
 
 		// group the devices by types - if any for a type, insert its corresponding grammar and the list of devices
@@ -71,7 +68,7 @@ define([
 		insertListOfDevices:function(grammarAnchor, listOfDevices) {
 			var deviceNames = "";
 			listOfDevices.forEach(function(d) {
-				deviceNames += '"' + d.get("name") + '"/'; 
+				deviceNames += '"<span class=' + "'device-name'>" + d.get("name") + '</span>"/'; 
 			});
 			if (deviceNames !== "") {
 				deviceNames = deviceNames.substring(0, deviceNames.length - 1);

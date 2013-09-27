@@ -22,6 +22,8 @@ require.config({
 		colorWheel: "libs/raphael/plugins/colorwheel",
 		// parser generator
 		peg: "libs/peg/peg-0.7.min",
+		// Moment.js library
+		moment: "libs/moment/moment.min",
         // Modules
         communicator: "modules/communicator",
         location: "modules/location",

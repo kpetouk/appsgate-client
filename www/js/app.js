@@ -15,6 +15,10 @@ define([
             ""		: "index",
 			"reset" : "index"
         },
+		
+		initialize:function() {
+			this.isModalShown = false;
+		},
 
         // default route of the application
         index:function() {
@@ -81,12 +85,13 @@ define([
         window.dispatcher = _.clone(Backbone.Events);
 		
 		// Setting the connection with the box
-		window.communicator = new Communicator('ws://prima5:8080');
+		window.communicator = new Communicator('ws://194.199.23.174:8080');
 
         // Wait for the socket to be opened
         dispatcher.on("WebSocketOpen", function() {
 			// delete the current collections if any - in case of a reconnection
 			if (typeof devices !== "undefined") {
+				devices.getCoreClock().unsynchronize();
 				devices.reset();
 				delete devices;
 			}
