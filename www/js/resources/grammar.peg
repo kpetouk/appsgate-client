@@ -204,7 +204,7 @@ activatedProgramEvent = programName:P sep "est active"
 	nodeEvent.sourceType = "program";
 	nodeEvent.sourceId = programs.findWhere({ name : $(programName).text() }).get("id");
 	nodeEvent.eventName = "runningState";
-	nodeEvent.eventValue = "true";
+	nodeEvent.eventValue = "STARTED";
 
 	return nodeEvent;
 }
@@ -216,7 +216,7 @@ disactivatedProgramEvent = programName:P sep "est desactive"
 	nodeEvent.sourceType = "program";
 	nodeEvent.sourceId = programs.findWhere({ name : $(programName).text() }).get("id");
 	nodeEvent.eventName = "runningState";
-	nodeEvent.eventValue = "true";
+	nodeEvent.eventValue = "STOPPED";
 
 	return nodeEvent;
 }
