@@ -5,10 +5,10 @@
 	<% if (device.get("name") !== "") { %>
 		<%= device.get("name") %>
 	<% } else { %>
-		<em>Dispositif sans nom</em>
+		<em data-i18n="devices.device-no-name"></em>
 	<% } %>
 	<div class="pull-right">
-		<button type="button" class="btn btn-default" data-target="#edit-device-modal" data-toggle="modal"><i class="glyphicon glyphicon-edit"></i> Editer</button>
+		<button type="button" class="btn btn-default" data-target="#edit-device-modal" data-toggle="modal"><i class="glyphicon glyphicon-edit"></i> <span data-i18n="form.edit-button"></span></button>
 	</div>
 </div>
 
@@ -36,7 +36,7 @@
 			<strong>Emplacement</strong>
 			<div class="pull-right">
 				<% if (device.get("placeId") === "-1") { %>
-					Non localis&eacute;
+					<span data-i18n="devices.device-unlocated"></span>
 				<% } else { %>
 					<%= locations.get(device.get("placeId")).get("name")%>
 				<% } %>
@@ -44,14 +44,14 @@
 		</li>
 	<% } %>
 	<li class="list-group-item">
-		<strong>Statut</strong>
+		<strong data-i18n="devices.status-label"></strong>
 		<div class="pull-right">
 			<% if (device.get("status") === "0") { %>
-				<span class="label label-danger">D&eacute;connect&eacute;</span>
+				<span class="label label-danger" data-i18n="devices.status.disconnected"></span>
 			<% } else if (device.get("status" === "1")) { %>
-				<span class="label label-warning">En attente</span>
+				<span class="label label-warning" data-i18n="devices.status.waiting"></span>
 			<% } else { %>
-				<span class="label label-success">Connect&eacute;</span>
+				<span class="label label-success" data-i18n="devices.status.connected"></span>
 			<% } %>
 		</div>
 	</li>
@@ -68,21 +68,21 @@
 					<% if (device.get("name") !== "") { %>
 						<%= device.get("name") %>
 					<% } else { %>
-						<em>Dispositif sans nom</em>
+						<em data-i18n="devices.device-no-name"></em>
 					<% } %>
 				</h3>
 			</div>
 			<div class="modal-body">
 					<div class="row">
-						<div class="col-md-3">Nom</div>
+						<div class="col-md-3" data-i18n="modal-edit-device.name-label"></div>
 						<div class="col-md-9">
-							<input type="text" class="form-control" id="device-name" placeholder="Nom du dispositif">
-							<p class="hide text-danger">Nom de dispositif d&eacute;j&agrave; existant</p>
+							<input type="text" class="form-control" id="device-name" data-i18n="[placeholder]modal-edit-device.name-placeholder">
+							<p class="hide text-danger" data-i18n="modal-edit-device.name-already-existing"></p>
 						</div>
 					</div><br>
 					<% if (device.get("type") !== "21" && device.get("type") !== 21) { %>
 						<div class="row">
-							<div class="col-md-3">Emplacement</div>
+							<div class="col-md-3" data-i18n="modal-edit-device.place-label"></div>
 							<div class="col-md-9">
 								<select id="device-place" class="form-control">
 									<% _.each(locations.models, function(location) { %>
@@ -95,7 +95,7 @@
 						</div>
 					<% } else { %>
 						<div class="row">
-							<div class="col-md-3">Heure</div>
+							<div class="col-md-3" data-i18n="modal-edit-device.time-label"></div>
 							<div class="col-md-9">
 								<div class="row">
 									<div class="col-md-4">
@@ -117,7 +117,7 @@
 							</div>
 						</div><br>
 						<div class="row">
-							<div class="col-md-3">Vitesse</div>
+							<div class="col-md-3" data-i18n="modal-edit-device.time-speed-label"></div>
 							<div class="col-md-9">
 								<input type="text" class="form-control" id="time-flow-rate">
 							</div>
@@ -126,8 +126,8 @@
 				</form>
 			</div>
 			<div class="modal-footer">
-				<button class="btn btn-default cancel-edit-device" data-dismiss="modal">Annuler</button>
-				<button class="btn btn-primary valid-button">Valider</button>
+				<button class="btn btn-default cancel-edit-device" data-dismiss="modal" data-i18n="form.cancel-button"></button>
+				<button class="btn btn-primary valid-button" data-i18n="form.valid-button"></button>
 			</div>
 		</div>
 	</div>

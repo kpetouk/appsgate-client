@@ -1,0 +1,12 @@
+<a href="#devices/<%= device.get('id') %>" class="list-group-item <% if (active) { %> active <% } %>">
+	<p class="list-group-item-text lead">
+		<% if (device.get("name") !== "") { %>
+			<%= device.get("name") %>
+		<% } else { %>
+			<em>Horloge syst&egrave;me sans nom</em>
+		<% } %>
+		<span class="label label-info pull-right">
+			<%= device.get("hour") %>:<%= device.get("minute") %>
+		</span>
+	</p>
+</a>

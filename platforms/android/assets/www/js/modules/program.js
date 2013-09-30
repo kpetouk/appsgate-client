@@ -6,8 +6,9 @@ define([
 	"text!templates/program/menu/menu.html",
 	"text!templates/program/menu/programContainer.html",
 	"text!templates/program/menu/addButton.html",
+	"text!templates/devices/menu/coreClockContainer.html",
 	"text!templates/program/editor/editor.html"
-], function($, _, Backbone, Grammar, programMenuTemplate, programContainerMenuTemplate, addProgramButtonTemplate, programEditorTemplate) {
+], function($, _, Backbone, Grammar, programMenuTemplate, programContainerMenuTemplate, addProgramButtonTemplate, coreClockContainerMenuTemplate, programEditorTemplate) {
 	// initialize the module
 	var Program = {};
 
@@ -23,7 +24,7 @@ define([
 			appRouter.showMenuView(new Program.Views.Menu());
 			
 			// set active the first element - displayed by default
-			$($(".aside-menu .list-group-item")[0]).addClass("active");
+			$($($(".aside-menu .list-group")[1]).find(".list-group-item")[0]).addClass("active");
 			
 			// display the first program
 			appRouter.showView(new Program.Views.Editor({ model : programs.at(0) }));
@@ -205,9 +206,10 @@ define([
 	 * Render the side menu for the programs
 	 */
 	Program.Views.Menu = Backbone.View.extend({
-		tpl					: _.template(programMenuTemplate),
-		tplProgramContainer	: _.template(programContainerMenuTemplate),
-		tplAddProgramButton	: _.template(addProgramButtonTemplate),
+		tpl						: _.template(programMenuTemplate),
+		tplProgramContainer		: _.template(programContainerMenuTemplate),
+		tplAddProgramButton		: _.template(addProgramButtonTemplate),
+		tplCoreClockContainer	: _.template(coreClockContainerMenuTemplate),
 		
 		/**
 		 * Bind events of the DOM elements from the view to their callback
@@ -215,6 +217,7 @@ define([
 		events : {
 			"click a.list-group-item"						: "updateSideMenu",
 			"show.bs.modal #add-program-modal"				: "initializeModal",
+			"hide.bs.modal #add-program-modal"				: "toggleModalValue",
 			"click #add-program-modal button.valid-button"	: "validAddProgram",
 			"keyup #add-program-modal input:text"			: "validAddProgram",
 			"click button.start-program-button"				: "onStartProgramButton",
@@ -257,6 +260,16 @@ define([
 			$("#add-program-modal .text-danger").addClass("hide");
 			$("#add-program-modal input:checkbox").prop("checked", true);
 			$("#add-program-modal .valid-button").addClass("disabled");
+			
+			// tell the router that there is a modal
+			appRouter.isModalShown = true;
+		},
+		
+		/**
+		 * Tell the router there is no modal anymore
+		 */
+		toggleModalValue:function() {
+			appRouter.isModalShown = false;
 		},
 		
 		/**
@@ -376,26 +389,35 @@ define([
 		 * Render the side menu
 		 */
 		render:function() {
-			var self = this;
-			
-			// initialize the content
-			this.$el.html(this.tpl());
-			
-			// for each program, add a menu item
-			programs.forEach(function(program) {
-				self.$el.find(".list-group").append(self.tplProgramContainer({
-					program : program,
-					active	: Backbone.history.fragment.split("/programs")[1] === program.get("name") ? true : false
+			if (!appRouter.isModalShown) {
+				var self = this;
+
+				// initialize the content
+				this.$el.html(this.tpl());
+
+				// put the time on the top of the menu
+				$(this.$el.find(".list-group")[0]).append(this.tplCoreClockContainer({
+					device	: devices.getCoreClock(),
+					active	: Backbone.history.fragment === "devices/" + devices.getCoreClock().get("id") ? true : false
 				}));
-			});
-			
-			// "add program" button to the side menu
-			this.$el.append(this.tplAddProgramButton());
-			
-			// set active the current menu item
-			this.updateSideMenu();
-			
-			return this;
+
+				// for each program, add a menu item
+				this.$el.append(this.tpl());
+				programs.forEach(function(program) {
+					$(self.$el.find(".list-group")[1]).append(self.tplProgramContainer({
+						program : program,
+						active	: Backbone.history.fragment.split("/programs")[1] === program.get("name") ? true : false
+					}));
+				});
+
+				// "add program" button to the side menu
+				this.$el.append(this.tplAddProgramButton());
+
+				// set active the current menu item
+				this.updateSideMenu();
+
+				return this;
+			}
 		}
 
 	});
@@ -534,6 +556,9 @@ define([
 		 * Render the editor view
 		 */
 		render:function() {
+			delete window.grammar;
+			window.grammar = new Grammar();
+			
 			// render the editor with the program
 			this.$el.html(this.tplEditor({
 				program : this.model

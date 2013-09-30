@@ -10,6 +10,8 @@ require.config({
         jquery: "libs/jquery/jquery-1.8.2",
         // jQuery UI
         jqueryui: "libs/jquery/jquery-ui-1.10.0.min",
+		// i18next for internationalization
+		i18next: "libs/i18next/i18next.amd.withJQuery-1.7.1.min",
         // bootstrap
         bootstrap: "libs/bootstrap/js/bootstrap.min",
         // underscore library
@@ -22,6 +24,8 @@ require.config({
 		colorWheel: "libs/raphael/plugins/colorwheel",
 		// parser generator
 		peg: "libs/peg/peg-0.7.min",
+		// Moment.js library
+		moment: "libs/moment/moment.min",
         // Modules
         communicator: "modules/communicator",
         location: "modules/location",
@@ -49,6 +53,9 @@ require.config({
 		},
         "jqueryui": {
             deps: [ "jquery" ]
-        }
+        },
+		"i18next" : {
+			deps: [ "jquery" ] 
+		}
     }
 });

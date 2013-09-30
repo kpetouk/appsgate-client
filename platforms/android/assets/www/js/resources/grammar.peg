@@ -197,26 +197,26 @@ actionProgramDisactivate = "<span class='action-name'>desactiver le programme</s
 }
 
 eventProgram = activatedProgramEvent / disactivatedProgramEvent
-activatedProgramEvent = programName:P sep "est active"
+activatedProgramEvent = programName:P sep "<span class='event'>est active</span>"
 {
 	var nodeEvent = {};
 	nodeEvent.type = "NodeEvent";
 	nodeEvent.sourceType = "program";
 	nodeEvent.sourceId = programs.findWhere({ name : $(programName).text() }).get("id");
 	nodeEvent.eventName = "runningState";
-	nodeEvent.eventValue = "true";
+	nodeEvent.eventValue = "STARTED";
 
 	return nodeEvent;
 }
 
-disactivatedProgramEvent = programName:P sep "est desactive"
+disactivatedProgramEvent = programName:P sep "<span class='event'>est desactive</span>"
 {
 	var nodeEvent = {};
 	nodeEvent.type = "NodeEvent";
 	nodeEvent.sourceType = "program";
 	nodeEvent.sourceId = programs.findWhere({ name : $(programName).text() }).get("id");
 	nodeEvent.eventName = "runningState";
-	nodeEvent.eventValue = "true";
+	nodeEvent.eventValue = "STOPPED";
 
 	return nodeEvent;
 }
@@ -250,9 +250,21 @@ number "<form class='form-inline'><div class='form-group'><input type='text' cla
 
 string "Chaine de caract&egrave;res"
 	= chars:([^" \r\n]+) { return chars.join(""); }
+
 boolean = true / false
 true = "vrai" { return true; }
 false = "faux" { return false; }
+
+time "<form class='form-inline' role='form'><div class='form-group'><input type='text' id='time' class='form-control' placeholder='hh:mm'></div><button type='button' class='btn btn-primary valid-value'>Valider</button></form>"
+	= "<span class='value'>" hour:[0-9]+ ":" minute:[0-9]+ "</span>"
+{
+	var time = devices.getCoreClock().get("moment").clone();
+	time.set("hour", parseInt(hour.join("")));
+	time.set("minute", parseInt(minute.join("")));
+	time.set("second", 0);
+
+	return time.valueOf();
+}
 
 /* separators */
 sep "espace"

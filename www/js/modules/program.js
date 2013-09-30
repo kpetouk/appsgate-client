@@ -2,13 +2,12 @@ define([
 	"jquery",
 	"underscore",
 	"backbone",
-	"grammar",
 	"text!templates/program/menu/menu.html",
 	"text!templates/program/menu/programContainer.html",
 	"text!templates/program/menu/addButton.html",
 	"text!templates/devices/menu/coreClockContainer.html",
 	"text!templates/program/editor/editor.html"
-], function($, _, Backbone, Grammar, programMenuTemplate, programContainerMenuTemplate, addProgramButtonTemplate, coreClockContainerMenuTemplate, programEditorTemplate) {
+], function($, _, Backbone, programMenuTemplate, programContainerMenuTemplate, addProgramButtonTemplate, coreClockContainerMenuTemplate, programEditorTemplate) {
 	// initialize the module
 	var Program = {};
 
@@ -281,7 +280,7 @@ define([
 			// name is empty
 			if ($("#add-program-modal input:text").val() === "") {
 				$("#add-program-modal .text-danger")
-						.text("Le nom du programme doit être renseigné.")
+						.text($.i18n.t("modal-add-program.name-empty"))
 						.removeClass("hide");
 				$("#add-program-modal .valid-button").addClass("disabled");
 				
@@ -291,7 +290,7 @@ define([
 			// name already exists
 			if (programs.where({ name : $("#add-program-modal input:text").val() }).length > 0) {
 				$("#add-program-modal .text-danger")
-						.text("Nom déjà existant")
+						.text($.i18n.t("modal-add-program.name-already-existing"))
 						.removeClass("hide");
 				$("#add-program-modal .valid-button").addClass("disabled");
 				
@@ -321,7 +320,7 @@ define([
 						// instantiate a model for the new program
 						var program = new Program.Model({
 							name	: $("#add-program-modal input:text").val(),
-							daemon	: $("#add-program-modal input:checkbox").prop("checked")
+							daemon	: "false"
 						});
 
 						// send the program to the backend
@@ -415,6 +414,9 @@ define([
 
 				// set active the current menu item
 				this.updateSideMenu();
+				
+				// translate the view
+				this.$el.i18n();
 
 				return this;
 			}
@@ -441,8 +443,9 @@ define([
 		 * @constructor
 		 */
 		initialize:function() {
-			window.grammar = new Grammar();
-			this.userInputSource = this.model.get("name") + " ecrit par Bob pour Alice ";
+			if (typeof this.model !== "undefined") {
+				this.userInputSource = this.model.get("name") + " " + $.i18n.t("language.written-by") + " Bob pour Alice ";
+			}
 		},
 		
 		/**
@@ -468,7 +471,7 @@ define([
 		},
 		
 		onClickCompletionButton:function(e) {
-			if ($(e.currentTarget).text() === "espace") {
+			if ($(e.currentTarget).text() === $.i18n.t("language.space")) {
 				$(".programInput").append(" ");
 			} else {
 				$(".programInput").append($(e.currentTarget).html());
@@ -497,7 +500,7 @@ define([
 
 		compileProgram:function() {
 			// build the beginning of the user input source to be given to the parser
-			var programInput = this.model.get("name") + " ecrit par Bob pour Alice ";
+			var programInput = this.model.get("name") + " " + $.i18n.t("language.written-by") + " Bob pour Alice ";
 			programInput += $(".programInput").html();
 			programInput = programInput.replace(/"/g, "'");
 			console.log(programInput);
@@ -529,9 +532,13 @@ define([
 			} catch(e) {
 				$(".alert-danger").removeClass("hide");
 				$(".alert-success").addClass("hide");
+				
+				if (e.expected.length === 1) {
+					console.log(e.expected);
+				}
 
 				if (e.expected.length === 1) {
-					if (e.expected[0] === "espace") {
+					if (e.expected[0] === $.i18n.t("language.space")) {
 						$(".programInput").append(" ");
 						this.compileProgram();
 					} else if (e.expected[0].indexOf("input") === -1) {
@@ -556,19 +563,25 @@ define([
 		 * Render the editor view
 		 */
 		render:function() {
-			delete window.grammar;
-			window.grammar = new Grammar();
-			
 			// render the editor with the program
 			this.$el.html(this.tplEditor({
 				program : this.model
 			}));
 			
 			// initialize the popover
-			this.$el.find("#delete-popover").popover({ html : true });
+			this.$el.find("#delete-popover").popover({
+				html		: true,
+				content		: "<button type='button' class='btn btn-danger delete-program-button'>" + $.i18n.t("form.delete-button") + "</button>",
+				placement	: "bottom"
+			});
 			
 			// try to compile the program to show the potential errors
-			this.compileProgram();
+			if (typeof this.model !== "undefined") {
+				this.compileProgram();
+			}
+			
+			// translate the view
+			this.$el.i18n();
 			
 			return this;
 		}

@@ -6,8 +6,10 @@ define([
 	"device",
     "location",
     "program",
-	"bootstrap"
-], function($, _, Backbone, Communicator, Device, Location, Program) {
+	"grammar",
+	"bootstrap",
+	"i18next"
+], function($, _, Backbone, Communicator, Device, Location, Program, Grammar) {
 
 	// define the application router
 	var AppRouter = Backbone.Router.extend({
@@ -15,6 +17,15 @@ define([
             ""		: "index",
 			"reset" : "index"
         },
+		
+		initialize:function() {
+			this.isModalShown = false;
+			this.locale = "fr-FR";
+			
+			$.i18n.init({ lng : this.locale }).done(function() {
+				$("body").i18n();
+			});
+		},
 
         // default route of the application
         index:function() {
@@ -25,7 +36,7 @@ define([
 			$($(".navbar li")[0]).addClass("active");
 			
 			// set active the first element of the aside menu - displayed by default
-			$($(".aside-menu .list-group-item")[0]).addClass("active");
+			$($($(".aside-menu .list-group")[1]).find(".list-group-item")[0]).addClass("active");
         },
 
 		// update the side menu w/ new content
@@ -70,7 +81,17 @@ define([
 			this.currentView = view;
 			$(".body-content").html(this.currentView.$el);
 			this.currentView.render();
-        }
+        },
+		
+		updateLocale:function(locale) {
+			this.locale = locale;
+			
+			$.i18n.init({ lng : this.locale }).done(function() {
+				locations.get("-1").set("name", $.i18n.t("places-menu.unlocated-devices"));
+				appRouter.navigate("reset", { trigger : true });
+				$("body").i18n();
+			});
+		}
     });
 
 	/**
@@ -81,12 +102,13 @@ define([
         window.dispatcher = _.clone(Backbone.Events);
 		
 		// Setting the connection with the box
-		window.communicator = new Communicator('ws://prima5:8080');
+		window.communicator = new Communicator('ws://194.199.23.174:8080');
 
         // Wait for the socket to be opened
         dispatcher.on("WebSocketOpen", function() {
 			// delete the current collections if any - in case of a reconnection
 			if (typeof devices !== "undefined") {
+				devices.getCoreClock().unsynchronize();
 				devices.reset();
 				delete devices;
 			}
@@ -130,6 +152,9 @@ define([
 
 			// all data have been received, launch the user interface
 			dispatcher.on("dataReady", function() {
+				// initialize the grammar
+				window.grammar = new Grammar();
+				
 				$("#lost-connection-modal").modal("hide");
 				$("#settings-modal").modal("hide");
 
@@ -234,11 +259,19 @@ define([
 			var serverAddr = "ws://" + $("#settings-modal .addr-server").val() + ":";
 			serverAddr += $("#settings-modal .port-server").val() === "" ? "8080" : $("#settings-modal .port-server").val();
 
-			// set the new address
-			communicator.setServerAddr(serverAddr);
+			// update the language if updated
+			if ($("#settings-modal select#language :selected").val() !== appRouter.locale) {
+				appRouter.updateLocale($("#settings-modal select#language :selected").val());
+				$("#settings-modal").modal("hide");
+			}
 
-			// reconnect w/ to the new server
-			communicator.reconnect();
+			if (communicator.getServerAddr() !== serverAddr) {
+				// set the new address
+				communicator.setServerAddr(serverAddr);
+
+				// reconnect w/ to the new server
+				communicator.reconnect();
+			}
 		}
 	}
 	

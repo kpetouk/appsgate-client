@@ -4,9 +4,10 @@ define([
 	"backbone",
 	"text!templates/locations/menu/menu.html",
 	"text!templates/locations/menu/placeContainer.html",
+	"text!templates/devices/menu/coreClockContainer.html",
 	"text!templates/locations/menu/addButton.html",
 	"text!templates/locations/details/details.html"
-], function($, _, Backbone, placeMenuTemplate, placeContainerMenuTemplate, addPlaceButtonTemplate, locationDetailsTemplate) {
+], function($, _, Backbone, placeMenuTemplate, placeContainerMenuTemplate, coreClockContainerMenuTemplate, addPlaceButtonTemplate, locationDetailsTemplate) {
 	// initialize the module
 	var Location = {};
 
@@ -23,7 +24,7 @@ define([
 			appRouter.showMenuView(new Location.Views.Menu());
 			
 			// set active the first element - displayed by default
-			$($(".aside-menu .list-group-item")[0]).addClass("active");
+			$($($(".aside-menu .list-group")[1]).find(".list-group-item")[0]).addClass("active");
 			
 			// display the first place
 			appRouter.showView(new Location.Views.Details({ model : locations.at(0) }));
@@ -409,9 +410,10 @@ define([
 	 * Render the side menu for the places
 	 */
 	Location.Views.Menu = Backbone.View.extend({
-		tpl					: _.template(placeMenuTemplate),
-		tplPlaceContainer	: _.template(placeContainerMenuTemplate),
-		tplAddPlaceButton	: _.template(addPlaceButtonTemplate),
+		tpl						: _.template(placeMenuTemplate),
+		tplPlaceContainer		: _.template(placeContainerMenuTemplate),
+		tplCoreClockContainer	: _.template(coreClockContainerMenuTemplate),
+		tplAddPlaceButton		: _.template(addPlaceButtonTemplate),
 		
 		/**
 		 * Bind events of the DOM elements from the view to their callback
@@ -419,6 +421,7 @@ define([
 		events: {
 			"click a.list-group-item"						: "updateSideMenu",
 			"show.bs.modal #add-place-modal"				: "initializeModal",
+			"hidden.bs.modal #add-place-modal"				: "toggleModalValue",
 			"click #add-place-modal button.valid-button"	: "validEditName",
 			"keyup #add-place-modal input"					: "validEditName"
 		},
@@ -444,6 +447,7 @@ define([
 			_.forEach($("a.list-group-item"), function(item) {
 				$(item).removeClass("active");
 			});
+			
 			$(e.currentTarget).addClass("active");
 		},
 		
@@ -454,6 +458,16 @@ define([
 			$("#add-place-modal input").val("");
 			$("#add-place-modal .text-danger").addClass("hide");
 			$("#add-place-modal .valid-button").addClass("disabled");
+			
+			// the router that there is a modal
+			appRouter.isModalShown = true;
+		},
+		
+		/**
+		 * Tell the router there is no modal anymore
+		 */
+		toggleModalValue:function() {
+			appRouter.isModalShown = false;
 		},
 		
 		/**
@@ -513,6 +527,9 @@ define([
 
 						// add it to the collection
 						locations.add(place);
+						
+						// tell the router that there is no modal any more
+						appRouter.isModalShown = false;
 					});
 					
 					// hide the modal
@@ -527,32 +544,46 @@ define([
 		 * Render the side menu
 		 */
 		render:function() {
-			var self = this;
-			
-			// initialize the content
-			this.$el.html(this.tpl());
-			
-			// for each location, add a menu item
-			locations.forEach(function(location) {
-				if (location.get("id") !== "-1") {
-					self.$el.find(".list-group").append(self.tplPlaceContainer({
-						place : location,
-						active	: Backbone.history.fragment.split("/")[1] === location.get("id") ? true : false
+			if (!appRouter.isModalShown) {
+				var self = this;
+
+				// initialize the content
+				this.$el.html(this.tpl());
+
+				// put the time on the top of the menu
+				if (typeof devices.getCoreClock() !== "undefined") { // dirty hack to avoid a bug when reconnecting - TODO
+					$(this.$el.find(".list-group")[0]).append(this.tplCoreClockContainer({
+						device	: devices.getCoreClock(),
+						active	: Backbone.history.fragment === "devices/" + devices.getCoreClock().get("id") ? true : false
 					}));
 				}
-			});
-			
-			// put the unlocated devices into a separate group list
-			this.$el.append(this.tpl());
-			$(this.$el.find(".list-group")[1]).append(this.tplPlaceContainer({
-				place	: locations.get("-1"),
-				active	: Backbone.history.fragment.split("/")[1] === "-1" ? true : false
-			}));
-			
-			// "add place" button to the side menu
-			this.$el.append(this.tplAddPlaceButton());
-			
-			return this;
+
+				// for each location, add a menu item
+				this.$el.append(this.tpl());
+				locations.forEach(function(location) {
+					if (location.get("id") !== "-1") {
+						$(self.$el.find(".list-group")[1]).append(self.tplPlaceContainer({
+							place : location,
+							active	: Backbone.history.fragment.split("/")[1] === location.get("id") ? true : false
+						}));
+					}
+				});
+
+				// put the unlocated devices into a separate group list
+				this.$el.append(this.tpl());
+				$(this.$el.find(".list-group")[2]).append(this.tplPlaceContainer({
+					place	: locations.get("-1"),
+					active	: Backbone.history.fragment.split("/")[1] === "-1" ? true : false
+				}));
+
+				// "add place" button to the side menu
+				this.$el.append(this.tplAddPlaceButton());
+				
+				// set active the current item menu
+				// this.updateSideMenu();
+
+				return this;
+			}
 		}
 	});
 
@@ -745,22 +776,24 @@ define([
 		 * Render the view
 		 */
 		render:function() {
-			// render the view itselft
-			this.$el.html(this.tpl({
-				place : this.model,
-				deviceTypes	: deviceTypesName
-			}));
-			
-			// put the name of the place by default in the modal to edit
-			$("#edit-name-place-modal .place-name").val(this.model.get("name"));
-			
-			// hide the error message
-			$("#edit-name-place-modal .text-error").hide();
-			
-			// initialize the popover
-			this.$el.find("#delete-popover").popover({ html : true });
-			
-			return this;
+			if (!appRouter.isModalShown) {
+				// render the view itselft
+				this.$el.html(this.tpl({
+					place : this.model,
+					deviceTypes	: deviceTypesName
+				}));
+
+				// put the name of the place by default in the modal to edit
+				$("#edit-name-place-modal .place-name").val(this.model.get("name"));
+
+				// hide the error message
+				$("#edit-name-place-modal .text-error").hide();
+
+				// initialize the popover
+				this.$el.find("#delete-popover").popover({ html : true });
+
+				return this;
+			}
 		}
 	});
 

@@ -3,7 +3,10 @@ define([
 	"underscore",
 	"backbone",
 	"raphael",
+	"moment",
+	"text!templates/devices/menu/menu.html",
 	"text!templates/devices/menu/deviceContainer.html",
+	"text!templates/devices/menu/coreClockContainer.html",
 	"text!templates/devices/list/deviceListByCategory.html",
 	"text!templates/devices/details/deviceContainer.html",
 	"text!templates/devices/details/contact.html",
@@ -13,13 +16,15 @@ define([
 	"text!templates/devices/details/temperature.html",
 	"text!templates/devices/details/plug.html",
 	"text!templates/devices/details/phillipsHue.html",
+	"text!templates/devices/details/coreClock.html",
 	"colorWheel"
-], function($, _, Backbone, Raphael, deviceContainerMenuTemplate, 
+], function($, _, Backbone, Raphael, Moment,
+		deviceMenuTemplate, deviceContainerMenuTemplate, coreClockContainerMenuTemplate,
 		deviceListByCategoryTemplate,
 		deviceDetailsTemplate,
 		contactDetailTemplate, illuminationDetailTemplate,
 		keyCardDetailTemplate, switchDetailTemplate, temperatureDetailTemplate,
-		plugDetailTemplate, phillipsHueDetailTemplate) {
+		plugDetailTemplate, phillipsHueDetailTemplate, coreClockDetailTemplate) {
 	
 	// initialize the module
 	var Device = {};
@@ -57,6 +62,10 @@ define([
 		7 : {
 			singular	: "Lampe Philips Hue",
 			plural		: "Lampes Philips Hue"
+		},
+		21 : {
+			singular	: "Heure syst&egrave;me",
+			plural		: "Heures syst&egrave;me"
 		}
 	};
 	
@@ -593,6 +602,44 @@ define([
 				'lampColor = "<span class=' + "'value'" + '>blanc<span>" / "<span class=' + "'value'" + '>rouge</span>" / "<span class=' + "'value'" + '>bleu</span>" / "<span class=' + "'value'" + '>vert</span>" / "<span class=' + "'value'" + '>jaune</span>" / "<span class=' + "'value'" + '>orange</span>" / "<span class=' + "'value'" + '>violet</span>" / "<span class=' + "'value'" + '>rose</span>"',
 				"L = {{listOfLamps}}"
 			]
+		},
+		21	: {
+			eventAnchor		: "eventCoreClock",
+			statusAnchor	: "statusCoreClock",
+			listAnchor		: "{{listOfCoreClock}}",
+			rules			: [
+				'eventCoreClock = "<span class=' + "'event'" + '>il est</span>" sep time:time\n\
+				{\n\
+					var nodeEvent = {};\n\
+					\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.getCoreClock().get("id");\n\
+					nodeEvent.eventName = "ClockAlarm";\n\
+					nodeEvent.eventValue = time;\n\
+					\n\
+					return nodeEvent;\n\
+				}',
+				'statusCoreClock = "<span class=' + "'status'" + '>il est</span>" sep time:time\n\
+				{\n\
+					var nodeRelationBool = {};\n\
+					nodeRelationBool.type = "NodeRelationBool";\n\
+					nodeRelationBool.operator = "==";\n\
+					\n\
+					nodeRelationBool.leftOperand = {};\n\
+					nodeRelationBool.leftOperand.targetType = "device";\n\
+					nodeRelationBool.leftOperand.targetId = devices.getCoreClock().get("id");\n\
+					nodeRelationBool.leftOperand.methodName = "getCurrentTimeInMillis";\n\
+					nodeRelationBool.leftOperand.returnType = "number";\n\
+					nodeRelationBool.leftOperand.args = [];\n\
+					\n\
+					nodeRelationBool.rightOperand = {};\n\
+					nodeRelationBool.rightOperand.type = "number";\n\
+					nodeRelationBool.rightOperand.value = time;\n\
+					\n\
+					return nodeRelationBool;\n\
+				}'
+			]
 		}
 	};
 
@@ -617,13 +664,14 @@ define([
 			appRouter.showMenuView(new Device.Views.Menu());
 			
 			// set active the first element - displayed by default
-			$($(".aside-menu .list-group-item")[0]).addClass("active");
+			$($($(".aside-menu .list-group")[1]).find(".list-group-item")[0]).addClass("active");
 			
 			// display the first category of devices
-			appRouter.showView(new Device.Views.DevicesByType({ id: $($(".aside-menu .list-group-item")[0]).attr("id").split("side-")[1] }));
+			var typeId = $($($(".aside-menu .list-group")[1]).find(".list-group-item")[0]).attr("id").split("side-")[1];
+			appRouter.showView(new Device.Views.DevicesByType({ id: typeId }));
 			
 			// update the url
-			appRouter.navigate("#devices/types/1");
+			appRouter.navigate("#devices/types/" + typeId);
 		},
 		
 		/**
@@ -693,7 +741,7 @@ define([
 		 * @param method Remote method name to call
 		 * @param args Array containing the argument taken by the method. Each entry of the array has to be { type : "", value "" }
 		 */
-		remoteCall:function(method, args) {
+		remoteCall:function(method, args, callId) {
 			// build the message
 			var messageJSON = {
 				targetType	: "1",
@@ -701,6 +749,10 @@ define([
 				method		: method,
 				args		: args
 			};
+			
+			if (typeof callId !== "undefined") {
+				messageJSON.callId = callId;
+			}
 			
 			// send the message
 			communicator.sendMessage(messageJSON);
@@ -726,6 +778,10 @@ define([
 								model.sendSaturation();
 							} else if (attribute === "brightness" && (model.get("type") === "7" || model.get("type") === 7)) {
 								model.sendBrightness();
+							} else if ((attribute === "hour" || attribute === "minute") && (model.get("type") === "21" || model.get("type") === 21)) {
+								model.sendTimeInMillis();
+							} else if (attribute === "flowRate" && (model.get("type") === "21" || model.get("type") === 21)) {
+								model.sendTimeFlowRate();
 							}
 						});
 						break;
@@ -877,6 +933,110 @@ define([
 			this.remoteCall("setBrightness", [{ type : "long", value : this.get("brightness") }]);
 		}
 	});
+	
+	/**
+	 * Implementation of the Core Clock
+	 *
+	 * @class Device.CoreClock
+	 */
+	Device.CoreClock = Device.Model.extend({
+		/**
+		 * @constructor
+		 */
+		initialize:function() {
+			var self = this;
+			
+			Device.CoreClock.__super__.initialize.apply(this, arguments);
+			
+			// attribute for the clock
+			this.set("moment", Moment(parseInt(this.get("clockValue"))));
+			this.set("year", this.get("moment").year());
+			this.set("month", this.get("moment").month());
+			this.set("day", this.get("moment").day());
+			this.set("hour", this.get("moment").hour().toString());
+			if (this.get("hour").length === 1) {
+				this.set("hour", "0" + this.get("hour"));
+			}
+			this.set("minute", this.get("moment").minute().toString());
+			if (this.get("minute").length === 1) {
+				this.set("minute", "0" + this.get("minute"));
+			}
+			this.set("second", this.get("moment").second().toString());
+			if (this.get("second").length === 1) {
+				this.set("second", "0" + this.get("second"));
+			}
+			
+			// when the flow rate changes, update the interval that controls the local time
+			this.on("change:flowRate", function() {
+				clearInterval(this.intervalLocalClockValue);
+				this.intervalLocalClockValue = setInterval(self.updateClockValue, (1 / self.get("flowRate")) * 60000);
+			});
+			
+			// synchronize the core clock with the server every 10 minutes
+			dispatcher.on("systemCurrentTime", function(timeInMillis) {
+				self.moment = moment(timeInMillis);
+			});
+			
+			// bind the method to this model to avoid this keyword pointing to the window object for the callback on setInterval
+			this.synchronizeCoreClock = _.bind(this.synchronizeCoreClock, this);
+			this.intervalClockValue = setInterval(this.synchronizeCoreClock, 600000);
+			
+			// update the local time every minute
+			this.updateClockValue = _.bind(this.updateClockValue, this);
+			this.intervalLocalClockValue = setInterval(this.updateClockValue, (1 / this.get("flowRate")) * 60000);
+		},
+		
+		/**
+		 * Callback to update the clock value - increase the local time of one minute
+		 */
+		updateClockValue:function() {
+			this.get("moment").add("minute", 1);
+			this.set("year", this.get("moment").year().toString());
+			this.set("month", this.get("moment").month().toString());
+			this.set("day", this.get("moment").day().toString());
+			this.set("hour", this.get("moment").hour().toString());
+			if (this.get("hour").length === 1) {
+				this.set("hour", "0" + this.get("hour"));
+			}
+			this.set("minute", this.get("moment").minute().toString());
+			if (this.get("minute").length === 1) {
+				this.set("minute", "0" + this.get("minute"));
+			}
+			this.set("second", this.get("moment").second().toString());
+			if (this.get("second").length === 1) {
+				this.set("second", "0" + this.get("second"));
+			}
+		},
+		
+		/**
+		 * Send a request synchronization with the core clock of the system
+		 */
+		synchronizeCoreClock:function() {
+			this.remoteCall("getCurrentTimeInMillis", [], "systemCurrentTime");
+		},
+		
+		/**
+		 * Remove the automatic synchronization with the server
+		 */
+		unsynchronize:function() {
+			clearInterval(this.intervalClockValue);
+			clearInterval(this.intervalLocalClockValue);
+		},
+		
+		/**
+		 * Send a message to the backend the core clock time
+		 */
+		sendTimeInMillis:function() {
+			this.remoteCall("setCurrentTimeInMillis", [{ type : "long", value : this.get("moment").valueOf() }]);
+		},
+		
+		/**
+		 * Send a message to the backend the core clock flow rate
+		 */
+		sendTimeFlowRate:function() {
+			this.remoteCall("setTimeFlowRate", [{ type : "double", value : this.get("flowRate") }]);
+		}
+	});
 
 	// collection
 	Device.Collection = Backbone.Collection.extend({
@@ -940,6 +1100,9 @@ define([
 					break;
 				case 7:
 					this.add(new Device.PhillipsHue(device));
+					break;
+				case 21:
+					this.add(new Device.CoreClock(device));
 					break;
 				default:
 					console.log("unknown type", device);
@@ -1008,6 +1171,13 @@ define([
 		},
 		
 		/**
+		 * @return Core clock of the home - unique device
+		 */
+		getCoreClock:function() {
+			return devices.findWhere({ type : 21 });
+		},
+		
+		/**
 		 * @return Array of the unlocated devices
 		 */
 		getUnlocatedDevices:function() {
@@ -1035,9 +1205,9 @@ define([
 	 * Render the side menu for the devices
 	 */
 	Device.Views.Menu = Backbone.View.extend({
-		tagName		: "div",
-		className	: "list-group",
-		tplDeviceContainer:	_.template(deviceContainerMenuTemplate),
+		tpl						: _.template(deviceMenuTemplate),
+		tplDeviceContainer		:	_.template(deviceContainerMenuTemplate),
+		tplCoreClockContainer	: _.template(coreClockContainerMenuTemplate),
 		
 		/**
 		 * Bind events of the DOM elements from the view to their callback
@@ -1080,33 +1250,44 @@ define([
 				}
 			}
 		},
-		
+
 		/**
 		 * Render the side menu
 		 */
-		 render:function() {
-			 var self = this;
-			 
-			 // initialize the content
-			 this.$el.html("");
-			 
-			 // for each category of devices, add a menu item
-			 var types = devices.getDevicesByType();
-			 _.forEach(_.keys(types), function(type) {
-				self.$el.append(self.tplDeviceContainer({
-					type	: type,
-					typeName	: devices.getDevicesByType()[type].length === 1 ? deviceTypesName[type].singular : deviceTypesName[type].plural,
-					devices		: types[type],
-					places		: locations,
-					unlocatedDevices: devices.filter(function(d) { return (d.get("placeId") === "-1" && d.get("type") === type) }),
-					active		: Backbone.history.fragment.split("devices/types/")[1] === type ? true : false
+		render:function() {
+			if (!appRouter.isModalShown) {
+				var self = this;
+
+				// initialize the content
+				this.$el.html(this.tpl());
+
+				// put the time on the top of the menu
+				$(this.$el.find(".list-group")[0]).append(this.tplCoreClockContainer({
+					device	: devices.getCoreClock(),
+					active	: Backbone.history.fragment === "devices/" + devices.getCoreClock().get("id") ? true : false
 				}));
-			 });
-			 
-			 // set active the current item menu
-			 this.updateSideMenu();
-			 
-			 return this;
+
+				// for each category of devices, add a menu item
+				this.$el.append(this.tpl());
+				var types = devices.getDevicesByType();
+				_.forEach(_.keys(types), function(type) {
+					if (type !== "21") {
+						$(self.$el.find(".list-group")[1]).append(self.tplDeviceContainer({
+							type		: type,
+							typeName	: devices.getDevicesByType()[type].length === 1 ? deviceTypesName[type].singular : deviceTypesName[type].plural,
+							devices		: types[type],
+							places		: locations,
+							unlocatedDevices: devices.filter(function(d) { return (d.get("placeId") === "-1" && d.get("type") === type) }),
+							active		: Backbone.history.fragment.split("devices/types/")[1] === type ? true : false
+						}));
+					}
+				});
+
+				// set active the current item menu
+				this.updateSideMenu();
+
+				return this;
+			 }
 		 }
 	});
 
@@ -1120,6 +1301,7 @@ define([
 		tplTemperature: _.template(temperatureDetailTemplate),
 		tplPlug: _.template(plugDetailTemplate),
 		tplPhillipsHue: _.template(phillipsHueDetailTemplate),
+		tplCoreClock: _.template(coreClockDetailTemplate),
 		
 		// map the events and their callback
 		events: {
@@ -1127,6 +1309,7 @@ define([
 			"click button.toggle-lamp-button"				: "onToggleLampButton",
 			"click button.toggle-plug-button"				: "onTogglePlugButton",
 			"show.bs.modal #edit-device-modal"				: "initializeModal",
+			"hide.bs.modal #edit-device-modal"				: "toggleModalValue",
 			"click #edit-device-modal button.valid-button"	: "validEditDevice",
 			"keyup #edit-device-modal input"				: "validEditDevice",
 			"change #edit-device-modal select"				: "checkDevice"
@@ -1210,9 +1393,26 @@ define([
 		 * Clear the input text, hide the error message and disable the valid button by default
 		 */
 		initializeModal:function() {
-			$("#edit-device-modal input").val(this.model.get("name").replace(/&eacute;/g, "é").replace(/&egrave;/g, "è"));
+			$("#edit-device-modal input#device-name").val(this.model.get("name").replace(/&eacute;/g, "é").replace(/&egrave;/g, "è"));
 			$("#edit-device-modal .text-danger").addClass("hide");
 			$("#edit-device-modal .valid-button").addClass("disabled");
+			
+			// initialize the field to edit the core clock if needed
+			if (this.model.get("type") === "21" || this.model.get("type") === 21) {
+				$("#edit-device-modal select#hour").val(this.model.get("hour"));
+				$("#edit-device-modal select#minute").val(this.model.get("minute"));
+				$("#edit-device-modal input#time-flow-rate").val(this.model.get("flowRate"));
+			}
+			
+			// tell the router that there is a modal
+			appRouter.isModalShown = true;
+		},
+		
+		/**
+		 * Tell the router there is no modal anymore
+		 */
+		toggleModalValue:function() {
+			appRouter.isModalShown = false;
 		},
 		
 		/**
@@ -1243,7 +1443,7 @@ define([
 			
 			return true;
 		},
-				
+
 		/**
 		 * Save the edits of the device
 		 */
@@ -1255,17 +1455,46 @@ define([
 				
 				// update if information are ok
 				if (this.checkDevice()) {
-					var destPlaceId = $("#edit-device-modal select option:selected").val();
+					var destPlaceId;
+					
+					if (this.model.get("type") !== "21" && this.model.get("type") !== 21) {
+						destPlaceId = $("#edit-device-modal select option:selected").val();
+					}
 					
 					this.$el.find("#edit-device-modal").on("hidden.bs.modal", function() {
 						// set the new name to the device
-						self.model.set("name", $("#edit-device-modal input").val());
+						self.model.set("name", $("#edit-device-modal input#device-name").val());
 						
 						// send the updates to the server
 						self.model.save();
 						
-						// move the device
-						locations.moveDevice(self.model.get("placeId"), destPlaceId, self.model.get("id"), true);
+						// move the device if this is not the core clock
+						if (self.model.get("type") !== "21" && self.model.get("type") !== 21) {
+							locations.moveDevice(self.model.get("placeId"), destPlaceId, self.model.get("id"), true);
+						} else { // update the time and the flow rate set by the user
+							// update the moment attribute
+							self.model.get("moment").set("hour", parseInt($("#edit-device-modal select#hour").val()));
+							self.model.get("moment").set("minute", parseInt($("#edit-device-modal select#minute").val()));
+							
+							// retrieve the value of the flow rate set by the user
+							var timeFlowRate = $("#edit-device-modal input#time-flow-rate").val();
+							
+							// update the attributes hour and minute
+							self.model.set("hour", self.model.get("moment").hour());
+							self.model.set("minute", self.model.get("moment").minute());
+							
+							// send the update to the server
+							self.model.save();
+							
+							// update the attribute time flow rate
+							self.model.set("flowRate", timeFlowRate);
+							
+							// send the update to the server
+							self.model.save();
+						}
+						
+						// tell the router that there is no modal any more
+						appRouter.isModalShown = false;
 						
 						return false;
 					});
@@ -1305,87 +1534,107 @@ define([
 		 * Render the detailled view of a device
 		 */
 		render: function() {
-			switch (this.model.get("type")) {
-				case 0: // temperature sensor
-					this.$el.html(this.template({
-						device: this.model,
-						sensorImg: "styles/img/sensors/temperature.jpg",
-						sensorType: deviceTypesName[0].singular,
-						locations: locations,
-						deviceDetails: this.tplTemperature
-					}));
-					break;
+			if (!appRouter.isModalShown) {
+				switch (this.model.get("type")) {
+					case 0: // temperature sensor
+						this.$el.html(this.template({
+							device: this.model,
+							sensorImg: "styles/img/sensors/temperature.jpg",
+							sensorType: deviceTypesName[0].singular,
+							locations: locations,
+							deviceDetails: this.tplTemperature
+						}));
+						break;
 
-				case 1: // illumination sensor
-					this.$el.html(this.template({
-						device: this.model,
-						sensorImg: "styles/img/sensors/illumination.jpg",
-						sensorType: deviceTypesName[1].singular,
-						locations: locations,
-						deviceDetails: this.tplIllumination
-					}));
-					break;
+					case 1: // illumination sensor
+						this.$el.html(this.template({
+							device: this.model,
+							sensorImg: "styles/img/sensors/illumination.jpg",
+							sensorType: deviceTypesName[1].singular,
+							locations: locations,
+							deviceDetails: this.tplIllumination
+						}));
+						break;
 
-				case 2: // switch sensor
-					this.$el.html(this.template({
-						device: this.model,
-						sensorImg: "styles/img/sensors/doubleSwitch.jpg",
-						sensorType: deviceTypesName[2].singular,
-						locations: locations,
-						deviceDetails: this.tplSwitch
-					}));
-					break;
+					case 2: // switch sensor
+						this.$el.html(this.template({
+							device: this.model,
+							sensorImg: "styles/img/sensors/doubleSwitch.jpg",
+							sensorType: deviceTypesName[2].singular,
+							locations: locations,
+							deviceDetails: this.tplSwitch
+						}));
+						break;
 
-				case 3: // contact sensor
-					this.$el.html(this.template({
-						device: this.model,
-						sensorImg: "styles/img/sensors/contact.jpg",
-						sensorType: deviceTypesName[3].singular,
-						locations: locations,
-						deviceDetails: this.tplContact
-					}));
-					break;
+					case 3: // contact sensor
+						this.$el.html(this.template({
+							device: this.model,
+							sensorImg: "styles/img/sensors/contact.jpg",
+							sensorType: deviceTypesName[3].singular,
+							locations: locations,
+							deviceDetails: this.tplContact
+						}));
+						break;
 
-				case 4: // key card sensor
-					this.$el.html(this.template({
-						device: this.model,
-						sensorImg: "styles/img/sensors/keycard.jpg",
-						sensorType: deviceTypesName[4].singular,
-						locations: locations,
-						deviceDetails: this.tplKeyCard
-					}));
-					break;
-				
-				case 6: // plug
-					this.$el.html(this.template({
-						device: this.model,
-						sensorImg: "styles/img/sensors/plug.jpg",
-						sensorType: deviceTypesName[6].singular,
-						locations: locations,
-						deviceDetails: this.tplPlug
-					}));
-					break;
+					case 4: // key card sensor
+						this.$el.html(this.template({
+							device: this.model,
+							sensorImg: "styles/img/sensors/keycard.jpg",
+							sensorType: deviceTypesName[4].singular,
+							locations: locations,
+							deviceDetails: this.tplKeyCard
+						}));
+						break;
 
-				case 7: // phillips hue
-					this.$el.html(this.template({
-						device: this.model,
-						sensorType: deviceTypesName[7].singular,
-						locations: locations,
-						deviceDetails: this.tplPhillipsHue
-					}));
-					
-					// if the color wheel is not already displayed
-					if (typeof window.colorWheel === "undefined") {
-						this.renderColorWheel();
-					}
-					
-					// update the size of the color picker container
-					this.$el.find(".color-picker").height(colorWheel.size2 * 2);
+					case 6: // plug
+						this.$el.html(this.template({
+							device: this.model,
+							sensorImg: "styles/img/sensors/plug.jpg",
+							sensorType: deviceTypesName[6].singular,
+							locations: locations,
+							deviceDetails: this.tplPlug
+						}));
+						break;
 
-					break;
+					case 7: // phillips hue
+						this.$el.html(this.template({
+							device: this.model,
+							sensorType: deviceTypesName[7].singular,
+							locations: locations,
+							deviceDetails: this.tplPhillipsHue
+						}));
+
+						// if the color wheel is not already displayed
+						if (typeof window.colorWheel === "undefined") {
+							this.renderColorWheel();
+						}
+
+						// update the size of the color picker container
+						this.$el.find(".color-picker").height(colorWheel.size2 * 2);
+
+						break;
+					case 21: // core clock
+						var hours = new Array();
+						for (var i = 0; i < 24; i++) {
+							hours.push(i);
+						}
+
+						var minutes = new Array();
+						for (var i = 0; i < 60; i++) {
+							minutes.push(i);
+						}
+						this.$el.html(this.template({
+							device: this.model,
+							sensorType: deviceTypesName[21].singular,
+							locations: locations,
+							hours: hours,
+							minutes: minutes,
+							deviceDetails: this.tplCoreClock
+						}));
+				}
+
+				return this;
 			}
-
-			return this;
 		},
 		
 		/**
@@ -1515,13 +1764,15 @@ define([
 		 * Render the list
 		 */
 		render:function() {
-			this.$el.html(this.tpl({
-				typeId			: this.id,
-				deviceTypeName	: devices.getDevicesByType()[this.id].length === 1 ? deviceTypesName[this.id].singular : deviceTypesName[this.id].plural,
-				places			: locations
-			}));
-			
-			return this;
+			if (!appRouter.isModalShown) {
+				this.$el.html(this.tpl({
+					typeId			: this.id,
+					deviceTypeName	: devices.getDevicesByType()[this.id].length === 1 ? deviceTypesName[this.id].singular : deviceTypesName[this.id].plural,
+					places			: locations
+				}));
+
+				return this;
+			}
 		}
 	});
 

@@ -1,5 +1,5 @@
 <a data-toggle="modal" href="#add-program-modal" class="col-md-12 btn btn-primary">
-	<i class="glyphicon glyphicon-plus-sign"></i> Ajouter programme
+	<i class="glyphicon glyphicon-plus-sign"></i> <span data-i18n="programs-menu.add-button"></span>
 </a>
 
 <!-- modal to add a new place -->
@@ -8,26 +8,20 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title">Ajouter programme</h4>
+				<h4 class="modal-title" data-i18n="modal-add-program.title"></h4>
 			</div>
 			<div class="modal-body">
 				<div class="row">
-					<div class="col-md-3">Nom</div>
+					<div class="col-md-3" data-i18n="modal-add-program.name-label"></div>
 					<div class="col-md-9">
-						<input type="text" class="form-control" placeholder="Nom du programme">
-						<p class="hide text-danger">Nom de programme d&eacute;j&agrave; existant</p>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-3">Daemon</div>
-					<div class="col-md-9">
-						<input type="checkbox">
+						<input type="text" class="form-control" data-i18n="[placeholder]modal-add-program.name-placeholder">
+						<p class="hide text-danger" data-i18n="modal-add-program.name-already-existing"></p>
 					</div>
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn btn-default cancel-button" data-dismiss="modal">Annuler</button>
-				<button class="btn btn-primary valid-button">Valider</button>
+				<button class="btn btn-default cancel-button" data-dismiss="modal" data-i18n="form.cancel-button"></button>
+				<button class="btn btn-primary valid-button" data-i18n="form.valid-button"></button>
 			</div>
 		</div>
 	</div>

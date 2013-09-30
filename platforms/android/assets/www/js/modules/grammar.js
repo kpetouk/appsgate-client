@@ -2,12 +2,14 @@ define([
 	"underscore",
 	"text!resources/grammar.peg",
 	"peg"
-], function(_, grammar) {
+], function(_, grammarSource) {
 	/**
 	 * @constructor
 	 */
 	function Grammar() {
 		var self = this;
+		
+		this.grammar = grammarSource;
 
 		// cannot be called as a function...
 		if (!(this instanceof Grammar)) {
@@ -25,7 +27,7 @@ define([
 		_.keys(devicesByType).forEach(function(deviceType) {
 			// append the rules to the grammar
 			deviceTypesGrammar[deviceType].rules.forEach(function(r) {
-				grammar += r + "\n";
+				self.grammar += r + "\n";
 			});
 			// insert the list of the devices
 			self.insertListOfDevices(deviceTypesGrammar[deviceType].listAnchor, devicesByType[deviceType]);
@@ -47,19 +49,19 @@ define([
 		});
 
 		// insert the list of events
-		grammar = grammar.replace(/{{listOfEvents}}/g, listOfEvents);
+		this.grammar = this.grammar.replace(/{{listOfEvents}}/g, listOfEvents);
 		
 		// insert the list of status
-		grammar = grammar.replace(/{{listOfStatus}}/g, listOfStatus);
+		this.grammar = this.grammar.replace(/{{listOfStatus}}/g, listOfStatus);
 
 		// insert the list of actions
-		grammar = grammar.replace(/{{listOfActions}}/g, listOfActions);
+		this.grammar = this.grammar.replace(/{{listOfActions}}/g, listOfActions);
 
 		// insert the list of programs
-		this.insertListOfDevices("{{listOfPrograms}}", programs);
+		this.insertListOfDevices("{{listOfPrograms}}", programs.models);
 
 		// build the parser from the grammar
-		this.parser = PEG.buildParser(grammar);
+		this.parser = PEG.buildParser(this.grammar);
 	}
 
 	Grammar.prototype = {
@@ -75,7 +77,7 @@ define([
 			}
 
 			var regexp = new RegExp(grammarAnchor, "g");
-			grammar = grammar.replace(regexp, deviceNames);
+			this.grammar = this.grammar.replace(regexp, deviceNames);
 		},
 
 		parse:function(input) {

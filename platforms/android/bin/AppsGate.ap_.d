@@ -39,6 +39,7 @@
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/backbone \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/bootstrap \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/jquery \
+/Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/moment \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/peg \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/raphael \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/require \
@@ -59,6 +60,7 @@
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/bootstrap/js/bootstrap.min.js \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/jquery/jquery-1.8.2.js \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/jquery/jquery-ui-1.10.0.min.js \
+/Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/moment/moment.min.js \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/peg/peg-0.7.min.js \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/raphael/eve.0.3.4.js \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/raphael/plugins \
@@ -87,6 +89,7 @@
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/templates/devices/list \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/templates/devices/menu \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/templates/devices/details/contact.html \
+/Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/templates/devices/details/coreClock.html \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/templates/devices/details/details.html \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/templates/devices/details/deviceContainer.html \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/templates/devices/details/editModal.html \
@@ -97,7 +100,9 @@
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/templates/devices/details/switch.html \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/templates/devices/details/temperature.html \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/templates/devices/list/deviceListByCategory.html \
+/Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/templates/devices/menu/coreClockContainer.html \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/templates/devices/menu/deviceContainer.html \
+/Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/templates/devices/menu/menu.html \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/templates/home/home.html \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/templates/locations/details \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/templates/locations/menu \

@@ -1,11 +1,11 @@
 <li class="list-group-item">
-	<strong>Etat</strong>
+	<strong data-i18n="devices.state-label"></strong>
 	<div class="pull-right">
 		<button type="button" class="btn btn-info btn-sm toggle-lamp-button">
 			<% if (device.get("value") === "true" || device.get("value") === true) { %>
-				Eteindre
+				<span data-i18n="devices.lamp.action.turnOff"></span>
 			<% } else { %>
-				Allumer
+				<span data-i18n="devices.lamp.action.turnOn"></span>
 			<% } %>
 		</button>
 	</div>
