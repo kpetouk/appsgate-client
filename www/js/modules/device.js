@@ -1794,7 +1794,7 @@ define([
 			// instantiate the color wheel
 			window.colorWheel = Raphael.colorwheel(
 				$(".body-content").position().left + ($(".body-content").width() - wheelRadius) / 2,
-				this.$el.find(".color-picker").position().top + 80,
+				this.$el.find(".color-picker").position().top + 160,
 				wheelRadius,
 				"#F00"
 			);

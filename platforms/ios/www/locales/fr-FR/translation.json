@@ -85,6 +85,8 @@
 	"devices" : {
 		"device-no-name"	: "Dispositif sans nom",
 		"device-unlocated"	: "Non localisé",
+		"type-label"		: "Type",
+		"place-label"		: "Emplacement",
 		"state-label"		: "Etat",
 		"value-label"		: "Valeur",
 		"consumption-label"	: "Consommation",
@@ -147,6 +149,10 @@
 				"singular"	: "Prise gigogne",
 				"plural"	: "Prises gigogne"
 			},
+			"status"	: {
+				"turnedOn"	: "Allumée",
+				"turnedOff"	: "Eteinte"
+			},
 			"action"	: {
 				"turnOn"	: "Allumer",
 				"turnOff"	: "Eteindre"
@@ -156,6 +162,10 @@
 			"name"	: {
 				"singular"	: "Lampe Philips Hue",
 				"plural"	: "Lampes Philips Hue"
+			},
+			"status"	: {
+				"turnedOn"	: "Allumée",
+				"turnedOff"	: "Eteinte"
 			},
 			"action"	: {
 				"turnOn"	: "Allumer",

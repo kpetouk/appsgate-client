@@ -69,7 +69,6 @@
 					<em data-i18n="places-details.body.device-no-name"></em>
 				<% } %>
 				<div class="pull-right">
-					<span class="label label-info"><%= s.get("value") %>&deg;C</span>
 					<i class="glyphicon glyphicon-chevron-right"></i>
 				</div>
 				<br>
@@ -80,6 +79,7 @@
 				<% } else { %>
 					<span class="label label-success" data-i18n="devices.status.connected"></span>
 				<% } %>
+				<span class="label label-info"><%= s.get("value") %>&deg;C</span>
 			</a>
 		<% }) %>
 	</div>
@@ -110,7 +110,6 @@
 					<em data-i18n="places-details.body.device-no-name"></em>
 				<% } %>
 				<div class="pull-right">
-					<span class="label label-info"><%= s.get("value") %> Lux</span>
 					<i class="glyphicon glyphicon-chevron-right"></i>
 				</div>
 				<br>
@@ -121,6 +120,7 @@
 				<% } else { %>
 					<span class="label label-success" data-i18n="devices.status.connected"></span>
 				<% } %>
+				<span class="label label-info"><%= s.get("value") %> Lux</span>
 			</a>
 		<% }) %>
 	</div>
@@ -151,11 +151,6 @@
 					<em data-i18n="places-details.body.device-no-name"></em>
 				<% } %>
 				<div class="pull-right">
-					<% if (s.get("value") === "true") { %>
-						<span class="label label-info" data-i18n="devices.switch.value.opened"></span>
-					<% } else { %>
-						<span class="label label-info" data-i18n="devices.switch.value.closed"></span>
-					<% } %>
 					<i class="glyphicon glyphicon-chevron-right"></i>
 				</div>
 				<br>
@@ -165,6 +160,11 @@
 					<span class="label label-warning" data-i18n="devices.status.waiting"></span>
 				<% } else { %>
 					<span class="label label-success" data-i18n="devices.status.connected"></span>
+				<% } %>
+				<% if (s.get("value") === "true") { %>
+					<span class="label label-info" data-i18n="devices.switch.value.opened"></span>
+				<% } else { %>
+					<span class="label label-info" data-i18n="devices.switch.value.closed"></span>
 				<% } %>
 			</a>
 		<% }) %>
@@ -196,11 +196,6 @@
 					<em data-i18n="places-details.body.device-no-name"></em>
 				<% } %>
 				<div class="pull-right">
-					<% if (s.get("contact") === "true") { %>
-						<span class="label label-info" data-i18n="devices.contact.value.closed"></span>
-					<% } else { %>
-						<span class="label label-info" data-i18n="devices.contact.value.opened"></span>
-					<% } %>
 					<i class="glyphicon glyphicon-chevron-right"></i>
 				</div>
 				<br>
@@ -210,6 +205,11 @@
 					<span class="label label-warning" data-i18n="devices.status.waiting"></span>
 				<% } else { %>
 					<span class="label label-success" data-i18n="devices.status.connected"></span>
+				<% } %>
+				<% if (s.get("contact") === "true") { %>
+					<span class="label label-info" data-i18n="devices.contact.value.closed"></span>
+				<% } else { %>
+					<span class="label label-info" data-i18n="devices.contact.value.opened"></span>
 				<% } %>
 			</a>
 		<% }) %>
@@ -235,26 +235,26 @@
 	<div class="list-group">
 		<% place.getKeyCardReaders().forEach(function(s) { %>
 			<a href="#devices/<%= s.get('id') %>" class="list-group-item">
-			<% if (s.get("name") !== "") { %>
-				<%= s.get("name") %>
-			<% } else { %>
-				<em data-i18n="places-details.body.device-no-name"></em>
-			<% } %>
-			<div class="pull-right">
-				<% if (s.get("inserted") === "true") { %>
-					<span class="label label-info" data-i18n="devices.keycard-reader.value.inserted"></span>
+				<% if (s.get("name") !== "") { %>
+					<%= s.get("name") %>
 				<% } else { %>
-					<span class="label label-info" data-i18n="devices.keycard-reader.value.not-inserted"></span>
+					<em data-i18n="places-details.body.device-no-name"></em>
 				<% } %>
-				<i class="glyphicon glyphicon-chevron-right"></i>
-			</div>
-			<br>
-			<% if (s.get("status") === "0") { %>
+				<div class="pull-right">
+					<i class="glyphicon glyphicon-chevron-right"></i>
+				</div>
+				<br>
+				<% if (s.get("status") === "0") { %>
 					<span class="label label-danger" data-i18n="devices.status.disconnected"></span>
 				<% } else if (s.get("status" === "1")) { %>
 					<span class="label label-warning" data-i18n="devices.status.waiting"></span>
 				<% } else { %>
-					<span class="label label-success" data-i18n="devices.status.conneted"></span>
+					<span class="label label-success" data-i18n="devices.status.connected"></span>
+				<% } %>
+				<% if (s.get("inserted") === "true") { %>
+					<span class="label label-info" data-i18n="devices.keycard-reader.value.inserted"></span>
+				<% } else { %>
+					<span class="label label-info" data-i18n="devices.keycard-reader.value.not-inserted"></span>
 				<% } %>
 			</a>
 		<% }) %>
@@ -326,9 +326,8 @@
 					<em data-i18n="places-details.body.device-no-name"></em>
 				<% } %>
 				<div class="pull-right">
-					<span class="label label-info"><%= s.get("consumption") %> W</span>
 					<% if (s.get("plugState") === "true" || s.get("plugState") === true) { %>
-					<button type="button" id="<%= s.get('id') %>" class="btn btn-info btn-sm toggle-plug-button" data-i18n="devices.plug.action.turnOff"></button>
+						<button type="button" id="<%= s.get('id') %>" class="btn btn-info btn-sm toggle-plug-button" data-i18n="devices.plug.action.turnOff"></button>
 					<% } else { %>
 						<button type="button" id="<%= s.get('id') %>" class="btn btn-info btn-sm toggle-plug-button" data-i18n="devices.plug.action.turnOn"></button>
 					<% } %>
@@ -341,6 +340,12 @@
 					<span class="label label-warning" data-i18n="devices.status.waiting"></span>
 				<% } else { %>
 					<span class="label label-success" data-i18n="devices.status.connected"></span>
+				<% } %>
+				<span class="label label-info"><%= s.get("consumption") %> W</span>
+				<% if (s.get("plugState") === "true" || s.get("plugState") === true) { %>
+					<span class="label label-info" data-i18n="devices.plug.status.turnedOn"></span>
+				<% } else { %>
+					<span class="label label-info" data-i18n="devices.plug.status.turnedOff"></span>
 				<% } %>
 			</a>
 		<% }) %>
@@ -386,6 +391,11 @@
 					<span class="label label-warning" data-i18n="devices.status.waiting"></span>
 				<% } else { %>
 					<span class="label label-success" data-i18n="devices.status.connected"></span>
+				<% } %>
+				<% if (s.get("value") === "true" || s.get("value") === true) { %>
+					<span class="label label-info" data-i18n="devices.lamp.status.turnedOn"></span>
+				<% } else { %>
+					<span class="label label-info" data-i18n="devices.lamp.status.turnedOff"></span>
 				<% } %>
 			</a>
 		<% }) %>

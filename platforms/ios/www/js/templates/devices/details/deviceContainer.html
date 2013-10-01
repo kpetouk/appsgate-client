@@ -26,14 +26,14 @@
 		</li>
 	<% } %>
 	<li class="list-group-item">
-		<strong>Type</strong>
+		<strong data-i18n="devices.type-label"></strong>
 		<div class="pull-right">
 			<%= sensorType %>
 		</div>
 	</li>
 	<% if (device.get("type") !== "21" && device.get("type") !== 21) { %>
 		<li class="list-group-item">
-			<strong>Emplacement</strong>
+			<strong data-i18n="devices.place-label"></strong>
 			<div class="pull-right">
 				<% if (device.get("placeId") === "-1") { %>
 					<span data-i18n="devices.device-unlocated"></span>
@@ -65,6 +65,9 @@
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				<h3>
+					<% if (device.get("type") === "21" || device.get("type") === 21) { %>
+						<i class="glyphicon glyphicon-time"></i>
+					<% } %>
 					<% if (device.get("name") !== "") { %>
 						<%= device.get("name") %>
 					<% } else { %>
