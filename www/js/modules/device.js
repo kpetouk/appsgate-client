@@ -809,7 +809,7 @@ define([
 					nodeEvent.sourceType = "device";\n\
 					nodeEvent.sourceId = devices.getCoreMail().get("id");\n\
 					nodeEvent.eventName = "newMail";\n\
-					nodeEvent.eventValue = "";\n\
+					nodeEvent.eventValue = "smarthome.inria@gmail.com";\n\
 					\n\
 					return nodeEvent;\n\
 				}',
