@@ -2,12 +2,13 @@ define([
 	"jquery",
 	"underscore",
 	"backbone",
+	"grammar",
 	"text!templates/program/menu/menu.html",
 	"text!templates/program/menu/programContainer.html",
 	"text!templates/program/menu/addButton.html",
 	"text!templates/devices/menu/coreClockContainer.html",
 	"text!templates/program/editor/editor.html"
-], function($, _, Backbone, programMenuTemplate, programContainerMenuTemplate, addProgramButtonTemplate, coreClockContainerMenuTemplate, programEditorTemplate) {
+], function($, _, Backbone, Grammar, programMenuTemplate, programContainerMenuTemplate, addProgramButtonTemplate, coreClockContainerMenuTemplate, programEditorTemplate) {
 	// initialize the module
 	var Program = {};
 
@@ -174,12 +175,24 @@ define([
 			// listen to the event when a program appears and add it
 			dispatcher.on("newProgram", function(program) {
 				self.add(program);
+				
+				// update the grammar to take the new program in consideration
+				if (typeof window.grammar !== "undefined") {
+					delete window.grammar;
+				}
+				window.grammar = new Grammar();
 			});
 			
 			// listen to the event when a program has been removed
 			dispatcher.on("removeProgram", function(programId) {
 				var removedProgram = programs.findWhere({ id : programId });
 				programs.remove(removedProgram);
+				
+				// update the grammar to remove the program from the grammar
+				if (typeof window.grammar !== "undefined") {
+					delete window.grammar;
+				}
+				window.grammar = new Grammar();
 			});
 			
 			// listen to the event when a program has been updated
@@ -216,7 +229,7 @@ define([
 		events : {
 			"click a.list-group-item"						: "updateSideMenu",
 			"show.bs.modal #add-program-modal"				: "initializeModal",
-			"hide.bs.modal #add-program-modal"				: "toggleModalValue",
+			"hidden.bs.modal #add-program-modal"			: "toggleModalValue",
 			"click #add-program-modal button.valid-button"	: "validAddProgram",
 			"keyup #add-program-modal input:text"			: "validAddProgram",
 			"click button.start-program-button"				: "onStartProgramButton",
@@ -232,6 +245,7 @@ define([
 			this.listenTo(programs, "add", this.render);
 			this.listenTo(programs, "remove", this.render);
 			this.listenTo(programs, "change", this.render);
+			this.listenTo(devices.getCoreClock(), "change", this.render);
 		},
 		
 		/**
@@ -317,6 +331,9 @@ define([
 					
 					// instantiate the program and add it to the collection after the modal has been hidden
 					$("#add-program-modal").on("hidden.bs.modal", function() {
+						// tell the router there is no modal any more
+						appRouter.isModalShown = false;
+						
 						// instantiate a model for the new program
 						var program = new Program.Model({
 							name	: $("#add-program-modal input:text").val(),

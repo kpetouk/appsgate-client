@@ -150,8 +150,8 @@
 				"plural"	: "Smart plugs"
 			},
 			"status"	: {
-				"turnedOn"	: "Allumée",
-				"turnedOff"	: "Eteinte"
+				"turnedOn"	: "Turned on",
+				"turnedOff"	: "Turned off"
 			},
 			"action"	: {
 				"turnOn"	: "Turn on",
@@ -267,6 +267,13 @@
 		"yellow-color"								: "yellow",
 		"orange-color"								: "orange",
 		"purple-color"								: "purple",
-		"pink-color"								: "pink"
+		"pink-color"								: "pink",
+		
+		"clock-event"								: "it is",
+		"clock-status"								: "it is",
+		
+		"received-mail-event"						: "a mail arrives",
+		"send-mail-action"							: "send the mail 'Well arrived!' to",
+		"well-arrived-subject"						: "Well arrived!"
 	}
 }

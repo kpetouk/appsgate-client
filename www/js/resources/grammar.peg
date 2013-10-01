@@ -248,8 +248,7 @@ number "<form class='form-inline'><div class='form-group'><input type='text' cla
 	return parseInt(digits.join(""), 10);
 }
 
-string "Chaine de caract&egrave;res"
-	= chars:([^" \r\n]+) { return chars.join(""); }
+string= chars:([a-zA-Z0-9@\.]+) { return chars.join(""); }
 
 boolean = true / false
 true = "{{true}}" { return true; }
@@ -264,6 +263,12 @@ time "<form class='form-inline' role='form'><div class='form-group'><input type=
 	time.set("second", 0);
 
 	return time.valueOf();
+}
+
+emailAddress "<form class='form-inline' role='form'><div class='form-group'><input type='text' id='email-address' class='form-control' placeholder='e-mail'></div><button type='button' class='btn btn-primary valid-value'>{{validButton}}</button></form>"
+	= "<span class='value'>" to:string "</span>"
+{
+	return to;
 }
 
 /* separators */

@@ -738,8 +738,18 @@ define([
 			eventAnchor		: "eventCoreClock",
 			statusAnchor	: "statusCoreClock",
 			listAnchor		: "{{listOfCoreClock}}",
+			i18nData		: [
+				{
+					grammarAnchor	: "{{clockEvent}}",
+					i18nVar			: "language.clock-event"
+				},
+				{
+					grammarAnchor	: "{{clockStatus}}",
+					i18nVar			: "language.clock-status"
+				}
+			],
 			rules			: [
-				'eventCoreClock = "<span class=' + "'event'" + '>il est</span>" sep time:time\n\
+				'eventCoreClock = "<span class=' + "'event'" + '>{{clockEvent}}</span>" sep time:time\n\
 				{\n\
 					var nodeEvent = {};\n\
 					\n\
@@ -751,7 +761,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'statusCoreClock = "<span class=' + "'status'" + '>il est</span>" sep time:time\n\
+				'statusCoreClock = "<span class=' + "'status'" + '>{{clockStatus}}</span>" sep time:time\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -769,6 +779,50 @@ define([
 					nodeRelationBool.rightOperand.value = time;\n\
 					\n\
 					return nodeRelationBool;\n\
+				}'
+			]
+		},
+		102		: {
+			eventAnchor		: "eventCoreMail",
+			actionAnchor	: "actionMail",
+			listAnchor		: "{{listOfMailboxes}}",
+			i18nData		: [
+				{
+					grammarAnchor	: "{{receivedMailEvent}}",
+					i18nVar			: "language.received-mail-event"
+				},
+				{
+					grammarAnchor	: "{{sendMailAction}}",
+					i18nVar			: "language.send-mail-action"
+				},
+				{
+					grammarAnchor	: "{{wellArrivedSubject}}",
+					i18nVar			: "language.well-arrived-subject"
+				}
+			],
+			rules			: [
+				'eventCoreMail = "<span class=' + "'event'" + '>{{receivedMailEvent}}</span>"\n\
+				{\n\
+					var nodeEvent = {};\n\
+					\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+				}',
+				'actionMail = "<span class=' + "'action-name'" + '>{{sendMailAction}}</span>" sep emailAddress:emailAddress sep\n\
+				{\n\
+					var nodeAction = {};\n\
+					\n\
+					nodeAction.type = "NodeAction";\n\
+					nodeAction.targetType = "device";\n\
+					nodeAction.targetId = devices.getCoreMail().get("id");\n\
+					nodeAction.methodName = "sendMailSimple";\n\
+					nodeAction.args = [\n\
+						{ type : "String", value : emailAddress },\n\
+						{ type : "String", value : "{{wellArrivedSubject}}" },\n\
+						{ type : "String", value : "" }\n\
+					];\n\
+					\n\
+					return nodeAction;\n\
 				}'
 			]
 		}
@@ -1174,6 +1228,15 @@ define([
 			this.remoteCall("setTimeFlowRate", [{ type : "double", value : this.get("flowRate") }]);
 		}
 	});
+	
+	Device.Mail = Device.Model.extend({
+		/**
+		 * @constructor
+		 */
+		initialize: function() {
+			Device.Mail.__super__.initialize.apply(this, arguments);
+		},
+	});
 
 	// collection
 	Device.Collection = Backbone.Collection.extend({
@@ -1241,8 +1304,11 @@ define([
 				case 21:
 					this.add(new Device.CoreClock(device));
 					break;
+				case 102:
+					this.add(new Device.Mail(device));
+					break;
 				default:
-					console.log("unknown type", device);
+					console.log("unknown type", device, typeof device.type);
 					break;
 			}
 			
@@ -1312,6 +1378,13 @@ define([
 		 */
 		getCoreClock:function() {
 			return devices.findWhere({ type : 21 });
+		},
+		
+		/**
+		 * @return Core mail of the home - unique device
+		 */
+		getCoreMail:function() {
+			return devices.findWhere({ type : 102 });
 		},
 		
 		/**
@@ -1408,7 +1481,7 @@ define([
 				this.$el.append(this.tpl());
 				var types = devices.getDevicesByType();
 				_.forEach(_.keys(types), function(type) {
-					if (type !== "21") {
+					if (type !== "21" && type !== "102") {
 						$(self.$el.find(".list-group")[1]).append(self.tplDeviceContainer({
 							type		: type,
 							devices		: types[type],
