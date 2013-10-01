@@ -272,6 +272,12 @@
 		"clock-event"								: "it is",
 		"clock-status"								: "it is",
 		
+		"play-media-player-action"					: "play the media on",
+		"pause-media-player-action"					: "pause the media on",
+		"stop-media-player-action"					: "stop the media on",
+		"set-volume-media-player-action"			: "set the volume of",
+		"complement-set-volume-media-player-action"	: "on",
+		
 		"received-mail-event"						: "a mail arrives",
 		"send-mail-action"							: "send the mail 'Well arrived!' to",
 		"well-arrived-subject"						: "Well arrived!"

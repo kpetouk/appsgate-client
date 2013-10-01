@@ -29,6 +29,8 @@ define([
 			deviceTypesGrammar[deviceType].rules.forEach(function(r) {
 				self.grammar += r + "\n";
 			});
+			
+			console.log(deviceTypesGrammar[deviceType].listAnchor, devicesByType[deviceType]);
 			// insert the list of the devices
 			self.insertListOfDevices(deviceTypesGrammar[deviceType].listAnchor, devicesByType[deviceType]);
 
@@ -72,7 +74,11 @@ define([
 		this.translateRootGrammar();
 
 		// build the parser from the grammar
-		this.parser = PEG.buildParser(this.grammar);
+		try {
+			this.parser = PEG.buildParser(this.grammar);
+		} catch (e) {
+			console.log(e);
+		}
 	}
 
 	Grammar.prototype = {
@@ -86,6 +92,8 @@ define([
 			if (deviceNames !== "") {
 				deviceNames = deviceNames.substring(0, deviceNames.length - 1);
 			}
+			
+			console.log(deviceNames);
 
 			var regexp = new RegExp(grammarAnchor, "g");
 			this.grammar = this.grammar.replace(regexp, deviceNames);
