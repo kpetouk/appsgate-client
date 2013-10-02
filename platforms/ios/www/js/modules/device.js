@@ -782,6 +782,80 @@ define([
 				}'
 			]
 		},
+		31		: {
+			actionAnchor	: "actionMediaPlayer",
+			listAnchor		: "{{listOfMediaPlayers}}",
+			i18nData		: [
+				{
+					grammarAnchor	: "{{playMediaPlayerAction}}",
+					i18nVar			: "language.play-media-player-action"
+				},
+				{
+					grammarAnchor	: "{{pauseMediaPlayerAction}}",
+					i18nVar			: "language.pause-media-player-action"
+				},
+				{
+					grammarAnchor	: "{{stopMediaPlayerAction}}",
+					i18nVar			: "language.stop-media-player-action"
+				},
+				{
+					grammarAnchor	: "{{setVolumeMediaPlayerAction}}",
+					i18nVar			: "language.set-volume-media-player-action"
+				},
+				{
+					grammarAnchor	: "{{complementMediaPlayerAction}}",
+					i18nVar			: "language.complement-media-player-action"
+				}
+			],
+			rules			: [
+				'actionMediaPlayer = playMediaPlayerAction / pauseMediaPlayerAction / stopMediaPlayerAction / setVolumeMediaPlayerAction',
+				'playMediaPlayerAction = "<span class=' + "'action-name'" + '>{{playMediaPlayerAction}}</span>" sep mediaPlayerName:M\n\
+				{\n\
+					var nodeAction = {};\n\
+					nodeAction.type = "NodeAction";\n\
+					nodeAction.targetType = "device";\n\
+					nodeAction.targetId = devices.findWhere({ name : $(mediaPlayerName).text() }).get("id");\n\
+					nodeAction.methodName = "play";\n\
+					nodeAction.args = [];\n\
+					\n\
+					return nodeAction;\n\
+				}',
+				'pauseMediaPlayerAction = "<span class=' + "'action-name'" + '>{{pauseMediaPlayerAction}}</span>" sep mediaPlayerName:M\n\
+				{\n\
+					var nodeAction = {};\n\
+					nodeAction.type = "NodeAction";\n\
+					nodeAction.targetType = "device";\n\
+					nodeAction.targetId = devices.findWhere({ name : $(mediaPlayerName).text() }).get("id");\n\
+					nodeAction.methodName = "pause";\n\
+					nodeAction.args = [];\n\
+					\n\
+					return nodeAction;\n\
+				}',
+				'stopMediaPlayerAction = "<span class=' + "'action-name'" + '>{{stopMediaPlayerAction}}</span>" sep mediaPlayerName:M\n\
+				{\n\
+					var nodeAction = {};\n\
+					nodeAction.type = "NodeAction";\n\
+					nodeAction.targetType = "device";\n\
+					nodeAction.targetId = devices.findWhere({ name : $(mediaPlayerName).text() }).get("id");\n\
+					nodeAction.methodName = "stop";\n\
+					nodeAction.args = [];\n\
+					\n\
+					return nodeAction;\n\
+				}',
+				'setVolumeMediaPlayerAction = "<span class=' + "'action-name'" + '>{{setVolumeMediaPlayerAction}}</span>" sep mediaPlayerName:M sep "<span class=' + "'action-name'" + '>{{complementMediaPlayerAction}}</span>" sep volume:number sep "<span class=' + "'action-name'" + '>%</span>"\n\
+				{\n\
+					var nodeAction = {};\n\
+					nodeAction.type = "NodeAction";\n\
+					nodeAction.targetType = "device";\n\
+					nodeAction.targetId = devices.findWhere({ name : $(mediaPlayerName).text() }).get("id");\n\
+					nodeAction.methodName = "setVolume";\n\
+					nodeAction.args = [{ type : "int", value : 50 }];\n\
+					\n\
+					return nodeAction;\n\
+				}',
+				'M = {{listOfMediaPlayers}}'
+			]
+		},
 		102		: {
 			eventAnchor		: "eventCoreMail",
 			actionAnchor	: "actionMail",
@@ -807,6 +881,11 @@ define([
 					\n\
 					nodeEvent.type = "NodeEvent";\n\
 					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.getCoreMail().get("id");\n\
+					nodeEvent.eventName = "newMail";\n\
+					nodeEvent.eventValue = "smarthome.inria@gmail.com";\n\
+					\n\
+					return nodeEvent;\n\
 				}',
 				'actionMail = "<span class=' + "'action-name'" + '>{{sendMailAction}}</span>" sep emailAddress:emailAddress sep\n\
 				{\n\
@@ -1229,6 +1308,11 @@ define([
 		}
 	});
 	
+	/**
+	 * Implementation of the core mail
+	 *
+	 * @class Device.Mail
+	 */
 	Device.Mail = Device.Model.extend({
 		/**
 		 * @constructor
@@ -1236,6 +1320,20 @@ define([
 		initialize: function() {
 			Device.Mail.__super__.initialize.apply(this, arguments);
 		},
+	});
+	
+	/**
+	 * Implementation of the UPnP media player
+	 *
+	 * @class Device.MediaPlayer
+	 */
+	Device.MediaPlayer = Device.Model.extend({
+		/**
+		 * @constructor
+		 */
+		initialize:function() {
+			Device.MediaPlayer.__super__.initialize.apply(this, arguments);
+		}
 	});
 
 	// collection
@@ -1261,6 +1359,20 @@ define([
 			// listen to the backend notifying when a device appears and add it
 			dispatcher.on("newDevice", function(device) {
 				self.addDevice(device);
+			});
+			
+			dispatcher.on("removeDevice", function(deviceId) {
+				console.log("removeDevice");
+				var device = devices.findWhere({ id : deviceId });
+				devices.remove(device);
+				
+				console.log(device);
+				
+				// update the grammar to take the new program in consideration
+				if (typeof window.grammar !== "undefined") {
+					delete window.grammar;
+				}
+				window.grammar = new Grammar();
 			});
 
 			// send the request to fetch the devices
@@ -1303,6 +1415,9 @@ define([
 					break;
 				case 21:
 					this.add(new Device.CoreClock(device));
+					break;
+				case 31:
+					this.add(new Device.MediaPlayer(device));
 					break;
 				case 102:
 					this.add(new Device.Mail(device));
@@ -1385,6 +1500,13 @@ define([
 		 */
 		getCoreMail:function() {
 			return devices.findWhere({ type : 102 });
+		},
+		
+		/**
+		 * @return Array of UPnP media players
+		 */
+		getMediaPlayers:function() {
+			return devices.where({ type : 31 });
 		},
 		
 		/**
@@ -1481,7 +1603,7 @@ define([
 				this.$el.append(this.tpl());
 				var types = devices.getDevicesByType();
 				_.forEach(_.keys(types), function(type) {
-					if (type !== "21" && type !== "102") {
+					if (type !== "21" && type !== "31" && type !== "102") {
 						$(self.$el.find(".list-group")[1]).append(self.tplDeviceContainer({
 							type		: type,
 							devices		: types[type],

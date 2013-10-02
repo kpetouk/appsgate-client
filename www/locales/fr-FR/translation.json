@@ -223,6 +223,9 @@
 		"true"										: "vrai",
 		"false"										: "faux",
 		
+		"op-more-than"								: "plus de",
+		"op-less-than"								: "moins de",
+		
 		"indicate-temperature"						: "indique",
 		
 		"indicate-illumination"						: "indique",
@@ -272,11 +275,18 @@
 		"clock-event"								: "il est",
 		"clock-status"								: "il est",
 		
-		"play-media-player-action"					: "jouer le media sur",
-		"pause-media-player-action"					: "mettre en pause le media sur",
-		"stop-media-player-action"					: "stopper le media sur",
+		"play-media-player-action"					: "jouer",
+		"pause-media-player-action"					: "mettre en pause le media",
+		"stop-media-player-action"					: "stopper",
 		"set-volume-media-player-action"			: "mettre le volume de",
-		"complement-set-volume-media-player-action"	: "sur",
+		"complement-media-player-action"			: "sur",
+		
+		"alarm-music"								: "musique du reveil",
+		"music"										: "musique",
+		"ring-bell-mail-arrived"					: "sonnerie 'Mail bien arrive'",
+		"radio"										: "radio",
+		"movie"										: "film",
+		"img-table"									: "image a table",
 		
 		"received-mail-event"						: "un mail arrive",
 		"send-mail-action"							: "envoyer le mail 'Bien arrive !' a",

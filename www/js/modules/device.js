@@ -54,11 +54,11 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'statusTemperature = temperatureName:T sep "<span class=' + "'status'" + '>{{indicateTemperature}}</span>" sep temperature:number sep "<span class=' + "'status'" + '>degres C</span>"\n\
+				'statusTemperature = temperatureName:T sep "<span class=' + "'status'" + '>{{indicateTemperature}}</span>" sep operator:opComparison sep temperature:number sep "<span class=' + "'status'" + '>degres C</span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
-					nodeRelationBool.operator = "==";\n\
+					nodeRelationBool.operator = operator;\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
 					nodeRelationBool.leftOperand.targetType = "device";\n\
@@ -98,11 +98,11 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'statusIllumination = illuminationName:I sep "<span class=' + "'status'" + '>{{indicateIllumination}}</span>" sep illumination:number sep "<span class=' + "'status'" + '>Lux</span>"\n\
+				'statusIllumination = illuminationName:I sep "<span class=' + "'status'" + '>{{indicateIllumination}}</span>" sep operator:opComparison sep illumination:number sep "<span class=' + "'status'" + '>Lux</span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
-					nodeRelationBool.operator = "==";\n\
+					nodeRelationBool.operator = operator;\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
 					nodeRelationBool.leftOperand.targetType = "device";\n\
@@ -803,20 +803,44 @@ define([
 					i18nVar			: "language.set-volume-media-player-action"
 				},
 				{
-					grammarAnchor	: "{{complementSetVolumeMediaPlayerAction}}",
-					i18nVar			: "language.complement-set-volume-media-player-action"
+					grammarAnchor	: "{{complementMediaPlayerAction}}",
+					i18nVar			: "language.complement-media-player-action"
+				},
+				{
+					grammarAnchor	: "{{alarmMusic}}",
+					i18nVar			: "language.alarm-music"
+				},
+				{
+					grammarAnchor	: "{{music}}",
+					i18nVar			: "language.music"
+				},
+				{
+					grammarAnchor	: "{{ringBellMailArrived}}",
+					i18nVar			: "language.ring-bell-mail-arrived"
+				},
+				{
+					grammarAnchor	: "{{radio}}",
+					i18nVar			: "language.radio"
+				},
+				{
+					grammarAnchor	: "{{movie}}",
+					i18nVar			: "language.movie"
+				},
+				{
+					grammarAnchor	: "{{imgTable}}",
+					i18nVar			: "language.img-table"
 				}
 			],
 			rules			: [
 				'actionMediaPlayer = playMediaPlayerAction / pauseMediaPlayerAction / stopMediaPlayerAction / setVolumeMediaPlayerAction',
-				'playMediaPlayerAction = "<span class=' + "'action-name'" + '>{{playMediaPlayerAction}}</span>" sep mediaPlayerName:M\n\
+				'playMediaPlayerAction = "<span class=' + "'action-name'" + '>{{playMediaPlayerAction}}</span>" sep media:ML sep "<span class=' + "'action-name'" + '>{{complementMediaPlayerAction}}</span>" sep mediaPlayerName:M\n\
 				{\n\
 					var nodeAction = {};\n\
 					nodeAction.type = "NodeAction";\n\
 					nodeAction.targetType = "device";\n\
 					nodeAction.targetId = devices.findWhere({ name : $(mediaPlayerName).text() }).get("id");\n\
 					nodeAction.methodName = "play";\n\
-					nodeAction.args = [];\n\
+					nodeAction.args = [{ type : "String", value : media }];\n\
 					\n\
 					return nodeAction;\n\
 				}',
@@ -842,7 +866,7 @@ define([
 					\n\
 					return nodeAction;\n\
 				}',
-				'setVolumeMediaPlayerAction = "<span class=' + "'action-name'" + '>{{setVolumeMediaPlayerAction}}</span>" sep mediaPlayerName:M sep "<span class=' + "'action-name'" + '>{{complementSetVolumeMediaPlayerAction}}</span>" sep volume:number sep "<span class=' + "'action-name'" + '>%</span>"\n\
+				'setVolumeMediaPlayerAction = "<span class=' + "'action-name'" + '>{{setVolumeMediaPlayerAction}}</span>" sep mediaPlayerName:M sep "<span class=' + "'action-name'" + '>{{complementMediaPlayerAction}}</span>" sep volume:number sep "<span class=' + "'action-name'" + '>%</span>"\n\
 				{\n\
 					var nodeAction = {};\n\
 					nodeAction.type = "NodeAction";\n\
@@ -853,7 +877,32 @@ define([
 					\n\
 					return nodeAction;\n\
 				}',
-				'M = {{listOfMediaPlayers}}'
+				'M = {{listOfMediaPlayers}}',
+				'ML = alarmMusic / music / ringBellMailArrived / radio / movie / imgTable',
+				'alarmMusic = "<span class=' + "'value'" + '>{{alarmMusic}}</span>"\n\
+				{\n\
+					return "/Users/cedric/AppsGate/ressources/sound/Musique_Reveil.mp3";\n\
+				}',
+				'music = "<span class=' + "'value'" + '>{{music}}</span>"\n\
+				{\n\
+					return "/Users/cedric/AppsGate/ressources/sound/Musique.mp3";\n\
+				}',
+				'ringBellMailArrived = "<span class=' + "'value'" + '>{{ringBellMailArrived}}</span>"\n\
+				{\n\
+					return "/Users/cedric/AppsGate/ressources/sound/Sonnerie_mail_arrive.aac";\n\
+				}',
+				'radio = "<span class=' + "'value'" + '>{{radio}}</span>"\n\
+				{\n\
+					return "/Users/cedric/AppsGate/ressources/sound/Radio.mp3";\n\
+				}',
+				'movie = "<span class=' + "'value'" + '>{{movie}}</span>"\n\
+				{\n\
+					return "";\n\
+				}',
+				'imgTable = "<span class=' + "'value'" + '>{{imgTable}}</span>"\n\
+				{\n\
+					return "/Users/cedric/AppsGate/ressources/pictures/Image_a_table.jpg";\n\
+				}'
 			]
 		},
 		102		: {
@@ -1359,6 +1408,20 @@ define([
 			// listen to the backend notifying when a device appears and add it
 			dispatcher.on("newDevice", function(device) {
 				self.addDevice(device);
+			});
+			
+			dispatcher.on("removeDevice", function(deviceId) {
+				console.log("removeDevice");
+				var device = devices.findWhere({ id : deviceId });
+				devices.remove(device);
+				
+				console.log(device);
+				
+				// update the grammar to take the new program in consideration
+				if (typeof window.grammar !== "undefined") {
+					delete window.grammar;
+				}
+				window.grammar = new Grammar();
 			});
 
 			// send the request to fetch the devices

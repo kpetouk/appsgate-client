@@ -223,6 +223,9 @@
 		"true"										: "true",
 		"false"										: "false",
 		
+		"more-than"									: "more than",
+		"less-than"									: "less than",
+		
 		"indicate-temperature"						: "indicates",
 		
 		"indicate-illumination"						: "indicates",
@@ -272,11 +275,18 @@
 		"clock-event"								: "it is",
 		"clock-status"								: "it is",
 		
-		"play-media-player-action"					: "play the media on",
-		"pause-media-player-action"					: "pause the media on",
-		"stop-media-player-action"					: "stop the media on",
+		"play-media-player-action"					: "play",
+		"pause-media-player-action"					: "pause the media",
+		"stop-media-player-action"					: "stop",
 		"set-volume-media-player-action"			: "set the volume of",
-		"complement-set-volume-media-player-action"	: "on",
+		"complement-media-player-action"			: "on",
+		
+		"alarm-music"								: "alarm clock music",
+		"music"										: "music",
+		"ring-bell-mail-arrived"					: "ringbell mail 'Well arrived!'",
+		"radio"										: "radio",
+		"movie"										: "movie",
+		"img-table"									: "image 'dinner's ready!'",
 		
 		"received-mail-event"						: "a mail arrives",
 		"send-mail-action"							: "send the mail 'Well arrived!' to",

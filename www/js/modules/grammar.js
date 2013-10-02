@@ -128,6 +128,8 @@ define([
 			this.grammar = this.grammar.replace(/{{opThenRule}}/g, $.i18n.t("language.op-then-rule"));
 			this.grammar = this.grammar.replace(/{{opOrBool}}/g, $.i18n.t("language.op-or-bool"));
 			this.grammar = this.grammar.replace(/{{opAndBool}}/g, $.i18n.t("language.op-and-bool"));
+			this.grammar = this.grammar.replace(/{{opMoreThan}}/g, $.i18n.t("language.op-more-than"));
+			this.grammar = this.grammar.replace(/{{opLessThan}}/g, $.i18n.t("language.op-less-than"));
 			
 			// button
 			this.grammar = this.grammar.replace(/{{validButton}}/g, $.i18n.t("form.valid-button"));
