@@ -223,8 +223,8 @@
 		"true"										: "true",
 		"false"										: "false",
 		
-		"more-than"									: "more than",
-		"less-than"									: "less than",
+		"op-more-than"								: "more than",
+		"op-less-than"								: "less than",
 		
 		"indicate-temperature"						: "indicates",
 		

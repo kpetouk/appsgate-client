@@ -237,7 +237,15 @@ opAndRule = " <span class='keyword prev-seqrules'>{{opAndRule}}</span> "
 opThenRule = " <span class='keyword prev-seqrules'>{{opThenRule}}</span> "
 opOrBool = " <span class='keyword'>{{opOrBool}}</span> "
 opAndBool = " <span class='keyword'>{{opAndBool}}</span> "
-opComparison = "==" / "!="
+opComparison = opMoreThan / opLessThan
+opMoreThan = "<span class='keyword'>{{opMoreThan}}</span>"
+{
+	return ">=";
+}
+opLessThan = "<span class='keyword'>{{opLessThan}}</span>"
+{
+	return "<=";
+}
 opAdd = "+" / "-"
 opMult = "*" / "/"
 

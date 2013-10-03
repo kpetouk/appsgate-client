@@ -1411,7 +1411,6 @@ define([
 			});
 			
 			dispatcher.on("removeDevice", function(deviceId) {
-				console.log("removeDevice");
 				var device = devices.findWhere({ id : deviceId });
 				devices.remove(device);
 				
