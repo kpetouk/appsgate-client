@@ -225,9 +225,41 @@ disactivatedProgramEvent = programName:P "<span class='event'> {{isDisactivatedP
 statusProgram = isActivatedProgramStatus / isDisactivatedProgramStatus
 isActivatedProgramStatus = programName:P "<span class='status'> {{isRunningProgramStatus}} </span>"
 {
+	var nodeRelationBool = {};
+	nodeRelationBool.type = "NodeRelationBool";
+	nodeRelationBool.operator = "==";
+
+	nodeRelationBool.leftOperand = {};
+	nodeRelationBool.leftOperand.targetType = "device";
+	nodeRelationBool.leftOperand.targetId = programs.findWhere({ name : $(programName).text() }).get("id");
+	nodeRelationBool.leftOperand.methodName = "isProgramActive";
+	nodeRelationBool.leftOperand.returnType = "boolean";
+	nodeRelationBool.leftOperand.args = [];
+
+	nodeRelationBool.rightOperand = {};
+	nodeRelationBool.rightOperand.type = "boolean";
+	nodeRelationBool.rightOperand.value = "true";
+
+	return nodeRelationBool;
 }
 isDisactivatedProgramStatus = programName:P "<span class='status'> {{isStoppedProgramStatus}} </span>"
 {
+	var nodeRelationBool = {};
+	nodeRelationBool.type = "NodeRelationBool";
+	nodeRelationBool.operator = "==";
+
+	nodeRelationBool.leftOperand = {};
+	nodeRelationBool.leftOperand.targetType = "device";
+	nodeRelationBool.leftOperand.targetId = programs.findWhere({ name : $(programName).text() }).get("id");
+	nodeRelationBool.leftOperand.methodName = "isProgramActive";
+	nodeRelationBool.leftOperand.returnType = "boolean";
+	nodeRelationBool.leftOperand.args = [];
+
+	nodeRelationBool.rightOperand = {};
+	nodeRelationBool.rightOperand.type = "boolean";
+	nodeRelationBool.rightOperand.value = "false";
+
+	return nodeRelationBool;
 }
 P = {{listOfPrograms}}
 
