@@ -38,12 +38,28 @@ define([
 			listAnchor		: "{{listOfTemperatureSensors}}",
 			i18nData		: [
 				{
+					grammarAnchor	: "{{changeTemperature}}",
+					i18nVar			: "language.change-temperature"
+				},
+				{
 					grammarAnchor	: "{{indicateTemperature}}",
 					i18nVar			: "language.indicate-temperature"
 				}
 			],
 			rules			: [
-				'eventTemperature = temperatureName:T "<span class=' + "'event'" + '> {{indicateTemperature}} </span>" temperature:number "<span class=' + "'event'" + '> degres Celsius </span>"\n\
+				'eventTemperature = eventAnyTemperature / eventPreciseTemperature',
+				'eventAnyTemperature = temperatureName:T "<span class=' + "'event'" + '> {{changeTemperature}} </span>"\n\
+				{\n\
+					var nodeEvent = {};\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.findWhere({ name : $(temperatureName).text() }).get("id");\n\
+					nodeEvent.eventName = "value";\n\
+					nodeEvent.eventValue = "";\n\
+					\n\
+					return nodeEvent;\n\
+				}',
+				'eventPreciseTemperature = temperatureName:T "<span class=' + "'event'" + '> {{indicateTemperature}} </span>" temperature:number "<span class=' + "'event'" + '> degres Celsius </span>"\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -874,7 +890,7 @@ define([
 					nodeAction.targetType = "device";\n\
 					nodeAction.targetId = devices.findWhere({ name : $(mediaPlayerName).text() }).get("id");\n\
 					nodeAction.methodName = "setVolume";\n\
-					nodeAction.args = [{ type : "int", value : 50 }];\n\
+					nodeAction.args = [{ type : "int", value : volume }];\n\
 					\n\
 					return nodeAction;\n\
 				}',

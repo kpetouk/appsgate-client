@@ -226,6 +226,7 @@
 		"op-more-than"								: "plus de",
 		"op-less-than"								: "moins de",
 		
+		"change-temperature"						: "change",
 		"indicate-temperature"						: "indique",
 		
 		"indicate-illumination"						: "indique",
