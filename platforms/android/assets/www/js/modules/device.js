@@ -2,6 +2,7 @@ define([
 	"jquery",
 	"underscore",
 	"backbone",
+	"grammar",
 	"raphael",
 	"moment",
 	"text!templates/devices/menu/menu.html",
@@ -18,7 +19,7 @@ define([
 	"text!templates/devices/details/phillipsHue.html",
 	"text!templates/devices/details/coreClock.html",
 	"colorWheel"
-], function($, _, Backbone, Raphael, Moment,
+], function($, _, Backbone, Grammar, Raphael, Moment,
 		deviceMenuTemplate, deviceContainerMenuTemplate, coreClockContainerMenuTemplate,
 		deviceListByCategoryTemplate,
 		deviceDetailsTemplate,
@@ -28,46 +29,6 @@ define([
 	
 	// initialize the module
 	var Device = {};
-
-	// global variables concerning the devices
-	window.deviceTypesName = {
-		0 : {
-			singular	: "Capteur de temp&eacute;rature",
-			plural		: "Capteurs de temp&eacute;rature"
-		},
-		1 : {
-			singular	: "Capteur de luminosit&eacute;",
-			plural		: "Capteurs de luminosit&eacute;"
-		},
-		2 : {
-			singular	: "Interrupteur",
-			plural		: "Interrupteurs"
-		},
-		3 : {
-			singular	: "Capteur de contact",
-			plural		: "Capteurs de contact"
-		},
-		4 : {
-			singular	: "Lecteur de carte",
-			plural		: "Lecteurs de carte"
-		},
-		5 : {
-			singular	: "Capteur de mouvement",
-			plural		: "Capteurs de mouvement"
-		},
-		6 : {
-			singular	: "Prise gigogne",
-			plural		: "Prises gigogne"
-		},
-		7 : {
-			singular	: "Lampe Philips Hue",
-			plural		: "Lampes Philips Hue"
-		},
-		21 : {
-			singular	: "Heure syst&egrave;me",
-			plural		: "Heures syst&egrave;me"
-		}
-	};
 	
 	// define the grammar for each type of device
 	window.deviceTypesGrammar = {
@@ -75,8 +36,14 @@ define([
 			eventAnchor		: "eventTemperature",
 			statusAnchor	: "statusTemperature",
 			listAnchor		: "{{listOfTemperatureSensors}}",
+			i18nData		: [
+				{
+					grammarAnchor	: "{{indicateTemperature}}",
+					i18nVar			: "language.indicate-temperature"
+				}
+			],
 			rules			: [
-				'eventTemperature = temperatureName:T sep "<span class=' + "'event'" + '>indique</span>" sep temperature:number sep "<span class=' + "'event'" + '>degres C</span>"\n\
+				'eventTemperature = temperatureName:T sep "<span class=' + "'event'" + '>{{indicateTemperature}}</span>" sep temperature:number sep "<span class=' + "'event'" + '>degres C</span>"\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -87,11 +54,11 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'statusTemperature = temperatureName:T sep "<span class=' + "'status'" + '>indique</span>" sep temperature:number sep "<span class=' + "'status'" + '>degres C</span>"\n\
+				'statusTemperature = temperatureName:T sep "<span class=' + "'status'" + '>{{indicateTemperature}}</span>" sep operator:opComparison sep temperature:number sep "<span class=' + "'status'" + '>degres C</span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
-					nodeRelationBool.operator = "==";\n\
+					nodeRelationBool.operator = operator;\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
 					nodeRelationBool.leftOperand.targetType = "device";\n\
@@ -113,8 +80,14 @@ define([
 			eventAnchor		: "eventIllumination",
 			statusAnchor	: "statusIllumination",
 			listAnchor		: "{{listOfIlluminationSensors}}",
+			i18nData		: [
+				{
+					grammarAnchor	: "{{indicateIllumination}}",
+					i18nVar			: "language.indicate-illumination"
+				}
+			],
 			rules			: [
-				'eventIllumination = illuminationName:I sep "<span class=' + "'event'" + '>indique</span>" sep illumination:number sep "<span class=' + "'event'" + '>Lux</span>"\n\
+				'eventIllumination = illuminationName:I sep "<span class=' + "'event'" + '>{{indicateIllumination}}</span>" sep illumination:number sep "<span class=' + "'event'" + '>Lux</span>"\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -125,11 +98,11 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'statusIllumination = illuminationName:I sep "<span class=' + "'status'" + '>indique</span>" sep illumination:number sep "<span class=' + "'status'" + '>Lux</span>"\n\
+				'statusIllumination = illuminationName:I sep "<span class=' + "'status'" + '>{{indicateIllumination}}</span>" sep operator:opComparison sep illumination:number sep "<span class=' + "'status'" + '>Lux</span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
-					nodeRelationBool.operator = "==";\n\
+					nodeRelationBool.operator = operator;\n\
 					\n\
 					nodeRelationBool.leftOperand = {};\n\
 					nodeRelationBool.leftOperand.targetType = "device";\n\
@@ -150,9 +123,19 @@ define([
 		2	: {
 			eventAnchor		: "eventSwitch",
 			listAnchor		: "{{listOfSwitches}}",
+			i18nData		: [
+				{
+					grammarAnchor	: "{{pushedSwitchEvent}}",
+					i18nVar			: "language.pushed-switch-event"
+				},
+				{
+					grammarAnchor	: "{{releasedSwitchEvent}}",
+					i18nVar			: "language.released-switch-event"
+				}
+			],
 			rules			: [
 				"eventSwitch = pushedSwitchEvent / releasedSwitchEvent",
-				'pushedSwitchEvent = "<span class=' + "'event'" + '>on appuie sur</span>" sep switchName:S\n\
+				'pushedSwitchEvent = "<span class=' + "'event'" + '>{{pushedSwitchEvent}}</span>" sep switchName:S\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -163,7 +146,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'releasedSwitchEvent = "<span class=' + "'event'" + '>on relache</span>" sep switchName:S\n\
+				'releasedSwitchEvent = "<span class=' + "'event'" + '>{{releasedSwitchEvent}}</span>" sep switchName:S\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -181,9 +164,47 @@ define([
 			eventAnchor		: "eventContact",
 			statusAnchor	: "statusContact",
 			listAnchor		: "{{listOfContactSensors}}",
+			i18nData		: [
+				{
+					grammarAnchor	: "{{openedContactEvent}}",
+					i18nVar			: "language.opened-contact-event"
+				},
+				{
+					grammarAnchor	: "{{closedContactEvent}}",
+					i18nVar			: "language.closed-contact-event"
+				},
+				{
+					grammarAnchor	: "{{contactSensorKeyWord}}",
+					i18nVar			: "language.contact-sensor-keyword"
+				},
+				{
+					grammarAnchor	: "{{contactDisassembledEvent}}",
+					i18nVar			: "language.contact-disassembled-event"
+				},
+				{
+					grammarAnchor	: "{{contactAssembledEvent}}",
+					i18nVar			: "language.contact-assembled-event"
+				},
+				{
+					grammarAnchor	: "{{isClosedContactStatus}}",
+					i18nVar			: "language.is-closed-contact-status"
+				},
+				{
+					grammarAnchor	: "{{isAssembledContactStatus}}",
+					i18nVar			: "language.is-assembled-contact-status"
+				},
+				{
+					grammarAnchor	: "{{isOpenedContactStatus}}",
+					i18nVar			: "language.is-opened-contact-status"
+				},
+				{
+					grammarAnchor	: "{{isDisassembledContactStatus}}",
+					i18nVar			: "language.is-disassembled-contact-status"
+				}
+			],
 			rules			: [
 				"eventContact = openedContactEvent / assembledContactEvent / closedContactEvent / disassembledContactEvent",
-				'openedContactEvent = "<span class=' + "'event'" + '>on ouvre</span>" sep contactName:C\n\
+				'openedContactEvent = "<span class=' + "'event'" + '>{{openedContactEvent}}</span>" sep contactName:C\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -194,7 +215,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'disassembledContactEvent = "<span class=' + "'event'" + '>le capteur de contact de</span>" sep contactName:C sep "<span class= ' + "'event'" + '>se desassemble</span>"\n\
+				'disassembledContactEvent = "<span class=' + "'event'" + '>{{contactSensorKeyWord}}</span>" sep contactName:C sep "<span class=' + "'event'" + '>{{contactDisassembledEvent}}</span>"\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -205,7 +226,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'closedContactEvent = "<span class=' + "'event'" + '>on ferme</span>" sep contactName:C\n\
+				'closedContactEvent = "<span class=' + "'event'" + '>{{closedContactEvent}}</span>" sep contactName:C\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -216,7 +237,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'assembledContactEvent = "<span class=' + "'event'" + '>le capteur de contact de</span>" sep contactName:C sep "<span class=' + "'event'" + '>s assemble</span>"\n\
+				'assembledContactEvent = "<span class=' + "'event'" + '>{{contactSensorKeyWord}}</span>" sep contactName:C sep "<span class=' + "'event'" + '>{{contactAssembledEvent}}</span>"\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -228,7 +249,7 @@ define([
 					return nodeEvent;\n\
 				}',
 				"statusContact = closedContactStatus / assembledContactStatus / openedContactStatus / disassembledContactStatus",
-				'closedContactStatus = contactName:C sep "<span class=' + "'status'" + '>est ferme</span>"\n\
+				'closedContactStatus = contactName:C sep "<span class=' + "'status'" + '>{{isClosedContactStatus}}</span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -247,7 +268,7 @@ define([
 					\n\
 					return nodeRelationBool;\n\
 				}',
-				'assembledContactStatus = "<span class=' + "'status'" + '>le capteur de contact de</span>" sep contactName:C sep "<span class=' + "'status'" + '>est assemble</span>"\n\
+				'assembledContactStatus = "<span class=' + "'status'" + '>{{contactSensorKeyWord}}</span>" sep contactName:C sep "<span class=' + "'status'" + '>{{isAssembledContactStatus}}</span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -266,7 +287,7 @@ define([
 					\n\
 					return nodeRelationBool;\n\
 				}',
-				'openedContactStatus = contactName:C sep "<span class=' + "'status'" + '>est ouvert</span>"\n\
+				'openedContactStatus = contactName:C sep "<span class=' + "'status'" + '>{{isOpenedContactStatus}}</span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -285,7 +306,7 @@ define([
 					\n\
 					return nodeRelationBool;\n\
 				}',
-				'disassembledContactStatus = "<span class=' + "'status'" + '>le capteur de contact de</span>" sep contactName:C sep "<span class=' + "'status'" + '>est desassemble</span>"\n\
+				'disassembledContactStatus = "<span class=' + "'status'" + '>{{contactSensorKeyWord}}</span>" sep contactName:C sep "<span class=' + "'status'" + '>{{isDisassembledContactStatus}}</span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -311,9 +332,27 @@ define([
 			eventAnchor		: "eventKeyCardReader",
 			statusAnchor	: "statusKeyCardReader",
 			listAnchor		: "{{listOfKeyCardReaders}}",
+			i18nData		: [
+				{
+					grammarAnchor	: "{{insertedKeycardReaderEvent}}",
+					i18nVar			: "language.inserted-keycard-reader-event"
+				},
+				{
+					grammarAnchor	: "{{removedKeycardReaderEvent}}",
+					i18nVar			: "language.removed-keycard-reader-event"
+				},
+				{
+					grammarAnchor	: "{{cardInsertedKeycardReaderEvent}}",
+					i18nVar			: "language.card-inserted-keycard-reader-status"
+				},
+				{
+					grammarAnchor	: "{{noCardInsertedKeycardReaderEvent}}",
+					i18nVar			: "language.no-card-inserted-keycard-reader-status"
+				}
+			],
 			rules			: [
 				"eventKeyCardReader = insertedKCREvent / removedKCREvent",
-				'insertedKCREvent = "<span class=' + "'event'" + '>on insere une carte dans</span>" sep KCRName:KCR\n\
+				'insertedKCREvent = "<span class=' + "'event'" + '>{{insertedKeycardReaderEvent}}</span>" sep KCRName:KCR\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -324,7 +363,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'removedKCREvent = "<span class=' + "'event'" + '>on retire une carte de</span>" sep KCRName:KCR\n\
+				'removedKCREvent = "<span class=' + "'event'" + '>{{removedKeycardReaderEvent}}</span>" sep KCRName:KCR\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -336,7 +375,7 @@ define([
 					return nodeEvent;\n\
 				}',
 				"statusKeyCardReader = cardInsertedKCRStatus / cardRemovedKCRStatus",
-				'cardInsertedKCRStatus = "<span class=' + "'status'" + '>une carte est inseree dans</span>" sep KCRName:KCR\n\
+				'cardInsertedKCRStatus = "<span class=' + "'status'" + '>{{cardInsertedKeycardReaderEvent}}</span>" sep KCRName:KCR\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -355,7 +394,7 @@ define([
 					\n\
 					return nodeRelationBool;\n\
 				}',
-				'cardRemovedKCRStatus = "<span class=' + "'status'" + '>aucune carte n est inseree dans</span>" sep KCRName:KCR\n\
+				'cardRemovedKCRStatus = "<span class=' + "'status'" + '>{{noCardInsertedKeycardReaderEvent}}</span>" sep KCRName:KCR\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -382,9 +421,35 @@ define([
 			statusAnchor	: "statusPlug",
 			actionAnchor	: "actionPlug",
 			listAnchor		: "{{listOfPlugs}}",
+			i18nData		: [
+				{
+					grammarAnchor	: "{{turnedOnPlugEvent}}",
+					i18nVar			: "language.turned-on-plug-event"
+				},
+				{
+					grammarAnchor	: "{{turnedOffPlugEvent}}",
+					i18nVar			: "language.turned-off-plug-event"
+				},
+				{
+					grammarAnchor	: "{{isTurnedOnPlugStatus}}",
+					i18nVar			: "language.is-turned-on-plug-status"
+				},
+				{
+					grammarAnchor	: "{{isTurnedOffPlugStatus}}",
+					i18nVar			: "language.is-turned-off-plug-status"
+				},
+				{
+					grammarAnchor	: "{{turnOnPlugAction}}",
+					i18nVar			: "language.turn-on-plug-action"
+				},
+				{
+					grammarAnchor	: "{{turnOffPlugAction}}",
+					i18nVar			: "language.turn-off-plug-action"
+				}
+			],
 			rules			: [
 				"eventPlug = turnedOnPlugEvent / turnedOffPlugEvent",
-				'turnedOnPlugEvent = "<span class=' + "'event'" + '>on allume</span>" sep plugName:PL\n\
+				'turnedOnPlugEvent = "<span class=' + "'event'" + '>{{turnedOnPlugEvent}}</span>" sep plugName:PL\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -395,7 +460,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'turnedOffPlugEvent = "<span class=' + "'event'" + '>on eteint</span>" sep plugName:PL\n\
+				'turnedOffPlugEvent = "<span class=' + "'event'" + '>{{turnedOffPlugEvent}}</span>" sep plugName:PL\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -407,7 +472,7 @@ define([
 					return nodeEvent;\n\
 				}',
 				"statusPlug = isOnPlugStatus / isOffPlugStatus",
-				'isOnPlugStatus = plugName:PL sep "<span class=' + "'status'" + '>est allumee</span>"\n\
+				'isOnPlugStatus = plugName:PL sep "<span class=' + "'status'" + '>{{isTurnedOnPlugStatus}}</span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -426,7 +491,7 @@ define([
 					\n\
 					return nodeRelationBool;\n\
 				}',
-				'isOffPlugStatus = plugName:PL sep "<span class=' + "'status'" + '>est eteinte</span>"\n\
+				'isOffPlugStatus = plugName:PL sep "<span class=' + "'status'" + '>{{isTurnedOffPlugStatus}}</span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -447,7 +512,7 @@ define([
 				}\n\
 				',
 				"actionPlug = onPlugAction / offPlugAction",
-				'onPlugAction = "<span class=' + "'action-name'" + '>allumer</span>" sep plugName:PL\n\
+				'onPlugAction = "<span class=' + "'action-name'" + '>{{turnOnPlugAction}}</span>" sep plugName:PL\n\
 				{\n\
 					var nodeAction = {};\n\
 					nodeAction.type = "NodeAction";\n\
@@ -458,7 +523,7 @@ define([
 					\n\
 					return nodeAction;\n\
 				}',
-				'offPlugAction = "<span class=' + "'action-name'" + '>eteindre</span>" sep plugName:PL\n\
+				'offPlugAction = "<span class=' + "'action-name'" + '>{{turnOffPlugAction}}</span>" sep plugName:PL\n\
 				{\n\
 					var nodeAction = {};\n\
 					nodeAction.type = "NodeAction";\n\
@@ -477,9 +542,75 @@ define([
 			statusAnchor	: "statusLamp",
 			actionAnchor	: "actionLamp",
 			listAnchor		: "{{listOfLamps}}",
+			i18nData		: [
+				{
+					grammarAnchor	: "{{turnedOnLampEvent}}",
+					i18nVar			: "language.turned-on-lamp-event"
+				},
+				{
+					grammarAnchor	: "{{turnedOffLampEvent}}",
+					i18nVar			: "language.turned-off-lamp-event"
+				},
+				{
+					grammarAnchor	: "{{isTurnedOnLampStatus}}",
+					i18nVar			: "language.is-turned-on-lamp-status"
+				},
+				{
+					grammarAnchor	: "{{isTurnedOffLampStatus}}",
+					i18nVar			: "language.is-turned-off-lamp-status"
+				},
+				{
+					grammarAnchor	: "{{turnOnLampAction}}",
+					i18nVar			: "language.turn-on-lamp-action"
+				},
+				{
+					grammarAnchor	: "{{turnOffLampAction}}",
+					i18nVar			: "language.turn-off-lamp-action"
+				},
+				{
+					grammarAnchor	: "{{changeColorLampAction}}",
+					i18nVar			: "language.change-color-lamp-action"
+				},
+				{
+					grammarAnchor	: "{{complementChangeColorLampAction}}",
+					i18nVar			: "language.complement-change-color-lamp-action"
+				},
+				{
+					grammarAnchor	: "{{whiteColor}}",
+					i18nVar			: "language.white-color"
+				},
+				{
+					grammarAnchor	: "{{redColor}}",
+					i18nVar			: "language.red-color"
+				},
+				{
+					grammarAnchor	: "{{blueColor}}",
+					i18nVar			: "language.blue-color"
+				},
+				{
+					grammarAnchor	: "{{greenColor}}",
+					i18nVar			: "language.green-color"
+				},
+				{
+					grammarAnchor	: "{{yellowColor}}",
+					i18nVar			: "language.yellow-color"
+				},
+				{
+					grammarAnchor	: "{{orangeColor}}",
+					i18nVar			: "language.orange-color"
+				},
+				{
+					grammarAnchor	: "{{purpleColor}}",
+					i18nVar			: "language.purple-color"
+				},
+				{
+					grammarAnchor	: "{{pinkColor}}",
+					i18nVar			: "language.pink-color"
+				}
+			],
 			rules			: [
 				"eventLamp	= turnedOnLampEvent / turnedOffLampEvent",
-				'turnedOnLampEvent = "<span class=' + "'event'" + '>on allume</span>" sep lampName:L\n\
+				'turnedOnLampEvent = "<span class=' + "'event'" + '>{{turnedOnLampEvent}}</span>" sep lampName:L\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -490,7 +621,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'turnedOffLampEvent = "<span class=' + "'event'" + '>on eteint</span>" sep lampName:L\n\
+				'turnedOffLampEvent = "<span class=' + "'event'" + '>{{turnedOffLampEvent}}</span>" sep lampName:L\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -502,7 +633,7 @@ define([
 					return nodeEvent;\n\
 				}',
 				"statusLamp	= isOnLampStatus / isOffLampStatus",
-				'isOnLampStatus = lampName:L sep "<span class=' + "'status'" + '>est allumee</span>"\n\
+				'isOnLampStatus = lampName:L sep "<span class=' + "'status'" + '>{{isTurnedOnLampStatus}}</span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -521,7 +652,7 @@ define([
 					\n\
 					return nodeRelationBool;\n\
 				}',
-				'isOffLampStatus = lampName:L sep "<span class=' + "'status'" + '>est eteinte</span>"\n\
+				'isOffLampStatus = lampName:L sep "<span class=' + "'status'" + '>{{isTurnedOffLampStatus}}</span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -541,7 +672,7 @@ define([
 					return nodeRelationBool;\n\
 				}',
 				"actionLamp = onLampAction / offLampAction / changeColorLampAction",
-				'onLampAction = "<span class=' + "'action-name'" + '>allumer</span>" sep lampName:L\n\
+				'onLampAction = "<span class=' + "'action-name'" + '>{{turnOnLampAction}}</span>" sep lampName:L\n\
 				{\n\
 					var nodeAction = {};\n\
 					nodeAction.type = "NodeAction";\n\
@@ -552,7 +683,7 @@ define([
 					\n\
 					return nodeAction;\n\
 				}',
-				'offLampAction = "<span class=' + "'action-name'" + '>eteindre</span>" sep lampName:L\n\
+				'offLampAction = "<span class=' + "'action-name'" + '>{{turnOffLampAction}}</span>" sep lampName:L\n\
 				{\n\
 					var nodeAction = {};\n\
 					nodeAction.type = "NodeAction";\n\
@@ -563,35 +694,35 @@ define([
 					\n\
 					return nodeAction;\n\
 				}',
-				'changeColorLampAction = "<span class=' + "'action-name'" + '>changer la couleur de</span>" sep lampName:L sep "<span class=' + "'action-name'" + '>en</span>" sep color:lampColor\n\
+				'changeColorLampAction = "<span class=' + "'action-name'" + '>{{changeColorLampAction}}</span>" sep lampName:L sep "<span class=' + "'action-name'" + '>{{complementChangeColorLampAction}}</span>" sep color:lampColor\n\
 				{\n\
 					var nodeAction = {};\n\
 					nodeAction.type = "NodeAction";\n\
 					nodeAction.targetType = "device";\n\
 					nodeAction.targetId = devices.findWhere({ name : $(lampName).text() }).get("id");\n\
 					switch ($(color).text()) {\n\
-						case "rouge":\n\
+						case "{{redColor}}":\n\
 							nodeAction.methodName = "setRed";\n\
 							break;\n\
-						case "bleu":\n\
+						case "{{blueColor}}":\n\
 							nodeAction.methodName = "setBlue";\n\
 							break;\n\
-						case "vert":\n\
+						case "{{greenColor}}":\n\
 							nodeAction.methodName = "setGreen";\n\
 							break;\n\
-						case "jaune":\n\
+						case "{{yellowColor}}":\n\
 							nodeAction.methodName = "setYellow";\n\
 							break;\n\
-						case "orange":\n\
+						case "{{orangeColor}}":\n\
 							nodeAction.methodName = "setOrange";\n\
 							break;\n\
-						case "violet":\n\
+						case "{{purpleColor}}":\n\
 							nodeAction.methodName = "setPurple";\n\
 							break;\n\
-						case "rose":\n\
+						case "{{pinkColor}}":\n\
 							nodeAction.methodName = "setPink";\n\
 							break;\n\
-						case "blanc":\n\
+						case "{{whiteColor}}":\n\
 							nodeAction.methodName = "setDefault";\n\
 							break;\n\
 					}\n\
@@ -599,7 +730,7 @@ define([
 					\n\
 					return nodeAction;\n\
 				}',
-				'lampColor = "<span class=' + "'value'" + '>blanc<span>" / "<span class=' + "'value'" + '>rouge</span>" / "<span class=' + "'value'" + '>bleu</span>" / "<span class=' + "'value'" + '>vert</span>" / "<span class=' + "'value'" + '>jaune</span>" / "<span class=' + "'value'" + '>orange</span>" / "<span class=' + "'value'" + '>violet</span>" / "<span class=' + "'value'" + '>rose</span>"',
+				'lampColor = "<span class=' + "'value'" + '>{{whiteColor}}</span>" / "<span class=' + "'value'" + '>{{redColor}}</span>" / "<span class=' + "'value'" + '>{{blueColor}}</span>" / "<span class=' + "'value'" + '>{{greenColor}}</span>" / "<span class=' + "'value'" + '>{{yellowColor}}</span>" / "<span class=' + "'value'" + '>{{orangeColor}}</span>" / "<span class=' + "'value'" + '>{{purpleColor}}</span>" / "<span class=' + "'value'" + '>{{pinkColor}}</span>"',
 				"L = {{listOfLamps}}"
 			]
 		},
@@ -607,8 +738,18 @@ define([
 			eventAnchor		: "eventCoreClock",
 			statusAnchor	: "statusCoreClock",
 			listAnchor		: "{{listOfCoreClock}}",
+			i18nData		: [
+				{
+					grammarAnchor	: "{{clockEvent}}",
+					i18nVar			: "language.clock-event"
+				},
+				{
+					grammarAnchor	: "{{clockStatus}}",
+					i18nVar			: "language.clock-status"
+				}
+			],
 			rules			: [
-				'eventCoreClock = "<span class=' + "'event'" + '>il est</span>" sep time:time\n\
+				'eventCoreClock = "<span class=' + "'event'" + '>{{clockEvent}}</span>" sep time:time\n\
 				{\n\
 					var nodeEvent = {};\n\
 					\n\
@@ -620,7 +761,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'statusCoreClock = "<span class=' + "'status'" + '>il est</span>" sep time:time\n\
+				'statusCoreClock = "<span class=' + "'status'" + '>{{clockStatus}}</span>" sep time:time\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -638,6 +779,178 @@ define([
 					nodeRelationBool.rightOperand.value = time;\n\
 					\n\
 					return nodeRelationBool;\n\
+				}'
+			]
+		},
+		31		: {
+			actionAnchor	: "actionMediaPlayer",
+			listAnchor		: "{{listOfMediaPlayers}}",
+			i18nData		: [
+				{
+					grammarAnchor	: "{{playMediaPlayerAction}}",
+					i18nVar			: "language.play-media-player-action"
+				},
+				{
+					grammarAnchor	: "{{pauseMediaPlayerAction}}",
+					i18nVar			: "language.pause-media-player-action"
+				},
+				{
+					grammarAnchor	: "{{stopMediaPlayerAction}}",
+					i18nVar			: "language.stop-media-player-action"
+				},
+				{
+					grammarAnchor	: "{{setVolumeMediaPlayerAction}}",
+					i18nVar			: "language.set-volume-media-player-action"
+				},
+				{
+					grammarAnchor	: "{{complementMediaPlayerAction}}",
+					i18nVar			: "language.complement-media-player-action"
+				},
+				{
+					grammarAnchor	: "{{alarmMusic}}",
+					i18nVar			: "language.alarm-music"
+				},
+				{
+					grammarAnchor	: "{{music}}",
+					i18nVar			: "language.music"
+				},
+				{
+					grammarAnchor	: "{{ringBellMailArrived}}",
+					i18nVar			: "language.ring-bell-mail-arrived"
+				},
+				{
+					grammarAnchor	: "{{radio}}",
+					i18nVar			: "language.radio"
+				},
+				{
+					grammarAnchor	: "{{movie}}",
+					i18nVar			: "language.movie"
+				},
+				{
+					grammarAnchor	: "{{imgTable}}",
+					i18nVar			: "language.img-table"
+				}
+			],
+			rules			: [
+				'actionMediaPlayer = playMediaPlayerAction / pauseMediaPlayerAction / stopMediaPlayerAction / setVolumeMediaPlayerAction',
+				'playMediaPlayerAction = "<span class=' + "'action-name'" + '>{{playMediaPlayerAction}}</span>" sep media:ML sep "<span class=' + "'action-name'" + '>{{complementMediaPlayerAction}}</span>" sep mediaPlayerName:M\n\
+				{\n\
+					var nodeAction = {};\n\
+					nodeAction.type = "NodeAction";\n\
+					nodeAction.targetType = "device";\n\
+					nodeAction.targetId = devices.findWhere({ name : $(mediaPlayerName).text() }).get("id");\n\
+					nodeAction.methodName = "play";\n\
+					nodeAction.args = [{ type : "String", value : media }];\n\
+					\n\
+					return nodeAction;\n\
+				}',
+				'pauseMediaPlayerAction = "<span class=' + "'action-name'" + '>{{pauseMediaPlayerAction}}</span>" sep mediaPlayerName:M\n\
+				{\n\
+					var nodeAction = {};\n\
+					nodeAction.type = "NodeAction";\n\
+					nodeAction.targetType = "device";\n\
+					nodeAction.targetId = devices.findWhere({ name : $(mediaPlayerName).text() }).get("id");\n\
+					nodeAction.methodName = "pause";\n\
+					nodeAction.args = [];\n\
+					\n\
+					return nodeAction;\n\
+				}',
+				'stopMediaPlayerAction = "<span class=' + "'action-name'" + '>{{stopMediaPlayerAction}}</span>" sep mediaPlayerName:M\n\
+				{\n\
+					var nodeAction = {};\n\
+					nodeAction.type = "NodeAction";\n\
+					nodeAction.targetType = "device";\n\
+					nodeAction.targetId = devices.findWhere({ name : $(mediaPlayerName).text() }).get("id");\n\
+					nodeAction.methodName = "stop";\n\
+					nodeAction.args = [];\n\
+					\n\
+					return nodeAction;\n\
+				}',
+				'setVolumeMediaPlayerAction = "<span class=' + "'action-name'" + '>{{setVolumeMediaPlayerAction}}</span>" sep mediaPlayerName:M sep "<span class=' + "'action-name'" + '>{{complementMediaPlayerAction}}</span>" sep volume:number sep "<span class=' + "'action-name'" + '>%</span>"\n\
+				{\n\
+					var nodeAction = {};\n\
+					nodeAction.type = "NodeAction";\n\
+					nodeAction.targetType = "device";\n\
+					nodeAction.targetId = devices.findWhere({ name : $(mediaPlayerName).text() }).get("id");\n\
+					nodeAction.methodName = "setVolume";\n\
+					nodeAction.args = [{ type : "int", value : 50 }];\n\
+					\n\
+					return nodeAction;\n\
+				}',
+				'M = {{listOfMediaPlayers}}',
+				'ML = alarmMusic / music / ringBellMailArrived / radio / movie / imgTable',
+				'alarmMusic = "<span class=' + "'value'" + '>{{alarmMusic}}</span>"\n\
+				{\n\
+					return "/Users/cedric/AppsGate/ressources/sound/Musique_Reveil.mp3";\n\
+				}',
+				'music = "<span class=' + "'value'" + '>{{music}}</span>"\n\
+				{\n\
+					return "/Users/cedric/AppsGate/ressources/sound/Musique.mp3";\n\
+				}',
+				'ringBellMailArrived = "<span class=' + "'value'" + '>{{ringBellMailArrived}}</span>"\n\
+				{\n\
+					return "/Users/cedric/AppsGate/ressources/sound/Sonnerie_mail_arrive.aac";\n\
+				}',
+				'radio = "<span class=' + "'value'" + '>{{radio}}</span>"\n\
+				{\n\
+					return "/Users/cedric/AppsGate/ressources/sound/Radio.mp3";\n\
+				}',
+				'movie = "<span class=' + "'value'" + '>{{movie}}</span>"\n\
+				{\n\
+					return "";\n\
+				}',
+				'imgTable = "<span class=' + "'value'" + '>{{imgTable}}</span>"\n\
+				{\n\
+					return "/Users/cedric/AppsGate/ressources/pictures/Image_a_table.jpg";\n\
+				}'
+			]
+		},
+		102		: {
+			eventAnchor		: "eventCoreMail",
+			actionAnchor	: "actionMail",
+			listAnchor		: "{{listOfMailboxes}}",
+			i18nData		: [
+				{
+					grammarAnchor	: "{{receivedMailEvent}}",
+					i18nVar			: "language.received-mail-event"
+				},
+				{
+					grammarAnchor	: "{{sendMailAction}}",
+					i18nVar			: "language.send-mail-action"
+				},
+				{
+					grammarAnchor	: "{{wellArrivedSubject}}",
+					i18nVar			: "language.well-arrived-subject"
+				}
+			],
+			rules			: [
+				'eventCoreMail = "<span class=' + "'event'" + '>{{receivedMailEvent}}</span>"\n\
+				{\n\
+					var nodeEvent = {};\n\
+					\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.getCoreMail().get("id");\n\
+					nodeEvent.eventName = "newMail";\n\
+					nodeEvent.eventValue = "smarthome.inria@gmail.com";\n\
+					\n\
+					return nodeEvent;\n\
+				}',
+				'actionMail = "<span class=' + "'action-name'" + '>{{sendMailAction}}</span>" sep emailAddress:emailAddress sep\n\
+				{\n\
+					var nodeAction = {};\n\
+					\n\
+					nodeAction.type = "NodeAction";\n\
+					nodeAction.targetType = "device";\n\
+					nodeAction.targetId = devices.getCoreMail().get("id");\n\
+					nodeAction.methodName = "sendMailSimple";\n\
+					nodeAction.args = [\n\
+						{ type : "String", value : emailAddress },\n\
+						{ type : "String", value : "{{wellArrivedSubject}}" },\n\
+						{ type : "String", value : "" }\n\
+					];\n\
+					\n\
+					return nodeAction;\n\
 				}'
 			]
 		}
@@ -709,6 +1022,12 @@ define([
 		 */
 		initialize: function() {
 			var self = this;
+			
+			// when a name is updated, update the grammar
+			this.on("change:name", function() {
+				delete window.grammar;
+				window.grammar = new Grammar();
+			});
 			
 			// each device listens to the event whose id corresponds to its own id. This ensures to
 			// receive only relevant events
@@ -1037,6 +1356,34 @@ define([
 			this.remoteCall("setTimeFlowRate", [{ type : "double", value : this.get("flowRate") }]);
 		}
 	});
+	
+	/**
+	 * Implementation of the core mail
+	 *
+	 * @class Device.Mail
+	 */
+	Device.Mail = Device.Model.extend({
+		/**
+		 * @constructor
+		 */
+		initialize: function() {
+			Device.Mail.__super__.initialize.apply(this, arguments);
+		},
+	});
+	
+	/**
+	 * Implementation of the UPnP media player
+	 *
+	 * @class Device.MediaPlayer
+	 */
+	Device.MediaPlayer = Device.Model.extend({
+		/**
+		 * @constructor
+		 */
+		initialize:function() {
+			Device.MediaPlayer.__super__.initialize.apply(this, arguments);
+		}
+	});
 
 	// collection
 	Device.Collection = Backbone.Collection.extend({
@@ -1061,6 +1408,19 @@ define([
 			// listen to the backend notifying when a device appears and add it
 			dispatcher.on("newDevice", function(device) {
 				self.addDevice(device);
+			});
+			
+			dispatcher.on("removeDevice", function(deviceId) {
+				var device = devices.findWhere({ id : deviceId });
+				devices.remove(device);
+				
+				console.log(device);
+				
+				// update the grammar to take the new program in consideration
+				if (typeof window.grammar !== "undefined") {
+					delete window.grammar;
+				}
+				window.grammar = new Grammar();
 			});
 
 			// send the request to fetch the devices
@@ -1104,8 +1464,14 @@ define([
 				case 21:
 					this.add(new Device.CoreClock(device));
 					break;
+				case 31:
+					this.add(new Device.MediaPlayer(device));
+					break;
+				case 102:
+					this.add(new Device.Mail(device));
+					break;
 				default:
-					console.log("unknown type", device);
+					console.log("unknown type", device, typeof device.type);
 					break;
 			}
 			
@@ -1175,6 +1541,20 @@ define([
 		 */
 		getCoreClock:function() {
 			return devices.findWhere({ type : 21 });
+		},
+		
+		/**
+		 * @return Core mail of the home - unique device
+		 */
+		getCoreMail:function() {
+			return devices.findWhere({ type : 102 });
+		},
+		
+		/**
+		 * @return Array of UPnP media players
+		 */
+		getMediaPlayers:function() {
+			return devices.where({ type : 31 });
 		},
 		
 		/**
@@ -1271,13 +1651,12 @@ define([
 				this.$el.append(this.tpl());
 				var types = devices.getDevicesByType();
 				_.forEach(_.keys(types), function(type) {
-					if (type !== "21") {
+					if (type !== "21" && type !== "31" && type !== "102") {
 						$(self.$el.find(".list-group")[1]).append(self.tplDeviceContainer({
 							type		: type,
-							typeName	: devices.getDevicesByType()[type].length === 1 ? deviceTypesName[type].singular : deviceTypesName[type].plural,
 							devices		: types[type],
 							places		: locations,
-							unlocatedDevices: devices.filter(function(d) { return (d.get("placeId") === "-1" && d.get("type") === type) }),
+							unlocatedDevices: devices.filter(function(d) { return (d.get("placeId") === "-1" && d.get("type") === type); }),
 							active		: Backbone.history.fragment.split("devices/types/")[1] === type ? true : false
 						}));
 					}
@@ -1285,6 +1664,9 @@ define([
 
 				// set active the current item menu
 				this.updateSideMenu();
+				
+				// translate the view
+				this.$el.i18n();
 
 				return this;
 			 }
@@ -1540,7 +1922,7 @@ define([
 						this.$el.html(this.template({
 							device: this.model,
 							sensorImg: "styles/img/sensors/temperature.jpg",
-							sensorType: deviceTypesName[0].singular,
+							sensorType: $.i18n.t("devices.temperature.name.singular"),
 							locations: locations,
 							deviceDetails: this.tplTemperature
 						}));
@@ -1550,7 +1932,7 @@ define([
 						this.$el.html(this.template({
 							device: this.model,
 							sensorImg: "styles/img/sensors/illumination.jpg",
-							sensorType: deviceTypesName[1].singular,
+							sensorType: $.i18n.t("devices.illumination.name.singular"),
 							locations: locations,
 							deviceDetails: this.tplIllumination
 						}));
@@ -1560,7 +1942,7 @@ define([
 						this.$el.html(this.template({
 							device: this.model,
 							sensorImg: "styles/img/sensors/doubleSwitch.jpg",
-							sensorType: deviceTypesName[2].singular,
+							sensorType: $.i18n.t("devices.switch.name.singular"),
 							locations: locations,
 							deviceDetails: this.tplSwitch
 						}));
@@ -1570,7 +1952,7 @@ define([
 						this.$el.html(this.template({
 							device: this.model,
 							sensorImg: "styles/img/sensors/contact.jpg",
-							sensorType: deviceTypesName[3].singular,
+							sensorType: $.i18n.t("devices.contact.name.singular"),
 							locations: locations,
 							deviceDetails: this.tplContact
 						}));
@@ -1580,7 +1962,7 @@ define([
 						this.$el.html(this.template({
 							device: this.model,
 							sensorImg: "styles/img/sensors/keycard.jpg",
-							sensorType: deviceTypesName[4].singular,
+							sensorType: $.i18n.t("devices.keycard-reader.name.singular"),
 							locations: locations,
 							deviceDetails: this.tplKeyCard
 						}));
@@ -1590,7 +1972,7 @@ define([
 						this.$el.html(this.template({
 							device: this.model,
 							sensorImg: "styles/img/sensors/plug.jpg",
-							sensorType: deviceTypesName[6].singular,
+							sensorType: $.i18n.t("devices.plug.name.singular"),
 							locations: locations,
 							deviceDetails: this.tplPlug
 						}));
@@ -1599,7 +1981,7 @@ define([
 					case 7: // phillips hue
 						this.$el.html(this.template({
 							device: this.model,
-							sensorType: deviceTypesName[7].singular,
+							sensorType: $.i18n.t("devices.lamp.name.singular"),
 							locations: locations,
 							deviceDetails: this.tplPhillipsHue
 						}));
@@ -1625,13 +2007,16 @@ define([
 						}
 						this.$el.html(this.template({
 							device: this.model,
-							sensorType: deviceTypesName[21].singular,
+							sensorType: $.i18n.t("devices.clock.name.singular"),
 							locations: locations,
 							hours: hours,
 							minutes: minutes,
 							deviceDetails: this.tplCoreClock
 						}));
 				}
+				
+				// translate the view
+				this.$el.i18n();
 
 				return this;
 			}
@@ -1652,7 +2037,7 @@ define([
 			// instantiate the color wheel
 			window.colorWheel = Raphael.colorwheel(
 				$(".body-content").position().left + ($(".body-content").width() - wheelRadius) / 2,
-				this.$el.find(".color-picker").position().top + 80,
+				this.$el.find(".color-picker").position().top + 160,
 				wheelRadius,
 				"#F00"
 			);
@@ -1766,10 +2151,12 @@ define([
 		render:function() {
 			if (!appRouter.isModalShown) {
 				this.$el.html(this.tpl({
-					typeId			: this.id,
-					deviceTypeName	: devices.getDevicesByType()[this.id].length === 1 ? deviceTypesName[this.id].singular : deviceTypesName[this.id].plural,
+					type			: this.id,
 					places			: locations
 				}));
+				
+				// translate the view
+				this.$el.i18n();
 
 				return this;
 			}

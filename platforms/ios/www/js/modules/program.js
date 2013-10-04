@@ -184,8 +184,8 @@ define([
 			});
 			
 			// listen to the event when a program has been removed
-			dispatcher.on("removeProgram", function(programId) {
-				var removedProgram = programs.findWhere({ id : programId });
+			dispatcher.on("removeProgram", function(program) {
+				var removedProgram = programs.get(program.id);
 				programs.remove(removedProgram);
 				
 				// update the grammar to remove the program from the grammar
@@ -448,12 +448,15 @@ define([
 		tplEditor : _.template(programEditorTemplate),
 		
 		events : {
-			"click button.save-program-button"		: "onSaveProgramButton",
-			"click button.delete-program-button"	: "onDeleteProgramButton",
-			"keyup textarea"						: "onKeyUpTextarea",
-			"click button.completion-button"		: "onClickCompletionButton",
-			"click .programInput span"				: "onClickSourceElement",
-			"click button.valid-value"				: "onValidValueButton"
+			"click button.save-program-button"							: "onSaveProgramButton",
+			"click button.delete-program-button"						: "onDeleteProgramButton",
+			"keyup textarea"											: "onKeyUpTextarea",
+			"click .expected-elements > button.completion-button"		: "onClickCompletionButton",
+			"click .programInput > span"								: "onClickSourceElement",
+			"click button.valid-value"									: "onValidValueButton",
+			"click button.deleted-elements"								: "onClickDeletedElements",
+			"click button.popover-button"								: "onClickPopoverButton",
+			"click button.close-popover-button"							: "onClickClosePopoverButton"
 		},
 		
 		/**
@@ -489,7 +492,7 @@ define([
 		
 		onClickCompletionButton:function(e) {
 			if ($(e.currentTarget).text() === $.i18n.t("language.space")) {
-				$(".programInput").append(" ");
+				// $(".programInput").append(" ");
 			} else {
 				$(".programInput").append($(e.currentTarget).html());
 			}
@@ -498,21 +501,92 @@ define([
 
 		onClickSourceElement:function(e) {
 			var i = $(".programInput").children().toArray().indexOf(e.currentTarget);
-			// var before = $(".programInput").children().splice(0, i);
+			var before = $(".programInput").children().splice(0, i);
 			var after = $(".programInput").children().splice(i, $(".programInput").children().length);
 			
-			$(".deleted-elements").html("");
-			
-			after.forEach(function(element) {
-				$(".deleted-elements").append(element);
-			});
-			
-			this.compileProgram();
+			if ($(e.currentTarget).hasClass("value")) {
+				var input = $("<div>");
+				input.append(this.model.get("name") + " " + $.i18n.t("language.written-by") + " Bob pour Alice ");
+				before.forEach(function(span) {
+					$(span).clone().appendTo(input);
+				});
+				try {
+					grammar.parse(input.html().replace(/"/g, "'"));
+				} catch (exception) {
+					var content = $("<span>");
+					
+					exception.expected.forEach(function(nextPossibility) {
+						if (nextPossibility.indexOf("input") === -1) {
+							content.append("<button class='btn btn-primary popover-button'>" + nextPossibility.replace(/"/g, "").replace(/\\/g, "") + "</button><br>");
+						} else {
+							content.append(nextPossibility);
+						}
+					});
+					content.append("<button class='btn btn-danger delete-popover-button'>" + $.i18n.t("form.delete-button") + "</button>");
+					content.append("<button class='btn btn-info close-popover-button'>" + $.i18n.t("form.cancel-button") + "</button>");
+					
+					$(e.currentTarget).popover({
+						html		: true,
+						title		: "plop",
+						content		: content,
+						placement	: "bottom"
+					});
+					
+					this.valueToReplace = $(e.currentTarget);
+					$(e.currentTarget).popover("show");
+				}
+				
+			} else {
+				$(".deleted-elements").html("");
+				after.forEach(function(element) {
+					$(".deleted-elements").append(element);
+				});
+				// $(".deleted-elements").html($(".deleted-elements").html().slice(0, $(".deleted-elements").html().length - 1));
+
+				$(".deleted-elements").removeClass("hidden");
+
+				this.compileProgram();
+			}
 		},
 		
 		onValidValueButton:function() {
-			$(".programInput").append("<span class='value'>" + $(".expected-elements input").val() + "</span> ");
+			$(".programInput").append("<span class='value'>" + $(".expected-elements input").val() + "</span>");
 			this.compileProgram();
+		},
+		
+		onClickDeletedElements:function() {
+			$(".programInput").append($("button.deleted-elements").html());
+			$("button.deleted-elements").addClass("hidden");
+			this.compileProgram();
+		},
+		
+		onClickPopoverButton:function(e) {
+			var self = this;
+			this.valueToReplace.text($(e.currentTarget).text());
+			
+			this.valueToReplace.on("hidden.bs.popover", function() {
+				self.valueToReplace
+						.removeAttr("data-original-title")
+						.removeAttr("title");
+				$(".programInput .popover").remove();
+				self.compileProgram();
+			});
+			
+			this.valueToReplace.popover("destroy");
+		},
+		
+		onClickClosePopoverButton:function() {
+			console.log("plop");
+			var self = this;
+			
+			this.valueToReplace.on("hidden.bs.popover", function() {
+				self.valueToReplace
+						.removeAttr("data-original-title")
+						.removeAttr("title");
+				$(".programInput .popover").remove();
+			});
+			
+			this.valueToReplace.popover("destroy");
 		},
 
 		compileProgram:function() {
@@ -520,6 +594,7 @@ define([
 			var programInput = this.model.get("name") + " " + $.i18n.t("language.written-by") + " Bob pour Alice ";
 			programInput += $(".programInput").html();
 			programInput = programInput.replace(/"/g, "'");
+			
 			console.log(programInput);
 
 			// clear the error span
@@ -534,11 +609,15 @@ define([
 				this.model.set("userInputSource", $(".programInput").html());
 
 				console.log(ast);
+				
 				// include a syntax error to the program input to get the next possibilities if the user wants to add rules
 				try {
 					grammar.parse(programInput + " ");
 				} catch(e) {
 					e.expected.forEach(function(nextPossibility) {
+						if ($("button.deleted-elements").html().replace(/"/g, "'") === nextPossibility.replace(/"/g, "")) {
+							$("button.deleted-elements").addClass("hidden");
+						}
 						if (nextPossibility.indexOf("input") === -1) {
 							$(".expected-elements").append("<button class='btn btn-default completion-button'>" + nextPossibility.replace(/"/g, "").replace(/\\/g, "") + "</button>&nbsp;");
 						} else {
@@ -551,10 +630,10 @@ define([
 				$(".alert-success").addClass("hide");
 				
 				if (e.expected.length === 1) {
-					console.log(e.expected);
-				}
-
-				if (e.expected.length === 1) {
+					if ($("button.deleted-elements").html().replace(/" /g, "'") === e.expected[0]) {
+						$("button.deleted-elements").addClass("hidden");
+					}
+					
 					if (e.expected[0] === $.i18n.t("language.space")) {
 						$(".programInput").append(" ");
 						this.compileProgram();
@@ -566,12 +645,36 @@ define([
 					}
 				} else {
 					e.expected.forEach(function(nextPossibility) {
+						if ($("button.deleted-elements").html().replace(/"/g, "'") === nextPossibility.replace(/"/g, "")) {
+							$("button.deleted-elements").addClass("hidden");
+						}
+						
 						if (nextPossibility.indexOf("input") === -1) {
 							$(".expected-elements").append("<button class='btn btn-default completion-button'>" + nextPossibility.replace(/"/g, "").replace(/\\/g, "") + "</button>&nbsp;");
 						} else {
 							$(".expected-elements").append(nextPossibility);
 						}
 					});
+				}
+			}
+			
+			if ($(".programInput").html().replace(/"/g, "'").replace(/ /g, "") === $("button.deleted-elements").html().replace(/"/g, "'").replace(/ /g, "")) {
+				$("button.deleted-elements").addClass("hidden");
+			}
+			
+			// check if it is possible to append the deleted elements to the program
+			if (!$("button.deleted-elements").hasClass("hidden")) {
+				try {
+					grammar.parse(programInput + $("button.deleted-elements").html().replace(/"/g, "'"));
+					$("button.deleted-elements")
+							.removeClass("disabled")
+							.css("text-decoration", "none")
+							.css("font-style", "normal");
+				} catch (e) {
+					$("button.deleted-elements")
+							.addClass("disabled")
+							.css("text-decoration", "line-through")
+							.css("font-style", "italic");
 				}
 			}
 		},

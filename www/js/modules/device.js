@@ -43,7 +43,7 @@ define([
 				}
 			],
 			rules			: [
-				'eventTemperature = temperatureName:T sep "<span class=' + "'event'" + '>{{indicateTemperature}}</span>" sep temperature:number sep "<span class=' + "'event'" + '>degres C</span>"\n\
+				'eventTemperature = temperatureName:T "<span class=' + "'event'" + '> {{indicateTemperature}} </span>" temperature:number "<span class=' + "'event'" + '> degres Celsius </span>"\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -54,7 +54,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'statusTemperature = temperatureName:T sep "<span class=' + "'status'" + '>{{indicateTemperature}}</span>" sep operator:opComparison sep temperature:number sep "<span class=' + "'status'" + '>degres C</span>"\n\
+				'statusTemperature = temperatureName:T "<span class=' + "'status'" + '> {{indicateTemperature}} </span>" operator:opComparison temperature:number "<span class=' + "'status'" + '> degres Celsius </span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -87,7 +87,7 @@ define([
 				}
 			],
 			rules			: [
-				'eventIllumination = illuminationName:I sep "<span class=' + "'event'" + '>{{indicateIllumination}}</span>" sep illumination:number sep "<span class=' + "'event'" + '>Lux</span>"\n\
+				'eventIllumination = illuminationName:I "<span class=' + "'event'" + '> {{indicateIllumination}} </span>" illumination:number "<span class=' + "'event'" + '> Lux </span>"\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -98,7 +98,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'statusIllumination = illuminationName:I sep "<span class=' + "'status'" + '>{{indicateIllumination}}</span>" sep operator:opComparison sep illumination:number sep "<span class=' + "'status'" + '>Lux</span>"\n\
+				'statusIllumination = illuminationName:I "<span class=' + "'status'" + '> {{indicateIllumination}} </span>" operator:opComparison illumination:number "<span class=' + "'status'" + '> Lux </span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -135,7 +135,7 @@ define([
 			],
 			rules			: [
 				"eventSwitch = pushedSwitchEvent / releasedSwitchEvent",
-				'pushedSwitchEvent = "<span class=' + "'event'" + '>{{pushedSwitchEvent}}</span>" sep switchName:S\n\
+				'pushedSwitchEvent = "<span class=' + "'event'" + '> {{pushedSwitchEvent}} </span>" switchName:S\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -146,7 +146,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'releasedSwitchEvent = "<span class=' + "'event'" + '>{{releasedSwitchEvent}}</span>" sep switchName:S\n\
+				'releasedSwitchEvent = "<span class=' + "'event'" + '> {{releasedSwitchEvent}} </span>" switchName:S\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -204,7 +204,7 @@ define([
 			],
 			rules			: [
 				"eventContact = openedContactEvent / assembledContactEvent / closedContactEvent / disassembledContactEvent",
-				'openedContactEvent = "<span class=' + "'event'" + '>{{openedContactEvent}}</span>" sep contactName:C\n\
+				'openedContactEvent = "<span class=' + "'event'" + '> {{openedContactEvent}} </span>" contactName:C\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -215,7 +215,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'disassembledContactEvent = "<span class=' + "'event'" + '>{{contactSensorKeyWord}}</span>" sep contactName:C sep "<span class=' + "'event'" + '>{{contactDisassembledEvent}}</span>"\n\
+				'disassembledContactEvent = "<span class=' + "'event'" + '> {{contactSensorKeyWord}} </span>" contactName:C "<span class=' + "'event'" + '> {{contactDisassembledEvent}} </span>"\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -226,7 +226,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'closedContactEvent = "<span class=' + "'event'" + '>{{closedContactEvent}}</span>" sep contactName:C\n\
+				'closedContactEvent = "<span class=' + "'event'" + '> {{closedContactEvent}} </span>" contactName:C\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -237,7 +237,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'assembledContactEvent = "<span class=' + "'event'" + '>{{contactSensorKeyWord}}</span>" sep contactName:C sep "<span class=' + "'event'" + '>{{contactAssembledEvent}}</span>"\n\
+				'assembledContactEvent = "<span class=' + "'event'" + '> {{contactSensorKeyWord}} </span>" contactName:C "<span class=' + "'event'" + '> {{contactAssembledEvent}} </span>"\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -249,7 +249,7 @@ define([
 					return nodeEvent;\n\
 				}',
 				"statusContact = closedContactStatus / assembledContactStatus / openedContactStatus / disassembledContactStatus",
-				'closedContactStatus = contactName:C sep "<span class=' + "'status'" + '>{{isClosedContactStatus}}</span>"\n\
+				'closedContactStatus = contactName:C "<span class=' + "'status'" + '> {{isClosedContactStatus}} </span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -268,7 +268,7 @@ define([
 					\n\
 					return nodeRelationBool;\n\
 				}',
-				'assembledContactStatus = "<span class=' + "'status'" + '>{{contactSensorKeyWord}}</span>" sep contactName:C sep "<span class=' + "'status'" + '>{{isAssembledContactStatus}}</span>"\n\
+				'assembledContactStatus = "<span class=' + "'status'" + '> {{contactSensorKeyWord}} </span>" contactName:C "<span class=' + "'status'" + '> {{isAssembledContactStatus}} </span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -287,7 +287,7 @@ define([
 					\n\
 					return nodeRelationBool;\n\
 				}',
-				'openedContactStatus = contactName:C sep "<span class=' + "'status'" + '>{{isOpenedContactStatus}}</span>"\n\
+				'openedContactStatus = contactName:C "<span class=' + "'status'" + '> {{isOpenedContactStatus}} </span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -306,7 +306,7 @@ define([
 					\n\
 					return nodeRelationBool;\n\
 				}',
-				'disassembledContactStatus = "<span class=' + "'status'" + '>{{contactSensorKeyWord}}</span>" sep contactName:C sep "<span class=' + "'status'" + '>{{isDisassembledContactStatus}}</span>"\n\
+				'disassembledContactStatus = "<span class=' + "'status'" + '> {{contactSensorKeyWord}} </span>" contactName:C "<span class=' + "'status'" + '> {{isDisassembledContactStatus}} </span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -352,7 +352,7 @@ define([
 			],
 			rules			: [
 				"eventKeyCardReader = insertedKCREvent / removedKCREvent",
-				'insertedKCREvent = "<span class=' + "'event'" + '>{{insertedKeycardReaderEvent}}</span>" sep KCRName:KCR\n\
+				'insertedKCREvent = "<span class=' + "'event'" + '> {{insertedKeycardReaderEvent}} </span>" KCRName:KCR\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -363,7 +363,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'removedKCREvent = "<span class=' + "'event'" + '>{{removedKeycardReaderEvent}}</span>" sep KCRName:KCR\n\
+				'removedKCREvent = "<span class=' + "'event'" + '> {{removedKeycardReaderEvent}} </span>" KCRName:KCR\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -375,7 +375,7 @@ define([
 					return nodeEvent;\n\
 				}',
 				"statusKeyCardReader = cardInsertedKCRStatus / cardRemovedKCRStatus",
-				'cardInsertedKCRStatus = "<span class=' + "'status'" + '>{{cardInsertedKeycardReaderEvent}}</span>" sep KCRName:KCR\n\
+				'cardInsertedKCRStatus = "<span class=' + "'status'" + '> {{cardInsertedKeycardReaderEvent}} </span>" KCRName:KCR\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -394,7 +394,7 @@ define([
 					\n\
 					return nodeRelationBool;\n\
 				}',
-				'cardRemovedKCRStatus = "<span class=' + "'status'" + '>{{noCardInsertedKeycardReaderEvent}}</span>" sep KCRName:KCR\n\
+				'cardRemovedKCRStatus = "<span class=' + "'status'" + '> {{noCardInsertedKeycardReaderEvent}} </span>" KCRName:KCR\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -449,7 +449,7 @@ define([
 			],
 			rules			: [
 				"eventPlug = turnedOnPlugEvent / turnedOffPlugEvent",
-				'turnedOnPlugEvent = "<span class=' + "'event'" + '>{{turnedOnPlugEvent}}</span>" sep plugName:PL\n\
+				'turnedOnPlugEvent = "<span class=' + "'event'" + '> {{turnedOnPlugEvent}} </span>" plugName:PL\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -460,7 +460,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'turnedOffPlugEvent = "<span class=' + "'event'" + '>{{turnedOffPlugEvent}}</span>" sep plugName:PL\n\
+				'turnedOffPlugEvent = "<span class=' + "'event'" + '> {{turnedOffPlugEvent}} </span>" plugName:PL\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -472,7 +472,7 @@ define([
 					return nodeEvent;\n\
 				}',
 				"statusPlug = isOnPlugStatus / isOffPlugStatus",
-				'isOnPlugStatus = plugName:PL sep "<span class=' + "'status'" + '>{{isTurnedOnPlugStatus}}</span>"\n\
+				'isOnPlugStatus = plugName:PL "<span class=' + "'status'" + '> {{isTurnedOnPlugStatus}} </span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -491,7 +491,7 @@ define([
 					\n\
 					return nodeRelationBool;\n\
 				}',
-				'isOffPlugStatus = plugName:PL sep "<span class=' + "'status'" + '>{{isTurnedOffPlugStatus}}</span>"\n\
+				'isOffPlugStatus = plugName:PL "<span class=' + "'status'" + '> {{isTurnedOffPlugStatus}} </span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -512,7 +512,7 @@ define([
 				}\n\
 				',
 				"actionPlug = onPlugAction / offPlugAction",
-				'onPlugAction = "<span class=' + "'action-name'" + '>{{turnOnPlugAction}}</span>" sep plugName:PL\n\
+				'onPlugAction = "<span class=' + "'action-name'" + '> {{turnOnPlugAction}} </span>" plugName:PL\n\
 				{\n\
 					var nodeAction = {};\n\
 					nodeAction.type = "NodeAction";\n\
@@ -523,7 +523,7 @@ define([
 					\n\
 					return nodeAction;\n\
 				}',
-				'offPlugAction = "<span class=' + "'action-name'" + '>{{turnOffPlugAction}}</span>" sep plugName:PL\n\
+				'offPlugAction = "<span class=' + "'action-name'" + '> {{turnOffPlugAction}} </span>" plugName:PL\n\
 				{\n\
 					var nodeAction = {};\n\
 					nodeAction.type = "NodeAction";\n\
@@ -610,7 +610,7 @@ define([
 			],
 			rules			: [
 				"eventLamp	= turnedOnLampEvent / turnedOffLampEvent",
-				'turnedOnLampEvent = "<span class=' + "'event'" + '>{{turnedOnLampEvent}}</span>" sep lampName:L\n\
+				'turnedOnLampEvent = "<span class=' + "'event'" + '> {{turnedOnLampEvent}} </span>" lampName:L\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -621,7 +621,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'turnedOffLampEvent = "<span class=' + "'event'" + '>{{turnedOffLampEvent}}</span>" sep lampName:L\n\
+				'turnedOffLampEvent = "<span class=' + "'event'" + '> {{turnedOffLampEvent}} </span>" lampName:L\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\
@@ -633,7 +633,7 @@ define([
 					return nodeEvent;\n\
 				}',
 				"statusLamp	= isOnLampStatus / isOffLampStatus",
-				'isOnLampStatus = lampName:L sep "<span class=' + "'status'" + '>{{isTurnedOnLampStatus}}</span>"\n\
+				'isOnLampStatus = lampName:L "<span class=' + "'status'" + '> {{isTurnedOnLampStatus}} </span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -652,7 +652,7 @@ define([
 					\n\
 					return nodeRelationBool;\n\
 				}',
-				'isOffLampStatus = lampName:L sep "<span class=' + "'status'" + '>{{isTurnedOffLampStatus}}</span>"\n\
+				'isOffLampStatus = lampName:L "<span class=' + "'status'" + '> {{isTurnedOffLampStatus}} </span>"\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -672,7 +672,7 @@ define([
 					return nodeRelationBool;\n\
 				}',
 				"actionLamp = onLampAction / offLampAction / changeColorLampAction",
-				'onLampAction = "<span class=' + "'action-name'" + '>{{turnOnLampAction}}</span>" sep lampName:L\n\
+				'onLampAction = "<span class=' + "'action-name'" + '> {{turnOnLampAction}} </span>" lampName:L\n\
 				{\n\
 					var nodeAction = {};\n\
 					nodeAction.type = "NodeAction";\n\
@@ -683,7 +683,7 @@ define([
 					\n\
 					return nodeAction;\n\
 				}',
-				'offLampAction = "<span class=' + "'action-name'" + '>{{turnOffLampAction}}</span>" sep lampName:L\n\
+				'offLampAction = "<span class=' + "'action-name'" + '> {{turnOffLampAction}} </span>" lampName:L\n\
 				{\n\
 					var nodeAction = {};\n\
 					nodeAction.type = "NodeAction";\n\
@@ -694,43 +694,44 @@ define([
 					\n\
 					return nodeAction;\n\
 				}',
-				'changeColorLampAction = "<span class=' + "'action-name'" + '>{{changeColorLampAction}}</span>" sep lampName:L sep "<span class=' + "'action-name'" + '>{{complementChangeColorLampAction}}</span>" sep color:lampColor\n\
+				'changeColorLampAction = "<span class=' + "'action-name'" + '> {{changeColorLampAction}} </span>" lampName:L "<span class=' + "'action-name'" + '> {{complementChangeColorLampAction}} </span>" color:lampColor\n\
 				{\n\
 					var nodeAction = {};\n\
 					nodeAction.type = "NodeAction";\n\
 					nodeAction.targetType = "device";\n\
 					nodeAction.targetId = devices.findWhere({ name : $(lampName).text() }).get("id");\n\
 					switch ($(color).text()) {\n\
-						case "{{redColor}}":\n\
+						case " {{redColor}} ":\n\
 							nodeAction.methodName = "setRed";\n\
 							break;\n\
-						case "{{blueColor}}":\n\
+						case " {{blueColor}} ":\n\
 							nodeAction.methodName = "setBlue";\n\
 							break;\n\
-						case "{{greenColor}}":\n\
+						case " {{greenColor}} ":\n\
 							nodeAction.methodName = "setGreen";\n\
 							break;\n\
-						case "{{yellowColor}}":\n\
+						case " {{yellowColor}} ":\n\
 							nodeAction.methodName = "setYellow";\n\
 							break;\n\
-						case "{{orangeColor}}":\n\
+						case " {{orangeColor}} ":\n\
 							nodeAction.methodName = "setOrange";\n\
 							break;\n\
-						case "{{purpleColor}}":\n\
+						case " {{purpleColor}} ":\n\
 							nodeAction.methodName = "setPurple";\n\
 							break;\n\
-						case "{{pinkColor}}":\n\
+						case " {{pinkColor}} ":\n\
 							nodeAction.methodName = "setPink";\n\
 							break;\n\
-						case "{{whiteColor}}":\n\
+						case " {{whiteColor}} ":\n\
 							nodeAction.methodName = "setDefault";\n\
 							break;\n\
+						default:\n\
 					}\n\
 					nodeAction.args = [];\n\
 					\n\
 					return nodeAction;\n\
 				}',
-				'lampColor = "<span class=' + "'value'" + '>{{whiteColor}}</span>" / "<span class=' + "'value'" + '>{{redColor}}</span>" / "<span class=' + "'value'" + '>{{blueColor}}</span>" / "<span class=' + "'value'" + '>{{greenColor}}</span>" / "<span class=' + "'value'" + '>{{yellowColor}}</span>" / "<span class=' + "'value'" + '>{{orangeColor}}</span>" / "<span class=' + "'value'" + '>{{purpleColor}}</span>" / "<span class=' + "'value'" + '>{{pinkColor}}</span>"',
+				'lampColor = "<span class=' + "'value'" + '> {{whiteColor}} </span>" / "<span class=' + "'value'" + '> {{redColor}} </span>" / "<span class=' + "'value'" + '> {{blueColor}} </span>" / "<span class=' + "'value'" + '> {{greenColor}} </span>" / "<span class=' + "'value'" + '> {{yellowColor}} </span>" / "<span class=' + "'value'" + '> {{orangeColor}} </span>" / "<span class=' + "'value'" + '> {{purpleColor}} </span>" / "<span class=' + "'value'" + '> {{pinkColor}} </span>"',
 				"L = {{listOfLamps}}"
 			]
 		},
@@ -749,7 +750,7 @@ define([
 				}
 			],
 			rules			: [
-				'eventCoreClock = "<span class=' + "'event'" + '>{{clockEvent}}</span>" sep time:time\n\
+				'eventCoreClock = "<span class=' + "'event'" + '> {{clockEvent}} </span>" time:time\n\
 				{\n\
 					var nodeEvent = {};\n\
 					\n\
@@ -761,7 +762,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'statusCoreClock = "<span class=' + "'status'" + '>{{clockStatus}}</span>" sep time:time\n\
+				'statusCoreClock = "<span class=' + "'status'" + '> {{clockStatus}} </span>" time:time\n\
 				{\n\
 					var nodeRelationBool = {};\n\
 					nodeRelationBool.type = "NodeRelationBool";\n\
@@ -833,7 +834,7 @@ define([
 			],
 			rules			: [
 				'actionMediaPlayer = playMediaPlayerAction / pauseMediaPlayerAction / stopMediaPlayerAction / setVolumeMediaPlayerAction',
-				'playMediaPlayerAction = "<span class=' + "'action-name'" + '>{{playMediaPlayerAction}}</span>" sep media:ML sep "<span class=' + "'action-name'" + '>{{complementMediaPlayerAction}}</span>" sep mediaPlayerName:M\n\
+				'playMediaPlayerAction = "<span class=' + "'action-name'" + '> {{playMediaPlayerAction}} </span>" media:ML "<span class=' + "'action-name'" + '> {{complementMediaPlayerAction}} </span>" mediaPlayerName:M\n\
 				{\n\
 					var nodeAction = {};\n\
 					nodeAction.type = "NodeAction";\n\
@@ -844,7 +845,7 @@ define([
 					\n\
 					return nodeAction;\n\
 				}',
-				'pauseMediaPlayerAction = "<span class=' + "'action-name'" + '>{{pauseMediaPlayerAction}}</span>" sep mediaPlayerName:M\n\
+				'pauseMediaPlayerAction = "<span class=' + "'action-name'" + '> {{pauseMediaPlayerAction}} </span>" mediaPlayerName:M\n\
 				{\n\
 					var nodeAction = {};\n\
 					nodeAction.type = "NodeAction";\n\
@@ -855,7 +856,7 @@ define([
 					\n\
 					return nodeAction;\n\
 				}',
-				'stopMediaPlayerAction = "<span class=' + "'action-name'" + '>{{stopMediaPlayerAction}}</span>" sep mediaPlayerName:M\n\
+				'stopMediaPlayerAction = "<span class=' + "'action-name'" + '> {{stopMediaPlayerAction}} </span>" mediaPlayerName:M\n\
 				{\n\
 					var nodeAction = {};\n\
 					nodeAction.type = "NodeAction";\n\
@@ -866,7 +867,7 @@ define([
 					\n\
 					return nodeAction;\n\
 				}',
-				'setVolumeMediaPlayerAction = "<span class=' + "'action-name'" + '>{{setVolumeMediaPlayerAction}}</span>" sep mediaPlayerName:M sep "<span class=' + "'action-name'" + '>{{complementMediaPlayerAction}}</span>" sep volume:number sep "<span class=' + "'action-name'" + '>%</span>"\n\
+				'setVolumeMediaPlayerAction = "<span class=' + "'action-name'" + '> {{setVolumeMediaPlayerAction}} </span>" mediaPlayerName:M "<span class=' + "'action-name'" + '> {{complementMediaPlayerAction}} </span>" volume:number "<span class=' + "'action-name'" + '> % </span>"\n\
 				{\n\
 					var nodeAction = {};\n\
 					nodeAction.type = "NodeAction";\n\
@@ -879,29 +880,29 @@ define([
 				}',
 				'M = {{listOfMediaPlayers}}',
 				'ML = alarmMusic / music / ringBellMailArrived / radio / movie / imgTable',
-				'alarmMusic = "<span class=' + "'value'" + '>{{alarmMusic}}</span>"\n\
+				'alarmMusic = "<span class=' + "'value'" + '> {{alarmMusic}} </span>"\n\
 				{\n\
-					return "/Users/cedric/AppsGate/ressources/sound/Musique_Reveil.mp3";\n\
+					return "/Users/camillelenoir/Desktop/MediapourExperimenta/MusiqueReveil.mp3";\n\
 				}',
-				'music = "<span class=' + "'value'" + '>{{music}}</span>"\n\
+				'music = "<span class=' + "'value'" + '> {{music}} </span>"\n\
 				{\n\
-					return "/Users/cedric/AppsGate/ressources/sound/Musique.mp3";\n\
+					return "/Users/camillelenoir/Desktop/MediapourExperimenta/Musique.mp3";\n\
 				}',
-				'ringBellMailArrived = "<span class=' + "'value'" + '>{{ringBellMailArrived}}</span>"\n\
+				'ringBellMailArrived = "<span class=' + "'value'" + '> {{ringBellMailArrived}} </span>"\n\
 				{\n\
-					return "/Users/cedric/AppsGate/ressources/sound/Sonnerie_mail_arrive.aac";\n\
+					return "/Users/camillelenoir/Desktop/MediapourExperimenta/SonnerieMailArrive.aac";\n\
 				}',
-				'radio = "<span class=' + "'value'" + '>{{radio}}</span>"\n\
+				'radio = "<span class=' + "'value'" + '> {{radio}} </span>"\n\
 				{\n\
-					return "/Users/cedric/AppsGate/ressources/sound/Radio.mp3";\n\
+					return "/Users/camillelenoir/Desktop/MediapourExperimenta/Radio.mp3";\n\
 				}',
-				'movie = "<span class=' + "'value'" + '>{{movie}}</span>"\n\
+				'movie = "<span class=' + "'value'" + '> {{movie}} </span>"\n\
 				{\n\
-					return "";\n\
+					return "/Users/camillelenoir/Desktop/MediapourExperimenta/Film.avi";\n\
 				}',
-				'imgTable = "<span class=' + "'value'" + '>{{imgTable}}</span>"\n\
+				'imgTable = "<span class=' + "'value'" + '> {{imgTable}} </span>"\n\
 				{\n\
-					return "/Users/cedric/AppsGate/ressources/pictures/Image_a_table.jpg";\n\
+					return "/Users/camillelenoir/Desktop/MediapourExperimenta/ImageATable.jpg";\n\
 				}'
 			]
 		},
@@ -924,7 +925,7 @@ define([
 				}
 			],
 			rules			: [
-				'eventCoreMail = "<span class=' + "'event'" + '>{{receivedMailEvent}}</span>"\n\
+				'eventCoreMail = "<span class=' + "'event'" + '> {{receivedMailEvent}} </span>"\n\
 				{\n\
 					var nodeEvent = {};\n\
 					\n\
@@ -936,7 +937,7 @@ define([
 					\n\
 					return nodeEvent;\n\
 				}',
-				'actionMail = "<span class=' + "'action-name'" + '>{{sendMailAction}}</span>" sep emailAddress:emailAddress sep\n\
+				'actionMail = "<span class=' + "'action-name'" + '> {{sendMailAction}} </span>" emailAddress:emailAddress\n\
 				{\n\
 					var nodeAction = {};\n\
 					\n\

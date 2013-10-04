@@ -4,7 +4,7 @@
 		<% if (place.get("name") !== "") { %>
 			<%= place.get("name") %>
 		<% } else { %>
-			<em>Pi&egrave;ce sans nom</em>
+			<em data-i18n="places-menu.place-no-name"></em>
 		<% } %>
 		<span class="pull-right badge">
 			<%= place.get("devices").length %>
@@ -18,11 +18,10 @@
 			<% if (place.getTemperatureSensors().length > 0) { %>
 			<li>
 				<% if (place.getTemperatureSensors().length === 1) { %>
-					Capteur
+					<span data-i18n="devices.temperature.name.singular"></span>
 				<% } else { %>
-					Capteurs
+					<span data-i18n="devices.temperature.name.plural"></span>
 				<% } %>
-				de temp&eacute;rature
 				<span class="label label-info">
 					<%= place.getAverageTemperature() %>&degC
 				</span>
@@ -36,11 +35,10 @@
 			<% if (place.getIlluminationSensors().length > 0) { %>
 			<li>
 				<% if (place.getIlluminationSensors().length === 1) { %>
-					Capteur
+					<span data-i18n="devices.illumination.name.singular"></span>
 				<% } else { %>
-					Capteurs
+					<span data-i18n="devices.illumination.name.plural"></span>
 				<% } %>
-				de luminosit&eacute;
 				<div class="label label-info">
 					<%= place.getAverageIllumination() %> Lux
 				</div>
@@ -54,9 +52,9 @@
 			<% if (place.getSwitches().length > 0) { %>
 			<li>
 				<% if (place.getSwitches().length === 1) { %>
-					Interrupteur
+					<span data-i18n="devices.switch.name.singular"></span>
 				<% } else { %>
-					Interrupteurs
+					<span data-i18n="devices.switch.name.plural"></span>
 				<% } %>
 				<span class="pull-right badge">
 					<%= place.getSwitches().length %>
@@ -68,11 +66,10 @@
 			<% if (place.getContactSensors().length > 0) { %>
 			<li>
 				<% if (place.getContactSensors().length === 1) { %>
-					Capteur
+					<span data-i18n="devices.contact.name.singular"></span>
 				<% } else { %>
-					Capteurs
+					<span data-i18n="devices.contact.name.plural"></span>
 				<% } %>
-				de contact
 				<span class="pull-right badge">
 					<%= place.getContactSensors().length %>
 				</span>
@@ -83,11 +80,10 @@
 			<% if (place.getKeyCardReaders().length > 0) { %>
 			<li>
 				<% if (place.getKeyCardReaders().length === 1) { %>
-					Lecteur
+					<span data-i18n="devices.keycard-reader.name.singular"></span>
 				<% } else { %>
-					Lecteurs
+					<span data-i18n="devices.keycard-reader.name.plural"></span>
 				<% } %>
-				de carte
 				<span class="pull-right badge">
 					<%= place.getKeyCardReaders().length %>
 				</span>
@@ -98,11 +94,10 @@
 			<% if (place.getMovementSensors().length > 0) { %>
 			<li>
 				<% if (place.getMovementSensors().length === 1) { %>
-					Capteur
+					<span data-i18n="devices.movement.name.singular"></span>
 				<% } else { %>
-					Capteurs
+					<span data-i18n="devices.movement.name.plural"></span>
 				<% } %>
-				de mouvement
 				<span class="pull-right badge">
 					<%= place.getMovementSensors().length %>
 				</span>
@@ -113,11 +108,10 @@
 			<% if (place.getPlugs().length > 0) { %>
 			<li>
 				<% if (place.getPlugs().length === 1) { %>
-					Prise
+					<span data-i18n="devices.plug.name.singular"></span>
 				<% } else { %>
-					Prises
+					<span data-i18n="devices.plug.name.plural"></span>
 				<% } %>
-				gigogne
 				<span class="label label-info">
 					<%= place.getAverageConsumption() %> Watt
 				</span>
@@ -131,11 +125,10 @@
 			<% if (place.getPhilipsHueLamps().length > 0) { %>
 			<li>
 				<% if (place.getPhilipsHueLamps().length === 1) { %>
-					Lampe
+					<span data-i18n="devices.lamp.name.singular"></span>
 				<% } else { %>
-					Lampes
+					<span data-i18n="devices.lamp.name.plural"></span>
 				<% } %>
-				Philips Hue
 				<span class="pull-right badge">
 					<%= place.getPhilipsHueLamps().length %>
 				</span>

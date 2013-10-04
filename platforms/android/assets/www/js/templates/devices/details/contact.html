@@ -1,10 +1,10 @@
 <li class="list-group-item">
-	<strong>Etat</strong>
+	<strong data-i18n="devices.state-label"></strong>
 	<div class="pull-right label label-info">
 		<% if (device.get("contact") === "true") { %>
-			Ferm&eacute;
+			<span data-i18n="devices.contact.value.closed"></span>
 		<% } else { %>
-			Ouvert
+			<span data-i18n="devices.contact.value.opened"></span>
 		<% } %>
 	</div>
 </li>

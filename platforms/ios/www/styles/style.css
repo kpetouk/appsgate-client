@@ -8,7 +8,7 @@ body {
 	margin-left: 25%;
 }
 
-.programInput span:hover {
+.programInput > span:hover {
 	background-color: lightgrey;
 }
 
@@ -41,4 +41,19 @@ body {
 .deleted-elements {
 	font-style: italic;
 	text-decoration: line-through;
+}
+
+.programInput > .popover .popover-content {
+	max-height: 200px;
+	overflow-y: scroll;
+}
+
+.programInput > .popover button {
+	width: 100%;
+	margin: auto;
+	margin-bottom: 5px;
+}
+
+.programInput > .popover button.delete-popover-button {
+	margin-top: 10px;
 }

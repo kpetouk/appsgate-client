@@ -184,8 +184,8 @@ define([
 			});
 			
 			// listen to the event when a program has been removed
-			dispatcher.on("removeProgram", function(programId) {
-				var removedProgram = programs.findWhere({ id : programId });
+			dispatcher.on("removeProgram", function(program) {
+				var removedProgram = programs.get(program.id);
 				programs.remove(removedProgram);
 				
 				// update the grammar to remove the program from the grammar
@@ -448,12 +448,18 @@ define([
 		tplEditor : _.template(programEditorTemplate),
 		
 		events : {
-			"click button.save-program-button"		: "onSaveProgramButton",
-			"click button.delete-program-button"	: "onDeleteProgramButton",
-			"keyup textarea"						: "onKeyUpTextarea",
-			"click button.completion-button"		: "onClickCompletionButton",
-			"click .programInput span"				: "onClickSourceElement",
-			"click button.valid-value"				: "onValidValueButton"
+			"click button.save-program-button"							: "onSaveProgramButton",
+			"click button.delete-program-button"						: "onDeleteProgramButton",
+			"keyup textarea"											: "onKeyUpTextarea",
+			"click .expected-elements > button.completion-button"		: "onClickCompletionButton",
+			"click .programInput > span"								: "onClickSourceElement",
+			"click button.valid-value"									: "onValidValueButton",
+			"click button.deleted-elements"								: "onClickDeletedElements",
+			"click button.value-popover-button"							: "onClickValuePopoverButton",
+			"click button.valid-value-popover-button"					: "onClickValidValuePopoverButton",
+			"click button.device-popover-button"						: "onClickDevicePopoverButton",
+			"click button.delete-popover-button"						: "onClickDeletePopoverButton",
+			"click button.close-popover-button"							: "onClickClosePopoverButton"
 		},
 		
 		/**
@@ -470,6 +476,11 @@ define([
 		 */
 		onSaveProgramButton:function() {
 			this.model.save();
+			
+			// hide the deleted elements
+			if (!$(".deleted-elements").hasClass("hidden")) {
+				$(".deleted-elements").addClass("hidden");
+			}
 		},
 		
 		/**
@@ -489,7 +500,7 @@ define([
 		
 		onClickCompletionButton:function(e) {
 			if ($(e.currentTarget).text() === $.i18n.t("language.space")) {
-				$(".programInput").append(" ");
+				// $(".programInput").append(" ");
 			} else {
 				$(".programInput").append($(e.currentTarget).html());
 			}
@@ -498,21 +509,187 @@ define([
 
 		onClickSourceElement:function(e) {
 			var i = $(".programInput").children().toArray().indexOf(e.currentTarget);
-			// var before = $(".programInput").children().splice(0, i);
-			var after = $(".programInput").children().splice(i, $(".programInput").children().length);
+			var before = $(".programInput").children().splice(0, i);
+			var after = $(".programInput").children().splice(i + 1, $(".programInput").children().length);
 			
-			$(".deleted-elements").html("");
+			// destroy the current popover if needed to avoid conflicts
+			$(e.currentTarget)
+					.removeAttr("data-original-title")
+					.removeAttr("title");
+			$(e.currentTarget).popover("destroy");
+			$(".programInput .popover").remove();
 			
-			after.forEach(function(element) {
-				$(".deleted-elements").append(element);
-			});
-			
-			this.compileProgram();
+			// user wants to edit a value
+			if ($(e.currentTarget).hasClass("value")) {
+				var input = $("<div>");
+				input.append(this.model.get("name") + " " + $.i18n.t("language.written-by") + " Bob pour Alice ");
+				before.forEach(function(span) {
+					$(span).clone().appendTo(input);
+				});
+				try {
+					grammar.parse(input.html().replace(/"/g, "'"));
+				} catch (exception) {
+					var content = $("<span>");
+					
+					exception.expected.forEach(function(nextPossibility) {
+						if (nextPossibility.indexOf("input") === -1) {
+							content.append("<button class='btn btn-primary value-popover-button'>" + nextPossibility.replace(/"/g, "").replace(/\\/g, "") + "</button><br>");
+						} else {
+							content.append($(nextPossibility).find("input"));
+							content.find("input").val($(e.currentTarget).text());
+							content.append("<button class='btn btn-success valid-value-popover-button'>" + $.i18n.t("form.valid-button") + "</button>");
+						}
+					});
+					content.append("<button class='btn btn-danger delete-popover-button'>" + $.i18n.t("form.delete-button") + "</button>");
+					content.append("<button class='btn btn-info close-popover-button'>" + $.i18n.t("form.cancel-button") + "</button>");
+					
+					$(e.currentTarget).popover({
+						html		: true,
+						title		: "Changer valeur",
+						content		: content,
+						placement	: "bottom"
+					});
+					
+					this.valueToReplace = $(e.currentTarget);
+					$(e.currentTarget).popover("show");
+				}
+			} else if ($(e.currentTarget).hasClass("device-name")) {
+				var title = "";
+				var content = $("<span>");
+				
+				if ($(e.currentTarget).attr("data-device-type") === "program") {
+					title = "Changer programme";
+					
+					programs.forEach(function(p) {
+						content.append("<button class='btn btn-primary device-popover-button'>" + p.get("name") + "</button>")
+					});
+				} else {
+					title = "Changer dispositif";
+					
+					var possibleDevices = devices.where({ type : parseInt($(e.currentTarget).attr("data-device-type")) });
+					possibleDevices.forEach(function(d) {
+						content.append("<button class='btn btn-primary device-popover-button'>" + d.get("name") + "</button>");
+					});
+				}
+				
+				content.append("<button class='btn btn-danger delete-popover-button'>" + $.i18n.t("form.delete-button") + "</button>");
+				content.append("<button class='btn btn-info close-popover-button'>" + $.i18n.t("form.cancel-button") + "</button>");
+				
+				$(e.currentTarget).popover({
+					html		: true,
+					title		: title,
+					content		: content,
+					placement	: "bottom"
+				});
+				
+				this.valueToReplace = $(e.currentTarget);
+				$(e.currentTarget).popover("show");
+			} else {
+				$(".deleted-elements").html("");
+				after.forEach(function(element) {
+					$(".deleted-elements").append(element);
+				});
+
+				$(e.currentTarget).remove();
+				$(".deleted-elements").removeClass("hidden");
+
+				this.compileProgram();
+			}
 		},
 		
 		onValidValueButton:function() {
-			$(".programInput").append("<span class='value'>" + $(".expected-elements input").val() + "</span> ");
+			$(".programInput").append("<span class='value'>" + $(".expected-elements input").val() + "</span>");
 			this.compileProgram();
+		},
+		
+		onClickDeletedElements:function() {
+			$(".programInput").append($("button.deleted-elements").html());
+			$("button.deleted-elements").addClass("hidden");
+			this.compileProgram();
+		},
+		
+		onClickValuePopoverButton:function(e) {
+			var self = this;
+			this.valueToReplace.text($(e.currentTarget).text());
+			
+			this.valueToReplace.on("hidden.bs.popover", function() {
+				self.valueToReplace
+						.removeAttr("data-original-title")
+						.removeAttr("title");
+				$(".programInput .popover").remove();
+				self.compileProgram();
+			});
+			
+			this.valueToReplace.popover("destroy");
+		},
+		
+		onClickValidValuePopoverButton:function() {
+			var self = this;
+			this.valueToReplace.text($(".programInput > .popover input").val());
+			
+			this.valueToReplace.on("hidden.bs.popover", function() {
+				self.valueToReplace
+						.removeAttr("data-original-title")
+						.removeAttr("title");
+				$(".programInput .popover").remove();
+				self.compileProgram();
+			});
+			
+			this.valueToReplace.popover("destroy");
+		},
+		
+		onClickDevicePopoverButton:function(e) {
+			var self = this;
+			this.valueToReplace.text($(e.currentTarget).text());
+			
+			this.valueToReplace.on("hidden.bs.popover", function() {
+				self.valueToReplace
+						.removeAttr("data-original-title")
+						.removeAttr("title");
+				$(".programInput .popover").remove();
+				self.compileProgram();
+			});
+			
+			this.valueToReplace.popover("destroy");
+		},
+		
+		onClickDeletePopoverButton:function() {
+			var self = this;
+			 //.indexOf(this.valueToReplace));
+			
+			this.valueToReplace.on("hidden.bs.popover", function() {
+				self.valueToReplace
+						.removeAttr("data-original-title")
+						.removeAttr("title");
+				$(".programInput .popover").remove();
+				
+				var after = $(".programInput").children().toArray().slice($(".programInput").children().index(self.valueToReplace) + 1, $(".programInput").children().length);
+				
+				$(".deleted-elements").html("");
+				after.forEach(function(element) {
+					$(".deleted-elements").append(element);
+				});
+				$(".deleted-elements").removeClass("hidden");
+				
+				self.valueToReplace.remove();
+				
+				self.compileProgram();
+			});
+			
+			this.valueToReplace.popover("destroy");
+		},
+		
+		onClickClosePopoverButton:function() {
+			var self = this;
+			
+			this.valueToReplace.on("hidden.bs.popover", function() {
+				self.valueToReplace
+						.removeAttr("data-original-title")
+						.removeAttr("title");
+				$(".programInput .popover").remove();
+			});
+			
+			this.valueToReplace.popover("destroy");
 		},
 
 		compileProgram:function() {
@@ -520,6 +697,7 @@ define([
 			var programInput = this.model.get("name") + " " + $.i18n.t("language.written-by") + " Bob pour Alice ";
 			programInput += $(".programInput").html();
 			programInput = programInput.replace(/"/g, "'");
+			
 			console.log(programInput);
 
 			// clear the error span
@@ -534,11 +712,15 @@ define([
 				this.model.set("userInputSource", $(".programInput").html());
 
 				console.log(ast);
+				
 				// include a syntax error to the program input to get the next possibilities if the user wants to add rules
 				try {
 					grammar.parse(programInput + " ");
 				} catch(e) {
 					e.expected.forEach(function(nextPossibility) {
+						if ($("button.deleted-elements").html().replace(/"/g, "'") === nextPossibility.replace(/"/g, "")) {
+							$("button.deleted-elements").addClass("hidden");
+						}
 						if (nextPossibility.indexOf("input") === -1) {
 							$(".expected-elements").append("<button class='btn btn-default completion-button'>" + nextPossibility.replace(/"/g, "").replace(/\\/g, "") + "</button>&nbsp;");
 						} else {
@@ -551,10 +733,10 @@ define([
 				$(".alert-success").addClass("hide");
 				
 				if (e.expected.length === 1) {
-					console.log(e.expected);
-				}
-
-				if (e.expected.length === 1) {
+					if ($("button.deleted-elements").html().replace(/" /g, "'") === e.expected[0]) {
+						$("button.deleted-elements").addClass("hidden");
+					}
+					
 					if (e.expected[0] === $.i18n.t("language.space")) {
 						$(".programInput").append(" ");
 						this.compileProgram();
@@ -566,12 +748,36 @@ define([
 					}
 				} else {
 					e.expected.forEach(function(nextPossibility) {
+						if ($("button.deleted-elements").html().replace(/"/g, "'") === nextPossibility.replace(/"/g, "")) {
+							$("button.deleted-elements").addClass("hidden");
+						}
+						
 						if (nextPossibility.indexOf("input") === -1) {
 							$(".expected-elements").append("<button class='btn btn-default completion-button'>" + nextPossibility.replace(/"/g, "").replace(/\\/g, "") + "</button>&nbsp;");
 						} else {
 							$(".expected-elements").append(nextPossibility);
 						}
 					});
+				}
+			}
+			
+			if ($(".programInput").html().replace(/"/g, "'").replace(/ /g, "") === $("button.deleted-elements").html().replace(/"/g, "'").replace(/ /g, "")) {
+				$("button.deleted-elements").addClass("hidden");
+			}
+			
+			// check if it is possible to append the deleted elements to the program
+			if (!$("button.deleted-elements").hasClass("hidden")) {
+				try {
+					grammar.parse(programInput + $("button.deleted-elements").html().replace(/"/g, "'"));
+					$("button.deleted-elements")
+							.removeClass("disabled")
+							.css("text-decoration", "none")
+							.css("font-style", "normal");
+				} catch (e) {
+					$("button.deleted-elements")
+							.addClass("disabled")
+							.css("text-decoration", "line-through")
+							.css("font-style", "italic");
 				}
 			}
 		},

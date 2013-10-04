@@ -26,6 +26,7 @@
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/cordova_plugins.js \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/index.html \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js \
+/Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/locales \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/phonegap.js \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/plugins \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/styles \
@@ -38,6 +39,7 @@
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/templates \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/backbone \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/bootstrap \
+/Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/i18next \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/jquery \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/moment \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/peg \
@@ -58,6 +60,7 @@
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/bootstrap/fonts/glyphicons-halflings-regular.woff \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/bootstrap/js/bootstrap.js \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/bootstrap/js/bootstrap.min.js \
+/Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/i18next/i18next.amd.withJQuery-1.7.1.min.js \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/jquery/jquery-1.8.2.js \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/jquery/jquery-ui-1.10.0.min.js \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/libs/moment/moment.min.js \
@@ -117,6 +120,16 @@
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/templates/program/menu/addButton.html \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/templates/program/menu/menu.html \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/js/templates/program/menu/programContainer.html \
+/Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/locales/dev \
+/Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/locales/en \
+/Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/locales/en-US \
+/Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/locales/fr \
+/Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/locales/fr-FR \
+/Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/locales/dev/translation.json \
+/Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/locales/en/translation.json \
+/Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/locales/en-US/translation.json \
+/Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/locales/fr/translation.json \
+/Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/locales/fr-FR/translation.json \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/plugins/com.ququplay.websocket.WebSocket \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/plugins/com.ququplay.websocket.WebSocket/www \
 /Users/remy/Development/appsgate/appsgate-client/platforms/android/assets/www/plugins/com.ququplay.websocket.WebSocket/www/phonegap-websocket.js \

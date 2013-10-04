@@ -30,7 +30,6 @@ define([
 				self.grammar += r + "\n";
 			});
 			
-			console.log(deviceTypesGrammar[deviceType].listAnchor, devicesByType[deviceType]);
 			// insert the list of the devices
 			self.insertListOfDevices(deviceTypesGrammar[deviceType].listAnchor, devicesByType[deviceType]);
 
@@ -92,8 +91,6 @@ define([
 			if (deviceNames !== "") {
 				deviceNames = deviceNames.substring(0, deviceNames.length - 1);
 			}
-			
-			console.log(deviceNames);
 
 			var regexp = new RegExp(grammarAnchor, "g");
 			this.grammar = this.grammar.replace(regexp, deviceNames);

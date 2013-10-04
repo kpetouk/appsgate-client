@@ -54,7 +54,7 @@ seqAndRules = rule1:rule rule2:(opAndRule rule)*
 rule = nodeWhen / nodeIf / nodeAction
 
 /* basic nodes */
-nodeWhen = "<span class='keyword'>{{whenKeyWord}}</span>" sep seqEvents:seqEvents (opEventBool expBool)* sep "<span class='keyword prev-seqrules'>{{thenKeyWord}}</span>" sep seqRules:seqRules sep "<span class='keyword end-of-block'>{{endWhenBlock}}</span>"
+nodeWhen = "<span class='keyword'> {{whenKeyWord}} </span>" seqEvents:seqEvents (opEventBool expBool)* "<span class='keyword prev-seqrules'> {{thenKeyWord}} </span>" seqRules:seqRules "<span class='keyword end-of-block'> {{endWhenBlock}} </span>"
 {
 	var nodeWhen = {};
 	nodeWhen.type = "NodeWhen";
@@ -63,7 +63,7 @@ nodeWhen = "<span class='keyword'>{{whenKeyWord}}</span>" sep seqEvents:seqEvent
 	return nodeWhen;
 }
 
-nodeIf = "<span class='keyword'>{{ifKeyWord}}</span>" sep expBool:expBool sep "<span class='keyword prev-seqrules'>{{thenKeyWord}}</span>" sep seqRulesTrue:seqRules seqRulesFalse:(sep "<span class='keyword end-of-block prev-seqrules'>{{elseKeyWord}}</span>" sep seqRules)? sep "<span class='keyword end-of-block'>{{endIfBlock}}</span>"
+nodeIf = "<span class='keyword'> {{ifKeyWord}} </span>" expBool:expBool "<span class='keyword prev-seqrules'> {{thenKeyWord}} </span>" seqRulesTrue:seqRules seqRulesFalse:("<span class='keyword end-of-block prev-seqrules'> {{elseKeyWord}} </span>" seqRules)? "<span class='keyword end-of-block'> {{endIfBlock}} </span>"
 {
 	var nodeIf = {};
 	nodeIf.type = "NodeIf";
@@ -172,7 +172,7 @@ status = {{listOfStatus}}
 
 /* programs */
 actionProgram = actionProgramActivate / actionProgramDisactivate
-actionProgramActivate = "<span class='action-name'>{{activateProgramAction}}</span>" sep programName:P
+actionProgramActivate = "<span class='action-name'> {{activateProgramAction}} </span>" programName:P
 {
 	var nodeAction = {};
 	nodeAction.type = "NodeAction";
@@ -184,7 +184,7 @@ actionProgramActivate = "<span class='action-name'>{{activateProgramAction}}</sp
 	return nodeAction;
 }
 
-actionProgramDisactivate = "<span class='action-name'>{{disactivateProgramAction}}</span>" sep programName:P
+actionProgramDisactivate = "<span class='action-name'> {{disactivateProgramAction}} </span>" programName:P
 {
 	var nodeAction = {};
 	nodeAction.type = "NodeAction";
@@ -197,7 +197,7 @@ actionProgramDisactivate = "<span class='action-name'>{{disactivateProgramAction
 }
 
 eventProgram = activatedProgramEvent / disactivatedProgramEvent
-activatedProgramEvent = programName:P sep "<span class='event'>{{isActivatedProgramEvent}}</span>"
+activatedProgramEvent = programName:P "<span class='event'> {{isActivatedProgramEvent}} </span>"
 {
 	var nodeEvent = {};
 	nodeEvent.type = "NodeEvent";
@@ -209,7 +209,7 @@ activatedProgramEvent = programName:P sep "<span class='event'>{{isActivatedProg
 	return nodeEvent;
 }
 
-disactivatedProgramEvent = programName:P sep "<span class='event'>{{isDisactivatedProgramEvent}}</span>"
+disactivatedProgramEvent = programName:P "<span class='event'> {{isDisactivatedProgramEvent}} </span>"
 {
 	var nodeEvent = {};
 	nodeEvent.type = "NodeEvent";
@@ -222,23 +222,23 @@ disactivatedProgramEvent = programName:P sep "<span class='event'>{{isDisactivat
 }
 
 statusProgram = isActivatedProgramStatus / isDisactivatedProgramStatus
-isActivatedProgramStatus = programName:P sep "<span class='status'>{{isRunningProgramStatus}}</span>"
+isActivatedProgramStatus = programName:P "<span class='status'> {{isRunningProgramStatus}} </span>"
 {
 }
-isDisactivatedProgramStatus = programName:P sep "<span class='status'>{{isStoppedProgramStatus}}</span>"
+isDisactivatedProgramStatus = programName:P "<span class='status'> {{isStoppedProgramStatus}} </span>"
 {
 }
 P = {{listOfPrograms}}
 
 /* operators */
-opEvent = " <span class='keyword'>{{opEvent}}</span> "
-opEventBool = " <span class='keyword'>{{opEventBool}}</span> "
-opAndRule = " <span class='keyword prev-seqrules'>{{opAndRule}}</span> "
-opThenRule = " <span class='keyword prev-seqrules'>{{opThenRule}}</span> "
-opOrBool = " <span class='keyword'>{{opOrBool}}</span> "
-opAndBool = " <span class='keyword'>{{opAndBool}}</span> "
+opEvent = "<span class='keyword'> {{opEvent}} </span>"
+opEventBool = "<span class='keyword'> {{opEventBool}} </span>"
+opAndRule = "<span class='keyword prev-seqrules'> {{opAndRule}} </span>"
+opThenRule = "<span class='keyword prev-seqrules'> {{opThenRule}} </span>"
+opOrBool = "<span class='keyword'> {{opOrBool}} </span>"
+opAndBool = "<span class='keyword'> {{opAndBool}} </span>"
 opComparison = opMoreThan / opLessThan
-opMoreThan = "<span class='keyword'>{{opMoreThan}}</span>"
+opMoreThan = "<span class='keyword'> {{opMoreThan}} </span>"
 {
 	return ">=";
 }

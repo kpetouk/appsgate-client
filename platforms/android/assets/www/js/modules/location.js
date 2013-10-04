@@ -2,12 +2,14 @@ define([
 	"jquery",
 	"underscore",
 	"backbone",
+	"grammar",
 	"text!templates/locations/menu/menu.html",
 	"text!templates/locations/menu/placeContainer.html",
 	"text!templates/devices/menu/coreClockContainer.html",
 	"text!templates/locations/menu/addButton.html",
-	"text!templates/locations/details/details.html"
-], function($, _, Backbone, placeMenuTemplate, placeContainerMenuTemplate, coreClockContainerMenuTemplate, addPlaceButtonTemplate, locationDetailsTemplate) {
+	"text!templates/locations/details/details.html",
+	"i18next"
+], function($, _, Backbone, Grammar, placeMenuTemplate, placeContainerMenuTemplate, coreClockContainerMenuTemplate, addPlaceButtonTemplate, locationDetailsTemplate) {
 	// initialize the module
 	var Location = {};
 
@@ -50,6 +52,14 @@ define([
 		 */
 		initialize:function() {
 			var self = this;
+			
+			// when a name is updated, update the grammar
+			this.on("change:name", function() {
+				if (typeof window.grammar !== "undefined") {
+					delete window.grammar;
+				}
+				window.grammar = new Grammar();
+			});
 			
 			// remove potential duplicated entries and trigger a refresh of the list of places event
 			this.on("change:devices", function() {
@@ -192,6 +202,10 @@ define([
 			return this.getTypeSensors(7);
 		},
 		
+		getMediaPlayers:function() {
+			return this.getTypeSensors(31);
+		},
+		
 		/**
 		 * Send a message to the server to perform a remote call
 		 * 
@@ -263,13 +277,17 @@ define([
 			// add the location w/ id -1 for the unlocated devices
 			this.add({
 				id : "-1",
-				name: "Dispositifs non localis&eacute;s",
+				name: $.i18n.t("places-menu.unlocated-devices"),
 				devices: []
 			});
 			
 			// a place has been removed - put its devices as unlocated
 			this.on("remove", function(place) {
 				self.updateDevicesRemovedPlace(place);
+				
+				// update the grammar
+				delete window.grammar;
+				window.grammar = new Grammar();
 			});
 
 		 	// listen to the event when the list of locations is received
@@ -283,11 +301,19 @@ define([
 		 	// listen to the event when a location appears and add it
 		 	dispatcher.on("newPlace", function(location) {
 		 		self.add(location);
+				
+				// update the grammar
+				delete window.grammar;
+				window.grammar = new Grammar();
 		 	});
 
 			// listen to the event when a place has been updated
 			dispatcher.on("updatePlace", function(place) {
 				locations.get(place.id).set("name", place.name);
+				
+				// update the grammar
+				delete window.grammar;
+				window.grammar = new Grammar();
 			});
 
 			// listen to the event when a place has been removed
@@ -307,12 +333,20 @@ define([
 					if (Backbone.history.fragment === "locations/" + placeId) {
 						appRouter.navigate("#locations", { trigger : true });
 					}
+					
+					// update the grammar
+					delete window.grammar;
+					window.grammar = new Grammar();
 				}
 			});
 
 		 	// listen to the event when a device has been moved
 		 	dispatcher.on("moveDevice", function(messageData) {
 		 		self.moveDevice(messageData.srcLocationId, messageData.destLocationId, messageData.deviceId, false);
+				
+				// update the grammar
+				delete window.grammar;
+				window.grammar = new Grammar();
 		 	});
 
 		 	// send the request to fetch the locations
@@ -479,7 +513,7 @@ define([
 			// name is empty
 			if ($("#add-place-modal input").val() === "") {
 				$("#add-place-modal .text-danger")
-						.text("Le nom de la pièce doit être renseigné.")
+						.text($.i18n.t("modal-add-place.place-name-empty"))
 						.removeClass("hide");
 				$("#add-place-modal .valid-button").addClass("disabled");
 				
@@ -489,7 +523,7 @@ define([
 			// name already exists
 			if (locations.where({ name : $("#add-place-modal input").val() }).length > 0) {
 				$("#add-place-modal .text-danger")
-						.text("Nom déjà existant")
+						.text($.i18n.t("modal-add-place.place-already-existing"))
 						.removeClass("hide");
 				$("#add-place-modal .valid-button").addClass("disabled");
 				
@@ -579,8 +613,8 @@ define([
 				// "add place" button to the side menu
 				this.$el.append(this.tplAddPlaceButton());
 				
-				// set active the current item menu
-				// this.updateSideMenu();
+				// translate the menu
+				this.$el.i18n();
 
 				return this;
 			}
@@ -645,7 +679,7 @@ define([
 			// name is empty
 			if ($("#edit-name-place-modal input").val() === "") {
 				$("#edit-name-place-modal .text-danger").removeClass("hide");
-				$("#edit-name-place-modal .text-danger").text("Le nom de la pièce doit être renseigné");
+				$("#edit-name-place-modal .text-danger").text($.i18n.t("modal-edit-place.place-name-empty"));
 				$("#edit-name-place-modal .valid-button").addClass("disabled");
 				
 				return false;
@@ -653,8 +687,8 @@ define([
 			
 			// name already existing
 			if (locations.where({ name : $("#edit-name-place-modal input").val() }).length > 0) {
-				$("#edit-name-place-modal .text-danger").removeClass("hide")
-				$("#edit-name-place-modal .text-danger").text("Nom déjà existant");
+				$("#edit-name-place-modal .text-danger").removeClass("hide");
+				$("#edit-name-place-modal .text-danger").text($.i18n.t("modal-edit-place.place-already-existing"));
 				$("#edit-name-place-modal .valid-button").addClass("disabled");
 				
 				return false;
@@ -777,10 +811,9 @@ define([
 		 */
 		render:function() {
 			if (!appRouter.isModalShown) {
-				// render the view itselft
+				// render the view itself
 				this.$el.html(this.tpl({
 					place : this.model,
-					deviceTypes	: deviceTypesName
 				}));
 
 				// put the name of the place by default in the modal to edit
@@ -790,7 +823,14 @@ define([
 				$("#edit-name-place-modal .text-error").hide();
 
 				// initialize the popover
-				this.$el.find("#delete-popover").popover({ html : true });
+				this.$el.find("#delete-popover").popover({
+					html		: true,
+					content		: "<button type='button' class='btn btn-danger delete-place-button'>" + $.i18n.t("form.delete-button") + "</button>",
+					placement	: "bottom"
+				});
+				
+				// translate the view
+				this.$el.i18n();
 
 				return this;
 			}

@@ -175,12 +175,24 @@ define([
 			// listen to the event when a program appears and add it
 			dispatcher.on("newProgram", function(program) {
 				self.add(program);
+				
+				// update the grammar to take the new program in consideration
+				if (typeof window.grammar !== "undefined") {
+					delete window.grammar;
+				}
+				window.grammar = new Grammar();
 			});
 			
 			// listen to the event when a program has been removed
 			dispatcher.on("removeProgram", function(programId) {
 				var removedProgram = programs.findWhere({ id : programId });
 				programs.remove(removedProgram);
+				
+				// update the grammar to remove the program from the grammar
+				if (typeof window.grammar !== "undefined") {
+					delete window.grammar;
+				}
+				window.grammar = new Grammar();
 			});
 			
 			// listen to the event when a program has been updated
@@ -217,7 +229,7 @@ define([
 		events : {
 			"click a.list-group-item"						: "updateSideMenu",
 			"show.bs.modal #add-program-modal"				: "initializeModal",
-			"hide.bs.modal #add-program-modal"				: "toggleModalValue",
+			"hidden.bs.modal #add-program-modal"			: "toggleModalValue",
 			"click #add-program-modal button.valid-button"	: "validAddProgram",
 			"keyup #add-program-modal input:text"			: "validAddProgram",
 			"click button.start-program-button"				: "onStartProgramButton",
@@ -233,6 +245,7 @@ define([
 			this.listenTo(programs, "add", this.render);
 			this.listenTo(programs, "remove", this.render);
 			this.listenTo(programs, "change", this.render);
+			this.listenTo(devices.getCoreClock(), "change", this.render);
 		},
 		
 		/**
@@ -281,7 +294,7 @@ define([
 			// name is empty
 			if ($("#add-program-modal input:text").val() === "") {
 				$("#add-program-modal .text-danger")
-						.text("Le nom du programme doit être renseigné.")
+						.text($.i18n.t("modal-add-program.name-empty"))
 						.removeClass("hide");
 				$("#add-program-modal .valid-button").addClass("disabled");
 				
@@ -291,7 +304,7 @@ define([
 			// name already exists
 			if (programs.where({ name : $("#add-program-modal input:text").val() }).length > 0) {
 				$("#add-program-modal .text-danger")
-						.text("Nom déjà existant")
+						.text($.i18n.t("modal-add-program.name-already-existing"))
 						.removeClass("hide");
 				$("#add-program-modal .valid-button").addClass("disabled");
 				
@@ -318,10 +331,13 @@ define([
 					
 					// instantiate the program and add it to the collection after the modal has been hidden
 					$("#add-program-modal").on("hidden.bs.modal", function() {
+						// tell the router there is no modal any more
+						appRouter.isModalShown = false;
+						
 						// instantiate a model for the new program
 						var program = new Program.Model({
 							name	: $("#add-program-modal input:text").val(),
-							daemon	: $("#add-program-modal input:checkbox").prop("checked")
+							daemon	: "false"
 						});
 
 						// send the program to the backend
@@ -415,6 +431,9 @@ define([
 
 				// set active the current menu item
 				this.updateSideMenu();
+				
+				// translate the view
+				this.$el.i18n();
 
 				return this;
 			}
@@ -441,8 +460,9 @@ define([
 		 * @constructor
 		 */
 		initialize:function() {
-			window.grammar = new Grammar();
-			this.userInputSource = this.model.get("name") + " ecrit par Bob pour Alice ";
+			if (typeof this.model !== "undefined") {
+				this.userInputSource = this.model.get("name") + " " + $.i18n.t("language.written-by") + " Bob pour Alice ";
+			}
 		},
 		
 		/**
@@ -468,7 +488,7 @@ define([
 		},
 		
 		onClickCompletionButton:function(e) {
-			if ($(e.currentTarget).text() === "espace") {
+			if ($(e.currentTarget).text() === $.i18n.t("language.space")) {
 				$(".programInput").append(" ");
 			} else {
 				$(".programInput").append($(e.currentTarget).html());
@@ -497,7 +517,7 @@ define([
 
 		compileProgram:function() {
 			// build the beginning of the user input source to be given to the parser
-			var programInput = this.model.get("name") + " ecrit par Bob pour Alice ";
+			var programInput = this.model.get("name") + " " + $.i18n.t("language.written-by") + " Bob pour Alice ";
 			programInput += $(".programInput").html();
 			programInput = programInput.replace(/"/g, "'");
 			console.log(programInput);
@@ -529,9 +549,13 @@ define([
 			} catch(e) {
 				$(".alert-danger").removeClass("hide");
 				$(".alert-success").addClass("hide");
+				
+				if (e.expected.length === 1) {
+					console.log(e.expected);
+				}
 
 				if (e.expected.length === 1) {
-					if (e.expected[0] === "espace") {
+					if (e.expected[0] === $.i18n.t("language.space")) {
 						$(".programInput").append(" ");
 						this.compileProgram();
 					} else if (e.expected[0].indexOf("input") === -1) {
@@ -556,19 +580,25 @@ define([
 		 * Render the editor view
 		 */
 		render:function() {
-			delete window.grammar;
-			window.grammar = new Grammar();
-			
 			// render the editor with the program
 			this.$el.html(this.tplEditor({
 				program : this.model
 			}));
 			
 			// initialize the popover
-			this.$el.find("#delete-popover").popover({ html : true });
+			this.$el.find("#delete-popover").popover({
+				html		: true,
+				content		: "<button type='button' class='btn btn-danger delete-program-button'>" + $.i18n.t("form.delete-button") + "</button>",
+				placement	: "bottom"
+			});
 			
 			// try to compile the program to show the potential errors
-			this.compileProgram();
+			if (typeof this.model !== "undefined") {
+				this.compileProgram();
+			}
+			
+			// translate the view
+			this.$el.i18n();
 			
 			return this;
 		}

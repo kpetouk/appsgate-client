@@ -147,7 +147,7 @@
 		"plug"				: {
 			"name"	: {
 				"singular"	: "Prise gigogne",
-				"plural"	: "Prises gigognes"
+				"plural"	: "Prises gigogne"
 			},
 			"status"	: {
 				"turnedOn"	: "Allumée",
@@ -281,9 +281,9 @@
 		"set-volume-media-player-action"			: "mettre le volume de",
 		"complement-media-player-action"			: "sur",
 		
-		"alarm-music"								: "musique douce",
-		"music"										: "musique tonique",
-		"ring-bell-mail-arrived"					: "sonnerie nouveau mail arrive",
+		"alarm-music"								: "musique du reveil",
+		"music"										: "musique",
+		"ring-bell-mail-arrived"					: "sonnerie 'Mail bien arrive'",
 		"radio"										: "radio",
 		"movie"										: "film",
 		"img-table"									: "image a table",

@@ -30,9 +30,8 @@ define([
 				self.grammar += r + "\n";
 			});
 			
-			console.log(deviceTypesGrammar[deviceType].listAnchor, devicesByType[deviceType]);
 			// insert the list of the devices
-			self.insertListOfDevices(deviceTypesGrammar[deviceType].listAnchor, devicesByType[deviceType]);
+			self.insertListOfDevices(deviceTypesGrammar[deviceType].listAnchor, devicesByType[deviceType], deviceType);
 
 			// append the events to the list of events
 			if (typeof deviceTypesGrammar[deviceType].eventAnchor !== "undefined") {
@@ -68,7 +67,7 @@ define([
 		this.grammar = this.grammar.replace(/{{listOfActions}}/g, listOfActions);
 
 		// insert the list of programs
-		this.insertListOfDevices("{{listOfPrograms}}", programs.models);
+		this.insertListOfDevices("{{listOfPrograms}}", programs.models, "program");
 		
 		// translate the grammar
 		this.translateRootGrammar();
@@ -84,16 +83,14 @@ define([
 	Grammar.prototype = {
 		constructor: constructor,
 
-		insertListOfDevices:function(grammarAnchor, listOfDevices) {
+		insertListOfDevices:function(grammarAnchor, listOfDevices, deviceType) {
 			var deviceNames = "";
 			listOfDevices.forEach(function(d) {
-				deviceNames += '"<span class=' + "'device-name'>" + d.get("name") + '</span>"/'; 
+				deviceNames += '"<span class=' + "'device-name' data-device-type='" + deviceType + "'>" + d.get("name") + '</span>"/'; 
 			});
 			if (deviceNames !== "") {
 				deviceNames = deviceNames.substring(0, deviceNames.length - 1);
 			}
-			
-			console.log(deviceNames);
 
 			var regexp = new RegExp(grammarAnchor, "g");
 			this.grammar = this.grammar.replace(regexp, deviceNames);

@@ -2,9 +2,9 @@
 	<!-- header -->
 	<p class="list-group-item-heading lead">
 		<% if (program.get("name") !== "") { %>
-		<%= program.get("name") %>
+			<%= program.get("name") %>
 		<% } else { %>
-			<em>Programme sans nom</em>
+			<em data-i18n="programs.program-no-name"></em>
 		<% } %>
 	</p>
 	
@@ -13,17 +13,17 @@
 		<ul class="list-unstyled">
 			<li>
 				<% if (program.get("runningState") === "DEPLOYED") { %>
-					<label class="label label-default">D&eacute;ploy&eacute;</label>
-					<button type="button" id="<%= program.get('id') %>" class="btn btn-sm btn-info pull-right start-program-button">D&eacute;marrer</button>
+					<label class="label label-default" data-i18n="programs.state.deployed"></label>
+					<button type="button" id="<%= program.get('id') %>" class="btn btn-sm btn-info pull-right start-program-button" data-i18n="programs.action.start"></button>
 				<% } else if (program.get("runningState") === "STARTED") { %>
-					<label class="label label-success">D&eacute;marr&eacute;</label>
-					<button type="button" id="<%= program.get('id') %>" class="btn btn-sm btn-info pull-right stop-program-button">Arr&ecirc;ter</button>
+					<label class="label label-success" data-i18n="programs.state.started"></label>
+					<button type="button" id="<%= program.get('id') %>" class="btn btn-sm btn-info pull-right stop-program-button" data-i18n="programs.action.stop"></button>
 				<% } else if (program.get("runningState") === "STOPPED") { %>
-					<label class="label label-warning">Arr&ecirc;t&eacute;</label>
-					<button type="button" id="<%= program.get('id') %>" class="btn btn-sm btn-info pull-right start-program-button">D&eacute;marrer</button>
+					<label class="label label-warning" data-i18n="programs.state.stopped"></label>
+					<button type="button" id="<%= program.get('id') %>" class="btn btn-sm btn-info pull-right start-program-button" data-i18n="programs.action.start"></button>
 				<% } else if (program.get("runningState") === "FAILED") { %>
-					<label class="label label-danger">Erreur</label>
-					<button type="button" id="<%= program.get('id') %>" class="btn btn-sm btn-info pull-right start-program-button">D&eacute;marrer</button>
+					<label class="label label-danger" data-i18n="programs.state.failed"></label>
+					<button type="button" id="<%= program.get('id') %>" class="btn btn-sm btn-info pull-right start-program-button" data-i18n="programs.action.start"></button>
 				<% } %>
 			</li>
 		</ul>
