@@ -98,12 +98,28 @@ define([
 			listAnchor		: "{{listOfIlluminationSensors}}",
 			i18nData		: [
 				{
+					grammarAnchor	: "{{changeIllumination}}",
+					i18nVar			: "language.change-illumination"
+				},
+				{
 					grammarAnchor	: "{{indicateIllumination}}",
 					i18nVar			: "language.indicate-illumination"
 				}
 			],
 			rules			: [
-				'eventIllumination = illuminationName:I "<span class=' + "'event'" + '> {{indicateIllumination}} </span>" illumination:number "<span class=' + "'event'" + '> Lux </span>"\n\
+				'eventIllumination = eventAnyIllumination / eventPreciseIllumination',
+				'eventAnyIllumination = illuminationName:I "<span class=' + "'event'" + '> {{changeIllumination}} </span>"\n\
+				{\n\
+					var nodeEvent = {};\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.findWhere({ name : $(illuminationName).text() }).get("id");\n\
+					nodeEvent.eventName = "value";\n\
+					nodeEvent.eventValue = "";\n\
+					\n\
+					return nodeEvent;\n\
+				}',
+				'eventPreciseIllumination = illuminationName:I "<span class=' + "'event'" + '> {{indicateIllumination}} </span>" illumination:number "<span class=' + "'event'" + '> Lux </span>"\n\
 				{\n\
 					var nodeEvent = {};\n\
 					nodeEvent.type = "NodeEvent";\n\

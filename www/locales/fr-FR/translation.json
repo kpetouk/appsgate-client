@@ -229,6 +229,7 @@
 		"change-temperature"						: "change",
 		"indicate-temperature"						: "indique",
 		
+		"change-illumination"						: "change",
 		"indicate-illumination"						: "indique",
 		
 		"pushed-switch-event"						: "on appuie sur",
