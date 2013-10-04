@@ -65,12 +65,13 @@ nodeWhen = "<span class='keyword'> {{whenKeyWord}} </span>" seqEvents:seqEvents 
 
 nodeIf = "<span class='keyword'> {{ifKeyWord}} </span>" expBool:expBool "<span class='keyword prev-seqrules'> {{thenKeyWord}} </span>" seqRulesTrue:seqRules seqRulesFalse:("<span class='keyword end-of-block prev-seqrules'> {{elseKeyWord}} </span>" seqRules)? "<span class='keyword end-of-block'> {{endIfBlock}} </span>"
 {
+	console.log(seqRulesFalse);
 	var nodeIf = {};
 	nodeIf.type = "NodeIf";
 	nodeIf.expBool = expBool;
 	nodeIf.seqRulesTrue = seqRulesTrue;
 	if (seqRulesFalse !== "") {
-		nodeIf.seqRulesFalse = seqRulesFalse[3];
+		nodeIf.seqRulesFalse = seqRulesFalse[1];
 	} else {
 		nodeIf.seqRulesFalse = [];
 	}
