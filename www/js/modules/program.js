@@ -236,9 +236,7 @@ define([
 			"show.bs.modal #add-program-modal"				: "initializeModal",
 			"hidden.bs.modal #add-program-modal"			: "toggleModalValue",
 			"click #add-program-modal button.valid-button"	: "validAddProgram",
-			"keyup #add-program-modal input:text"			: "validAddProgram",
-			"click button.start-program-button"				: "onStartProgramButton",
-			"click button.stop-program-button"				: "onStopProgramButton"
+			"keyup #add-program-modal input:text"			: "validAddProgram"
 		},
 		
 		/**
@@ -361,6 +359,79 @@ define([
 		},
 		
 		/**
+		 * Render the side menu
+		 */
+		render:function() {
+			if (!appRouter.isModalShown) {
+				var self = this;
+
+				// initialize the content
+				this.$el.html(this.tpl());
+
+				// put the time on the top of the menu
+				$(this.$el.find(".list-group")[0]).append(this.tplCoreClockContainer({
+					device	: devices.getCoreClock(),
+					active	: Backbone.history.fragment === "devices/" + devices.getCoreClock().get("id") ? true : false
+				}));
+
+				// "add program" button to the side menu
+				this.$el.append(this.tplAddProgramButton());
+
+				// for each program, add a menu item
+				this.$el.append(this.tpl());
+				programs.forEach(function(program) {
+					$(self.$el.find(".list-group")[1]).append(self.tplProgramContainer({
+						program : program,
+						active	: Backbone.history.fragment.split("/programs")[1] === program.get("name") ? true : false
+					}));
+				});
+				
+				// set active the current menu item
+				this.updateSideMenu();
+				
+				// translate the view
+				this.$el.i18n();
+
+				return this;
+			}
+		}
+
+	});
+	
+	/**
+	 * Render the editor view
+	 */
+	Program.Views.Editor = Backbone.View.extend({
+		tplEditor : _.template(programEditorTemplate),
+		
+		events : {
+			"click button.start-program-button"				: "onStartProgramButton",
+			"click button.stop-program-button"				: "onStopProgramButton",
+			"click button.save-program-button"				: "onSaveProgramButton",
+			"click button.delete-program-button"				: "onDeleteProgramButton",
+			"keyup textarea"						: "onKeyUpTextarea",
+			"click .expected-elements > button.completion-button"		: "onClickCompletionButton",
+			"click .programInput > span"					: "onClickSourceElement",
+			"click button.valid-value"					: "onValidValueButton",
+			"click button.deleted-elements"					: "onClickDeletedElements",
+			"click button.value-popover-button"				: "onClickValuePopoverButton",
+			"click button.valid-value-popover-button"			: "onClickValidValuePopoverButton",
+			"click button.device-popover-button"				: "onClickDevicePopoverButton",
+			"click button.delete-popover-button"				: "onClickDeletePopoverButton",
+			"click button.close-popover-button"				: "onClickClosePopoverButton"
+		},
+		
+		/**
+		 * @constructor
+		 */
+		initialize:function() {
+			this.listenTo(programs, "change", this.render);
+			if (typeof this.model !== "undefined") {
+				this.userInputSource = this.model.get("name") + " " + $.i18n.t("language.written-by") + " Bob pour Alice ";
+			}
+		},
+
+		/**
 		 * Callback to start a program
 		 * 
 		 * @param e JS mouse event
@@ -407,85 +478,30 @@ define([
 		},
 		
 		/**
-		 * Render the side menu
-		 */
-		render:function() {
-			if (!appRouter.isModalShown) {
-				var self = this;
-
-				// initialize the content
-				this.$el.html(this.tpl());
-
-				// put the time on the top of the menu
-				$(this.$el.find(".list-group")[0]).append(this.tplCoreClockContainer({
-					device	: devices.getCoreClock(),
-					active	: Backbone.history.fragment === "devices/" + devices.getCoreClock().get("id") ? true : false
-				}));
-
-				// for each program, add a menu item
-				this.$el.append(this.tpl());
-				programs.forEach(function(program) {
-					$(self.$el.find(".list-group")[1]).append(self.tplProgramContainer({
-						program : program,
-						active	: Backbone.history.fragment.split("/programs")[1] === program.get("name") ? true : false
-					}));
-				});
-
-				// "add program" button to the side menu
-				this.$el.append(this.tplAddProgramButton());
-
-				// set active the current menu item
-				this.updateSideMenu();
-				
-				// translate the view
-				this.$el.i18n();
-
-				return this;
-			}
-		}
-
-	});
-	
-	/**
-	 * Render the editor view
-	 */
-	Program.Views.Editor = Backbone.View.extend({
-		tplEditor : _.template(programEditorTemplate),
-		
-		events : {
-			"click button.save-program-button"							: "onSaveProgramButton",
-			"click button.delete-program-button"						: "onDeleteProgramButton",
-			"keyup textarea"											: "onKeyUpTextarea",
-			"click .expected-elements > button.completion-button"		: "onClickCompletionButton",
-			"click .programInput > span"								: "onClickSourceElement",
-			"click button.valid-value"									: "onValidValueButton",
-			"click button.deleted-elements"								: "onClickDeletedElements",
-			"click button.value-popover-button"							: "onClickValuePopoverButton",
-			"click button.valid-value-popover-button"					: "onClickValidValuePopoverButton",
-			"click button.device-popover-button"						: "onClickDevicePopoverButton",
-			"click button.delete-popover-button"						: "onClickDeletePopoverButton",
-			"click button.close-popover-button"							: "onClickClosePopoverButton"
-		},
-		
-		/**
-		 * @constructor
-		 */
-		initialize:function() {
-			if (typeof this.model !== "undefined") {
-				this.userInputSource = this.model.get("name") + " " + $.i18n.t("language.written-by") + " Bob pour Alice ";
-			}
-		},
-		
-		/**
 		 * Callback when the user has clicked on the button to save modifications done on a program. Send the update to the server
 		 */
 		onSaveProgramButton:function() {
+				
+
+			// replace span text
+			if (!$(".save-span").hasClass("hidden") && $(".saving-span").hasClass("hidden")) {
+				$(".save-span").addClass("hidden");
+				$(".saving-span").removeClass("hidden");
+			}
+		
+			// save the model
 			this.model.save();
 			
 			// hide the deleted elements
 			if (!$(".deleted-elements").hasClass("hidden")) {
 				$(".deleted-elements").addClass("hidden");
 			}
+
+			// after a while reset save button text, TODO: get info from server when the programm is saved
+			setTimeout(function(){
+				$(".save-span").removeClass("hidden");
+				$(".saving-span").addClass("hidden");
+			}, 3000);
 		},
 		
 		/**

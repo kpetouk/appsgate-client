@@ -9,7 +9,8 @@
 		"rename-button"	: "Rename",
 		"delete-button"	: "Delete",
 		"edit-button"	: "Edit",
-		"save-button"	: "Save"
+		"save-button"	: "Save",
+		"saving-button" : "Saving..."
 	},
 	"navbar" : {
 		"places"			: "Places",
