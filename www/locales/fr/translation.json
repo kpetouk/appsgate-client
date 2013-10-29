@@ -9,7 +9,8 @@
 		"rename-button"	: "Renommer",
 		"delete-button"	: "Supprimer",
 		"edit-button"	: "Editer",
-		"save-button"	: "Sauvegarder"
+		"save-button"	: "Sauvegarder",
+		"saving-button" : "En cours..."
 	},
 	"navbar" : {
 		"places"			: "Pièces",
