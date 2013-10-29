@@ -522,7 +522,6 @@ define([
 		onSaveProgramButton:function() {
 
 			this.model.set("modified", false);
-				
 
 			// replace span text
 			if (!$(".save-span").hasClass("hidden") && $(".saving-span").hasClass("hidden")) {
