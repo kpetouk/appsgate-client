@@ -556,6 +556,7 @@ define([
 				$(".saving-span").addClass("hidden");
 				$(".start-program-button").prop("disabled",false);
 			}, 1000);
+
 		},
 
 		/**
