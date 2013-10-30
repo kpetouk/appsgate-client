@@ -53,7 +53,16 @@ define([
 			setTimeout(function(){
 				var divSize = window.innerHeight-(jqNode.offset().top + jqNode.outerHeight(true) - jqNode.innerHeight());
 				jqNode.height(divSize);
-				jqNode.scrollTop(($(".list-group-item.active")[0].offsetTop)-($(".list-group-item")[1].offsetTop));
+	
+				// if there is an active element, make it visible
+				var activeItem = jqNode.children(".list-group-item.active")[0];
+				if(typeof activeItem !== "undefined"){
+					jqNode.scrollTop((activeItem.offsetTop)-($(".list-group-item")[1].offsetTop));
+				}
+				// otherwise display the top of the list
+				else{
+					jqNode.scrollTop(0);
+				}
 			}, 0);
 		}
 	}
@@ -445,6 +454,10 @@ define([
 		tplEditor : _.template(programEditorTemplate),
 		
 		events : {
+			"show.bs.modal #edit-program-name-modal"			: "initializeModal",
+			"hidden #edit-program-name-modal"				: "render",
+			"click #edit-program-name-modal button.valid-button"		: "validEditName",
+			"keyup #edit-program-name-modal input"				: "validEditName",
 			"click button.start-program-button"				: "onStartProgramButton",
 			"click button.stop-program-button"				: "onStopProgramButton",
 			"click button.save-program-button"				: "onSaveProgramButton",
@@ -522,7 +535,6 @@ define([
 		onSaveProgramButton:function() {
 
 			this.model.set("modified", false);
-				
 
 			// replace span text
 			if (!$(".save-span").hasClass("hidden") && $(".saving-span").hasClass("hidden")) {
@@ -544,6 +556,83 @@ define([
 				$(".saving-span").addClass("hidden");
 				$(".start-program-button").prop("disabled",false);
 			}, 1000);
+		},
+
+		/**
+		 * Clear the input text, hide the error message and disable the valid button by default
+		 */
+		initializeModal:function() {
+			$("#edit-program-name-modal input").val(this.model.get("name"));
+			$("#edit-program-name-modal .text-danger").addClass("hide");
+			$("#edit-program-name-modal .valid-button").addClass("disabled");
+		},
+
+		/**
+		 * Check the current value of the input text and show a message error if needed
+		 * 
+		 * @return false if the typed name already exists, true otherwise
+		 */
+		checkProgramName:function() {
+			// name is empty
+			if ($("#edit-program-name-modal input").val() === "") {
+				$("#edit-program-name-modal .text-danger").removeClass("hide");
+				$("#edit-program-name-modal .text-danger").text($.i18n.t("modal-edit-program.program-name-empty"));
+				$("#edit-program-name-modal .valid-button").addClass("disabled");
+				
+				return false;
+			}
+			
+			// name already existing
+			if (programs.where({ name : $("#edit-program-name-modal input").val() }).length > 0) {
+				$("#edit-program-name-modal .text-danger").removeClass("hide");
+				$("#edit-program-name-modal .text-danger").text($.i18n.t("modal-edit-program.program-already-existing"));
+				$("#edit-program-name-modal .valid-button").addClass("disabled");
+				
+				return false;
+			}
+			
+			//ok
+			$("#edit-program-name-modal .text-danger").addClass("hide");
+			$("#edit-program-name-modal .valid-button").removeClass("disabled");
+			
+			return true;
+		},
+				
+		/**
+		 * Check if the name of the program does not already exist. If not, update the program
+		 * Hide the modal when done
+		 */
+		validEditName:function(e) {
+			var self = this;
+			
+			if (e.type === "keyup" && e.keyCode === 13 || e.type === "click") {
+				e.preventDefault();
+				
+				// update the name if it is ok
+				if (this.checkProgramName()) {
+					this.$el.find("#edit-program-name-modal").on("hidden.bs.modal", function() {
+						// set the new name to the place
+						self.model.set("name", $("#edit-program-name-modal input").val());
+						self.model.get("source").programName = $("#edit-program-name-modal input").val();
+
+						// send the update to the backend
+						self.model.save();
+						
+						return false;
+					});
+					
+					$("#edit-program-name-modal").on("hidden.bs.modal",function(){
+						self.render();
+					});
+
+					// hide the modal
+					$("#edit-program-name-modal").modal("hide");
+
+				}
+			} else if (e.type === "keyup") {
+				this.checkProgramName();
+			}
+
 		},
 		
 		/**
@@ -853,7 +942,7 @@ define([
 				}
 			}
 
-			// fix the programs list size to be able to scroll through it
+			// fix the program input size to be able to scroll through it
 			resizeDiv($(self.$el.find(".editorWorkspace")[0]));
 		},
 
@@ -875,6 +964,12 @@ define([
 				content		: "<button type='button' class='btn btn-danger delete-program-button'>" + $.i18n.t("form.delete-button") + "</button>",
 				placement	: "bottom"
 			});
+
+			// put the name of the place by default in the modal to edit
+			$("#edit-program-name-modal .program-name").val(this.model.get("name"));
+
+			// hide the error message
+			$("#edit-program-name-modal .text-error").hide();
 			
 			// try to compile the program to show the potential errors
 			if (typeof this.model !== "undefined") {

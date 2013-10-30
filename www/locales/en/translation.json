@@ -79,6 +79,12 @@
 		"name-empty"			: "The program must have a name.",
 		"name-already-existing"	: "The program's name is already existing"
 	},
+	"modal-edit-program"	: {
+		"title"				: "Rename program",
+		"program-name"			: "Program's name",
+		"program-name-empty"		: "The program must have a name.",
+		"program-already-existing"	: "The program's name is already existing"
+	},
 	"devices" : {
 		"device-no-name"	: "Device with no name",
 		"device-unlocated"	: "Unlocated",

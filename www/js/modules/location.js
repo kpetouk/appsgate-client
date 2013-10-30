@@ -44,6 +44,29 @@ define([
 	// instantiate the router
 	var router = new Location.Router();
 
+	/**
+	 * Resizes the div to the maximum displayable size on the screen
+	 */	
+	function resizeDiv(jqNode){
+		if(typeof jqNode !== "undefined"){
+			jqNode[0].classList.add("div-scrollable");
+			setTimeout(function(){
+				var divSize = window.innerHeight-(jqNode.offset().top + jqNode.outerHeight(true) - jqNode.innerHeight());
+
+				jqNode.height(divSize);
+				// if there is an active element, make it visible
+				var activeItem = jqNode.children(".list-group-item.active")[0];
+				if(typeof activeItem !== "undefined"){
+					jqNode.scrollTop((activeItem.offsetTop)-($(".list-group-item")[1].offsetTop));
+				}
+				// otherwise display the top of the list
+				else{
+					jqNode.scrollTop(0);
+				}
+			}, 0);
+		}
+	}
+
 	// model
 	Location.Model = Backbone.Model.extend({
 
@@ -592,8 +615,19 @@ define([
 					}));
 				}
 
+				// "add place" button to the side menu
+				this.$el.append(this.tplAddPlaceButton());
+
 				// for each location, add a menu item
 				this.$el.append(this.tpl());
+				
+				// put the unlocated devices into a separate group list
+				//this.$el.append(this.tpl());
+				$(this.$el.find(".list-group")[1]).append(this.tplPlaceContainer({
+					place	: locations.get("-1"),
+					active	: Backbone.history.fragment.split("/")[1] === "-1" ? true : false
+				}));
+
 				locations.forEach(function(location) {
 					if (location.get("id") !== "-1") {
 						$(self.$el.find(".list-group")[1]).append(self.tplPlaceContainer({
@@ -603,18 +637,11 @@ define([
 					}
 				});
 
-				// put the unlocated devices into a separate group list
-				this.$el.append(this.tpl());
-				$(this.$el.find(".list-group")[2]).append(this.tplPlaceContainer({
-					place	: locations.get("-1"),
-					active	: Backbone.history.fragment.split("/")[1] === "-1" ? true : false
-				}));
-
-				// "add place" button to the side menu
-				this.$el.append(this.tplAddPlaceButton());
-				
 				// translate the menu
 				this.$el.i18n();
+
+				// resize the menu
+				resizeDiv($(self.$el.find(".list-group")[1]));
 
 				return this;
 			}
@@ -831,6 +858,9 @@ define([
 				
 				// translate the view
 				this.$el.i18n();
+
+				// resize the devices list in the selected location
+				resizeDiv($(".contents-list"));
 
 				return this;
 			}

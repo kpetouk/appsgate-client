@@ -1044,6 +1044,30 @@ define([
 	var router = new Device.Router();
 
 	/**
+	 * Resizes the div to the maximum displayable size on the screen
+	 */	
+	function resizeDiv(jqNode){
+		if(typeof jqNode !== "undefined"){
+			jqNode[0].classList.add("div-scrollable");
+			setTimeout(function(){
+				var divSize = window.innerHeight-(jqNode.offset().top + jqNode.outerHeight(false) + 20 - jqNode.innerHeight());
+
+				jqNode.height(divSize);
+				// if there is an active element, make it visible
+				var activeItem = jqNode.children(".list-group-item.active")[0];
+				if(typeof activeItem !== "undefined"){
+					jqNode.scrollTop((activeItem.offsetTop)-($(".list-group-item")[1].offsetTop));
+				}
+				// otherwise display the top of the list
+				else{
+					jqNode.scrollTop(0);
+				}
+			}, 0);
+		}
+	}
+
+
+	/**
 	 * Abstract class regrouping common characteristics shared by all the devices
 	 *
 	 * @class Device.Model
@@ -1701,6 +1725,9 @@ define([
 				// translate the view
 				this.$el.i18n();
 
+				// resize the menu
+				resizeDiv($(self.$el.find(".list-group")[1]));
+
 				return this;
 			 }
 		 }
@@ -2051,6 +2078,9 @@ define([
 				// translate the view
 				this.$el.i18n();
 
+				// resize the panel
+				resizeDiv($(this.$el.find(".list-group")[0]));
+
 				return this;
 			}
 		},
@@ -2190,6 +2220,9 @@ define([
 				
 				// translate the view
 				this.$el.i18n();
+
+				// resize the list
+				resizeDiv($(this.$el.find(".list-group")[0]));
 
 				return this;
 			}

@@ -1,10 +1,13 @@
 body {
 	padding-top: 70px;
+	overflow: hidden;
 }
 
 .div-scrollable {
 	overflow-y: auto;
 	margin-bottom: 20px;
+	border: 1px solid #999999; 
+	border-radius: 4px;
 }
 
 .list-group-item > img {
