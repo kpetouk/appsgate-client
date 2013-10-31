@@ -53,7 +53,11 @@ define([
 			setTimeout(function(){
 				var divSize = window.innerHeight-(jqNode.offset().top + jqNode.outerHeight(true) - jqNode.innerHeight());
 
-				jqNode.height(divSize);
+				// if there isn't enough space to display the whole div, we adjust its size to the screen
+				if(divSize<jqNode.outerHeight(true)){	
+					jqNode.height(divSize);
+				}
+
 				// if there is an active element, make it visible
 				var activeItem = jqNode.children(".list-group-item.active")[0];
 				if(typeof activeItem !== "undefined"){

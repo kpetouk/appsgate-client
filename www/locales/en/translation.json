@@ -194,10 +194,10 @@
 	"language" : {
 		"written-by"								: "written by",
 		"when-keyword"								: "when",
-		"end-when-block"							: "end of when",
+		"end-when-block"							: ".",
 		"if-keyword"								: "if",
 		"else-keyword"								: "else",
-		"end-if-block"								: "end of if",
+		"end-if-block"								: ".",
 		"then-keyword"								: "then",
 		"activate-program-action"					: "start the program",
 		"disactivate-program-action"				: "stop the program",

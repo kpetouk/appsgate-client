@@ -209,10 +209,10 @@
 	"language" : {
 		"written-by"								: "ecrit par",
 		"when-keyword"								: "au moment ou",
-		"end-when-block"							: "fin de au moment ou",
+		"end-when-block"							: ".",
 		"if-keyword"								: "si",
 		"else-keyword"								: "sinon",
-		"end-if-block"								: "fin du si",
+		"end-if-block"								: ".",
 		"then-keyword"								: "alors",
 		"activate-program-action"					: "activer le programme",
 		"disactivate-program-action"				: "desactiver le programme",
