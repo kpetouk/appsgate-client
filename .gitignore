@@ -4,3 +4,5 @@ platforms/ios/build/*
 platforms/ios/CordovaLib/build/*
 platforms/ios/cordova/console.log
 platforms/ios/AppsGate.xcodeproj/project.xcworkspace/xcuserdata/*
+*.pbxproj
+*/xcuserdata/*

@@ -1,4 +1,4 @@
-appgate-client
+appsgate-client
 ==============
 
 Git repository for the client applications of the AppsGate project.
