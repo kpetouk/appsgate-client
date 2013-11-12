@@ -1093,12 +1093,7 @@ define([
 			// each device listens to the event whose id corresponds to its own id. This ensures to
 			// receive only relevant events
 			dispatcher.on(this.get("id"), function(updatedVariableJSON) {
-				if(updatedVariableJSON===false){
-					self.set(self.previousAttributes());
-				}
-				else{
-					self.set(updatedVariableJSON.varName, updatedVariableJSON.value);
-				}
+				self.set(updatedVariableJSON.varName, updatedVariableJSON.value);
 			});
 		},
 		
@@ -2084,8 +2079,14 @@ define([
 							deviceDetails: this.tplPhillipsHue
 						}));
 
+						// get the current color						
 						var color = Raphael.hsl((lamp.get("color") / 65535), (lamp.get("saturation") / 255), (lamp.get("brightness") / 255)); 
-						this.renderColorWheel(color);
+
+						// get the current state
+						var enabled = lamp.get("value");
+
+						// if the lamp is on, we allow the user to pick a color				
+						this.renderColorWheel(enabled, color);
 
 						// update the size of the color picker container
 						this.$el.find(".color-picker").height(colorWheel.size2 * 2);
@@ -2124,28 +2125,21 @@ define([
 		/**
 		 * Render the color wheel for the Philips Hue
 		 */
-		renderColorWheel:function(color) {
+		renderColorWheel:function(enabled, color) {
 			// create the color picker
-			// compute its size
-			/*var wheelRadius = Math.min(
-				$(".body-content").width(),
-				$(document).height() - this.$el.find(".color-picker").position().top
-			);*/
 			var wheelRadius = $(".body-content").outerWidth() / 10 + 80;
 
 			// instantiate the color wheel
 			window.colorWheel = Raphael.colorwheel($(".color-picker")[0], wheelRadius*2).color(color);
 
 			// bind the events
-			// mobile -> touch
-			if (navigator.userAgent.toLowerCase().match(/(ipad|ipod|iphone|android)/)) {
-				// window.colorWheel.onchange = this.onChangeColor;
-				//window.colorWheel.ring.node.ontouchend = this.onChangeColor;
-				//window.colorWheel.square.node.ontouchend = this.onChangeColor;
-				window.colorWheel.onchange(null, this.onChangeColor);
-			} else { // desktop -> drag w/ the mouse
+			if(typeof enabled !== undefined && enabled === "true"){
+				// color change enabled
 				window.colorWheel.ondrag(null, this.onChangeColor);
-				//window.colorWheel.square.node.onmouseup = this.onChangeColor;
+			}
+			else{
+				// color change disabled
+				window.colorWheel.onchange(function(){window.colorWheel.color(color)});
 			}
 		}
 	});
@@ -2254,7 +2248,7 @@ define([
 				this.$el.i18n();
 
 				// resize the list
-				resizeDiv($(this.$el.find(".list-group")[0]));
+				resizeDiv($(".contents-list"));
 
 				return this;
 			}
