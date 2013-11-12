@@ -496,9 +496,45 @@ define([
 			this.listenTo(locations, "add", this.render);
 			this.listenTo(locations, "change", this.render);
 			this.listenTo(locations, "remove", this.render);
-			this.listenTo(devices, "change", this.render);
+			this.listenTo(devices, "change", this.onChangedDevice);
 		},
 		
+		/**
+		 * Method called when a device has changed
+		 * @param model Model that changed, Device in that cas
+		 * @param collection Collection that holds the changed model
+		 * @param options Options given with the change event 	
+		 */
+		onChangedDevice:function(model, collection, options) {
+			// a device has changed
+			// if it's the clock, we refresh the clock only
+			if(typeof options !== "undefined" && options.clockRefresh){
+				this.refreshClockDisplay();
+			}
+			// otherwise we rerender the whole view
+			else{
+				this.render();
+			}
+		},
+
+		/**
+		 * Refreshes the time display without rerendering the whole screen
+		 */
+		refreshClockDisplay:function() {
+
+			if (typeof devices.getCoreClock() !== "undefined") { // dirty hack to avoid a bug when reconnecting - TODO
+				//remove existing node
+				$(this.$el.find(".list-group")[0]).children().remove();
+
+				//refresh the clock
+				$(this.$el.find(".list-group")[0]).append(this.tplCoreClockContainer({
+					device	: devices.getCoreClock(),
+					active	: Backbone.history.fragment === "devices/" + devices.getCoreClock().get("id") ? true : false
+				}));
+			}
+		},
+
+
 		/**
 		 * Update the side menu to set the correct active element
 		 * 

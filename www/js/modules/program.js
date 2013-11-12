@@ -278,7 +278,7 @@ define([
 			this.listenTo(programs, "add", this.render);
 			this.listenTo(programs, "remove", this.render);
 			this.listenTo(programs, "change", this.render);
-			this.listenTo(devices.getCoreClock(), "change", this.render);
+			this.listenTo(devices.getCoreClock(), "change", this.refreshClockDisplay);
 		},
 		
 		/**
@@ -298,6 +298,22 @@ define([
 			}
 		},
 		
+		/**
+		 * Refreshes the time display without rerendering the whole screen
+		 */
+		refreshClockDisplay:function() {
+			
+			//remove existing node
+			$(this.$el.find(".list-group")[0]).children().remove();
+
+			//refresh the clock
+			$(this.$el.find(".list-group")[0]).append(this.tplCoreClockContainer({
+				device	: devices.getCoreClock(),
+				active	: Backbone.history.fragment === "devices/" + devices.getCoreClock().get("id") ? true : false
+			}));
+
+		},
+
 		/**
 		 * Clear the input text, hide the error message, check the checkbox and disable the valid button by default
 		 */
@@ -429,12 +445,18 @@ define([
 				// for each program, add a menu item
 				this.$el.append(this.tpl());
 				var programsDiv = $(self.$el.find(".list-group")[1]);
+
+				// we build a temporary container with each model
+ 				var container = document.createDocumentFragment();
 				programs.forEach(function(program) {
-					programsDiv.append(self.tplProgramContainer({
+					$(container).append(self.tplProgramContainer({
 						program : program,
 						active	: Backbone.history.fragment.split("/programs")[1] === program.get("name") ? true : false
 					}));
 				});
+
+				// we add all elements all at once to avoid rendering them individually and thus reflowing the dom 					several times
+				programsDiv.append(container);
 
 				// set active the current menu item
 				this.updateSideMenu();

@@ -10,6 +10,10 @@ body {
 	border-radius: 4px;
 }
 
+.color-picker {
+	margin:auto;
+}
+
 .expected-input {
 	padding: 10px;
     	background: #DDDDDD;
