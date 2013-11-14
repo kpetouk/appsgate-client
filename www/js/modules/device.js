@@ -14,6 +14,7 @@ define([
 	"text!templates/devices/details/illumination.html",
 	"text!templates/devices/details/keyCard.html",
 	"text!templates/devices/details/switch.html",
+	"text!templates/devices/details/actuator.html",
 	"text!templates/devices/details/temperature.html",
 	"text!templates/devices/details/plug.html",
 	"text!templates/devices/details/phillipsHue.html",
@@ -21,11 +22,8 @@ define([
 	"colorWheel"
 ], function($, _, Backbone, Grammar, Raphael, Moment,
 		deviceMenuTemplate, deviceContainerMenuTemplate, coreClockContainerMenuTemplate,
-		deviceListByCategoryTemplate,
-		deviceDetailsTemplate,
-		contactDetailTemplate, illuminationDetailTemplate,
-		keyCardDetailTemplate, switchDetailTemplate, temperatureDetailTemplate,
-		plugDetailTemplate, phillipsHueDetailTemplate, coreClockDetailTemplate) {
+		deviceListByCategoryTemplate, deviceDetailsTemplate, contactDetailTemplate, illuminationDetailTemplate,
+		keyCardDetailTemplate, switchDetailTemplate, actuatorDetailTemplate, temperatureDetailTemplate, 			plugDetailTemplate, phillipsHueDetailTemplate, coreClockDetailTemplate) {
 	
 	// initialize the module
 	var Device = {};
@@ -767,6 +765,127 @@ define([
 				"L = {{listOfLamps}}"
 			]
 		},
+		8	: {
+			eventAnchor		: "eventActuator",
+			statusAnchor	: "statusActuator",
+			actionAnchor	: "actionActuator",
+			listAnchor		: "{{listOfActuators}}",
+			i18nData		: [
+				{
+					grammarAnchor	: "{{turnedOnActuatorEvent}}",
+					i18nVar			: "language.turned-on-actuator-event"
+				},
+				{
+					grammarAnchor	: "{{turnedOffActuatorEvent}}",
+					i18nVar			: "language.turned-off-actuator-event"
+				},
+				{
+					grammarAnchor	: "{{isTurnedOnActuatorStatus}}",
+					i18nVar			: "language.is-turned-on-actuator-status"
+				},
+				{
+					grammarAnchor	: "{{isTurnedOffActuatorStatus}}",
+					i18nVar			: "language.is-turned-off-actuator-status"
+				},
+				{
+					grammarAnchor	: "{{turnOnActuatorAction}}",
+					i18nVar			: "language.turn-on-actuator-action"
+				},
+				{
+					grammarAnchor	: "{{turnOffActuatorAction}}",
+					i18nVar			: "language.turn-off-actuator-action"
+				}
+			],
+			rules			: [
+				"eventActuator = turnedOnActuatorEvent / turnedOffActuatorEvent",
+				'turnedOnActuatorEvent = "<span class=' + "'event'" + '> {{turnedOnActuatorEvent}} </span>" actuatorName:PL\n\
+				{\n\
+					var nodeEvent = {};\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.findWhere({ name : $(actuatorName).text() }).get("id");\n\
+					nodeEvent.eventName = "actuatorState";\n\
+					nodeEvent.eventValue = "true";\n\
+					\n\
+					return nodeEvent;\n\
+				}',
+				'turnedOffActuatorEvent = "<span class=' + "'event'" + '> {{turnedOffActuatorEvent}} </span>" actuatorName:PL\n\
+				{\n\
+					var nodeEvent = {};\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.findWhere({ name : $(actuatorName).text() }).get("id");\n\
+					nodeEvent.eventName = "actuatorState";\n\
+					nodeEvent.eventValue = "false";\n\
+					\n\
+					return nodeEvent;\n\
+				}',
+				"statusActuator = isOnActuatorStatus / isOffActuatorStatus",
+				'isOnActuatorStatus = actuatorName:PL "<span class=' + "'status'" + '> {{isTurnedOnActuatorStatus}} </span>"\n\
+				{\n\
+					var nodeRelationBool = {};\n\
+					nodeRelationBool.type = "NodeRelationBool";\n\
+					nodeRelationBool.operator = "==";\n\
+					\n\
+					nodeRelationBool.leftOperand = {};\n\
+					nodeRelationBool.leftOperand.targetType = "device";\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : $(actuatorName).text() }).get("id");\n\
+					nodeRelationBool.leftOperand.methodName = "getRelayState";\n\
+					nodeRelationBool.leftOperand.returnType = "boolean";\n\
+					nodeRelationBool.leftOperand.args = [];\n\
+					\n\
+					nodeRelationBool.rightOperand = {};\n\
+					nodeRelationBool.rightOperand.type = "boolean";\n\
+					nodeRelationBool.rightOperand.value = "true";\n\
+					\n\
+					return nodeRelationBool;\n\
+				}',
+				'isOffActuatorStatus = actuatorName:PL "<span class=' + "'status'" + '> {{isTurnedOffActuatorStatus}} </span>"\n\
+				{\n\
+					var nodeRelationBool = {};\n\
+					nodeRelationBool.type = "NodeRelationBool";\n\
+					nodeRelationBool.operator = "==";\n\
+					\n\
+					nodeRelationBool.leftOperand = {};\n\
+					nodeRelationBool.leftOperand.targetType = "device";\n\
+					nodeRelationBool.leftOperand.targetId = devices.findWhere({ name : $(actuatorName).text() }).get("id");\n\
+					nodeRelationBool.leftOperand.methodName = "getRelayState";\n\
+					nodeRelationBool.leftOperand.returnType = "boolean";\n\
+					nodeRelationBool.leftOperand.args = [];\n\
+					\n\
+					nodeRelationBool.rightOperand = {};\n\
+					nodeRelationBool.rightOperand.type = "boolean";\n\
+					nodeRelationBool.rightOperand.value = "false";\n\
+					\n\
+					return nodeRelationBool;\n\
+				}\n\
+				',
+				"actionActuator = onActuatorAction / offActuatorAction",
+				'onActuatorAction = "<span class=' + "'action-name'" + '> {{turnOnActuatorAction}} </span>" actuatorName:PL\n\
+				{\n\
+					var nodeAction = {};\n\
+					nodeAction.type = "NodeAction";\n\
+					nodeAction.targetType = "device";\n\
+					nodeAction.targetId = devices.findWhere({ name : $(actuatorName).text() }).get("id");\n\
+					nodeAction.methodName = "on";\n\
+					nodeAction.args = [];\n\
+					\n\
+					return nodeAction;\n\
+				}',
+				'offActuatorAction = "<span class=' + "'action-name'" + '> {{turnOffActuatorAction}} </span>" actuatorName:PL\n\
+				{\n\
+					var nodeAction = {};\n\
+					nodeAction.type = "NodeAction";\n\
+					nodeAction.targetType = "device";\n\
+					nodeAction.targetId = devices.findWhere({ name : $(actuatorName).text() }).get("id");\n\
+					nodeAction.methodName = "off";\n\
+					nodeAction.args = [];\n\
+					\n\
+					return nodeAction;\n\
+				}',
+				"AL = {{listOfActuator}}"
+			]
+		},
 		21	: {
 			eventAnchor		: "eventCoreClock",
 			statusAnchor	: "statusCoreClock",
@@ -1150,7 +1269,7 @@ define([
 								model.sendName();
 							} else if (attribute === "plugState") {
 								model.sendPlugState();
-							} else if (attribute === "value" && (model.get("type") === "7" || model.get("type") === 7)) {
+							} else if (attribute === "value" && (model.get("type") === "7" || model.get("type") === 8)) {
 								model.sendValue();
 							} else if (attribute === "color" && (model.get("type") === "7" || model.get("type") === 7)) {
 								model.sendColor();
@@ -1203,6 +1322,31 @@ define([
 		 */
 		initialize: function() {
 			Device.SwitchSensor.__super__.initialize.apply(this, arguments);
+		}
+
+	});
+
+	/**
+	 * Implementation of an actuator
+	 * @class Device.Actuator
+	 */
+	Device.Actuator = Device.Model.extend({
+		/**
+		 * @constructor
+		 */
+		initialize: function() {
+			Device.Actuator.__super__.initialize.apply(this, arguments);
+		},
+
+		/**
+		 * Send a message to the backend to update the attribute value
+		 */
+		sendValue: function() {
+			if (this.get("value") === "true") {
+				this.remoteCall("on", []);
+			} else {
+				this.remoteCall("off", []);
+			}
 		}
 
 	});
@@ -1522,6 +1666,9 @@ define([
 				case 7:
 					this.add(new Device.PhillipsHue(device));
 					break;
+				case 8: 
+					this.add(new Device.Actuator(device));
+					break;
 				case 21:
 					this.add(new Device.CoreClock(device));
 					break;
@@ -1595,6 +1742,13 @@ define([
 		 */
 		getLamps:function() {
 			return devices.where({ type : 7 });
+		},
+
+		/**
+		 * @return Array of the switch actuators
+		 */
+		getActuators:function() {
+			return devices.where({ type : 8 });
 		},
 		
 		/**
@@ -1778,6 +1932,7 @@ define([
 		tplIllumination: _.template(illuminationDetailTemplate),
 		tplKeyCard: _.template(keyCardDetailTemplate),
 		tplSwitch: _.template(switchDetailTemplate),
+		tplActuator: _.template(actuatorDetailTemplate),
 		tplTemperature: _.template(temperatureDetailTemplate),
 		tplPlug: _.template(plugDetailTemplate),
 		tplPhillipsHue: _.template(phillipsHueDetailTemplate),
@@ -1788,6 +1943,7 @@ define([
 			"click button.back-button"						: "onBackButton",
 			"click button.toggle-lamp-button"				: "onToggleLampButton",
 			"click button.toggle-plug-button"				: "onTogglePlugButton",
+			"click button.toggle-actuator-button"				: "onToggleActuatorButton",
 			"show.bs.modal #edit-device-modal"				: "initializeModal",
 			"hide.bs.modal #edit-device-modal"				: "toggleModalValue",
 			"click #edit-device-modal button.valid-button"	: "validEditDevice",
@@ -1862,6 +2018,35 @@ define([
 				} else {
 					this.model.set("plugState", "true");
 					this.$el.find(".toggle-plug-button").text("Eteindre");
+				}
+			}
+			
+			// send the message to the backend
+			this.model.save();
+		},
+
+		/**
+		 * Callback to toggle a plug - used when the displayed device is a plug (!)
+		 */
+		onToggleActuatorButton:function() {
+			// value can be string or boolean
+			// string
+			if (typeof this.model.get("value") === "string") {
+				if (this.model.get("value") === "true") {
+					this.model.set("value", "false");
+					this.$el.find(".toggle-actuator-button").text("Allumer");
+				} else {
+					this.model.set("value", "true");
+					this.$el.find(".toggle-actuator-button").text("Eteindre");
+				}
+			// boolean
+			} else {
+				if (this.model.get("value")) {
+					this.model.set("value", "false");
+					this.$el.find(".toggle-actuator-button").text("Allumer");
+				} else {
+					this.model.set("value", "true");
+					this.$el.find(".toggle-actuator-button").text("Eteindre");
 				}
 			}
 			
@@ -2092,6 +2277,15 @@ define([
 						this.$el.find(".color-picker").height(colorWheel.size2 * 2);
 
 						break;
+					case 8: // switch actuator
+						this.$el.html(this.template({
+							device: this.model,
+							sensorImg: "styles/img/sensors/doubleSwitch.jpg",
+							sensorType: $.i18n.t("devices.actuator.name.singular"),
+							locations: locations,
+							deviceDetails: this.tplActuator
+						}));
+						break;
 					case 21: // core clock
 						var hours = new Array();
 						for (var i = 0; i < 24; i++) {
@@ -2152,7 +2346,8 @@ define([
 		
 		events: {
 			"click button.toggle-plug-button"	: "onTogglePlugButton",
-			"click button.toggle-lamp-button"	: "onToggleLampButton"
+			"click button.toggle-lamp-button"	: "onToggleLampButton",
+			"click button.toggle-actuator-button"	: "onToggleActuatorButton"
 		},
 		
 		/**
@@ -2233,7 +2428,39 @@ define([
 			
 			return false;
 		},
-		
+
+		/**
+		 * Callback to toggle an actuator
+		 * 
+		 * @param e JS mouse event
+		 */
+		onToggleActuatorButton:function(e) {
+			e.preventDefault();
+			
+			var actuator = devices.get($(e.currentTarget).attr("id"));
+			// value can be string or boolean
+			// string
+			if (typeof actuator.get("value") === "string") {
+				if (actuator.get("value") === "true") {
+					actuator.set("value", "false");
+				} else {
+					actuator.set("value", "true");
+				}
+			// boolean
+			} else {
+				if (actuator.get("value")) {
+					actuator.set("value", "false");
+				} else {
+					actuator.set("value", "true");
+				}
+			}
+			
+			// send the message to the backend
+			actuator.save();
+			
+			return false;
+		},
+			
 		/**
 		 * Render the list
 		 */
