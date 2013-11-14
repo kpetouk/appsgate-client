@@ -280,8 +280,10 @@
 
 		"turned-on-actuator-event"					: "on allume",
 		"turned-off-actuator-event"					: "on eteint",
+
 		"is-turned-on-actuator-status"					: "est allume",
 		"is-turned-off-actuator-status"					: "est eteint",
+
 		"turn-on-actuator-action"					: "allumer",
 		"turn-off-actuator-action"					: "eteindre",
 		
