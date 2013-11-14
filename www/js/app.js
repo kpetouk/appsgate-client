@@ -69,11 +69,6 @@ define([
         showView:function(view) {
 			// remove and unbind the current view
 			if (this.currentView) {
-				// manage raphaeljs objects
-				if (typeof colorWheel !== "undefined") {
-					colorWheel.remove();
-					delete colorWheel;
-				}
 				this.currentView.close();
 			}
 
