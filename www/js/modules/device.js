@@ -1683,7 +1683,7 @@ define([
 					break;
 			}
 			
-			locations.get(device.placeId).get("devices").push(device.id);
+			places.get(device.placeId).get("devices").push(device.id);
 		},
 		
 		/**
@@ -1904,7 +1904,7 @@ define([
 						$(self.$el.find(".list-group")[1]).append(self.tplDeviceContainer({
 							type		: type,
 							devices		: types[type],
-							places		: locations,
+							places		: places,
 							unlocatedDevices: devices.filter(function(d) { return (d.get("placeId") === "-1" && d.get("type") === type); }),
 							active		: Backbone.history.fragment.split("devices/types/")[1] === type ? true : false
 						}));
@@ -2135,7 +2135,7 @@ define([
 						
 						// move the device if this is not the core clock
 						if (self.model.get("type") !== "21" && self.model.get("type") !== 21) {
-							locations.moveDevice(self.model.get("placeId"), destPlaceId, self.model.get("id"), true);
+							places.moveDevice(self.model.get("placeId"), destPlaceId, self.model.get("id"), true);
 						} else { // update the time and the flow rate set by the user
 							// update the moment attribute
 							self.model.get("moment").set("hour", parseInt($("#edit-device-modal select#hour").val()));
@@ -2199,7 +2199,7 @@ define([
 							device: this.model,
 							sensorImg: "styles/img/sensors/temperature.jpg",
 							sensorType: $.i18n.t("devices.temperature.name.singular"),
-							locations: locations,
+							places: places,
 							deviceDetails: this.tplTemperature
 						}));
 						break;
@@ -2209,7 +2209,7 @@ define([
 							device: this.model,
 							sensorImg: "styles/img/sensors/illumination.jpg",
 							sensorType: $.i18n.t("devices.illumination.name.singular"),
-							locations: locations,
+							places: places,
 							deviceDetails: this.tplIllumination
 						}));
 						break;
@@ -2219,7 +2219,7 @@ define([
 							device: this.model,
 							sensorImg: "styles/img/sensors/doubleSwitch.jpg",
 							sensorType: $.i18n.t("devices.switch.name.singular"),
-							locations: locations,
+							places: places,
 							deviceDetails: this.tplSwitch
 						}));
 						break;
@@ -2229,7 +2229,7 @@ define([
 							device: this.model,
 							sensorImg: "styles/img/sensors/contact.jpg",
 							sensorType: $.i18n.t("devices.contact.name.singular"),
-							locations: locations,
+							places: places,
 							deviceDetails: this.tplContact
 						}));
 						break;
@@ -2239,7 +2239,7 @@ define([
 							device: this.model,
 							sensorImg: "styles/img/sensors/keycard.jpg",
 							sensorType: $.i18n.t("devices.keycard-reader.name.singular"),
-							locations: locations,
+							places: places,
 							deviceDetails: this.tplKeyCard
 						}));
 						break;
@@ -2249,7 +2249,7 @@ define([
 							device: this.model,
 							sensorImg: "styles/img/sensors/plug.jpg",
 							sensorType: $.i18n.t("devices.plug.name.singular"),
-							locations: locations,
+							places: places,
 							deviceDetails: this.tplPlug
 						}));
 						break;
@@ -2260,7 +2260,7 @@ define([
 						this.$el.html(this.template({
 							device: lamp,
 							sensorType: $.i18n.t("devices.lamp.name.singular"),
-							locations: locations,
+							places: places,
 							deviceDetails: this.tplPhillipsHue
 						}));
 
@@ -2282,7 +2282,7 @@ define([
 							device: this.model,
 							sensorImg: "styles/img/sensors/doubleSwitch.jpg",
 							sensorType: $.i18n.t("devices.actuator.name.singular"),
-							locations: locations,
+							places: places,
 							deviceDetails: this.tplActuator
 						}));
 						break;
@@ -2299,7 +2299,7 @@ define([
 						this.$el.html(this.template({
 							device: this.model,
 							sensorType: $.i18n.t("devices.clock.name.singular"),
-							locations: locations,
+							places: places,
 							hours: hours,
 							minutes: minutes,
 							deviceDetails: this.tplCoreClock
@@ -2468,7 +2468,7 @@ define([
 			if (!appRouter.isModalShown) {
 				this.$el.html(this.tpl({
 					type			: this.id,
-					places			: locations
+					places			: places
 				}));
 				
 				// translate the view
