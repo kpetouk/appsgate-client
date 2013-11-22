@@ -1269,8 +1269,10 @@ define([
 								model.sendName();
 							} else if (attribute === "plugState") {
 								model.sendPlugState();
-							} else if (attribute === "value" && (model.get("type") === "7" || model.get("type") === 8)) {
+							} else if (attribute === "value" && (model.get("type") === "7" || model.get("type") === 7)) {
 								model.sendValue();
+                            } else if (attribute === "value" && (model.get("type") === "8" || model.get("type") === 8)) {
+                                model.sendValue();
 							} else if (attribute === "color" && (model.get("type") === "7" || model.get("type") === 7)) {
 								model.sendColor();
 							} else if (attribute === "saturation" && (model.get("type") === "7" || model.get("type") === 7)) {
