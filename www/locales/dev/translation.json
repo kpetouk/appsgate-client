@@ -190,7 +190,8 @@
 			},
 			"action"	: {
 				"turnOn"	: "Allumer",
-				"turnOff"	: "Eteindre"
+				"turnOff"	: "Eteindre",
+                "blink"     : "Clignoter"
 			}
 		},
 		"clock"				: {

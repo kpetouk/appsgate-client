@@ -190,7 +190,8 @@
 			},
 			"action"	: {
 				"turnOn"	: "Turn on",
-				"turnOff"	: "Turn off"
+				"turnOff"	: "Turn off",
+                "blink"     : "Blink"
 			}
 		},
 		"clock"				: {
