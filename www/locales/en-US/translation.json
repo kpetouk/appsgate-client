@@ -192,7 +192,8 @@
 			},
 			"action"	: {
 				"turnOn"	: "Turn on",
-				"turnOff"	: "Turn off"
+				"turnOff"	: "Turn off",
+                "blink"     : "Blink"
 			}
 		},
 		"clock"				: {
@@ -293,6 +294,7 @@
 		"is-turned-off-lamp-status"					: "is turned off",
 		"turn-on-lamp-action"						: "turn on",
 		"turn-off-lamp-action"						: "turn off",
+        "blink-lamp-action"                         : "blink",
 		"change-color-lamp-action"					: "change the color of",
 		"complement-change-color-lamp-action"		: "in",
 		"white-color"								: "white",
