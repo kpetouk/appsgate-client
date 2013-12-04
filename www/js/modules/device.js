@@ -768,7 +768,7 @@ define([
 							nodeAction.methodName = "setPink";\n\
 							break;\n\
 						case " {{whiteColor}} ":\n\
-							nodeAction.methodName = "setDefault";\n\
+							nodeAction.methodName = "setWhite";\n\
 							break;\n\
 						default:\n\
 					}\n\
