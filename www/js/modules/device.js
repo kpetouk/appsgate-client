@@ -1709,7 +1709,7 @@ define([
 						var item = L_items.item(i);
 						
 						// making sure to not create duplicates
-						if($("#" + item.getAttribute('parentID')).parent().has("#" + item.getAttribute('id')).length === 0) {
+						if($("#" + item.getAttribute('parentID')).has("#" + item.getAttribute('id')).length === 0) {
 							$(".browser-container").jstree("create", $("#" + item.getAttribute('parentID'))[0], "inside",{ "data" : { "title" :item.querySelector('title').textContent}, "attr" : { "id" : item.getAttribute('id'), "title" :item.querySelector('title').textContent, "parent_id" : item.getAttribute('parentID'), "rel" : 'media', "res" : item.querySelector('res').textContent }},false,true);
 						}
 					}
