@@ -1076,6 +1076,12 @@ define([
 				}'
 			]
 		},
+		36	: {
+			eventAnchor		: "eventMediaBrowser",
+			listAnchor		: "{{listOfMediaBrowsers}}",
+			rules			: [
+			]  
+		},
 		102		: {
 			eventAnchor		: "eventCoreMail",
 			actionAnchor	: "actionMail",
@@ -1668,7 +1674,6 @@ define([
 			}).delegate("a", "click", function (event, data) {
 				event.preventDefault();
 				var target = "" + event.currentTarget.parentNode.id;
-				console.log(event.currentTarget.parentNode);
 			    if(typeof currentDevice === 'undefined' || (currentDevice !== devices.get(target) && devices.contains(target))) {
 					currentDevice = devices.get(event.currentTarget.parentNode.id);
 					target = "0";
@@ -1677,9 +1682,6 @@ define([
 					currentDevice.remoteCall("browse", [{"type":"String", "value":target},{"type":"String", "value":"BrowseDirectChildren"},{"type":"String", "value":"*"},{"type":"long" , "value":"0"},{"type":"long" , "value":"0"},{"type":"String", "value":""}], "mediaBrowser");
 				}
 				else {
-					console.log("media selected!");
-					console.log(event.currentTarget.parentNode.attributes.title);
-					console.log(event.currentTarget.parentNode.attributes.res);
 					selectedMedia.text(event.currentTarget.parentNode.attributes.title.textContent);
 					selectedMedia.attr("title",event.currentTarget.parentNode.attributes.title.textContent);
 					selectedMedia.attr("url",event.currentTarget.parentNode.attributes.res.textContent);
@@ -1774,8 +1776,7 @@ define([
 				window.grammar = new Grammar();
 			});
 			
-			
-end the request to fetch the devices
+			// send the request to fetch the devices
 			communicator.sendMessage({
 				method: "getDevices",
 				args: [],
