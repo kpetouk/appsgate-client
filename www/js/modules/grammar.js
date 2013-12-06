@@ -25,38 +25,37 @@ define([
 		// group the devices by types - if any for a type, insert its corresponding grammar and the list of devices
 		var devicesByType = devices.getDevicesByType();
 		_.keys(devicesByType).forEach(function(deviceType) {
-			if(deviceType === "36") {
-				return;
-			}
-			// append the rules to the grammar if there is rules to add
-			deviceTypesGrammar[deviceType].rules.forEach(function(r) {
-				self.grammar += r + "\n";
-			});
-			
-			// insert the list of the devices
-			self.insertListOfDevices(deviceTypesGrammar[deviceType].listAnchor, devicesByType[deviceType], deviceType);
-
-			// append the events to the list of events
-			if (typeof deviceTypesGrammar[deviceType].eventAnchor !== "undefined") {
-				listOfEvents += " / " + deviceTypesGrammar[deviceType].eventAnchor;
-			}
-			
-			// append the status to the list of events because it is used at the same location in the grammar
-			if (typeof deviceTypesGrammar[deviceType].statusAnchor !== "undefined") {
-				listOfStatus += " / " + deviceTypesGrammar[deviceType].statusAnchor;
-			}
-
-			// append the actions to the list of actions
-			if (typeof deviceTypesGrammar[deviceType].actionAnchor !== "undefined") {
-				listOfActions += " / " + deviceTypesGrammar[deviceType].actionAnchor;
-			}
-			
-			// translate the grammar of the device type
-			if (typeof deviceTypesGrammar[deviceType].i18nData !== "undefined") {
-				deviceTypesGrammar[deviceType].i18nData.forEach(function(l) {
-					var regexp = new RegExp(l.grammarAnchor, "g");
-					self.grammar = self.grammar.replace(regexp, $.i18n.t(l.i18nVar));
+			if(deviceType !== "36") {
+				// append the rules to the grammar if there is rules to add
+				deviceTypesGrammar[deviceType].rules.forEach(function(r) {
+					self.grammar += r + "\n";
 				});
+				
+				// insert the list of the devices
+				self.insertListOfDevices(deviceTypesGrammar[deviceType].listAnchor, devicesByType[deviceType], deviceType);
+
+				// append the events to the list of events
+				if (typeof deviceTypesGrammar[deviceType].eventAnchor !== "undefined") {
+					listOfEvents += " / " + deviceTypesGrammar[deviceType].eventAnchor;
+				}
+				
+				// append the status to the list of events because it is used at the same location in the grammar
+				if (typeof deviceTypesGrammar[deviceType].statusAnchor !== "undefined") {
+					listOfStatus += " / " + deviceTypesGrammar[deviceType].statusAnchor;
+				}
+
+				// append the actions to the list of actions
+				if (typeof deviceTypesGrammar[deviceType].actionAnchor !== "undefined") {
+					listOfActions += " / " + deviceTypesGrammar[deviceType].actionAnchor;
+				}
+				
+				// translate the grammar of the device type
+				if (typeof deviceTypesGrammar[deviceType].i18nData !== "undefined") {
+					deviceTypesGrammar[deviceType].i18nData.forEach(function(l) {
+						var regexp = new RegExp(l.grammarAnchor, "g");
+						self.grammar = self.grammar.replace(regexp, $.i18n.t(l.i18nVar));
+					});
+				}
 			}
 		});
 
