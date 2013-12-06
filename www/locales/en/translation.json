@@ -202,6 +202,23 @@
 				"no-name"	: "Unnamed system clock"
 			},
 			"time-speed-label"	: "Time speed"
+		},
+		"mediaplayer"		: {
+			"name"		: {
+				"singular"	: "Media player",
+				"plural"	: "Media players"
+			},
+			"status"	: {
+				"playing"	: "Playing",
+				"stopped"	: "Stopped"
+			},
+			"action"	: {
+				"resume"	: "Resume",
+				"pause"		: "Pause",
+				"stop"		: "Stop",
+				"volume"	: "Volume",
+				"browse"	: "Browse"
+			}
 		}
 	},
 	"programs" : {
