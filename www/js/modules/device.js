@@ -772,7 +772,7 @@ define([
 							nodeAction.methodName = "setPink";\n\
 							break;\n\
 						case " {{whiteColor}} ":\n\
-							nodeAction.methodName = "setDefault";\n\
+							nodeAction.methodName = "setWhite";\n\
 							break;\n\
 						default:\n\
 					}\n\
@@ -997,14 +997,18 @@ define([
 					grammarAnchor	: "{{movie}}",
 					i18nVar			: "language.movie"
 				},
-				{
-					grammarAnchor	: "{{imgTable}}",
-					i18nVar			: "language.img-table"
-				}
+                               {
+                               grammarAnchor	: "{{imgTable}}",
+                               i18nVar			: "language.img-table"
+                               },
+                               {
+                               grammarAnchor	: "{{selectedMusic}}",
+                               i18nVar			: "language.selectedMusic"
+                               }
 			],
 			rules			: [
 				'actionMediaPlayer = playMediaPlayerAction / pauseMediaPlayerAction / stopMediaPlayerAction / setVolumeMediaPlayerAction',
-				'playMediaPlayerAction = "<span class=' + "'action-name'" + '> {{playMediaPlayerAction}} </span>" media:ML "<span class=' + "'action-name'" + '> {{complementMediaPlayerAction}} </span>" mediaPlayerName:M\n\
+				'playMediaPlayerAction = "<span class=' + "'action-name'" + '> {{playMediaPlayerAction}} </span>" media:music "<span class=' + "'action-name'" + '> {{complementMediaPlayerAction}} </span>" mediaPlayerName:M\n\
 				{\n\
 					var nodeAction = {};\n\
 					nodeAction.type = "NodeAction";\n\
@@ -1048,33 +1052,7 @@ define([
 					\n\
 					return nodeAction;\n\
 				}',
-				'M = {{listOfMediaPlayers}}',
-				'ML = alarmMusic / music / ringBellMailArrived / radio / movie / imgTable',
-				'alarmMusic = "<span class=' + "'value'" + '> {{alarmMusic}} </span>"\n\
-				{\n\
-					return "/Users/camillelenoir/Desktop/MediapourExperimenta/MusiqueReveil.mp3";\n\
-				}',
-				'music = "<span class=' + "'value'" + '> {{music}} </span>"\n\
-				{\n\
-					return "/Users/camillelenoir/Desktop/MediapourExperimenta/Musique.mp3";\n\
-				}',
-				'ringBellMailArrived = "<span class=' + "'value'" + '> {{ringBellMailArrived}} </span>"\n\
-				{\n\
-					return "/Users/camillelenoir/Desktop/MediapourExperimenta/SonnerieMailArrive.aac";\n\
-				}',
-				'radio = "<span class=' + "'value'" + '> {{radio}} </span>"\n\
-				{\n\
-					return "/Users/camillelenoir/Desktop/MediapourExperimenta/Radio.mp3";\n\
-				}',
-				'movie = "<span class=' + "'value'" + '> {{movie}} </span>"\n\
-				{\n\
-					return "/Users/camillelenoir/Desktop/MediapourExperimenta/Film.avi";\n\
-				}',
-				'imgTable = "<span class=' + "'value'" + '> {{imgTable}} </span>"\n\
-				{\n\
-					return "/Users/camillelenoir/Desktop/MediapourExperimenta/ImageATable.jpg";\n\
-				}'
-			]
+				'M = {{listOfMediaPlayers}}'			]
 		},
 		36	: {
 			eventAnchor		: "eventMediaBrowser",
