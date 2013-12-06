@@ -805,7 +805,7 @@ define([
 			} else if ($(e.currentTarget).hasClass("music")) {
 				var title = "Change music";
 				var content = $("<span>");
-				content.append("<button class='btn btn-primary browse-media' data-target='#media-browser-modal' data-toggle='modal'>Parcourir</button><span id='playurl' style='display:none'></span>");
+				content.append("<button class='btn btn-primary browse-media' data-target='#media-browser-modal' data-toggle='modal'>" + $.i18n.t("form.browse-button") + "</button><span id='playurl' style='display:none'></span>");
 				$(".media-button").addClass("replace-media").removeClass("valid-media");
 				
                 content.append("<button class='btn btn-danger delete-popover-button'>" + $.i18n.t("form.delete-button") + "</button>");
