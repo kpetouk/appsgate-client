@@ -524,8 +524,9 @@ define([
 			"keyup textarea"						: "onKeyUpTextarea",
 			"click .expected-elements > button.completion-button"		: "onClickCompletionButton",
 			"click .programInput > span"					: "onClickSourceElement",
+			"click button.browse-media"					: "onClickBrowseMedia",
 			"click button.valid-value"					: "onValidValueButton",
-			"click button.valid-music"					: "onValidMusicButton",
+			"click button.valid-media"					: "onValidMusicButton",
             "click button.deleted-elements"					: "onClickDeletedElements",
 			"click button.value-popover-button"				: "onClickValuePopoverButton",
 			"click button.valid-value-popover-button"			: "onClickValidValuePopoverButton",
@@ -834,11 +835,18 @@ define([
 			$(".programInput").append("<span class='value'>" + $(".expected-elements input").val() + "</span>");
 			this.compileProgram();
 		},
+		
 		onValidMusicButton:function() {
+		$("#media-browser-modal").modal("hide");
 			this.model.set("modified", true);
-            
-			$(".programInput").append("<span class='music' alt='http://url.fr/toto.fr'>Name</span>");
+			$(".programInput").append("<span class='music' url='"+$("#playurl").attr('url')+"'>" + $("#playurl").html() + "</span>");
 			this.compileProgram();
+		},
+		
+		onClickBrowseMedia:function() {
+			var possibleDevices = devices.where({ type : 31 });
+			var currentDevice = devices.get(possibleDevices[0].get("id"));
+			currentDevice.onBrowseMedia($("#playurl"));
 		},
 		
 		onClickDeletedElements:function() {
