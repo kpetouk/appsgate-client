@@ -100,7 +100,7 @@ define([
 			console.log("received", message.data);
 
 			if (jsonMessage.callId !== undefined) {
-				if (typeof jsonMessage.value === "string") {
+				if (typeof jsonMessage.value === "string" && jsonMessage.callId !== "mediaBrowser") {
 					jsonMessage.value = JSON.parse(jsonMessage.value);
 				}
 				dispatcher.trigger(jsonMessage.callId, jsonMessage.value);
