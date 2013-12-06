@@ -1638,7 +1638,8 @@ define([
 			
 			var xml_data
 			for(var i = 0; i<browsers.length; i++){
-				xml_data += "<item id='" + browsers[i].get("id") + "'>" + "<content><name>" + browsers[i].get("id") + "</name></content></item>";
+				var name = browsers[i].get("friendlyName") !== "" ? browsers[i].get("friendlyName") : browsers[i].get("id");
+				xml_data += "<item id='" + browsers[i].get("id") + "' rel='root'>" + "<content><name>" + name + "</name></content></item>";
 			}
 			
 						
@@ -1654,18 +1655,30 @@ define([
 						console.log("unique conflict");
 					}
 				},
-				"plugins" : [ "xml_data", "themes", "crrm", "ui", "unique"]
+				"types" : {
+					"types" : {
+						"media" : {
+							"valid_children" : "none",
+							"icon" : {
+								"image" : "styles/img/drive.png"
+							}
+						},
+					},
+				},
+				"plugins" : [ "xml_data", "themes", "types", "crrm", "ui", "unique"]
 			}).delegate("a", "click", function (event, data) {
 				event.preventDefault();
 				var target = "" + event.currentTarget.parentNode.id;
-			    if(typeof currentDevice === 'undefined' || (currentDevice !== devices.get(target) && devices.contains(target))) {
-					currentDevice = devices.get(event.currentTarget.parentNode.id);
+			    if(typeof currentDevice ==='undefined' || event.currentTarget.parentNode.getAttribute("rel") === "root") {
+					currentDevice = devices.get(target);
 					target = "0";
 				}
-				if(event.currentTarget.parentNode.type !== "media"){
+				if(event.currentTarget.parentNode.getAttribute("rel") !== "media"){
+					$("#media-browser-modal .valid-media").addClass("disabled");
 					currentDevice.remoteCall("browse", [{"type":"String", "value":target},{"type":"String", "value":"BrowseDirectChildren"},{"type":"String", "value":"*"},{"type":"long" , "value":"0"},{"type":"long" , "value":"0"},{"type":"String", "value":""}], "mediaBrowser");
 				}
 				else {
+					$("#media-browser-modal .valid-media").removeClass("disabled");
 					selectedMedia.text(event.currentTarget.parentNode.attributes.title.textContent);
 					selectedMedia.attr("title",event.currentTarget.parentNode.attributes.title.textContent);
 					selectedMedia.attr("url",event.currentTarget.parentNode.attributes.res.textContent);
@@ -1686,9 +1699,8 @@ define([
 						var cont = L_containers.item(i);
 						
 						// making sure to not create duplicates
-						//if( typeof $("#" + cont.getAttribute('id'))[0] === 'undefined') {
 						if($("#" + cont.getAttribute('id')).length === 0) {
-							$(".browser-container").jstree("create", $("#" + cont.getAttribute('parentID'))[0], "inside",{ "data" : { "title" :cont.querySelector('title').textContent}, "attr" : { "id" : cont.getAttribute('id'), "title" :cont.querySelector('title').textContent, "parent_id" : cont.getAttribute('parentID'), "type" : 'container' }},false,true);
+							$(".browser-container").jstree("create", $("#" + cont.getAttribute('parentID'))[0], "inside",{ "data" : { "title" :cont.querySelector('title').textContent}, "attr" : { "id" : cont.getAttribute('id'), "title" :cont.querySelector('title').textContent, "parent_id" : cont.getAttribute('parentID'), "rel" : 'container' }},false,true);
 						}
 					}
 					// attaching media items to the tree
@@ -1698,7 +1710,7 @@ define([
 						
 						// making sure to not create duplicates
 						if($("#" + item.getAttribute('parentID')).parent().has("#" + item.getAttribute('id')).length === 0) {
-							$(".browser-container").jstree("create", $("#" + item.getAttribute('parentID'))[0], "inside",{ "data" : { "title" :item.querySelector('title').textContent}, "attr" : { "id" : item.getAttribute('id'), "title" :item.querySelector('title').textContent, "parent_id" : item.getAttribute('parentID'), "type" : 'media', "res" : item.querySelector('res').textContent }},false,true);
+							$(".browser-container").jstree("create", $("#" + item.getAttribute('parentID'))[0], "inside",{ "data" : { "title" :item.querySelector('title').textContent}, "attr" : { "id" : item.getAttribute('id'), "title" :item.querySelector('title').textContent, "parent_id" : item.getAttribute('parentID'), "rel" : 'media', "res" : item.querySelector('res').textContent }},false,true);
 						}
 					}
 				}

@@ -79,7 +79,7 @@ define([
 		try {
 			this.parser = PEG.buildParser(this.grammar);
 		} catch (e) {
-			console.log(e);
+			console.warn(e);
 		}
 	}
 
