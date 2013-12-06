@@ -25,6 +25,9 @@ define([
 		// group the devices by types - if any for a type, insert its corresponding grammar and the list of devices
 		var devicesByType = devices.getDevicesByType();
 		_.keys(devicesByType).forEach(function(deviceType) {
+			if(deviceType === "36") {
+				return;
+			}
 			// append the rules to the grammar if there is rules to add
 			deviceTypesGrammar[deviceType].rules.forEach(function(r) {
 				self.grammar += r + "\n";

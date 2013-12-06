@@ -1054,12 +1054,6 @@ define([
 				}',
 				'M = {{listOfMediaPlayers}}'			]
 		},
-		36	: {
-			eventAnchor		: "eventMediaBrowser",
-			listAnchor		: "{{listOfMediaBrowsers}}",
-			rules			: [
-			]  
-		},
 		102		: {
 			eventAnchor		: "eventCoreMail",
 			actionAnchor	: "actionMail",
