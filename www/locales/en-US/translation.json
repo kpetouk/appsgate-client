@@ -210,9 +210,11 @@
 			},
 			"status"	: {
 				"playing"	: "Playing",
-				"stopped"	: "Stopped"
+				"stopped"	: "Stopped",
+				"selected"	: "Please select a media"
 			},
 			"action"	: {
+				"play"		: "Play",
 				"resume"	: "Resume",
 				"pause"		: "Pause",
 				"stop"		: "Stop",

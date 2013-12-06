@@ -1591,6 +1591,18 @@ define([
 		/**
 		 * Send a message to the backend to play the current media
 		 */
+		sendPlay:function() {
+			var selectedMedia = $("#selectedMedia");
+			var url = selectedMedia.attr("url");
+			if(typeof url !== 'undefined') {
+				console.log("sending play with " + url);
+				this.remoteCall("play", [{"type":"String", "value":url}], "mediaplayer");
+			}
+		},
+		
+		/**
+		 * Send a message to the backend to play the current media
+		 */
 		sendResume:function() {
 			this.remoteCall("play", [], "mediaplayer");
 		},
@@ -2076,6 +2088,7 @@ define([
             "click button.blink-lamp-button"				: "onBlinkLampButton",
 			"click button.toggle-plug-button"				: "onTogglePlugButton",
 			"click button.toggle-actuator-button"			: "onToggleActuatorButton",
+			"click button.btn-media-play"					: "onPlayMedia",
 			"click button.btn-media-resume"					: "onResumeMedia",
 			"click button.btn-media-pause"					: "onPauseMedia",
 			"click button.btn-media-stop"					: "onStopMedia",
@@ -2208,6 +2221,13 @@ define([
 		/**
 		 * Called when resume button is pressed and the displayed device is a media player
 		 */
+		onPlayMedia:function() {
+			this.model.sendPlay();
+		},
+		
+		/**
+		 * Called when resume button is pressed and the displayed device is a media player
+		 */
 		onResumeMedia:function() {
 			this.model.sendResume();
 		},
@@ -2233,7 +2253,9 @@ define([
 			this.model.setVolume();
 		},
 		
-		
+		/**
+		 * Called when browse button is pressed, displays a tree of available media
+		 */
 		onBrowseMedia:function(e) {
 			
 			this.model.onBrowseMedia($("#selectedMedia"));

@@ -205,19 +205,21 @@
 		},
 		"mediaplayer"		: {
 			"name"		: {
-				"singular"	: "Media player",
-				"plural"	: "Media players"
+				"singular"	: "Lecteur multimédia",
+				"plural"	: "Lecteurs multimédia"
 			},
 			"status"	: {
-				"playing"	: "Playing",
-				"stopped"	: "Stopped"
+				"playing"	: "Lecture en cours",
+				"stopped"	: "Arrêté",
+				"selected"	: "Veuillez choisir un média"
 			},
 			"action"	: {
-				"resume"	: "Resume",
+				"play"		: "Lancer",
+				"resume"	: "Reprendre",
 				"pause"		: "Pause",
-				"stop"		: "Stop",
+				"stop"		: "Arrêter",
 				"volume"	: "Volume",
-				"browse"	: "Browse"
+				"browse"	: "Parcourir"
 			}
 		}
 	},

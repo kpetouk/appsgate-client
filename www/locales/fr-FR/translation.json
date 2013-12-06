@@ -210,9 +210,11 @@
 			},
 			"status"	: {
 				"playing"	: "Lecture en cours",
-				"stopped"	: "Arrêté"
+				"stopped"	: "Arrêté",
+				"selected"	: "Veuillez choisir un média"
 			},
 			"action"	: {
+				"play"		: "Lancer",
 				"resume"	: "Reprendre",
 				"pause"		: "Pause",
 				"stop"		: "Arrêter",
