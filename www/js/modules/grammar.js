@@ -25,7 +25,7 @@ define([
 		// group the devices by types - if any for a type, insert its corresponding grammar and the list of devices
 		var devicesByType = devices.getDevicesByType();
 		_.keys(devicesByType).forEach(function(deviceType) {
-			// append the rules to the grammar
+			// append the rules to the grammar if there is rules to add
 			deviceTypesGrammar[deviceType].rules.forEach(function(r) {
 				self.grammar += r + "\n";
 			});
@@ -65,11 +65,12 @@ define([
 
 		// insert the list of actions
 		this.grammar = this.grammar.replace(/{{listOfActions}}/g, listOfActions);
+       
+       // insert the list of programs
+       this.insertListOfDevices("{{listOfPrograms}}", programs.models, "program");
 
-		// insert the list of programs
-		this.insertListOfDevices("{{listOfPrograms}}", programs.models, "program");
-		
-		// translate the grammar
+       
+        // translate the grammar
 		this.translateRootGrammar();
 
 		// build the parser from the grammar

@@ -318,6 +318,7 @@
 		"ring-bell-mail-arrived"					: "ringbell new mail arrived",
 		"radio"										: "radio",
 		"movie"										: "movie",
+		"selectedMusic"								: "music",
 		"img-table"									: "image 'dinner's ready!'",
 		
 		"received-mail-event"						: "a mail arrives",

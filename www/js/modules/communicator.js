@@ -124,7 +124,7 @@ define([
 		 * @param targetType Parameter used by the server to route the message. 0: AbstractObject, 1: ApAM component
 		 */
 		sendMessage:function(message) {
-			console.log("sending", message);
+			console.log("sending", JSON.stringify(message));
 			this.webSocket.send(JSON.stringify(message));
 		},
 
