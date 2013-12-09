@@ -1495,9 +1495,13 @@ define([
 				this.intervalLocalClockValue = setInterval(self.updateClockValue, (1 / self.get("flowRate")) * 60000);
 			});
 			
+			this.on("change:ClockSet", function() {
+				self.synchronizeCoreClock();
+			});
+			
 			// synchronize the core clock with the server every 10 minutes
 			dispatcher.on("systemCurrentTime", function(timeInMillis) {
-				self.moment = moment(timeInMillis);
+				self.set("moment", Moment(parseInt(timeInMillis)));
 			});
 			
 			// bind the method to this model to avoid this keyword pointing to the window object for the callback on setInterval
