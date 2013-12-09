@@ -1495,6 +1495,7 @@ define([
 				this.intervalLocalClockValue = setInterval(self.updateClockValue, (1 / self.get("flowRate")) * 60000);
 			});
 			
+			// when the ClockSet changes, resynchornize with the server
 			this.on("change:ClockSet", function() {
 				self.synchronizeCoreClock();
 			});
