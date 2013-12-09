@@ -1832,7 +1832,7 @@ define([
 					this.add(new Device.Mail(device));
 					break;
 				default:
-					console.log("unknown type", device, typeof device.type);
+					console.log("unknown type", device.type, device);
 					break;
 			}
 			
