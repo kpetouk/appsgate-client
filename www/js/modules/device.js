@@ -1591,6 +1591,21 @@ define([
 		 */
 		initialize:function() {
 			Device.MediaPlayer.__super__.initialize.apply(this, arguments);
+			
+			// setting default friendly name if none exists
+			if(this.get("name") === ""){
+				this.set("name", this.get("friendlyName"));
+				this.save();
+			}
+			
+			// listening for volume value
+			dispatcher.on(this.get("id") + ":volume", function(volume) {
+				_.defer(function(){
+					$( ".volume-slider" ).slider({
+						value: volume,
+					});
+				});
+			});
 		},
 				
 		/**
@@ -2542,18 +2557,23 @@ define([
 							places: places,
 							deviceDetails: this.tplMediaPlayer
 						}));
+						
+						// initialize the volume slider
 						_.defer(function(){
 							$( ".volume-slider" ).slider({
 								range: "min",
 								min: 0,
 								max: 100,
-								value: 60,
+								value: 100,
 								stop: function( event, ui ) {
 									self.model.sendVolume($( ".volume-slider" ).slider( "value" ));
 								}
 							});
 						});
-					
+						
+						// requesting current volume level
+						this.model.remoteCall("getVolume", [], this.model.get("id") + ":volume");
+						
 					// resize the panel
 					if(this.model.get("type") != 21){
 						resizeDiv($(this.$el.find(".list-group")[0]));
