@@ -16,7 +16,7 @@
 /*
  * Program
  */
-pg = h:header blanks d:declarations blanks i:insts blanks
+pg = h:header _ d:declarations _ i:insts _
 {
   p={};
   if (h['programname']) {
@@ -51,12 +51,12 @@ header=[];
 
 headerInst = daemonInst / hInst
 
-hInst = t:str blanks ":" blanks v:str "\n" 
+hInst = t:str _ ":" _ v:str "\n" 
 {
   return {key:t, value:v};
 }
 
-daemonInst = "daemon" blanks ":" blanks v:bool "\n"
+daemonInst = "daemon" _ ":" _ v:bool "\n"
 {
   return {key:"daemon", value:v};
 }
@@ -70,16 +70,19 @@ declarations = v:var_decl*
 
 var_decl = alias / var_comp
 
-alias = v:var_name blanks "=" blanks o:object blanks
+alias = v:var_name _ "=" _ o:object _
 {
   o.var_name = v;
   variables[v] = o;
-  return variables[v];
+  return o;
 }
 
-var_comp = v:var_name blanks "=" blanks "[" blanks o:var_list blanks "]"
+var_comp = v:var_name _ "=" _ "[" _ o:var_list _ "]"
 {
-  return { type:'list', id:v, var_name:v, list:o};
+  
+  obj = { type:'list', id:v, var_name:v, list:o};
+  variables[v] = obj;
+  return obj;
 }
 
 var_list = v:var_name sep o:var_list 
@@ -107,7 +110,7 @@ insts = i:inst sep is:insts
 {
   return [i];
 }
-  / "[" blanks i:insts blanks "]"
+  / "[" _ i:insts _ "]"
 {
   return i;
 }
@@ -160,7 +163,7 @@ if = "if"i b:relBool sepTHEN t:insts sepELSE f:insts
   return {type:'NodeIf',expBool: [[ b]],seqRulesTrue: [[]],seqRulesFalse:[[f]]};
 }
 
-relBool = blanks "(" left:operand blanks o:operator blanks right:operand ")"
+relBool = _ "(" left:operand _ o:operator _ right:operand ")"
 {
   return {type:'NodeRelationBool',operator:o,leftOperand:left,rightOperand:right};
 }
@@ -228,11 +231,10 @@ bool = "true"i/"false"i
  * Separators
  */
 
-blanks = [\ \n]*
-sep = ([\ ]*[\n])+ / blanks ";" blanks / blanks "," blanks
+sep = ([\ ]*[\n])+ / _ ";" _ / _ "," _
 
-sepTHEN = blanks "=>" blanks / blanks "then"i blanks
-sepELSE = blanks "else"i blanks
+sepTHEN = _ "=>" _ / _ "then"i _
+sepELSE = _ "else"i _
 
 /* JSON parser based on the grammar described at http://json.org/. */
 
