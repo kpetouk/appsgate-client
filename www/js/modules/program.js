@@ -83,7 +83,7 @@ define([
 				seqParameters : [],
 				author : "",
 				target : "",
-				daemon : "true",
+				daemon : "false",
 				seqDefinitions : [],
 				seqRules : [
 					[]
@@ -180,7 +180,7 @@ define([
 			return {
 				id				: this.get("id"),
 				runningState	: this.get("runningState"),
-				modified	: this.get("modified"),
+				modified         : this.get("modified"),
 				source			: this.get("source"),
 				userInputSource	: this.get("userInputSource")
 			}
@@ -972,68 +972,21 @@ define([
 			var self = this;
 
 			// build the beginning of the user input source to be given to the parser
-			var programInput = this.model.get("name") + " " + $.i18n.t("language.written-by") + " Bob pour Alice ";
-			programInput += $(".programInput").html();
-			programInput = programInput.replace(/"/g, "'");
-			
-			// clear the error span
-			$(".expected-elements").html("");
-
+			var programInput = $("#programRaw").val();
+            
 			try {
 				var ast = grammar.parse(programInput);
 				$(".alert-danger").addClass("hide");
 				$(".alert-success").removeClass("hide");
 
 				this.model.set("source", ast);
-				this.model.set("userInputSource", $(".programInput").html());
+				this.model.set("userInputSource", programInput);
 
-				// include a syntax error to the program input to get the next possibilities if the user wants to add rules
-				try {
-					grammar.parse(programInput + " ");
-				} catch(e) {
-					e.expected.forEach(function(nextPossibility) {
-						if ($("button.deleted-elements").html().replace(/"/g, "'") === nextPossibility.replace(/"/g, "")) {
-							$("button.deleted-elements").addClass("hidden");
-						}
-						if (nextPossibility.indexOf("input") === -1) {
-							$(".expected-elements").append("<button class='btn btn-default completion-button'>" + nextPossibility.replace(/"/g, "").replace(/\\/g, "") + "</button>&nbsp;");
-						} else {
-							$(".expected-elements").append(nextPossibility);
-						}
-					});
-				}
 			} catch(e) {
             	if ( typeof(e.expected) !== 'undefined') {
             
                     $(".alert-danger").removeClass("hide");
                     $(".alert-success").addClass("hide");
-                    if (e.expected.length === 1) {
-                        if ($("button.deleted-elements").html().replace(/" /g, "'") === e.expected[0]) {
-                            $("button.deleted-elements").addClass("hidden");
-                        }
-                        
-                        if (e.expected[0] === $.i18n.t("language.space")) {
-                            $(".programInput").append(" ");
-                            this.compileProgram();
-                        } else if (e.expected[0].indexOf("input") === -1) {
-                            $(".programInput").append(e.expected[0].replace(/"/g, ""));
-                            this.compileProgram();
-                        } else {
-                            $(".expected-elements").html(e.expected[0]);
-                        }
-                    } else {
-                        e.expected.forEach(function(nextPossibility) {
-                            if ($("button.deleted-elements").html().replace(/"/g, "'") === nextPossibility.replace(/"/g, "")) {
-                                $("button.deleted-elements").addClass("hidden");
-                            }
-                            
-                            if (nextPossibility.indexOf("input") === -1) {
-                                $(".expected-elements").append("<button class='btn btn-default completion-button'>" + nextPossibility.replace(/"/g, "").replace(/\\/g, "") + "</button>&nbsp;");
-                            } else {
-                                $(".expected-elements").append(nextPossibility);
-                            }
-                        });
-                    }
                 }
 			}
 			
@@ -1042,20 +995,6 @@ define([
 			}
 			
 			// check if it is possible to append the deleted elements to the program
-			if (!$("button.deleted-elements").hasClass("hidden")) {
-				try {
-					grammar.parse(programInput + $("button.deleted-elements").html().replace(/"/g, "'"));
-					$("button.deleted-elements")
-							.removeClass("disabled")
-							.css("text-decoration", "none")
-							.css("font-style", "normal");
-				} catch (e) {
-					$("button.deleted-elements")
-							.addClass("disabled")
-							.css("text-decoration", "line-through")
-							.css("font-style", "italic");
-				}
-			}
 
 			// fix the program input size to be able to scroll through it
 			resizeDiv($(self.$el.find(".editorWorkspace")[0]));

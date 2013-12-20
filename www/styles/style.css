@@ -140,3 +140,9 @@ body {
   -webkit-border-radius: 100px;
 }
 
+.programInput>textarea {
+ font-family: monospace;
+ font-size:0.8em;
+
+
+}
