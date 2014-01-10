@@ -289,6 +289,9 @@
 		"is-assembled-contact-status"				: "is assembled",
 		"is-disassembled-contact-status"			: "is disassembled",
 		
+		"granted-ARD-event"                         : "someone has been granted on",
+		"not-granted-ARD-event"                     : "someone has been rejected on",
+
 		"inserted-keycard-reader-event"				: "we insert a card in",
 		"removed-keycard-reader-event"				: "we remove a card from",
 		"card-inserted-keycard-reader-status"		: "a card is inserted in",

@@ -450,6 +450,51 @@ define([
 				"KCR = {{listOfKeyCardReaders}}"
 			]
 		},
+        		5	: {
+			eventAnchor		: "eventARD",
+			statusAnchor	: "",
+			listAnchor		: "{{listOfARD}}",
+			i18nData		: [
+				{
+					grammarAnchor	: "{{GrantedARD}}",
+					i18nVar			: "language.granted-ARD-event"
+				},
+                {
+					grammarAnchor	: "{{NotGrantedARD}}",
+					i18nVar			: "language.not-granted-ARD-event"
+				}
+                            
+			],
+       
+
+			rules			: [
+				"eventARD = grantedARDEvent / notGrantedARDEvent",
+				'grantedARDEvent = "<span class=' + "'event'" + '> {{GrantedARD}} </span>" ARDName:ARD\n\
+				{\n\
+					var nodeEvent = {};\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.findWhere({ name : $(ARDName).text() }).get("id");\n\
+					nodeEvent.eventName = "GRANTED";\n\
+					nodeEvent.eventValue = "true";\n\
+					\n\
+					return nodeEvent;\n\
+				}',
+				'notGrantedARDEvent = "<span class=' + "'event'" + '> {{NotGrantedARD}} </span>" ARDName:ARD \n\
+				{\n\
+					var nodeEvent = {};\n\
+					nodeEvent.type = "NodeEvent";\n\
+					nodeEvent.sourceType = "device";\n\
+					nodeEvent.sourceId = devices.findWhere({ name : $(ARDName).text() }).get("id");\n\
+					nodeEvent.eventName = "NOTGRANTED";\n\
+					nodeEvent.eventValue = "true";\n\
+					\n\
+					return nodeEvent;\n\
+				}',
+				"ARD = {{listOfARD}}"
+			]
+		},
+
 		6	: {
 			eventAnchor		: "eventPlug",
 			statusAnchor	: "statusPlug",
@@ -1375,6 +1420,17 @@ define([
 			Device.KeyCardSensor.__super__.initialize.apply(this, arguments);
 		}
 	});
+	/**
+	 * @class Device.ARD
+	 */
+	Device.ARD = Device.Model.extend({
+		/**
+		 * @constructor
+		 */
+		initialize: function() {
+			Device.ARD.__super__.initialize.apply(this, arguments);
+		}
+	});
 
 	/**
 	 * @class Device.ContactSensor
@@ -1840,6 +1896,9 @@ define([
 				case 4:
 					this.add(new Device.KeyCardSensor(device));
 					break;
+				case 5:
+					this.add(new Device.ARD(device));
+					break;
 				case 6:
 					this.add(new Device.Plug(device));
 					break;
@@ -1911,6 +1970,13 @@ define([
 		 */
 		getKeyCardReaders:function() {
 			return devices.where({ type : 4 });
+		},
+		
+		/**
+		 * @return Array of the key-card readers
+		 */
+		getARD:function() {
+			return devices.where({ type : 5 });
 		},
 		
 		/**

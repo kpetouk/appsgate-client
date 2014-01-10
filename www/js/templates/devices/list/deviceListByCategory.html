@@ -31,9 +31,9 @@
 		<% } %>
 	<% } else if (type === "5") { %>
 		<% if (devices.length === 1) { %>
-			<span data-i18n="devices.movement.name.singular"></span>
+			<span data-i18n="devices.keycard-reader.name.plural"></span>
 		<% } else { %>
-			<span data-i18n="devices.movement.name.plural"></span>
+			<span data-i18n="devices.keycard-reader.name.plural"></span>
 		<% } %>
 	<% } else if (type === "6") { %>
 		<% if (devices.length === 1) { %>
@@ -137,6 +137,12 @@
 						<span class="label label-info" data-i18n="devices.contact.value.opened"></span>
 					<% } %>
 				<% } else if (type === "4") { %>
+					<% if (s.get("inserted") === "true") { %>
+						<span class="label label-info" data-i18n="devices.keycard-reader.value.inserted"></span>
+					<% } else { %>
+						<span class="label label-info" data-i18n="devices.keycard-reader.value.not-inserted"></span>
+					<% } %>
+				<% } else if (type === "5") { %>
 					<% if (s.get("inserted") === "true") { %>
 						<span class="label label-info" data-i18n="devices.keycard-reader.value.inserted"></span>
 					<% } else { %>
