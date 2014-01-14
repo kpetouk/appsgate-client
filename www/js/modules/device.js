@@ -15,6 +15,7 @@ define([
 	"text!templates/devices/details/contact.html",
 	"text!templates/devices/details/illumination.html",
 	"text!templates/devices/details/keyCard.html",
+	"text!templates/devices/details/ARD.html",
 	"text!templates/devices/details/switch.html",
 	"text!templates/devices/details/actuator.html",
 	"text!templates/devices/details/temperature.html",
@@ -26,7 +27,7 @@ define([
 ], function($, jqueryui, _, Backbone, Grammar, Raphael, Moment, JsTree,
 		deviceMenuTemplate, deviceContainerMenuTemplate, coreClockContainerMenuTemplate,
 		deviceListByCategoryTemplate, deviceDetailsTemplate, contactDetailTemplate, illuminationDetailTemplate,
-		keyCardDetailTemplate, switchDetailTemplate, actuatorDetailTemplate, temperatureDetailTemplate, plugDetailTemplate, phillipsHueDetailTemplate,
+		keyCardDetailTemplate, ARDDetailTemplate, switchDetailTemplate, actuatorDetailTemplate, temperatureDetailTemplate, plugDetailTemplate, phillipsHueDetailTemplate,
 		coreClockDetailTemplate, mediaPlayerTemplate) {
 	
 	// initialize the module
@@ -1975,7 +1976,7 @@ define([
 		/**
 		 * @return Array of the key-card readers
 		 */
-		getARD:function() {
+		getARDLock:function() {
 			return devices.where({ type : 5 });
 		},
 		
@@ -2187,6 +2188,7 @@ define([
 		tplContact: _.template(contactDetailTemplate),
 		tplIllumination: _.template(illuminationDetailTemplate),
 		tplKeyCard: _.template(keyCardDetailTemplate),
+		tplARD: _.template(ARDDetailTemplate),
 		tplSwitch: _.template(switchDetailTemplate),
 		tplActuator: _.template(actuatorDetailTemplate),
 		tplTemperature: _.template(temperatureDetailTemplate),
@@ -2570,6 +2572,15 @@ define([
 							sensorType: $.i18n.t("devices.keycard-reader.name.singular"),
 							places: places,
 							deviceDetails: this.tplKeyCard
+						}));
+						break;
+					case 5: // ARD lock
+						this.$el.html(this.template({
+							device: this.model,
+							sensorImg: "styles/img/sensors/keycard.jpg",
+							sensorType: $.i18n.t("devices.ard.name.singular"),
+							places: places,
+							deviceDetails: this.tplARD
 						}));
 						break;
 

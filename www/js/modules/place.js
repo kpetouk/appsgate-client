@@ -209,9 +209,9 @@ define([
 		},
 		
 		/**
-		 * @return Array of movement sensors in the place
+		 * @return Array of ARD in the place
 		 */
-		getMovementSensors:function() {
+		getARDLock:function() {
 			return this.getTypeSensors(5);
 		},
 		

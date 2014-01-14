@@ -162,10 +162,10 @@
 				"not-inserted"	: "Pas de carte"
 			}
 		},
-		"movement"			: {
+		"ard"			: {
 			"name"	: {
-				"singular"	: "Capteur de mouvement",
-				"plural"	: "Capteurs de mouvement"
+				"singular"	: "Porte ARD",
+				"plural"	: "Portes ARD"
 			}
 		},
 		"plug"				: {

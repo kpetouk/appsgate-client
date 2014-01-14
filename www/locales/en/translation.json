@@ -162,10 +162,10 @@
 				"not-inserted"	: "No card"
 			}
 		},
-		"movement"			: {
+		"ard"			: {
 			"name"	: {
-				"singular"	: "Movement sensor",
-				"plural"	: "Movement sensors"
+				"singular"	: "ARD lock",
+				"plural"	: "ARD locks"
 			}
 		},
 		"plug"				: {

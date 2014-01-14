@@ -263,23 +263,23 @@
 </div>
 <% } %>
 
-<!-- movement sensors -->
-<% if (place.getMovementSensors().length > 0) { %>
+<!-- ARD -->
+<% if (place.getARDLock().length > 0) { %>
 <div class="panel panel-default">
 	<div class="panel-heading">
 		<h3 class="panel-title">
-			<% if (place.getMovementSensors().length === 1) { %>
-				<span data-i18n="devices.movement.name.singular"></span>
+			<% if (place.getARDLock().length === 1) { %>
+				<span data-i18n="devices.ard.name.singular"></span>
 			<% } else { %>
-				<span data-i18n="devices.movement.name.plural"></span>
+				<span data-i18n="devices.ard.name.plural"></span>
 			<% } %>
 			<span class="badge pull-right">
-				<%= place.getMovementSensors().length %>
+				<%= place.getARDLock().length %>
 			</span>
 		</h3>
 	</div>
 	<div class="list-group">
-		<% place.getMovementSensors().forEach(function(s) { %>
+		<% place.getARDLock().forEach(function(s) { %>
 			<a href="#devices/<%= s.get('id') %>" class="list-group-item">
 				<% if (s.get("name") !== "") { %>
 					<%= s.get("name") %>

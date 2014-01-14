@@ -87,16 +87,16 @@
 			</li>
 			<% } %>
 			
-			<!-- movement sensors -->
-			<% if (place.getMovementSensors().length > 0) { %>
+			<!-- ard sensors -->
+			<% if (place.getARDLock().length > 0) { %>
 			<li>
-				<% if (place.getMovementSensors().length === 1) { %>
-					<span data-i18n="devices.movement.name.singular"></span>
+				<% if (place.getARDLock().length === 1) { %>
+					<span data-i18n="devices.ard.name.singular"></span>
 				<% } else { %>
-					<span data-i18n="devices.movement.name.plural"></span>
+					<span data-i18n="devices.ard.name.plural"></span>
 				<% } %>
 				<span class="pull-right badge">
-					<%= place.getMovementSensors().length %>
+					<%= place.getARDLock().length %>
 				</span>
 			</li>
 			<% } %>
