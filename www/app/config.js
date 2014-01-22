@@ -1,7 +1,7 @@
 // This is the runtime configuration file.  It complements the Gruntfile.js by
 // supplementing shared properties.
 require.config({
-  paths: {
+    paths: {
     // Make vendor easier to access.
     "vendor": "../vendor",
 
@@ -11,10 +11,35 @@ require.config({
     // Opt for Lo-Dash Underscore compatibility build over Underscore.
     "underscore": "../vendor/bower/lodash/dist/lodash.underscore",
 
-    // Map remaining vendor dependencies.
+    // JQuery and Backbone
     "jquery": "../vendor/bower/jquery/jquery",
-    "backbone": "../vendor/bower/backbone/backbone"
+    "backbone": "../vendor/bower/backbone/backbone",
+
+	// RequireJS plugins
+    "text": "../vendor/bower/requirejs-text/text",
+    "domReady": "../vendor/bower/requirejs-domready/domReady",
+		"i18n": "../vendor/bower/requirejs-i18n/i18n",
+
+	// Snap.Svg
+	"snapsvg": "../vendor/bower/Snap.svg/dist/snap.svg",
+
+    // Modules
+    "modules": "../app/modules",
+	
+	// Collections
+	"collections": "../app/modules/collections",
+	
+	// Models
+	"models": "../app/modules/models",
+	
+	// Views
+	"views": "../app/modules/views",
+	
+	// Templates
+	"templates": "../app/templates"
+
   },
+
 
   shim: {
     // This is required to ensure Backbone works as expected within the AMD
@@ -28,3 +53,13 @@ require.config({
     }
   }
 });
+
+// Setting up AppsGate globals.
+    if (!window.AppsGate) window.AppsGate = {};
+    if (!AppsGate.App) AppsGate.App = {};
+    if (!AppsGate.Universe) AppsGate.Universe = {};
+    if (!AppsGate.Place) AppsGate.Place = {};
+    if (!AppsGate.Device) AppsGate.Device = {};
+    if (!AppsGate.Program) AppsGate.Program = {};
+
+

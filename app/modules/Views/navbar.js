@@ -2,16 +2,16 @@ define([
   'jquery',
   'underscore',
   'backbone',
-  'text!templates/home/home.html',
-], function($, _, Backbone, homeTemplate) {
+  'text!templates/home/navbar.html',
+], function($, _, Backbone, navbarTemplate) {
  
   // initialize the views array
-  if (typeof AppsGate.Universe.Views === "undefined") AppsGate.Universe.Views = {};
+  if (typeof AppsGate.Views === "undefined") AppsGate.Views = {};
   
   // home view
-  AppsGate.Universe.Views.List = Backbone.View.extend({
+  AppsGate.Views.NavBar = Backbone.View.extend({
     el: $("#main"),
-    template: _.template(homeTemplate),
+    template: _.template(navbarTemplate),
 
     // render the homepage of the application
     render:function() {
@@ -20,5 +20,5 @@ define([
     }
   });
 
-  return AppsGate.Universe.Views.List;
+  return AppsGate.Views.NavBar;
 });

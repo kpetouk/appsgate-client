@@ -30,72 +30,72 @@ define([
             coreClockDetailTemplate, mediaPlayerTemplate) {
 
 
-/**
- * Resizes the div to the maximum displayable size on the screen
- */     
-function resizeDiv(jqNode){
-  if(typeof jqNode !== "undefined"){
-    jqNode[0].classList.add("div-scrollable");
-    setTimeout(function(){
-        var divSize = window.innerHeight-(jqNode.offset().top + jqNode.outerHeight(false) + 20 - jqNode.innerHeight());
+  /**
+   * Resizes the div to the maximum displayable size on the screen
+   */     
+              function resizeDiv(jqNode){
+                if(typeof jqNode !== "undefined"){
+                  jqNode[0].classList.add("div-scrollable");
+                  setTimeout(function(){
+                    var divSize = window.innerHeight-(jqNode.offset().top + jqNode.outerHeight(false) + 20 - jqNode.innerHeight());
 
-        // if there isn't enough space to display the whole div, we adjust its size to the screen
-        if(divSize<jqNode.outerHeight(true)){   
-        jqNode.height(divSize);
-        }
+                    // if there isn't enough space to display the whole div, we adjust its size to the screen
+                    if(divSize<jqNode.outerHeight(true)){   
+                      jqNode.height(divSize);
+                    }
 
-        // if there is an active element, make it visible
-        var activeItem = jqNode.children(".list-group-item.active")[0];
-        if(typeof activeItem !== "undefined"){
-        jqNode.scrollTop((activeItem.offsetTop)-($(".list-group-item")[1].offsetTop));
-        }
-        // otherwise display the top of the list
-        else{
-        jqNode.scrollTop(0);
-        }
-        }, 0);
-  }
-}
+                    // if there is an active element, make it visible
+                    var activeItem = jqNode.children(".list-group-item.active")[0];
+                    if(typeof activeItem !== "undefined"){
+                      jqNode.scrollTop((activeItem.offsetTop)-($(".list-group-item")[1].offsetTop));
+                    }
+                    // otherwise display the top of the list
+                    else{
+                      jqNode.scrollTop(0);
+                    }
+                  }, 0);
+                }
+              }
 
-   
-/**
- * Namespace for the views
- */
-Device.Views = {};
 
-/**
- * Render the side menu for the devices
- */
-Device.Views.Menu = Backbone.View.extend({
-tpl                                             : _.template(deviceMenuTemplate),
-tplDeviceContainer              : _.template(deviceContainerMenuTemplate),
-tplCoreClockContainer   : _.template(coreClockContainerMenuTemplate),
+              /**
+               * Namespace for the views
+               */
+              Device.Views = {};
 
-/**
- * Bind events of the DOM elements from the view to their callback
- */
-events: {
-"click a.list-group-item"       : "updateSideMenu"
-},
+              /**
+               * Render the side menu for the devices
+               */
+              Device.Views.Menu = Backbone.View.extend({
+                tpl                                             : _.template(deviceMenuTemplate),
+                tplDeviceContainer              : _.template(deviceContainerMenuTemplate),
+                tplCoreClockContainer   : _.template(coreClockContainerMenuTemplate),
 
-/**
- * Listen to the updates on devices and update if any
- * 
- * @constructor
- */
-initialize:function() {
-this.listenTo(devices, "add", this.render);
-this.listenTo(devices, "change", this.onChangedDevice);
-this.listenTo(devices, "remove", this.render);
-           },
+                /**
+                 * Bind events of the DOM elements from the view to their callback
+                 */
+                events: {
+                  "click a.list-group-item"       : "updateSideMenu"
+                },
 
-           /**
-            * Method called when a device has changed
-            * @param model Model that changed, Device in that cas
-            * @param collection Collection that holds the changed model
-            * @param options Options given with the change event   
-            */
-onChangedDevice:function(model, options) {
+                /**
+                 * Listen to the updates on devices and update if any
+                 * 
+                 * @constructor
+                 */
+                initialize:function() {
+                  this.listenTo(devices, "add", this.render);
+                  this.listenTo(devices, "change", this.onChangedDevice);
+                  this.listenTo(devices, "remove", this.render);
+                },
+
+                /**
+                 * Method called when a device has changed
+                 * @param model Model that changed, Device in that cas
+                 * @param collection Collection that holds the changed model
+                 * @param options Options given with the change event   
+                 */
+                onChangedDevice:function(model, options) {
                   // a device has changed
                   // if it's the clock, we refresh the clock only
                   if(typeof options !== "undefined" && options.clockRefresh){
@@ -112,254 +112,254 @@ onChangedDevice:function(model, options) {
                  * 
                  * @param e JS click event
                  */
-updateSideMenu:function(e) {
-  _.forEach($("a.list-group-item"), function(item) {
-    $(item).removeClass("active");
-  });
+                updateSideMenu:function(e) {
+                  _.forEach($("a.list-group-item"), function(item) {
+                    $(item).removeClass("active");
+                  });
 
-  if (typeof e !== "undefined") {
-    $(e.currentTarget).addClass("active");
-  } else {
-    if (Backbone.history.fragment === "devices") {
-      $($(".navbar li")[0]).addClass("active");
-    } else if (Backbone.history.fragment.split("/")[1] === "types") {
-      $("#side-" + Backbone.history.fragment.split("/")[2]).addClass("active");
-    } else {
-      var deviceId = Backbone.history.fragment.split("/")[1];
-      $("#side-" + devices.get(deviceId).get("type")).addClass("active");
-    }
-  }
-},
+                  if (typeof e !== "undefined") {
+                    $(e.currentTarget).addClass("active");
+                  } else {
+                    if (Backbone.history.fragment === "devices") {
+                      $($(".navbar li")[0]).addClass("active");
+                    } else if (Backbone.history.fragment.split("/")[1] === "types") {
+                      $("#side-" + Backbone.history.fragment.split("/")[2]).addClass("active");
+                    } else {
+                      var deviceId = Backbone.history.fragment.split("/")[1];
+                      $("#side-" + devices.get(deviceId).get("type")).addClass("active");
+                    }
+                  }
+                },
 
-/**
- * Refreshes the time display without rerendering the whole screen
- */
-refreshClockDisplay:function() {
+                               /**
+                                * Refreshes the time display without rerendering the whole screen
+                                */
+                refreshClockDisplay:function() {
 
-                      //remove existing node
-                      $(this.$el.find(".list-group")[0]).children().remove();
+                  //remove existing node
+                  $(this.$el.find(".list-group")[0]).children().remove();
 
-                      //refresh the clock
-                      $(this.$el.find(".list-group")[0]).append(this.tplCoreClockContainer({
-device  : devices.getCoreClock(),
-active  : Backbone.history.fragment === "devices/" + devices.getCoreClock().get("id") ? true : false
-}));
+                  //refresh the clock
+                  $(this.$el.find(".list-group")[0]).append(this.tplCoreClockContainer({
+                    device  : devices.getCoreClock(),
+                    active  : Backbone.history.fragment === "devices/" + devices.getCoreClock().get("id") ? true : false
+                  }));
 
-},
+                },
 
-  /**
-   * Render the side menu
-   */
-render:function() {
-         if (!appRouter.isModalShown) {
-           var self = this;
+                /**
+                 * Render the side menu
+                 */
+                render:function() {
+                  if (!appRouter.isModalShown) {
+                    var self = this;
 
-           // initialize the content
-           this.$el.html(this.tpl());
+                    // initialize the content
+                    this.$el.html(this.tpl());
 
-           // display the clock
-           $(this.$el.find(".list-group")[0]).append(this.tplCoreClockContainer({
-device  : devices.getCoreClock(),
-active  : Backbone.history.fragment === "devices/" + devices.getCoreClock().get("id") ? true : false
-}));
+                    // display the clock
+                    $(this.$el.find(".list-group")[0]).append(this.tplCoreClockContainer({
+                      device  : devices.getCoreClock(),
+                      active  : Backbone.history.fragment === "devices/" + devices.getCoreClock().get("id") ? true : false
+                    }));
 
-// for each category of devices, add a menu item
-this.$el.append(this.tpl());
-var types = devices.getDevicesByType();
-_.forEach(_.keys(types), function(type) {
-    if (type !== "21" && type !== "36" && type !== "102") {
-    $(self.$el.find(".list-group")[1]).append(self.tplDeviceContainer({
-type            : type,
-devices         : types[type],
-places          : places,
-unlocatedDevices: devices.filter(function(d) { return (d.get("placeId") === "-1" && d.get("type") === type); }),
-active          : Backbone.history.fragment.split("devices/types/")[1] === type ? true : false
-}));
-    }
-    });
+                    // for each category of devices, add a menu item
+                    this.$el.append(this.tpl());
+                    var types = devices.getDevicesByType();
+                    _.forEach(_.keys(types), function(type) {
+                      if (type !== "21" && type !== "36" && type !== "102") {
+                        $(self.$el.find(".list-group")[1]).append(self.tplDeviceContainer({
+                          type            : type,
+                          devices         : types[type],
+                          places          : places,
+                          unlocatedDevices: devices.filter(function(d) { return (d.get("placeId") === "-1" && d.get("type") === type); }),
+                          active          : Backbone.history.fragment.split("devices/types/")[1] === type ? true : false
+                        }));
+                      }
+                    });
 
-// set active the current item menu
-this.updateSideMenu();
+                    // set active the current item menu
+                    this.updateSideMenu();
 
-// translate the view
-this.$el.i18n();
+                    // translate the view
+                    this.$el.i18n();
 
-// resize the menu
-resizeDiv($(self.$el.find(".list-group")[1]));
+                    // resize the menu
+                    resizeDiv($(self.$el.find(".list-group")[1]));
 
-return this;
-}
-}
-});
+                    return this;
+                  }
+                }
+              });
 
-// detailled view of a device
-Device.Views.Details = Backbone.View.extend({
-template: _.template(deviceDetailsTemplate),
-tplContact: _.template(contactDetailTemplate),
-tplIllumination: _.template(illuminationDetailTemplate),
-tplKeyCard: _.template(keyCardDetailTemplate),
-tplSwitch: _.template(switchDetailTemplate),
-tplActuator: _.template(actuatorDetailTemplate),
-tplTemperature: _.template(temperatureDetailTemplate),
-tplPlug: _.template(plugDetailTemplate),
-tplPhillipsHue: _.template(phillipsHueDetailTemplate),
-tplCoreClock: _.template(coreClockDetailTemplate),
-tplMediaPlayer: _.template(mediaPlayerTemplate),
+              // detailled view of a device
+              Device.Views.Details = Backbone.View.extend({
+                template: _.template(deviceDetailsTemplate),
+                tplContact: _.template(contactDetailTemplate),
+                tplIllumination: _.template(illuminationDetailTemplate),
+                tplKeyCard: _.template(keyCardDetailTemplate),
+                tplSwitch: _.template(switchDetailTemplate),
+                tplActuator: _.template(actuatorDetailTemplate),
+                tplTemperature: _.template(temperatureDetailTemplate),
+                tplPlug: _.template(plugDetailTemplate),
+                tplPhillipsHue: _.template(phillipsHueDetailTemplate),
+                tplCoreClock: _.template(coreClockDetailTemplate),
+                tplMediaPlayer: _.template(mediaPlayerTemplate),
 
-// map the events and their callback
-events: {
-"click button.back-button"                                              : "onBackButton",
-"click button.toggle-lamp-button"                           : "onToggleLampButton",
-"click button.blink-lamp-button"                            : "onBlinkLampButton",
-"click button.toggle-plug-button"                               : "onTogglePlugButton",
-"click button.toggle-actuator-button"                   : "onToggleActuatorButton",
-"click button.btn-media-play"                                   : "onPlayMedia",
-"click button.btn-media-resume"                                 : "onResumeMedia",
-"click button.btn-media-pause"                                  : "onPauseMedia",
-"click button.btn-media-stop"                                   : "onStopMedia",
-"click button.btn-media-volume"                                 : "onSetVolumeMedia",
-"click button.btn-media-browse"                                 : "onBrowseMedia",
-"show.bs.modal #edit-device-modal"                              : "initializeModal",
-"hidden.bs.modal #edit-device-modal"                            : "toggleModalValue",
-"click #edit-device-modal button.valid-button"  : "validEditDevice",
-"keyup #edit-device-modal input"                                : "validEditDevice",
-"change #edit-device-modal select"                              : "checkDevice"
-},
+                // map the events and their callback
+                events: {
+                  "click button.back-button"                                              : "onBackButton",
+                  "click button.toggle-lamp-button"                           : "onToggleLampButton",
+                  "click button.blink-lamp-button"                            : "onBlinkLampButton",
+                  "click button.toggle-plug-button"                               : "onTogglePlugButton",
+                  "click button.toggle-actuator-button"                   : "onToggleActuatorButton",
+                  "click button.btn-media-play"                                   : "onPlayMedia",
+                  "click button.btn-media-resume"                                 : "onResumeMedia",
+                  "click button.btn-media-pause"                                  : "onPauseMedia",
+                  "click button.btn-media-stop"                                   : "onStopMedia",
+                  "click button.btn-media-volume"                                 : "onSetVolumeMedia",
+                  "click button.btn-media-browse"                                 : "onBrowseMedia",
+                  "show.bs.modal #edit-device-modal"                              : "initializeModal",
+                  "hidden.bs.modal #edit-device-modal"                            : "toggleModalValue",
+                  "click #edit-device-modal button.valid-button"  : "validEditDevice",
+                  "keyup #edit-device-modal input"                                : "validEditDevice",
+                  "change #edit-device-modal select"                              : "checkDevice"
+                },
 
-  /**
-   * Listen to the device update and refresh if any
-   * 
-   * @constructor
-   */
-initialize:function() {
-             this.listenTo(this.model, "change", this.render);
-           },
+                /**
+                 * Listen to the device update and refresh if any
+                 * 
+                 * @constructor
+                 */
+                initialize:function() {
+                  this.listenTo(this.model, "change", this.render);
+                },
 
-           /**
-            * Return to the previous view
-            */
-onBackButton:function() {
-               window.history.back();
-             },
+                /**
+                 * Return to the previous view
+                 */
+                onBackButton:function() {
+                  window.history.back();
+                },
 
-             /**
-              * Callback to toggle a lamp - used when the displayed device is a lamp (!)
-              */
-onToggleLampButton:function() {
-                     // value can be string or boolean
-                     // string
-                     if (typeof this.model.get("value") === "string") {
-                       if (this.model.get("value") === "true") {
-                         this.model.set("value", "false");
-                         this.$el.find(".toggle-lamp-button").text("Allumer");
-                       } else {
-                         this.model.set("value", "true");
-                         this.$el.find(".toggle-lamp-button").text("Eteindre");
-                       }
-                       // boolean
-                     } else {
-                       if (this.model.get("value")) {
-                         this.model.set("value", "false");
-                         this.$el.find(".toggle-lamp-button").text("Allumer");
-                       } else {
-                         this.model.set("value", "true");
-                         this.$el.find(".toggle-lamp-button").text("Eteindre");
-                       }
-                     }
+                /**
+                 * Callback to toggle a lamp - used when the displayed device is a lamp (!)
+                 */
+                onToggleLampButton:function() {
+                  // value can be string or boolean
+                  // string
+                  if (typeof this.model.get("value") === "string") {
+                    if (this.model.get("value") === "true") {
+                      this.model.set("value", "false");
+                      this.$el.find(".toggle-lamp-button").text("Allumer");
+                    } else {
+                      this.model.set("value", "true");
+                      this.$el.find(".toggle-lamp-button").text("Eteindre");
+                    }
+                    // boolean
+                  } else {
+                    if (this.model.get("value")) {
+                      this.model.set("value", "false");
+                      this.$el.find(".toggle-lamp-button").text("Allumer");
+                    } else {
+                      this.model.set("value", "true");
+                      this.$el.find(".toggle-lamp-button").text("Eteindre");
+                    }
+                  }
 
-                     // send the message to the backend
-                     this.model.save();
-                   },
+                  // send the message to the backend
+                  this.model.save();
+                },
 
-                   /**
-                    * Callback to blink a lamp
-                    *
-                    * @param e JS mouse event
-                    */
-           onBlinkLampButton:function(e) {
-             e.preventDefault();
-             var lamp = devices.get($(e.currentTarget).attr("id"));
-             // send the message to the backend
-             lamp.remoteCall("blink", []);
+                /**
+                 * Callback to blink a lamp
+                 *
+                 * @param e JS mouse event
+                 */
+onBlinkLampButton:function(e) {
+                    e.preventDefault();
+                    var lamp = devices.get($(e.currentTarget).attr("id"));
+                    // send the message to the backend
+                    lamp.remoteCall("blink", []);
 
-             return false;
-           },
+                    return false;
+                  },
 
-           /**
-            * Callback to toggle a plug - used when the displayed device is a plug (!)
-            */
-onTogglePlugButton:function() {
-                     // value can be string or boolean
-                     // string
-                     if (typeof this.model.get("plugState") === "string") {
-                       if (this.model.get("plugState") === "true") {
-                         this.model.set("plugState", "false");
-                         this.$el.find(".toggle-plug-button").text("Allumer");
-                       } else {
-                         this.model.set("plugState", "true");
-                         this.$el.find(".toggle-plug-button").text("Eteindre");
-                       }
-                       // boolean
-                     } else {
-                       if (this.model.get("plugState")) {
-                         this.model.set("plugState", "false");
-                         this.$el.find(".toggle-plug-button").text("Allumer");
-                       } else {
-                         this.model.set("plugState", "true");
-                         this.$el.find(".toggle-plug-button").text("Eteindre");
-                       }
-                     }
+                  /**
+                   * Callback to toggle a plug - used when the displayed device is a plug (!)
+                   */
+                onTogglePlugButton:function() {
+                  // value can be string or boolean
+                  // string
+                  if (typeof this.model.get("plugState") === "string") {
+                    if (this.model.get("plugState") === "true") {
+                      this.model.set("plugState", "false");
+                      this.$el.find(".toggle-plug-button").text("Allumer");
+                    } else {
+                      this.model.set("plugState", "true");
+                      this.$el.find(".toggle-plug-button").text("Eteindre");
+                    }
+                    // boolean
+                  } else {
+                    if (this.model.get("plugState")) {
+                      this.model.set("plugState", "false");
+                      this.$el.find(".toggle-plug-button").text("Allumer");
+                    } else {
+                      this.model.set("plugState", "true");
+                      this.$el.find(".toggle-plug-button").text("Eteindre");
+                    }
+                  }
 
-                     // send the message to the backend
-                     this.model.save();
-                   },
+                  // send the message to the backend
+                  this.model.save();
+                },
 
-                   /**
-                    * Callback to toggle a plug - used when the displayed device is a plug (!)
-                    */
-           onToggleActuatorButton:function() {
-             // value can be string or boolean
-             // string
-             if (typeof this.model.get("value") === "string") {
-               if (this.model.get("value") === "true") {
-                 this.model.set("value", "false");
-                 this.$el.find(".toggle-actuator-button").text("Allumer");
-               } else {
-                 this.model.set("value", "true");
-                 this.$el.find(".toggle-actuator-button").text("Eteindre");
-               }
-               // boolean
-             } else {
-               if (this.model.get("value")) {
-                 this.model.set("value", "false");
-                 this.$el.find(".toggle-actuator-button").text("Allumer");
-               } else {
-                 this.model.set("value", "true");
-                 this.$el.find(".toggle-actuator-button").text("Eteindre");
-               }
-             }
+                /**
+                 * Callback to toggle a plug - used when the displayed device is a plug (!)
+                 */
+onToggleActuatorButton:function() {
+                         // value can be string or boolean
+                         // string
+                         if (typeof this.model.get("value") === "string") {
+                           if (this.model.get("value") === "true") {
+                             this.model.set("value", "false");
+                             this.$el.find(".toggle-actuator-button").text("Allumer");
+                           } else {
+                             this.model.set("value", "true");
+                             this.$el.find(".toggle-actuator-button").text("Eteindre");
+                           }
+                           // boolean
+                         } else {
+                           if (this.model.get("value")) {
+                             this.model.set("value", "false");
+                             this.$el.find(".toggle-actuator-button").text("Allumer");
+                           } else {
+                             this.model.set("value", "true");
+                             this.$el.find(".toggle-actuator-button").text("Eteindre");
+                           }
+                         }
 
-             // send the message to the backend
-             this.model.save();
-           },
+                         // send the message to the backend
+                         this.model.save();
+                       },
 
-           /**
-            * Called when resume button is pressed and the displayed device is a media player
-            */
-onPlayMedia:function() {
-              this.model.sendPlay();
-            },
+                       /**
+                        * Called when resume button is pressed and the displayed device is a media player
+                        */
+                onPlayMedia:function() {
+                  this.model.sendPlay();
+                },
 
-            /**
-             * Called when resume button is pressed and the displayed device is a media player
-             */
-onResumeMedia:function() {
-                this.model.sendResume();
-              },
+                /**
+                 * Called when resume button is pressed and the displayed device is a media player
+                 */
+                onResumeMedia:function() {
+                  this.model.sendResume();
+                },
 
-              /**
-               * Called when pause button is pressed and the displayed device is a media player
-               */
+                /**
+                 * Called when pause button is pressed and the displayed device is a media player
+                 */
                 onPauseMedia:function() {
                   this.model.sendPause();
                 },
@@ -701,167 +701,167 @@ onResumeMedia:function() {
                     // color change disabled
                     window.colorWheel.onchange(
                       function(){
-                        window.colorWheel.color(color);
-                      });
+                      window.colorWheel.color(color);
+                    });
                   }
                 }
-                       });
-
-                       /**
-                        * Render the list of devices of a given type
-                        */
-                       Device.Views.DevicesByType = Backbone.View.extend({
-                         tpl: _.template(deviceListByCategoryTemplate),
-
-                         events: {
-                           "click button.toggle-plug-button"       : "onTogglePlugButton",
-                           "click button.blink-lamp-button"    : "onBlinkLampButton",
-                           "click button.toggle-lamp-button"   : "onToggleLampButton",
-                           "click button.toggle-actuator-button"   : "onToggleActuatorButton"
-                         },
+                         });
 
                          /**
-                          * Listen to the updates on the devices of the category and refresh if any
-                          * 
-                          * @constructor
+                          * Render the list of devices of a given type
                           */
-                         initialize:function() {
-                           var self = this;
+                         Device.Views.DevicesByType = Backbone.View.extend({
+                           tpl: _.template(deviceListByCategoryTemplate),
 
-                           devices.getDevicesByType()[this.id].forEach(function(device) {
-                             self.listenTo(device, "change", self.render);
-                             self.listenTo(device, "remove", self.render);
-                           });
-                         },
+                           events: {
+                             "click button.toggle-plug-button"       : "onTogglePlugButton",
+                             "click button.blink-lamp-button"    : "onBlinkLampButton",
+                             "click button.toggle-lamp-button"   : "onToggleLampButton",
+                             "click button.toggle-actuator-button"   : "onToggleActuatorButton"
+                           },
 
-                         /**
-                          * Callback to toggle a plug
-                          * 
-                          * @param e JS mouse event
-                          */
-                         onTogglePlugButton:function(e) {
-                           e.preventDefault();
+                           /**
+                            * Listen to the updates on the devices of the category and refresh if any
+                            * 
+                            * @constructor
+                            */
+                           initialize:function() {
+                             var self = this;
 
-                           var plug = devices.get($(e.currentTarget).attr("id"));
+                             devices.getDevicesByType()[this.id].forEach(function(device) {
+                               self.listenTo(device, "change", self.render);
+                               self.listenTo(device, "remove", self.render);
+                             });
+                           },
 
-                           // value can be string or boolean
-                           // string
-                           if (typeof plug.get("plugState") === "string") {
-                             if (plug.get("plugState") === "true") {
-                               plug.set("plugState", "false");
+                           /**
+                            * Callback to toggle a plug
+                            * 
+                            * @param e JS mouse event
+                            */
+                           onTogglePlugButton:function(e) {
+                             e.preventDefault();
+
+                             var plug = devices.get($(e.currentTarget).attr("id"));
+
+                             // value can be string or boolean
+                             // string
+                             if (typeof plug.get("plugState") === "string") {
+                               if (plug.get("plugState") === "true") {
+                                 plug.set("plugState", "false");
+                               } else {
+                                 plug.set("plugState", "true");
+                               }
+                               // boolean
                              } else {
-                               plug.set("plugState", "true");
+                               if (plug.get("plugState")) {
+                                 plug.set("plugState", "false");
+                               } else {
+                                 plug.set("plugState", "true");
+                               }
                              }
-                             // boolean
-                           } else {
-                             if (plug.get("plugState")) {
-                               plug.set("plugState", "false");
+
+                             // send the message to the backend
+                             plug.save();
+
+                             return false;
+                           },
+
+                           /**
+                            * Callback to toggle a lamp
+                            * 
+                            * @param e JS mouse event
+                            */
+                           onToggleLampButton:function(e) {
+                             e.preventDefault();
+
+                             var lamp = devices.get($(e.currentTarget).attr("id"));
+                             // value can be string or boolean
+                             // string
+                             if (typeof lamp.get("value") === "string") {
+                               if (lamp.get("value") === "true") {
+                                 lamp.set("value", "false");
+                               } else {
+                                 lamp.set("value", "true");
+                               }
+                               // boolean
                              } else {
-                               plug.set("plugState", "true");
+                               if (lamp.get("value")) {
+                                 lamp.set("value", "false");
+                               } else {
+                                 lamp.set("value", "true");
+                               }
+                             }
+
+                             // send the message to the backend
+                             lamp.save();
+
+                             return false;
+                           },
+                           /**
+                            * Callback to blink a lamp
+                            *
+                            * @param e JS mouse event
+                            */
+                           onBlinkLampButton:function(e) {
+                             e.preventDefault();
+                             var lamp = devices.get($(e.currentTarget).attr("id"));
+                             // send the message to the backend
+                             lamp.remoteCall("blink", []);
+
+                             return false;
+                           },
+
+                           /**
+                            * Callback to toggle an actuator
+                            * 
+                            * @param e JS mouse event
+                            */
+                           onToggleActuatorButton:function(e) {
+                             e.preventDefault();
+
+                             var actuator = devices.get($(e.currentTarget).attr("id"));
+                             // value can be string or boolean
+                             // string
+                             if (typeof actuator.get("value") === "string") {
+                               if (actuator.get("value") === "true") {
+                                 actuator.set("value", "false");
+                               } else {
+                                 actuator.set("value", "true");
+                               }
+                               // boolean
+                             } else {
+                               if (actuator.get("value")) {
+                                 actuator.set("value", "false");
+                               } else {
+                                 actuator.set("value", "true");
+                               }
+                             }
+
+                             // send the message to the backend
+                             actuator.save();
+
+                             return false;
+                           },
+
+                           /**
+                            * Render the list
+                            */
+                           render:function() {
+                             if (!appRouter.isModalShown) {
+                               this.$el.html(this.tpl({
+                                 type                    : this.id,
+                                 places                  : places
+                               }));
+
+                               // translate the view
+                               this.$el.i18n();
+
+                               // resize the list
+                               resizeDiv($(".contents-list"));
+
+                               return this;
                              }
                            }
-
-                           // send the message to the backend
-                           plug.save();
-
-                           return false;
-                         },
-
-                         /**
-                          * Callback to toggle a lamp
-                          * 
-                          * @param e JS mouse event
-                          */
-                         onToggleLampButton:function(e) {
-                           e.preventDefault();
-
-                           var lamp = devices.get($(e.currentTarget).attr("id"));
-                           // value can be string or boolean
-                           // string
-                           if (typeof lamp.get("value") === "string") {
-                             if (lamp.get("value") === "true") {
-                               lamp.set("value", "false");
-                             } else {
-                               lamp.set("value", "true");
-                             }
-                             // boolean
-                           } else {
-                             if (lamp.get("value")) {
-                               lamp.set("value", "false");
-                             } else {
-                               lamp.set("value", "true");
-                             }
-                           }
-
-                           // send the message to the backend
-                           lamp.save();
-
-                           return false;
-                         },
-                         /**
-                          * Callback to blink a lamp
-                          *
-                          * @param e JS mouse event
-                          */
-onBlinkLampButton:function(e) {
-                    e.preventDefault();
-                    var lamp = devices.get($(e.currentTarget).attr("id"));
-                    // send the message to the backend
-                    lamp.remoteCall("blink", []);
-
-                    return false;
-                  },
-
-                  /**
-                   * Callback to toggle an actuator
-                   * 
-                   * @param e JS mouse event
-                   */
-  onToggleActuatorButton:function(e) {
-    e.preventDefault();
-
-    var actuator = devices.get($(e.currentTarget).attr("id"));
-    // value can be string or boolean
-    // string
-    if (typeof actuator.get("value") === "string") {
-      if (actuator.get("value") === "true") {
-        actuator.set("value", "false");
-      } else {
-        actuator.set("value", "true");
-      }
-      // boolean
-    } else {
-      if (actuator.get("value")) {
-        actuator.set("value", "false");
-      } else {
-        actuator.set("value", "true");
-      }
-    }
-
-    // send the message to the backend
-    actuator.save();
-
-    return false;
-  },
-
-  /**
-   * Render the list
-   */
-render:function() {
-         if (!appRouter.isModalShown) {
-           this.$el.html(this.tpl({
-type                    : this.id,
-places                  : places
-}));
-
-// translate the view
-this.$el.i18n();
-
-// resize the list
-resizeDiv($(".contents-list"));
-
-return this;
-}
-}
-});
+                         });
 });

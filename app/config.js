@@ -11,88 +11,70 @@ require.config({
     // Opt for Lo-Dash Underscore compatibility build over Underscore.
     "underscore": "../vendor/bower/lodash/dist/lodash.underscore",
 
-    // Map remaining vendor dependencies.
+    // JQuery and Backbone
     "jquery": "../vendor/bower/jquery/jquery",
-    "backbone": "../vendor/bower/backbone/backbone"
+    "backbone": "../vendor/bower/backbone/backbone",
+
+    // JQuery plugins
+    "i18n": "../vendor/bower/i18next/release/i18next.amd.withJQuery-1.7.1",
+
+    // RequireJS plugins
+    "text": "../vendor/bower/requirejs-text/text",
+    "domReady": "../vendor/bower/requirejs-domready/domReady",
+		
+    // Snap.Svg
+    "snapsvg": "../vendor/bower/Snap.svg/dist/snap.svg",
+
+		// MomentJS
+		"moment": "../vendor/bower/momentjs/moment",
+
+    // Modules
+    "modules": "../app/modules",
+
+    // Collections
+    "collections": "../app/modules/collections",
+
+    // Models
+    "models": "../app/modules/models",
+
+    // Views
+    "views": "../app/modules/views",
+
+    // Templates
+    "templates": "../app/templates"
+
   },
+
 
   shim: {
     // This is required to ensure Backbone works as expected within the AMD
     // environment.
+    "underscore": {
+      exports: "_"
+    },
     "backbone": {
       // These are the two hard dependencies that will be loaded first.
       deps: ["jquery", "underscore"],
 
       // This maps the global `Backbone` object to `require("backbone")`.
       exports: "Backbone"
-    }
+    },
+    "i18n" : {
+      deps: [ "jquery" ] 
+    },
+		"moment" : {
+			exports: "moment"
+		}
+
   }
 });
 
+// Setting up AppsGate globals.
+if (!window.AppsGate) window.AppsGate = {};
+if (!AppsGate.App) AppsGate.App = {};
+if (!AppsGate.Universe) AppsGate.Universe = {};
+if (!AppsGate.Place) AppsGate.Place = {};
+if (!AppsGate.Device) AppsGate.Device = {};
+if (!AppsGate.Program) AppsGate.Program = {};
 
-require.config({
-    // initialize the application with the main application file
-    deps: ["main"],
-    paths:{
-        // RequireJS plugin
-        text: "libs/require/text",
-        // RequireJS plugin
-        domReady: "libs/require/domReady",
-        // jQuery
-        jquery: "libs/jquery/jquery-1.8.2",
-        // jQuery UI
-        jqueryui: "libs/jquery/plugins/jqueryui/jquery-ui",
-		// jstree
-		jstree : "libs/jquery/plugins/jstree/jquery.jstree",
-		// i18next for internationalization
-		i18next: "libs/i18next/i18next.amd.withJQuery-1.7.1.min",
-        // bootstrap
-        bootstrap: "libs/bootstrap/js/bootstrap.min",
-        // underscore library
-        underscore: "libs/underscore/underscore",
-        // Backbone.js library
-        backbone: "libs/backbone/backbone",
-		// Raphael.js library
-		raphael: "libs/raphael/raphael.2.1.0.amd",
-		// Color wheel Raphael.js plugin
-		colorWheel: "libs/raphael/plugins/colorwheel",
-		// parser generator
-		peg: "libs/peg/peg-0.7.min",
-		// Moment.js library
-		moment: "libs/moment/moment.min",
-        // Modules
-        communicator: "modules/communicator",
-        place: "modules/place",
-        device: "modules/device",
-        program: "modules/program",
-        home: "modules/home",
-		grammar: "modules/grammar"
-    },
-    shim: {
-        "bootstrap": {
-            deps: ["jquery"]
-        },
-        "underscore": {
-            exports: "_"
-        },
-        "backbone": {
-            deps: [ "underscore", "jquery" ],
-            exports: "Backbone"
-        },
-		"raphael" : {
-			exports: "Raphael"
-		},
-		"colorWheel" : {
-			deps: [ "jquery", "raphael" ]
-		},
-        "jqueryui": {
-            deps: [ "jquery" ]
-        },
-		"jstree" : {
-			deps: [ "jquery" ]
-		},
-		"i18next" : {
-			deps: [ "jquery" ] 
-		}
-    }
-});
+

@@ -134,7 +134,7 @@ module.exports = function(grunt) {
         browsers: ["PhantomJS"],
 
         // Change this to the framework you want to use.
-        frameworks: ["qunit"],
+        frameworks: ["mocha"],
 
         plugins: [
           "karma-jasmine",

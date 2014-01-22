@@ -9,7 +9,7 @@ define([
   "text!templates/devices/menu/coreClockContainer.html",
   "text!templates/program/editor/editor.html"
 ], function($, _, Backbone, Grammar, programMenuTemplate, programContainerMenuTemplate, addProgramButtonTemplate, coreClockContainerMenuTemplate, programEditorTemplate) {
-  
+
   // collection
   Program.Collection = Backbone.Collection.extend({
     model: Program.Model,

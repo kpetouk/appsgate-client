@@ -1,514 +1,283 @@
 define([
-  "jquery",
-  "underscore",
-  "backbone",
-  "grammar",
-  "text!templates/places/menu/menu.html",
-  "text!templates/places/menu/placeContainer.html",
-  "text!templates/devices/menu/coreClockContainer.html",
-  "text!templates/places/menu/addButton.html",
-  "text!templates/places/details/details.html",
-  "i18next"
-], function($, _, Backbone, Grammar, placeMenuTemplate, placeContainerMenuTemplate, coreClockContainerMenuTemplate, addPlaceButtonTemplate, placeDetailsTemplate) {
-
-  /**
-   * Namespace for the views
-   */
-Place.Views = {};
-
-  /**
-   * Resizes the div to the maximum displayable size on the screen
-   */     
-  function resizeDiv(jqNode){
-    if(typeof jqNode !== "undefined"){
-      jqNode[0].classList.add("div-scrollable");
-      setTimeout(function(){
-        var divSize = window.innerHeight-(jqNode.offset().top + jqNode.outerHeight(true) - jqNode.innerHeight());
-
-        // if there isn't enough space to display the whole div, we adjust its size to the screen
-        if(divSize<jqNode.outerHeight(true)){   
-          jqNode.height(divSize);
-        }
-
-        // if there is an active element, make it visible
-        var activeItem = jqNode.children(".list-group-item.active")[0];
-        if(typeof activeItem !== "undefined"){
-          jqNode.scrollTop((activeItem.offsetTop)-($(".list-group-item")[1].offsetTop));
-        }
-        // otherwise display the top of the list
-        else{
-          jqNode.scrollTop(0);
-        }
-      }, 0);
-    }
-  }
-
-  /**
-   * Render the side menu for the places
-   */
-  Place.Views.Menu = Backbone.View.extend({
-tpl                                             : _.template(placeMenuTemplate),
-tplPlaceContainer               : _.template(placeContainerMenuTemplate),
-tplCoreClockContainer   : _.template(coreClockContainerMenuTemplate),
-tplAddPlaceButton               : _.template(addPlaceButtonTemplate),
-
-  /**
-   * Bind events of the DOM elements from the view to their callback
-   */
-events: {
-"click a.list-group-item"                                               : "updateSideMenu",
-"show.bs.modal #add-place-modal"                                : "initializeModal",
-"hidden.bs.modal #add-place-modal"                              : "toggleModalValue",
-"click #add-place-modal button.valid-button"    : "validEditName",
-"keyup #add-place-modal input"                                  : "validEditName"
-},
-
-/**
- * Listen to the places collection update and refresh if any
- * 
- * @constructor
- */
-initialize:function() {
-             this.listenTo(places, "add", this.render);
-             this.listenTo(places, "change", this.render);
-             this.listenTo(places, "remove", this.render);
-             this.listenTo(devices, "change", this.onChangedDevice);
-           },
-
-           /**
-            * Method called when a device has changed
-            * @param model Model that changed, Device in that cas
-            * @param collection Collection that holds the changed model
-            * @param options Options given with the change event   
-            */
-onChangedDevice:function(model, options) {
-                  // a device has changed
-                  // if it's the clock, we refresh the clock only
-                  if(typeof options !== "undefined" && options.clockRefresh){
-                    this.refreshClockDisplay();
-                  }
-                  // otherwise we rerender the whole view
-                  else{
-                    this.render();
-                  }
-                },
-
-                /**
-                 * Refreshes the time display without rerendering the whole screen
-                 */
-  refreshClockDisplay:function() {
-
-    if (typeof devices.getCoreClock() !== "undefined") { // dirty hack to avoid a bug when reconnecting - TODO
-      //remove existing node
-      $(this.$el.find(".list-group")[0]).children().remove();
-
-      //refresh the clock
-      $(this.$el.find(".list-group")[0]).append(this.tplCoreClockContainer({
-        device  : devices.getCoreClock(),
-        active  : Backbone.history.fragment === "devices/" + devices.getCoreClock().get("id") ? true : false
-      }));
-    }
-  },
-
-
-  /**
-   * Update the side menu to set the correct active element
-   * 
-   * @param e JS click event
-   */
-updateSideMenu:function(e) {
-                 _.forEach($("a.list-group-item"), function(item) {
-                     $(item).removeClass("active");
-                     });
-
-                 $(e.currentTarget).addClass("active");
-               },
-
-               /**
-                * Clear the input text, hide the error message and disable the valid button by default
-                */
-  initializeModal:function() {
-    $("#add-place-modal input").val("");
-    $("#add-place-modal .text-danger").addClass("hide");
-    $("#add-place-modal .valid-button").addClass("disabled");
-
-    // the router that there is a modal
-    appRouter.isModalShown = true;
-  },
-
-  /**
-   * Tell the router there is no modal anymore
-   */
-toggleModalValue:function() {
-                   appRouter.isModalShown = false;
-                 },
-
-                 /**
-                  * Check the current value of the input text and show an error message if needed
-                  * 
-                  * @return false if the typed name already exists, true otherwise
-                  */
-  checkPlace:function() {
-    // name is empty
-    if ($("#add-place-modal input").val() === "") {
-      $("#add-place-modal .text-danger")
-      .text($.i18n.t("modal-add-place.place-name-empty"))
-      .removeClass("hide");
-      $("#add-place-modal .valid-button").addClass("disabled");
-
-      return false;
-    }
-
-    // name already exists
-    if (places.where({ name : $("#add-place-modal input").val() }).length > 0) {
-      $("#add-place-modal .text-danger")
-      .text($.i18n.t("modal-add-place.place-already-existing"))
-      .removeClass("hide");
-      $("#add-place-modal .valid-button").addClass("disabled");
-
-      return false;
-    }
-
-    // ok
-    $("#add-place-modal .text-danger").addClass("hide");
-    $("#add-place-modal .valid-button").removeClass("disabled");
-
-    return true;
-  },
-
-  /**
-   * Check if the name of the place does not already exist. If not, update the place
-   * Hide the modal when done
-   * 
-   * @param e JS event
-   */
-validEditName:function(e) {
-                if (e.type === "keyup" && e.keyCode === 13 || e.type === "click") {
-                  // create the place if the name is ok
-                  if (this.checkPlace()) {
-
-                    // instantiate the place and add it to the collection after the modal has been hidden
-                    $("#add-place-modal").on("hidden.bs.modal", function() {
-                        // instantiate a model for the new place
-                        var place = new Place.Model({
-name    : $("#add-place-modal input").val(),
-devices : []
-});
-
-                        // send the place to the backend
-                        place.save();
-
-                        // add it to the collection
-                        places.add(place);
-
-                        // tell the router that there is no modal any more
-                        appRouter.isModalShown = false;
-                        });
-
-// hide the modal
-$("#add-place-modal").modal("hide");
-}
-} else if (e.type === "keyup") {
-  this.checkPlace();
-}
-},
-
-  /**
-   * Render the side menu
-   */
-render:function() {
-         if (!appRouter.isModalShown) {
-           var self = this;
-
-           // initialize the content
-           this.$el.html(this.tpl());
-
-           // put the time on the top of the menu
-           if (typeof devices.getCoreClock() !== "undefined") { // dirty hack to avoid a bug when reconnecting - TODO
-             $(this.$el.find(".list-group")[0]).append(this.tplCoreClockContainer({
-device  : devices.getCoreClock(),
-active  : Backbone.history.fragment === "devices/" + devices.getCoreClock().get("id") ? true : false
-}));
-}
-
-// "add place" button to the side menu
-this.$el.append(this.tplAddPlaceButton());
-
-// for each place, add a menu item
-this.$el.append(this.tpl());
-
-// put the unlocated devices into a separate group list
-//this.$el.append(this.tpl());
-$(this.$el.find(".list-group")[1]).append(this.tplPlaceContainer({
-place   : places.get("-1"),
-active  : Backbone.history.fragment.split("/")[1] === "-1" ? true : false
-}));
-
-places.forEach(function(place) {
-    if (place.get("id") !== "-1") {
-    $(self.$el.find(".list-group")[1]).append(self.tplPlaceContainer({
-place : place,
-active  : Backbone.history.fragment.split("/")[1] === place.get("id") ? true : false
-}));
-    }
-    });
-
-// translate the menu
-this.$el.i18n();
-
-// resize the menu
-resizeDiv($(self.$el.find(".list-group")[1]));
-
-return this;
-}
-}
-});
-
-/**
- * Detailled view of a place
- */
-Place.Views.Details = Backbone.View.extend({
-tpl: _.template(placeDetailsTemplate),
-
-/**
- * Bind events of the DOM elements from the view to their callback
- */
-events: {
-"show.bs.modal #edit-name-place-modal"                          : "initializeModal",
-"click #edit-name-place-modal button.valid-button"      : "validEditName",
-"keyup #edit-name-place-modal input"                            : "validEditName",
-"click button.delete-place-button"                                      : "deletePlace",
-"click button.toggle-plug-button"                                       : "onTogglePlugButton",
-"click button.blink-lamp-button"                    : "onBlinkLampButton",
-"click button.toggle-lamp-button"                                       : "onToggleLampButton"
-},
-
-/**
- * Listen to the model update and refresh if any
- * 
- * @constructor
- */
-initialize:function() {
-             var self = this;
-
-             // listen to update on its model...
-             this.listenTo(this.model, "change", this.render);
-
-             // ... and on all its devices
-             this.model.get("devices").forEach(function(deviceId) {
-                 var device = devices.get(deviceId);
-
-                 // if the device has been found in the collection
-                 if (typeof device !== "undefined") {
-                 self.listenTo(devices.get(deviceId), "change", self.onChangedDevice);
-                 }
-                 });
-           },
-
-           /**
-            * Method called when a device has changed
-            * @param model Model that changed, Device in that cas
-            * @param collection Collection that holds the changed model
-            * @param options Options given with the change event   
-            */
-onChangedDevice:function(model, options) {
-                  // a device has changed
-                  // if it's the clock, we refresh the clock only
-                  if(typeof options === "undefined" || (typeof options !== "undefined") && !options.clockRefresh){
-                    this.render();
-                  }
-                },
-
-                /**
-                 * Clear the input text, hide the error message and disable the valid button by default
-                 */
-  initializeModal:function() {
-    $("#edit-name-place-modal input").val(this.model.get("name"));
-    $("#edit-name-place-modal .text-danger").addClass("hide");
-    $("#edit-name-place-modal .valid-button").addClass("disabled");
-  },
-
-  /**
-   * Check the current value of the input text and show a message error if needed
-   * 
-   * @return false if the typed name already exists, true otherwise
-   */
-checkPlace:function() {
-             // name is empty
-             if ($("#edit-name-place-modal input").val() === "") {
-               $("#edit-name-place-modal .text-danger").removeClass("hide");
-               $("#edit-name-place-modal .text-danger").text($.i18n.t("modal-edit-place.place-name-empty"));
-               $("#edit-name-place-modal .valid-button").addClass("disabled");
-
-               return false;
-             }
-
-             // name already existing
-             if (places.where({ name : $("#edit-name-place-modal input").val() }).length > 0) {
-               $("#edit-name-place-modal .text-danger").removeClass("hide");
-               $("#edit-name-place-modal .text-danger").text($.i18n.t("modal-edit-place.place-already-existing"));
-               $("#edit-name-place-modal .valid-button").addClass("disabled");
-
-               return false;
-             }
-
-             //ok
-             $("#edit-name-place-modal .text-danger").addClass("hide");
-             $("#edit-name-place-modal .valid-button").removeClass("disabled");
-
-             return true;
-           },
-
-           /**
-            * Check if the name of the place does not already exist. If not, update the place
-            * Hide the modal when done
-            */
-validEditName:function(e) {
-                var self = this;
-
-                if (e.type === "keyup" && e.keyCode === 13 || e.type === "click") {
-                  e.preventDefault();
-
-                  // update the name if it is ok
-                  if (this.checkPlace()) {
-                    this.$el.find("#edit-name-place-modal").on("hidden.bs.modal", function() {
-                        // set the new name to the place
-                        self.model.set("name", $("#edit-name-place-modal input").val());
-
-                        // send the update to the backend
-                        self.model.save();
-
-                        return false;
-                        });
-
-                    // hide the modal
-                    $("#edit-name-place-modal").modal("hide");
-                  }
-                } else if (e.type === "keyup") {
-                  this.checkPlace();
-                }
-              },
-
-              /**
-               * Callback when the user has clicked on the button to remove a place. Remove the place
-               */
-  deletePlace:function() {
-    // delete the place
-    this.model.destroy();
-
-    // navigate to the list of places
-    appRouter.navigate("#places", { trigger : true });
-  },
-
-  /**
-   * Callback to toggle a plug
-   * 
-   * @param e JS mouse event
-   */
-onTogglePlugButton:function(e) {
-                     e.preventDefault();
-
-                     var plug = devices.get($(e.currentTarget).attr("id"));
-                     // value can be string or boolean
-                     // string
-                     if (typeof plug.get("plugState") === "string") {
-                       if (plug.get("plugState") === "true") {
-                         plug.set("plugState", "false");
-                       } else {
-                         plug.set("plugState", "true");
-                       }
-                       // boolean
-                     } else {
-                       if (plug.get("plugState")) {
-                         plug.set("plugState", "false");
-                       } else {
-                         plug.set("plugState", "true");
-                       }
-                     }
-
-                     // send the message to the backend
-                     plug.save();
-
-                     return false;
-                   },
-
-                   /**
-                    * Callback to toggle a lamp
-                    * 
-                    * @param e JS mouse event
-                    */
-  onToggleLampButton:function(e) {
-    e.preventDefault();
-
-    var lamp = devices.get($(e.currentTarget).attr("id"));
-    // value can be string or boolean
-    // string
-    if (typeof lamp.get("value") === "string") {
-      if (lamp.get("value") === "true") {
-        lamp.set("value", "false");
-      } else {
-        lamp.set("value", "true");
+  'app',
+  'snapsvg',
+  'text!templates/map/default.html',
+], function(App, Snap, svgtemplate) {
+
+  // initialize the views array
+  if (typeof AppsGate.Universe.Views === "undefined") AppsGate.Universe.Views = {};
+
+  // home view
+  AppsGate.Universe.Views.SpatialUniverse = Backbone.View.extend({
+
+		el: $("#main"),
+    template: _.template(svgtemplate),
+
+    initialize:function() {
+			// Set zoom handler
+			window.onmousewheel = document.onmousewheel = this.wheel;
+		},
+
+		/**
+			* Sets custom functions to use Snap.svg
+			*/
+		initializeSnapSvg:function() {
+			paper.unit=100;
+				
+			// Animates viewbox changes
+			paper.animateViewBox = function( x, y, w, h, duration, easing_function, callback){
+				paper.zooming = true;
+				currentViewBox = paper.attr("viewBox");
+				var cx = currentViewBox ? currentViewBox.x : 0,
+					dx = x - cx,
+					cy = currentViewBox ? currentViewBox.y : 0,
+					dy = y - cy,
+					cw = currentViewBox ? currentViewBox.width : $('#svgspace').outerWidth(),
+					dw = w - cw,
+					ch = currentViewBox ? currentViewBox.height : $('#svgspace').outerHeight(),
+					dh = h - ch,
+					self = this;;
+				easing_function = easing_function || mina.linear;
+
+				var interval = 25;
+				var steps = duration / interval;
+				var current_step = 0;
+				var easing_formula = easing_function;
+
+				var intervalID = setInterval( function()
+					{
+						var ratio = current_step / steps;
+						var stepX = cx + dx * easing_formula( ratio );
+						var stepY = cy + dy * easing_formula( ratio );
+						var stepW = cw + dw * easing_formula( ratio );
+						var stepH = ch + dh * easing_formula( ratio );
+						console.log("step: " + current_step + ": " + stepX + "," + stepY + "," + stepW + "," + stepH )
+						
+						paper.attr({viewBox: "" + stepX + "," + stepY + "," + stepW + "," + stepH});
+						if ( current_step++ >= steps )
+						{
+							clearInterval( intervalID );
+							paper.zooming = false;
+							callback && callback();
+						}
+					}, interval );
+			};
+
+			// Zooming function based on the mousewheel
+			paper.zoomSvg = function(mouseX, mouseY, delta) {
+				var multiplier = 1.005;
+				if (delta < 0)
+					multiplier = 0.995;
+
+				var viewBox = paper.attr("viewBox");
+				
+				//console.log("viewBox: ");
+				//console.log(viewBox);
+
+				//mouse coordinates to viewbox coordinates at current scale
+				x = viewBox.x + mouseX / paper.currentZoom;
+				y = viewBox.y + mouseY / paper.currentZoom;
+
+				paper.currentZoom *= multiplier;
+				console.log("currentZoom: " + paper.currentZoom);
+				paper.displayDevices();
+
+				//scale the view box   
+				viewBoxWidth = $('#svgspace').outerWidth() / paper.currentZoom;
+				viewBoxHeight = $('#svgspace').outerHeight() / paper.currentZoom;
+				//new coordinates to new viewbox coordinates at new scale
+				paper.curX = x - mouseX / paper.currentZoom;
+				paper.curY = y - mouseY / paper.currentZoom;
+
+				//console.log("curX: " + paper.curX + ", curY: " + paper.curY);
+
+				paper.attr({viewBox: "" + paper.curX + "," + paper.curY + "," + viewBoxWidth + "," + viewBoxHeight});
+			};
+			
+			// Zooming function to zoom on a selected shape
+			paper.zoomInPlace = function(event) {
+				var element = event.srcElement;
+			
+				var bbox = element.getBBox();
+				
+				var horizontalZoom = $('#svgspace').outerWidth()/bbox.width;
+				var verticalZoom = $('#svgspace').outerHeight()/bbox.height;
+				paper.currentZoom = horizontalZoom < verticalZoom ? horizontalZoom : verticalZoom;
+				
+				//reduce zoom a bit to better see the element
+				paper.currentZoom *= 0.5
+				
+				viewBoxWidth = $('#svgspace').outerWidth() / paper.currentZoom;
+				viewBoxHeight = $('#svgspace').outerHeight() / paper.currentZoom;
+				
+				paper.animateViewBox(bbox.x-viewBoxWidth*0.25, bbox.y-viewBoxHeight*0.25, viewBoxWidth, viewBoxHeight, 500, mina.easeout, paper.displayDevices);
+				
+				var viewBox = paper.attr("viewBox");
+				
+				paper.curX = viewBox.x;
+				paper.curY = viewBox.y;
+				
+				
+				//console.log("viewBox: ");
+				//console.log(viewBox);
+				//console.log("bbox.x: " + bbox.x + ", bbox.y: " + bbox.y);
+				//console.log("curX: " + paper.curX + ", curY: " + paper.curY);
+				
+			};
+			
+			// Draws elements to represent a place
+			paper.drawPlace = function(number, place) {
+				var size = paper.unit;
+				var placeShape =	paper.rect(1.5*number*size,size,size,size).attr({class: "place-shape", fill: "white", stroke:"green"});
+				var placeTitle = paper.text(1.5*number*size+10,size,place.get("name")).attr({class:"place-title"});
+				var placeGroup = paper.group(placeShape, placeTitle).attr({id: place.get("id"), class: "place"});
+				
+				var bbox = placeShape.getBBox();
+				var placeX = bbox.x;
+				var placeY = bbox.y;
+				var placeHUnit = bbox.width/7;
+				var placeVUnit = bbox.height/7;
+				
+				// adding place devices
+				var devices = place.get("devices");
+				console.log(devices);
+				
+				// adding place summary
+				var deviceNbText = paper.text(placeX+placeHUnit,placeY+placeVUnit, $.i18n.t("places-details.header.device-number-title") + ": " + devices.length).attr({class:"place-details"});
+				var averageConsumption = paper.text(placeX+placeHUnit, placeY+placeVUnit*2, $.i18n.t("places-details.header.consumption-label") + ": " + place.getAverageConsumption()).attr({class:"place-details"});
+				var averageTemperature = paper.text(placeX+placeHUnit, placeY+placeVUnit*3, $.i18n.t("places-details.header.temperature-label") + ": " + place.getAverageTemperature()).attr({class:"place-details"});
+				var averageIllumination = paper.text(placeX+placeHUnit, placeY+placeVUnit*4, $.i18n.t("places-details.header.illumination-label") + ": " + place.getAverageIllumination()).attr({class:"place-details"});
+				
+				var placeDetails = paper.group(deviceNbText, averageConsumption, averageTemperature, averageIllumination).attr({class: "place-details"});
+				
+				placeGroup.add(placeDetails);
+				
+				// adding device items
+				var col = 1;
+				var row = 1;
+				devices.forEach(function(deviceId){
+					var device = AppsGate.Device.Collection.get(deviceId);
+					if(typeof device !== 'undefined'){
+						if(row <= 6){
+							var deviceX = placeX+placeHUnit*col;
+							var deviceY = placeY+placeVUnit*row;
+							var deviceShape = paper.rect(deviceX, deviceY, placeHUnit, placeVUnit).attr({class: "device-shape", fill:"gray", stroke:"green"});
+							var deviceTitle = paper.text(deviceX+placeHUnit*0.1, deviceY+placeVUnit/2,device.get("name")).attr({class:"device-title"});
+							var deviceGroup = paper.group(deviceShape, deviceTitle).attr({id: device.get("id"), class: "device"});
+							
+							col += 2;
+							col = col%6;
+							if(col == 1){
+								row += 2;
+							}
+						}
+					}
+				});
+			};
+			
+			// toggles devices display
+			paper.displayDevices = function() {
+				if(paper.currentZoom > 3){
+					$(".device").show();
+					$(".place-details").hide();
+					console.log("should display devices now");
+				} else {
+					$(".device").hide();
+					$(".place-details").show();
+					console.log("should hide devices now");
+				}
+			};
+
+		},
+
+    /**
+     * Event handler for mouse wheel event.
+     */
+    wheel: function(event){
+      var delta = 0;
+      if (event.wheelDelta) { /* IE/Opera. */
+        delta = event.wheelDelta/120;
+      } else if (event.detail) { /** Mozilla case. */
+      /** In Mozilla, sign of delta is different than in IE.
+       * Also, delta is multiple of 3.
+       */
+      delta = -event.detail/3;
       }
-      // boolean
-    } else {
-      if (lamp.get("value")) {
-        lamp.set("value", "false");
-      } else {
-        lamp.set("value", "true");
+      /** If delta is nonzero, handle it.
+       * Basically, delta is now positive if wheel was scrolled up,
+       * and negative, if wheel was scrolled down.
+       */
+      if (delta && !paper.zooming) {
+        paper.zoomSvg(event.x, event.y, delta);
       }
-    }
 
-    // send the message to the backend
-    lamp.save();
+      event.preventDefault();
 
-    return false;
-  },
-  /**
-   * Callback to blink a lamp
-   *
-   * @param e JS mouse event
-   */
-onBlinkLampButton:function(e) {
-                    e.preventDefault();
+    },
+		
+		startDrag:function (x, y, e) {
+			var viewBox = paper.attr("viewBox");
+			paper.curX = viewBox.x;
+			paper.curY	= viewBox.y;
+			//console.log("mouseX: " + x + ", mouseY: " + y);
+			//console.log("viewBox.x: " + paper.curX + ", viewbox.y: " + paper.curY);
+			//console.log(event);
+		},
+		
+		moveDrag:function (dx, dy, mx, my, event) {
+			var viewBox = paper.attr("viewBox");
+		
+			//console.log("dx: " + dx + ", dy: " + dy + ", currentZoom: " + paper.currentZoom);
+		
+			tx = paper.curX - dx / paper.currentZoom;
+			ty = paper.curY - dy / paper.currentZoom;
+			paper.attr({viewBox: "" + tx + "," + ty + "," + viewBox.width + "," + viewBox.height});
+    },
+		
+		endDrag:function(event) {
+			var viewBox = paper.attr("viewBox");
+			paper.curX = viewBox.x;
+			paper.curY	= viewBox.y;
+		
+			//console.log(event);
+		},
 
-                    var lamp = devices.get($(e.currentTarget).attr("id"));
-                    // send the message to the backend
-                    lamp.remoteCall("blink", []);
+    /**
+			* render the spatial universe
+			*/
+    render:function() {
+      var self = this;
 
-                    return false;
-                  },
+      this.$el.html(this.template());
+      window.paper = Snap("#svgspace");
+			this.initializeSnapSvg();
 
-                  /**
-                   * Render the view
-                   */
-  render:function() {
-    if (!appRouter.isModalShown) {
-      // render the view itself
-      this.$el.html(this.tpl({
-        place : this.model,
-      }));
+      var initialWidth = $('#svgspace').outerWidth();
+      var initialHeight = $('#svgspace').outerHeight();
 
-      // put the name of the place by default in the modal to edit
-      $("#edit-name-place-modal .place-name").val(this.model.get("name"));
+      paper.attr({viewBox: "0,0," + initialWidth + "," + initialHeight});
+			paper.currentZoom = 1;
+			paper.curX = 0;
+			paper.curY = 0;
+			
+			paper.drag(this.moveDrag, this.startDrag, this.endDrag);
+			
+			paper.dblclick(paper.zoomInPlace);
 
-      // hide the error message
-      $("#edit-name-place-modal .text-error").hide();
-
-      // initialize the popover
-      this.$el.find("#delete-popover").popover({
-        html            : true,
-        content         : "<button type='button' class='btn btn-danger delete-place-button'>" + $.i18n.t("form.delete-button") + "</button>",
-        placement       : "bottom"
+      var places = AppsGate.Place.Collection;
+      var i = 1;
+      places.forEach(function(place) {
+        if (place.get("id") !== "-1") {
+          paper.drawPlace(i, place);
+          i++;
+        }
       });
-
-      // translate the view
-      this.$el.i18n();
-
-      // resize the devices list in the selected place
-      resizeDiv($(".contents-list"));
-
-      return this;
+			
+			paper.displayDevices();
+      
+			return this;
     }
-  }
-});
+  });
+
+  return AppsGate.Universe.Views.SpatialUniverse;
 });

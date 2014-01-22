@@ -1,3 +1,6 @@
+bower_components
+node_modules
+test
 .DS_Store
 platforms/android/bin/*
 platforms/ios/build/*
