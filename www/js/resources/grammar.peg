@@ -1,3 +1,6 @@
+/*
+ * Init of the vars and function symbol table
+ */
 {
   var variables = [];
   var targetType;
@@ -12,6 +15,16 @@
       throw error;
     }
   }
+  function addVariable(vName,obj) {
+    if (typeof variables[vName] !== 'undefined') {
+      error = { message : "Variable already defined : " + vName }
+      throw error;
+    }
+    else {
+      variables[vName] = obj;
+    }
+  }
+var functions = [];
 }
 /*
  * Program
@@ -32,7 +45,7 @@ pg = h:header _ d:declarations _ i:insts _
     p.daemon = h['daemon'];
   }
   p.seqDefinitions=d;
-  p.seqRules = [i];
+  p.seqRules = {type:"instructions", rules:i};
   return p;
 }
 
@@ -65,34 +78,48 @@ daemonInst = "daemon" _ ":" _ v:bool "\n"
  * Declarations
  */
 
-declarations = v:var_decl*
-
-
-var_decl = alias / var_comp
-
-alias = v:var_name _ "=" _ o:object _
+declarations = v:var_decl* f:function_decl*
 {
-  o.var_name = v;
-  variables[v] = o;
-  return o;
+  return v.concat(f);
 }
 
-var_comp = v:var_name _ "=" _ "[" _ o:var_list _ "]"
+/*
+ * Variables
+ */
+
+var_decl = "var" _ v:var_assignation _ ";"  _
+{
+  addVariable(v.var_name, v);
+  return v;
+}
+
+var_assignation = v:var_name _ "=" _ o:object _
+{
+  o.var_name = v;
+  return o;
+}
+ /  v:var_name _ "=" _ "[" _ o:var_list _ "]" _
 {
   
   obj = { type:'list', id:v, var_name:v, list:o};
-  variables[v] = obj;
   return obj;
+} / v:var_name _ "=" _ a:argument _
+{
+  a.var_name = v;
+  return a;
 }
 
-var_list = v:var_name sep o:var_list 
+var_list = v:var_name _","_ o:var_list 
 {
-  return [{type:'variable',id: v}].concat(o);
+  l = {type:'variable',id:v, var_name:v};
+  return [{type:'variable',id: v, var_name:v}].concat(o);
 }
  / v:var_name 
 {
-  return {type:'variable',id:v};
+  o = {type:'variable',id:v, var_name:v};
+  return {type:'variable',id: v, var_name:v};
 } 
+
 
 var_name = v:str 
 {
@@ -100,9 +127,39 @@ var_name = v:str
 }
 
 /*
+ * Fonctions
+ */
+
+function_decl = "function" _ f:var_name _ "(" p:parameter_def ")" _ "{" _ i:insts _ "}" _
+{
+functions[f] = f;
+
+return {type:'function', id:f, seqDefinitions:p, seqRules:i};
+}
+
+parameter_def = v:par_list 
+{
+return v;
+}/ _
+
+par_list = v:var_name _","_ o:par_list 
+{
+  l = {type:'variable',id:v, var_name:v};
+  addVariable(v,l);
+  return [{type:'variable',id: v, var_name:v}].concat(o);
+}
+ / v:var_name 
+{
+  o = {type:'variable',id:v, var_name:v};
+  addVariable(v,o);
+  return {type:'variable',id: v, var_name:v};
+} 
+
+
+/*
  * Instructions
  */
-insts = i:inst sep is:insts
+insts = i:inst _ is:insts _
 {
   return [i].concat(is);
 } 
@@ -110,82 +167,123 @@ insts = i:inst sep is:insts
 {
   return [i];
 }
-  / "[" _ i:insts _ "]"
+
+
+inst = d:inst_def _ ";"
 {
-  return i;
+  return d;
+}
+ / block
+
+block = when / if
+
+inst_def = ret / v:var_assignation {
+return {type:"assignation", name:v.var_name,value:v}
+}/ function_call / action 
+
+ret = "return" _ a:argument
+{
+  return {type:"return", value:a};
+} / "return"
+{
+ return {type:"return"}
 }
 
-inst = action / when / if
+function_call = f:var_name"("param:arguments")"
+{
+  if (typeof functions[f] !== 'undefined') {
+    return {type:'functionNode', id:f, params:param}
+  } else {
+    throw { message: "Function undefined: " + f };
+  }
+}
+
+arguments =  a:argument _ "," _ l:arguments
+{
+  return [a].concat(l);
+} 
+  / a:argument
+{
+  return [a];
+} / _
+
+argument = str_val / numValue / boolean / var
+
+str_val = '"' s:str '"' { return {type:"string", value:s} }
+/ '""' {return {type:"string", value:""} }
+
+var = v:var_name 
+{
+  if (typeof variables[v] !== 'undefined') {
+    return {type:'variable', id:v}
+  } else {
+    throw { message: "Variable undefined: " + v };
+  }
+}
 
 /*
  * Node Action
  */
-action = v:var_name "." method:str "(" action:sentence ")"
+action = v:var_name "." method:str "(" action:arguments ")"
 {
    getType(v);
-   return {type:'NodeAction',targetType:targetType,targetId:id,methodName:method,action:action};
+   return {type:'action',targetType:targetType,targetId:id,methodName:method,action:action};
    
 }
 
 /**
  * Node When
  */
-when = "when(" e:evts sep i:insts ")" 
+when = "when" _ "[" _ e:events _"]"_ sepTHEN _ "{" _ i:insts _ "}" 
 {
-  return {type:'NodeWhen',events:e,seqRulesThen:i};
+  return {type:'when',events:e,seqRulesThen:{type:"instructions", rules:i}};
 }
 
 /**
  * Node events
  */
 
-evts = evt
-     / "[" e:evts "]"
+events = e:evts _"/"_ i:int _ "/" _ d:int
 {
-  return e;
-}
-     / e:evt sep es:evts 
-{
-  return e.concat(es);
+  return {type:"events", events:e, duration:d, nbEventToOccur:i};
 }
 
-evt  = v:var_name "."  e:string "(\"" event:string "\")"
+evts = e:evt _ "," _ es:evts 
+{
+  return [e].concat(es);
+}
+ / evt:evt
+{
+ return [evt];
+}
+
+evt  = v:var_name "."  e:str "(\"" event:str "\")"
 {
   getType(v);
-  return {type:'nodeEvent',sourceType:targetType,eventName:e,sourceId:id,eventValue:event};
+  return {type:'event',sourceType:targetType,eventName:e,sourceId:id,eventValue:event};
 }
 
 /*
  * Node If
  */
-if = "if"i b:relBool sepTHEN t:insts sepELSE f:insts 
+if = "if"i b:relBool sepTHEN "{" _ t:insts _ "}" sepELSE "{" _ f:insts _ "}" 
 {
-  return {type:'NodeIf',expBool: [[ b]],seqRulesTrue: [[]],seqRulesFalse:[[f]]};
+  return {type:'if',expBool:  b,seqRulesTrue: {type:"instructions", rules:t},seqRulesFalse:{type:"instructions", rules:f}};
 }
 
 relBool = _ "(" left:operand _ o:operator _ right:operand ")"
 {
-  return {type:'NodeRelationBool',operator:o,leftOperand:left,rightOperand:right};
+  return {type:'binaryExpression',operator:o,leftOperand:left,rightOperand:right};
 }
 
 /*
  * Node Function
 */
-function =  v:var_name "." method:str "(\"" action:sentence "\"" sep retType:[isb] ")"
+function =  v:var_name "." method:str "(" _ action:arguments _ ")"
 {
    getType(v);
-   switch(retType) {
-     case 'i':
-        retType = 'number';
-        break;
-     case 's':
-        retType = 'string';
-        break;
-     case 'b':
-        retType = 'boolean';
-        break;
-   }
-   return {targetId:id,methodName:method,returnType:retType,targetType:targetType,action:action};
+
+   return {targetId:id,methodName:method,targetType:targetType,action:action};
 }
 
 /*
@@ -233,7 +331,8 @@ bool = "true"i/"false"i
 
 sep = ([\ ]*[\n])+ / _ ";" _ / _ "," _
 
-sepTHEN = _ "=>" _ / _ "then"i _
+
+sepTHEN = _ "then"i _
 sepELSE = _ "else"i _
 
 /* JSON parser based on the grammar described at http://json.org/. */

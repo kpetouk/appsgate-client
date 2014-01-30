@@ -85,9 +85,7 @@ define([
 				target : "",
 				daemon : "false",
 				seqDefinitions : [],
-				seqRules : [
-					[]
-				]
+				seqRules : { "type" : "instructions", "rules": []}
 			}
 		},
 		
