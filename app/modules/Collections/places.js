@@ -3,9 +3,9 @@ define([
 	"models/place"
 ], function(App, Place) {
 
-	var PlaceCollection = {};
+	var Places = {};
   // collection
-  PlaceCollection = Backbone.Collection.extend({
+  Places = Backbone.Collection.extend({
     model: Place,
 
     /**
@@ -183,6 +183,6 @@ define([
     }
   });
 	
-	return PlaceCollection;
+	return Places;
 	
 });

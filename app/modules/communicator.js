@@ -41,13 +41,18 @@ define([
 
       // socket closed event or error occured during the connection - show the error in the modal settings
       this.webSocket.onclose = function() {
-        //console.log("Socket closed");
+        console.log("Socket closed");
         dispatcher.trigger("WebSocketClose");
       };
+			
+			this.webSocket.onerror = function(error) {
+				console.log(error);
+				dispatcher.trigger("WebSocketClose");
+			}
 
       // socket opened event - broadcast an event to the application
       this.webSocket.onopen = function() {
-        //console.log("Socket opened");
+        console.log("Socket opened");
         dispatcher.trigger("WebSocketOpen");
       };
 
@@ -94,20 +99,20 @@ define([
 
     /**
      * @method handleMessage
+		 * Receives a message from the backend and dispatches it to the recepient module
      */
     handleMessage:function(message) {
       // rebuild the message for the application
       var jsonMessage = JSON.parse(message.data);
-      //console.log("received", message.data);
+      console.log("received", message);
 
       if (jsonMessage.callId !== undefined) {
-        if (typeof jsonMessage.value === "string" && jsonMessage.callId !== "mediaBrowser") {
+        if (typeof jsonMessage.value === "string") {
           jsonMessage.value = JSON.parse(jsonMessage.value);
         }
         dispatcher.trigger(jsonMessage.callId, jsonMessage.value);
       } else if (typeof jsonMessage.objectId !== "undefined") {
         var id = jsonMessage.objectId;
-        delete jsonMessage.objectId;
         dispatcher.trigger(id, jsonMessage);
       } else {
         var commandName = _.keys(jsonMessage)[0];
@@ -125,7 +130,7 @@ define([
      * @param targetType Parameter used by the server to route the message. 0: AbstractObject, 1: ApAM component
      */
     sendMessage:function(message) {
-      //console.log("sending", JSON.stringify(message));
+      console.log("sending", JSON.stringify(message));
       this.webSocket.send(JSON.stringify(message));
     },
 

@@ -1,18 +1,20 @@
 define([
   "app",
-	"models/device/device"
+  "models/device/device"
 ], function(App, Device) {
 
-	var Plug = {};
+  var Plug = {};
   /**
    * @class Device.Plug
    */
-	 Plug = Device.extend({
+  Plug = Device.extend({
     /**
      * @constructor
      */
     initialize:function() {
       Plug.__super__.initialize.apply(this, arguments);
+
+      this.appendViewFactory( 'PresoBasicSmartPlug', PresoBasicSmartPlug, { pixelsMinDensity : 0, pixelsMaxDensity : 999999999, pixelsRatio : 1 });
     },
 
     /**
@@ -26,5 +28,5 @@ define([
       }
     }
   });
-	return Plug;
+  return Plug;
 });

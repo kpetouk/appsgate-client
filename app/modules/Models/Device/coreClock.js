@@ -1,16 +1,16 @@
 define([
   "app",
-	"models/device/device"
+  "models/device/device"
 ], function(App, Device) {
 
-	var CoreClock = {};
+  var CoreClock = {};
 
   /**
    * Implementation of the Core Clock
    *
    * @class Device.CoreClock
    */
-	 CoreClock = Device.extend({
+  CoreClock = Device.extend({
     /**
      * @constructor
      */
@@ -22,14 +22,14 @@ define([
       // when the flow rate changes, update the interval that controls the local time
       this.on("change:flowRate", function() {
         //clearInterval(this.intervalLocalClockValue);
-        var moi = this;
+        var localthis = this;
         var time = (new Date()).getTime();
-        clearTimeout( moi.timeout );
+        clearTimeout( localthis.timeout );
         var fctCB = function() {
           self.updateClockValue();
           var time = ( (new Date()).getTime() - self.anchorSysTime ) * self.get("flowRate"); // Temps écoulé en terme de l'horloge par rapport à son ancre AnchorTimeSys
           var dt = ( Math.floor((time+60000)/60000)*60000 - time) / self.get("flowRate");
-          moi.timeout = setTimeout( fctCB, dt + 5);
+          localthis.timeout = setTimeout( fctCB, dt + 5);
         };
         this.timeout = setTimeout( fctCB, ( Math.floor((time+60000)/60000)*60000 - time + 5 ) / self.get("flowRate") );
       });
@@ -128,5 +128,5 @@ define([
       this.remoteCall("setTimeFlowRate", [{ type : "double", value : this.get("flowRate") }]);
     }
   });
-	return CoreClock;
+  return CoreClock;
 });

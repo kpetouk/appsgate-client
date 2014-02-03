@@ -4,15 +4,16 @@ define(function(require, exports, module) {
   var _ = require("underscore");
   var $ = require("jquery");
   var Backbone = require("backbone");
-	var moment = require("moment");
 	var Router = require("router");
 	var Communicator = require("modules/communicator");
 	
+	require("moment");
 	require("i18n");
 	
   // Alias the module for easier identification.
   var app = module.exports;
 
+	// Initialization of the application
   app.initialize = function() {
 	
 			// Define your master router on the application namespace and trigger all
@@ -46,8 +47,6 @@ define(function(require, exports, module) {
 					if(placesReady && devicesReady){
 						dispatcher.trigger("dataReady");
 					}
-					//console.log("placesReady");
-					//console.log(AppsGate.Place.Collection);
 				});
 				
 				// devices
@@ -56,12 +55,8 @@ define(function(require, exports, module) {
 					if(placesReady && devicesReady){
 						dispatcher.trigger("dataReady");
 					}
-					
-					console.log("devicesReady");
-					console.log(AppsGate.Device.Collection);
 				});
 
-			
 				// all data have been received, launch the user interface
 				dispatcher.on("dataReady", function() {
 				
@@ -69,30 +64,20 @@ define(function(require, exports, module) {
 					AppsGate.Place.Collection.forEach(function(l) {
 						l.set({ devices : _.uniq(l.get("devices")) });
 					});
-				
+					
+					// Initializing the browser history and routing to index
 					Backbone.history.start();
 					
 				});
 			
-				if (navigator.splashscreen !== undefined) {
-					navigator.splashscreen.hide();
-				}
-				
 				// Initialize the collection of places
-				var placeModel = require("models/place");
-				AppsGate.Place.Model = new placeModel();
-				
 				var placeCollection = require("collections/places");
 				AppsGate.Place.Collection = new placeCollection();
 
 				// Initialize the collection of devices
-				var deviceModel = require("models/device/device");
-				AppsGate.Device.Model = new deviceModel();
-				
 				var deviceCollection = require("collections/devices");
 				AppsGate.Device.Collection = new deviceCollection();
 
-				
 			});
 
 			// Initialize the communication layer

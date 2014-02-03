@@ -1,13 +1,14 @@
 define([
   "app",
-	"models/device/device"
+  "models/device/device"
 ], function(App, Device) {
 
-	var ContactSensor = {};
-/**
- * @class Device.ContactSensor
- */
- ContactSensor = Device.extend({
+  var ContactSensor = {};
+  /**
+   * Implementation of a Contact sensor
+   * @class Device.ContactSensor
+   */
+  ContactSensor = Device.extend({
     /**
      * @constructor
      */
@@ -15,5 +16,5 @@ define([
       ContactSensor.__super__.initialize.apply(this, arguments);
     }
   });
-	return ContactSensor;
+  return ContactSensor;
 });

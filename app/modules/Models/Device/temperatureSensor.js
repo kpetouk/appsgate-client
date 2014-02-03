@@ -1,18 +1,18 @@
 define([
   "app",
-	"models/device/device"
+  "models/device/device"
 ], function(App, Device) {
 
-	var TemperatureSensor = {};
+  var TemperatureSensor = {};
 
-/**
- * Implementation of temperature sensor
- * Specific attribute is: 
- *      value, containing the last temperature sent by the backend, in degree Celsius
- *
- * @class Device.TemperatureSensor
- */
- TemperatureSensor = Device.extend({
+  /**
+   * Implementation of temperature sensor
+   * Specific attribute is: 
+   *      value, containing the last temperature sent by the backend, in degree Celsius
+   *
+   * @class Device.TemperatureSensor
+   */
+  TemperatureSensor = Device.extend({
     /**
      * @constructor
      */
@@ -20,5 +20,5 @@ define([
       TemperatureSensor.__super__.initialize.apply(this, arguments);
     }
   });
-	return TemperatureSensor;
+  return TemperatureSensor;
 });

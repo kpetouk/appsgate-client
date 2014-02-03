@@ -1,18 +1,27 @@
 define([
-  "app"
-], function(App) {
+  "app",
+  "models/brick",
+  "views/bricks/placebrickview"
+], function(App, Brick, PlaceBrickView) {
 
-	var Place = {};
+  var Place = {};
 
-
-  // model
-  Place = Backbone.Model.extend({
+  /**
+	 * Place model class representing a place in AppsGate
+	 */
+  Place = Brick.extend({
 
     /**
      * @constructor
      */
     initialize:function() {
+      Place.__super__.initialize.apply(this, arguments);
+
       var self = this;
+
+      this.type = "place";
+
+      this.appendViewFactory( 'PlaceBrickView', PlaceBrickView, { pixelsMinDensity : 0, pixelsMaxDensity : 999999999, pixelsRatio		 : 1 });
 
       // remove potential duplicated entries and trigger a refresh of the list of places event
       this.on("change:devices", function() {
@@ -44,15 +53,15 @@ define([
 
       return average / sensors.length;
     },
-		
-		/**
+
+    /**
      * Compute the total value of given sensors
      * 
      * @param sensors Array of sensors
      * @return Average value of the sensors if any, undefined otherwise
      */
-		getTotalValue:function(sensors) {
-		 // return null if there is no  sensors in the room
+    getTotalValue:function(sensors) {
+      // return null if there is no  sensors in the room
       if (sensors.length === 0) {
         return undefined;
       }
@@ -76,7 +85,7 @@ define([
      * @return Average temperature of the place if any temperature sensor, undefined otherwise
      */
     getAverageTemperature:function() {
-			var result = this.getAverageValue(this.getTemperatureSensors());
+      var result = this.getAverageValue(this.getTemperatureSensors());
       return result ? result : $.i18n.t("places-details.undefined");
     },
 
@@ -87,7 +96,7 @@ define([
      */
     getAverageIllumination:function() {
       var result = this.getAverageValue(this.getIlluminationSensors());
-			return result ? result : $.i18n.t("places-details.undefined");
+      return result ? result : $.i18n.t("places-details.undefined");
     },
 
     /**
@@ -97,7 +106,7 @@ define([
      */
     getAverageConsumption:function() {
       var result = this.getTotalValue(this.getPlugs());
-			return result ? result : $.i18n.t("places-details.undefined");
+      return result ? result : $.i18n.t("places-details.undefined");
     },
 
     /**
@@ -237,6 +246,6 @@ define([
       }; 
     }
   });
-	
-	return Place;
+
+  return Place;
 });

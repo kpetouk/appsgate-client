@@ -1,21 +1,26 @@
 define([
   "app",
-	"models/device/device"
-], function(App, Device) {
+  "models/device/device",
+  "views/bricks/mediaplayerview",
+	"views/bricks/mediaplayercloseview"
+], function(App, Device, MediaPlayerView, MediaPlayerCloseView) {
 
-	var MediaPlayer = {};
+  var MediaPlayer = {};
 
-/**
- * Implementation of the UPnP media player
- *
- * @class Device.MediaPlayer
- */
- MediaPlayer = Device.extend({
+  /**
+   * Implementation of the UPnP media player
+   *
+   * @class Device.MediaPlayer
+   */
+  MediaPlayer = Device.extend({
     /**
      * @constructor
      */
     initialize:function() {
-     MediaPlayer.__super__.initialize.apply(this, arguments);
+      MediaPlayer.__super__.initialize.apply(this, arguments);
+
+      this.appendViewFactory( 'MediaPlayerView', MediaPlayerView, { pixelsMinDensity : 0, pixelsMaxDensity : 0.5, pixelsRatio : 1 });
+			this.appendViewFactory( 'MediaPlayerCloseView', MediaPlayerCloseView,{ pixelsMinDensity : 0.5, pixelsMaxDensity : 2, pixelsRatio : 1 });
 
       // setting default friendly name if none exists
       if(this.get("name") === ""){
@@ -70,7 +75,7 @@ define([
      * Send a message to the backend to set the volume to a given level
      */
     sendVolume:function(volume) {
-      this.remoteCall("setVolume", [{"type":"int" , "value":volume}], "mediaplayer"); // TODO store the actual volume somewhere and allow to change it
+      this.remoteCall("setVolume", [{"type":"int" , "value":volume}], "mediaplayer");
     },
 
     // Displays a tree of items the player can read
@@ -86,7 +91,6 @@ define([
         var name = browsers[i].get("friendlyName") !== "" ? browsers[i].get("friendlyName") : browsers[i].get("id");
         xml_data += "<item id='" + browsers[i].get("id") + "' rel='root'>" + "<content><name>" + name + "</name></content></item>";
       }
-
 
       var mediabrowser = $(".browser-container").jstree({
         "xml_data" : {
@@ -128,9 +132,7 @@ define([
           selectedMedia.attr("title",event.currentTarget.parentNode.attributes.title.textContent);
           selectedMedia.attr("url",event.currentTarget.parentNode.attributes.res.textContent);
         }
-
       });
-
 
       dispatcher.on("mediaBrowser", function(result) {
         var D = null;
@@ -164,5 +166,5 @@ define([
       });
     },
   });
-	return MediaPlayer;
+  return MediaPlayer;
 });

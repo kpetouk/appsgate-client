@@ -2,10 +2,8 @@ define(function(require, exports, module) {
   "use strict";
 
   // External dependencies.
-  //var app = require("app");
-  //var Backbone = require("backbone");
-  require("views/universelist");
-  require("views/spatialUniverse");
+  var UniverseList = require("views/universelist");
+  var MapUniverseView = require("views/mapUniverseView");
 
   // define the application router
   var Router = Backbone.Router.extend({
@@ -17,12 +15,12 @@ define(function(require, exports, module) {
 
     // default route of the application
     index:function() {
-      this.showView(new AppsGate.Universe.Views.List());
+      this.showView(new UniverseList());
     },
 
 
     spatialUniverse:function() {
-      this.showView(new AppsGate.Universe.Views.SpatialUniverse());
+      this.showView(new MapUniverseView());
     },
 
     showView:function(view) {

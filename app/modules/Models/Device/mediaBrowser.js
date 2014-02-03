@@ -1,15 +1,15 @@
 define([
   "app",
-	"models/device/device"
+  "models/device/device"
 ], function(App, Device) {
 
-	var MediaBrowser = {};
+  var MediaBrowser = {};
 
-/**
- * Implementation of the UPnP media browser
- *
- * @class Device.MediaBrowser
- */
+  /**
+   * Implementation of the UPnP media browser
+   *
+   * @class Device.MediaBrowser
+   */
   MediaBrowser = Device.extend({
     /**
      * @constructor
@@ -18,5 +18,5 @@ define([
       MediaBrowser.__super__.initialize.apply(this,arguments);
     },
   });
-	return MediaBrowser;
+  return MediaBrowser;
 });

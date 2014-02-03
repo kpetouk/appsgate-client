@@ -9,9 +9,6 @@ require(["config"], function() {
      * @returns {undefined}
      */
     Backbone.View.prototype.close = function() {
-			// remove the view from the page
-			//this.remove();
-
 			// unbind all the events associated to the view
 			this.unbind();
     };
@@ -39,7 +36,6 @@ require(["config"], function() {
 			// initialise localisation
 			$.i18n.init({ resGetPath:'app/locales/__lng__/__ns__.json', lng : 'fr-FR' }).done(function() {
 				app.initialize();
-				console.log("localisation initialized");
 			});
     });
   });

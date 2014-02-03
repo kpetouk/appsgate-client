@@ -22,7 +22,7 @@ require.config({
     "text": "../vendor/bower/requirejs-text/text",
     "domReady": "../vendor/bower/requirejs-domready/domReady",
 		
-    // Snap.Svg
+    // Snap.svg
     "snapsvg": "../vendor/bower/Snap.svg/dist/snap.svg",
 
 		// MomentJS

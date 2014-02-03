@@ -1,11 +1,14 @@
 define([
-  "jquery",
-  "underscore",
-  "backbone"
-], function($, _, Backbone, Grammar) {
+  "app",
+  "models/brick"
+], function(App, Brick) {
 
-  // model
-  AppsGate.Universe.Model = Backbone.Model.extend({
+	var Universe = {};
+
+  /**
+	 * Universe model class, representing a universe in AppsGate
+	 */
+  Universe = Brick.extend({
 
     // default values
     defaults: {
@@ -72,4 +75,5 @@ define([
       };
     }
   });
+	return Universe;
 });

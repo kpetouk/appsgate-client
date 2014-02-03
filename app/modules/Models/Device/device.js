@@ -1,20 +1,23 @@
 define([
-  "app"
-], function(App) {
+  "app",
+  "models/brick"
+], function(App, Brick) {
 
-	var Device = {};
+  var Device = {};
 
   /**
    * Abstract class regrouping common characteristics shared by all the devices
    *
    * @class Device.Model
    */
-  Device = Backbone.Model.extend({
+  Device = Brick.extend({
 
     /**
      * @constructor 
      */
     initialize: function() {
+      Device.__super__.initialize.apply(this, arguments);
+
       var self = this;
 
       // each device listens to the event whose id corresponds to its own id. This ensures to

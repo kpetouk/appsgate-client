@@ -15,10 +15,10 @@ define([
 	"models/device/mail"
 ], function(App, Device, TemperatureSensor, IlluminationSensor, SwitchSensor, ContactSensor, KeyCardSensor, Plug, PhillipsHue, Actuator, CoreClock, MediaPlayer, MediaBrowser, Mail) {
 
-	var DeviceCollection = {};
+	var Devices = {};
 
   // collection
-  DeviceCollection = Backbone.Collection.extend({
+  Devices = Backbone.Collection.extend({
     model: Device,
 
     /**
@@ -66,51 +66,58 @@ define([
      */
     addDevice:function(device) {
       device.type = parseInt(device.type);
+			var brick;
 
       switch (device.type) {
         case 0:
-					this.add(new TemperatureSensor(device));
+					brick = new TemperatureSensor(device);
         break;
         case 1:
-					this.add(new IlluminationSensor(device));
+					brick = new IlluminationSensor(device);
         break;
         case 2:
-					this.add(new SwitchSensor(device));
+					brick = new SwitchSensor(device);
         break;
         case 3:
-					this.add(new ContactSensor(device));
+					brick = new ContactSensor(device);
         break;
         case 4:
-					this.add(new KeyCardSensor(device));
+					brick = new KeyCardSensor(device);
         break;
         case 6:
-					this.add(new Plug(device));
+					brick = new Plug(device);
         break;
         case 7:
-					this.add(new PhillipsHue(device));
+					brick = new PhillipsHue(device);
         break;
         case 8:
-					this.add(new Actuator(device));
+					brick = new Actuator(device);
         break;
         case 21:
-					this.add(new CoreClock(device));
+					brick = new CoreClock(device);
         break;
         case 31:
-					this.add(new MediaPlayer(device));
+					brick = new MediaPlayer(device);
         break;
         case 36:
-					this.add(new MediaBrowser(device));
+					brick = new MediaBrowser(device);
         break;
         case 102:
-          this.add(new Mail(device));
+          brick = new Mail(device);
         break;
         default:
           //console.log("unknown type", device.type, device);
         break;
       }
-
-      AppsGate.Place.Collection.get(device.placeId).get("devices").push(device.id);
-			//console.log("added a new device" + device.id);
+			
+			// adding the brick to the collection
+			this.add(brick);
+			
+			// integrating the brick in the place it is contained in
+			if(device.placeId !== "-1")	{
+				var place = AppsGate.Place.Collection.get(device.placeId);
+				place.appendChild(brick);
+			}
     },
 
     /**
@@ -225,6 +232,6 @@ define([
     }
   });
 	
-	return DeviceCollection;
+	return Devices;
 	
 });

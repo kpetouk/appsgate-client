@@ -1,16 +1,16 @@
 define([
   "app",
-	"models/device/device"
+  "models/device/device"
 ], function(App, Device) {
 
-	var Mail = {};
-	
+  var Mail = {};
+
   /**
    * Abstract class regrouping common characteristics shared by all the devices
    *
    * @class Device.Model
    */
-	 Mail = Device.extend({
+  Mail = Device.extend({
     /**
      * @constructor
      */
@@ -18,5 +18,5 @@ define([
       Mail.__super__.initialize.apply(this, arguments);
     },
   });
-	return Mail;
+  return Mail;
 });

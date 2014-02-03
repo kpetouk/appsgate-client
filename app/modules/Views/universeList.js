@@ -1,17 +1,25 @@
 define([
-  'jquery',
-  'underscore',
-  'backbone',
-  'text!templates/home/home.html',
-], function($, _, Backbone, homeTemplate) {
+	"app",
+  "text!templates/home/home.html"
+], function(App, homeTemplate) {
  
-  // initialize the views array
-  if (typeof AppsGate.Universe.Views === "undefined") AppsGate.Universe.Views = {};
+	var UniverseList = {};
   
-  // home view
-  AppsGate.Universe.Views.List = Backbone.View.extend({
+  /**
+	 * View used as home page of the application
+	 */
+  UniverseList = Backbone.View.extend({
     el: $("#main"),
     template: _.template(homeTemplate),
+		
+		/**
+		 * constructor
+		 */
+    initialize:function() {
+			var self = this;
+      UniverseList.__super__.initialize.apply(this, arguments);
+			
+		},
 
     // render the homepage of the application
     render:function() {
@@ -20,5 +28,5 @@ define([
     }
   });
 
-  return AppsGate.Universe.Views.List;
+  return UniverseList;
 });

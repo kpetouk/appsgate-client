@@ -1,15 +1,16 @@
 define([
   "app",
-	"models/device/device"
+  "models/device/device"
 ], function(App, Device) {
 
-	var Actuator = {};
+  var Actuator = {};
 
   /**
    * Implementation of an actuator
    * @class Device.Actuator
    */
-	 Actuator = Device.extend({
+  Actuator = Device.extend({
+
     /**
      * @constructor
      */
@@ -27,6 +28,6 @@ define([
         this.remoteCall("off", []);
       }
     }
-	});
-	return Actuator;
+  });
+  return Actuator;
 });

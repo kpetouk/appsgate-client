@@ -1,14 +1,14 @@
 define([
   "app",
-	"models/device/device"
+  "models/device/device"
 ], function(App, Device) {
 
-	var KeyCardSensor = {};
+  var KeyCardSensor = {};
 
-/**
- * @class Device.KeyCardSensor
- */
- KeyCardSensor = Device.extend({
+  /**
+   * @class Device.KeyCardSensor
+   */
+  KeyCardSensor = Device.extend({
     /**
      * @constructor
      */
@@ -16,5 +16,5 @@ define([
       KeyCardSensor.__super__.initialize.apply(this, arguments);
     }
   });
-	return KeyCardSensor;
+  return KeyCardSensor;
 });
