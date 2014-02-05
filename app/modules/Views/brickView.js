@@ -19,6 +19,8 @@ define( [
       this.dt = 0.1;
       this.size = 32;
       this.svg_point = null;
+      this.draggedList = [];
+      this.toUnplugList = [];
 
 
       this.x = this.y = 0;
@@ -30,6 +32,72 @@ define( [
       this.validity = { pixelsMinDensity : 0,
         pixelsMaxDensity : 999999999,
         pixelsRatio		 : this.w / this.h };
+    },
+
+    /**
+		 * Adds an element to the dragged list
+		 * @param obj Element to add
+		 */
+    pushDragged:function(obj) {
+      var node = obj.target;
+      obj.nodesList = [];
+      while(node.parentNode) {
+        obj.nodesList.push(node);
+        node=node.parentNode;
+      }
+      this.draggedList.push(obj);
+    },
+
+		/**
+		 * Removes an element from the dragged list
+		 * @param idPtr Pointer id to remove
+		 */
+    removeDragged:function(idPtr) {
+      for(var i=0; i<this.draggedList.length; i++) {
+        if(this.draggedList[i].id === idPtr) {
+          this.draggedList.splice(i,1);
+          break;
+        }
+      }
+    },
+		
+		/**
+		 * Returns the id of an element if it is in the dragging list
+		 * @param node Node to evaluate
+		 */
+    isDragging:function(node) {
+      for(var i=0; i<this.draggedList.length; i++) {
+        if(this.draggedList[i].nodesList.indexOf(node) >= 0) {
+          return this.draggedList[i].id;
+        }
+      }
+      return null;
+    },
+
+		/**
+		 * Adds an element to the list of elements to unplug
+		 * @param view The view to add
+		 */
+    pushViewToUnplug:function(view) {
+      this.toUnplugList.push(view);
+    },
+
+		/**
+		 * Unplugs the view referenced in the list of items to unplug
+		 * @param idPtr Pointer id
+		 */
+    processViewsToUnplug:function(idPtr) {
+      // Unplug only if the tile is no more related to any pointer
+      var list = [];
+      for(var i=0; i<this.toUnplugList.length; i++) {
+        if(this.isDragging(this.toUnplugList[i].root) === null) {
+          this.toUnplugList[i].brick.unPlugView(toUnplugView[i]);
+        }
+        else {
+          list.push(this.toUnplugList[i]);
+        }
+      }
+      this.toUnplugList = list;
     },
 
     /**

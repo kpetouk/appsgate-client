@@ -1,7 +1,7 @@
 define([
   "app",
-  "views/utils"
-], function(App) {
+  "views/tools/utils"
+], function(App, AppsGateUtils) {
 
   var uid = 0;
   var AppsGateView = {};
