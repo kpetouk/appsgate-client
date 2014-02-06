@@ -5,16 +5,7 @@
   var variables = [];
   var targetType;
   var id;
-  function getType(v)
-  {
-    if (typeof variables[v] !== 'undefined') {
-      targetType = variables[v].type;
-      id = variables[v].id;
-    } else {
-      error = { message : "unknown variable : " + v}
-      throw error;
-    }
-  }
+
   function addVariable(vName,obj) {
     if (typeof variables[vName] !== 'undefined') {
       error = { message : "Variable already defined : " + vName }
@@ -52,7 +43,7 @@ pg = h:header _ d:declarations _ i:insts _
 /*
  * Header
  */
-header = h:headerInst*
+header  = h:headerInst*
 {
 header=[];
   h.forEach(function(e) {
@@ -64,7 +55,7 @@ header=[];
 
 headerInst = daemonInst / hInst
 
-hInst = t:str _ ":" _ v:str "\n" 
+hInst = t:var_name _ ":" _ v:var_name "\n" 
 {
   return {key:t, value:v};
 }
@@ -78,7 +69,7 @@ daemonInst = "daemon" _ ":" _ v:bool "\n"
  * Declarations
  */
 
-declarations = v:var_decl* f:function_decl*
+declarations "declarations" = v:var_decl* f:function_decl*
 {
   return v.concat(f);
 }
@@ -93,66 +84,70 @@ var_decl = "var" _ v:var_assignation _ ";"  _
   return v;
 }
 
-var_assignation = v:var_name _ "=" _ o:object _
-{
-  o.var_name = v;
-  return o;
-}
- /  v:var_name _ "=" _ "[" _ o:var_list _ "]" _
-{
-  
-  obj = { type:'list', id:v, var_name:v, list:o};
-  return obj;
-} / v:var_name _ "=" _ a:argument _
+var_assignation =  v:var_name _ "=" _ a:argument _
 {
   a.var_name = v;
   return a;
 }
+ /  v:var_name _ "=" _ "[" _ o:arguments _ "]" _
+{
+  return { type:'list', id:v, var_name:v, list:o};
+}
+ / v:var_name _ "=" _ o:object _
+{
+  o.var_name = v;
+  return o;
+}
 
 var_list = v:var_name _","_ o:var_list 
 {
-  l = {type:'variable',id:v, var_name:v};
   return [{type:'variable',id: v, var_name:v}].concat(o);
 }
  / v:var_name 
 {
-  o = {type:'variable',id:v, var_name:v};
   return {type:'variable',id: v, var_name:v};
 } 
 
-
-var_name = v:str 
+var_name = f:[a-z] v:[a-zA-Z_0-9]+
 {
-  return v;
+  return [f].concat(v).join("");
 }
 
+device = "/" c:[^\/]+ "/" 
+{
+  return {type:"device",id:c.join("")};
+}
+
+program = "|" c:[^\|]+ "|" 
+{
+  return {type:"programCall",id:c.join("")};
+}
 /*
  * Fonctions
  */
 
 function_decl = "function" _ f:var_name _ "(" p:parameter_def ")" _ "{" _ i:insts _ "}" _
 {
-functions[f] = f;
-
-return {type:'function', id:f, seqDefinitions:p, seqRules:i};
+  functions[f] = f;
+  return {type:'function', id:f, seqDefinitions:p, seqRules:i};
 }
 
 parameter_def = v:par_list 
 {
-return v;
+  return v;
 }/ _
 
 par_list = v:var_name _","_ o:par_list 
 {
   l = {type:'variable',id:v, var_name:v};
   addVariable(v,l);
-  return [{type:'variable',id: v, var_name:v}].concat(o);
+  return [l].concat(o);
 }
  / v:var_name 
 {
   o = {type:'variable',id:v, var_name:v};
   addVariable(v,o);
-  return {type:'variable',id: v, var_name:v};
+  return o;
 } 
 
 
@@ -169,22 +164,30 @@ insts = i:inst _ is:insts _
 }
 
 
-inst = d:inst_def _ ";"
+inst = b:block _
+{
+return b;
+}
+ / d:inst_def _ ";"
 {
   return d;
 }
- / block
 
-block = when / if
+block = when / if / while
 
-inst_def = ret / v:var_assignation {
-return {type:"assignation", name:v.var_name,value:v}
-}/ function_call / action 
+inst_def = ret 
+ / action 
+ / function_call
+ / v:var_assignation 
+{
+  return {type:"assignation", name:v.var_name, value:v}
+}
 
 ret = "return" _ a:argument
 {
   return {type:"return", value:a};
-} / "return"
+}
+ / "return"
 {
  return {type:"return"}
 }
@@ -202,15 +205,15 @@ arguments =  a:argument _ "," _ l:arguments
 {
   return [a].concat(l);
 } 
-  / a:argument
+ / a:argument
 {
   return [a];
-} / _
+}
+ / _
 
-argument = str_val / numValue / boolean / var
+argument = device / var / stringValue / numValue / boolean 
 
-str_val = '"' s:str '"' { return {type:"string", value:s} }
-/ '""' {return {type:"string", value:""} }
+spokObject = program / device / var
 
 var = v:var_name 
 {
@@ -224,10 +227,9 @@ var = v:var_name
 /*
  * Node Action
  */
-action = v:var_name "." method:str "(" action:arguments ")"
+action = v:spokObject "." method:var_name "(" action:arguments ")"
 {
-   getType(v);
-   return {type:'action',targetType:targetType,targetId:id,methodName:method,action:action};
+   return {type:'action',target:v,methodName:method,action:action};
    
 }
 
@@ -257,10 +259,10 @@ evts = e:evt _ "," _ es:evts
  return [evt];
 }
 
-evt  = v:var_name "."  e:str "(\"" event:str "\")"
+evt  = v:spokObject "."  e:var_name "(" event:string ")"
 {
-  getType(v);
-  return {type:'event',sourceType:targetType,eventName:e,sourceId:id,eventValue:event};
+
+  return {type:'event',source:v,eventName:e,eventValue:event};
 }
 
 /*
@@ -279,38 +281,42 @@ relBool = _ "(" left:operand _ o:operator _ right:operand ")"
 /*
  * Node Function
 */
-function =  v:var_name "." method:str "(" _ action:arguments _ ")"
+function =  d:spokObject "." method:var_name "(" _ action:arguments _ ")"
 {
-   getType(v);
-
-   return {targetId:id,methodName:method,targetType:targetType,action:action};
+   return {target:d,methodName:method,action:action};
 }
 
 /*
+ * Node While
+ */
+
+while = "while" _ "(" _ s:state _ ")" _ "{" _ i1:inst _ "}" _ sepTHEN _ "{" _ i2:inst _ "}"
+{
+return {type:"while",state:s,rulesThen:i1,rulesAfter:i2};
+}
+ / "while" _ "(" _ s:state _ ")" _ "{" _ i1:inst _ "}"
+{
+return {type:"while",state:s,rulesThen:i1,rulesAfter:{}};
+}
+
+state = o:var_name "." st:var_name _ "(" _ v:operand _ ")" 
+{
+
+  return {type:"state", object:variables[o], stateName:st,stateValue:v};
+}
+/*
  * Basic elements
  */
-targetId=c:[a-zA-Z0-9\_\-\.\:]+
-{
-  return c.join("");
-}
-str = c:[a-zA-Z0-9\_\-]+
-{
-  return c.join("");
-}
-sentence = "\"" c:[a-zA-Z0-9\_\-\ êéèùàîïû]+ "\""
-{
-  return c.join("");
-} 
-/ "\"\"" 
-{
-  return "";
-}
 
 operator = "==" / ">=" / "<="
 
-operand= relBool / bool / stringValue / numValue / function
-stringValue= "\"" c:str "\""
+operand= relBool / boolean / stringValue / numValue / function
+
+/* Nodes Value */
+
+stringValue= c:string
 {
+obj = {};
   obj.type="string";
   obj.value=c;
   return obj;
@@ -328,9 +334,6 @@ bool = "true"i/"false"i
 /*
  * Separators
  */
-
-sep = ([\ ]*[\n])+ / _ ";" _ / _ "," _
-
 
 sepTHEN = _ "then"i _
 sepELSE = _ "else"i _
@@ -387,6 +390,8 @@ value
 string "string"
   = '"' '"' _             { return "";    }
   / '"' chars:chars '"' _ { return chars; }
+
+
 
 chars
   = chars:char+ { return chars.join(""); }
