@@ -17,8 +17,9 @@ define([
      * @constructor
      */
     initialize:function() {
-      MediaPlayer.__super__.initialize.apply(this, arguments);
-
+		  MediaPlayer.__super__.initialize.apply(this, arguments);
+			var self = this;
+			
       this.appendViewFactory( 'MediaPlayerView', MediaPlayerView, { pixelsMinDensity : 0, pixelsMaxDensity : 0.5, pixelsRatio : 1 });
 			this.appendViewFactory( 'MediaPlayerCloseView', MediaPlayerCloseView,{ pixelsMinDensity : 0.5, pixelsMaxDensity : 2, pixelsRatio : 1 });
 
@@ -27,15 +28,14 @@ define([
         this.set("name", this.get("friendlyName"));
         this.save();
       }
+			
+			// ask for current volume level
+			this.requestVolume();
 
       // listening for volume value
       dispatcher.on(this.get("id") + ":volume", function(volume) {
-        _.defer(function(){
-          $( ".volume-slider" ).slider({
-            value: volume,
-          });
-        });
-      });
+        self.set("volume", volume);
+			});
     },
 
     /**
@@ -46,7 +46,7 @@ define([
       var url = selectedMedia.attr("url");
       if(typeof url !== 'undefined') {
         console.log("sending play with " + url);
-        this.remoteCall("play", [{"type":"String", "value":url}], "mediaplayer");
+        this.remoteCall("play", [{"type":"String", "value":url}], this.id);
       }
     },
 
@@ -54,29 +54,36 @@ define([
      * Send a message to the backend to play the current media
      */
     sendResume:function() {
-      this.remoteCall("play", [], "mediaplayer");
+      this.remoteCall("play", [], this.id);
     },
 
     /**
      * Send a message to the backend to pause the current media
      */
     sendPause:function() {
-      this.remoteCall("pause", [], "mediaplayer");
+      this.remoteCall("pause", [], this.id);
     },
 
     /**
      * Send a message to the backend to stop the media player
      */
     sendStop:function() {
-      this.remoteCall("stop", [], "mediaplayer");
+      this.remoteCall("stop", [], this.id);
     },
 
     /**
      * Send a message to the backend to set the volume to a given level
      */
     sendVolume:function(volume) {
-      this.remoteCall("setVolume", [{"type":"int" , "value":volume}], "mediaplayer");
+      this.remoteCall("setVolume", [{"type":"int" , "value":volume}], this.id);
     },
+		
+		/**
+		 * Sends a request to the server for the current volume level
+		 */
+		requestVolume:function() {
+			this.remoteCall("getVolume", [], this.id + ":volume");
+		},
 
     // Displays a tree of items the player can read
     onBrowseMedia:function(selectedMedia) {

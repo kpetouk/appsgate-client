@@ -139,9 +139,8 @@ define( [
           var h = wrap.attr("height");
           var buttonGroup = f.select("g");
           var width=self.w*size/2, height=self.h*size/8;
-          var matrix = ""+width / w +", 0, 0, "+height / h +", 0,0";
-          //buttonGroup.attr({transform:matrix});
-          buttonGroup.transform("t"+[self.w*size/4,self.h*size*3/4] + "m"+matrix);
+          var matrix = ""+width / w +", 0, 0, "+height / h +"," + [self.w*size/4,self.h*size*3/4];
+          buttonGroup.transform("m"+matrix);
           buttonGroup.click(function(){
             self.onToggleLampButton();
           });
