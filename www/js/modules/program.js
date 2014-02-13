@@ -77,15 +77,14 @@ define([
 		defaults: {
 			runningState : "DEPLOYED",
 			modified : true,
-			userInputSource : "",
+			userSource : "",
 			source : {
-				programName : "",
-				seqParameters : [],
+				name : "",
+				parameters : [],
 				author : "",
-				target : "",
 				daemon : "false",
-				seqDefinitions : [],
-				seqRules : { "type" : "instructions", "rules": []}
+				definitions : [],
+				body : { "type" : "instructions", "rules": []}
 			}
 		},
 		
@@ -99,9 +98,9 @@ define([
 			
 			// name
 			if (typeof this.get("name") === "undefined") {
-				this.set("name", this.get("source").programName);
+				this.set("name", this.get("source").name);
 			} else {
-				this.get("source").programName = this.get("name");
+				this.get("source").name = this.get("name");
 			}
 			
 			// daemon
@@ -111,7 +110,7 @@ define([
 			
 			// when the source has been updated, update the attributes of the program model
 			this.on("change:source", function() {
-				this.set("name", this.get("source").programName);
+				this.set("name", this.get("source").name);
 				this.set("daemon", this.get("source").daemon);
 			});
 			
@@ -179,8 +178,11 @@ define([
 				id				: this.get("id"),
 				runningState	: this.get("runningState"),
 				modified         : this.get("modified"),
+                name: this.get("source").name,
+                body: this.get("source").body,
+                definitions: this.get("source").definitions,
 				source			: this.get("source"),
-				userInputSource	: this.get("userInputSource")
+				userSource	: this.get("userSource")
 			}
 		}
 	});
@@ -396,7 +398,7 @@ define([
 								program = new Program.Model(resultJSON);
 								program.set("id",null); // make sure the program is considered as new one
 								program.set("name", $("#add-program-modal input:text").val()); // use the name selected by the user
-								program.get("source").programName = $("#add-program-modal input:text").val();
+								program.get("source").name = $("#add-program-modal input:text").val();
 								
 								// hide the modal
 								$("#add-program-modal").modal("hide");
@@ -539,7 +541,7 @@ define([
 		 */
 		initialize:function() {
 			if (typeof this.model !== "undefined") {
-				this.userInputSource = this.model.get("name") + " " + $.i18n.t("language.written-by") + " Bob pour Alice ";
+				this.userSource = this.model.get("name") + " " + $.i18n.t("language.written-by") + " Bob pour Alice ";
 			}
 		},
 
@@ -674,7 +676,7 @@ define([
 					this.$el.find("#edit-program-name-modal").on("hidden.bs.modal", function() {
 						// set the new name to the place
 						self.model.set("name", $("#edit-program-name-modal input").val());
-						self.model.get("source").programName = $("#edit-program-name-modal input").val();
+						self.model.get("source").name = $("#edit-program-name-modal input").val();
 
 						// send the update to the backend
 						self.model.save();
@@ -978,7 +980,7 @@ define([
 				$(".alert-success").removeClass("hide");
 
 				this.model.set("source", ast);
-				this.model.set("userInputSource", programInput);
+				this.model.set("userSource", programInput);
 
 			} catch(e) {
             	if ( typeof(e.expected) !== 'undefined') {

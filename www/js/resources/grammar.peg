@@ -23,20 +23,17 @@ var functions = [];
 pg = h:header _ d:declarations _ i:insts _
 {
   p={};
-  if (h['programname']) {
-    p.programName = h['programname'];
+  if (h['name']) {
+    p.name = h['name'];
   }
   if (h['author']) {
     p.author = h['author']; 
   }
-  if (h['target']) {
-    p.target = h['target'];
-  }
   if (h['daemon']) {
     p.daemon = h['daemon'];
   }
-  p.seqDefinitions=d;
-  p.seqRules = {type:"instructions", rules:i};
+  p.definitions=d;
+  p.body = {type:"setOfRules", rules:i};
   return p;
 }
 
@@ -168,20 +165,22 @@ inst = b:block _
 {
 return b;
 }
- / d:inst_def _ ";"
+/ d:inst_def _ ";"
 {
   return d;
 }
-
+ 
 block = when / if / while
 
 inst_def = ret 
+ / keep_state
  / action 
  / function_call
  / v:var_assignation 
 {
   return {type:"assignation", name:v.var_name, value:v}
 }
+
 
 ret = "return" _ a:argument
 {
@@ -213,7 +212,7 @@ arguments =  a:argument _ "," _ l:arguments
 
 argument = device / var / stringValue / numValue / boolean 
 
-spokObject = program / device / var
+spokObject = program / device /var
 
 var = v:var_name 
 {
@@ -292,18 +291,29 @@ function =  d:spokObject "." method:var_name "(" _ action:arguments _ ")"
 
 while = "while" _ "(" _ s:state _ ")" _ "{" _ i1:inst _ "}" _ sepTHEN _ "{" _ i2:inst _ "}"
 {
-return {type:"while",state:s,rulesThen:i1,rulesAfter:i2};
+return {type:"while",state:s,rules:i1,rulesThen:i2};
 }
  / "while" _ "(" _ s:state _ ")" _ "{" _ i1:inst _ "}"
 {
-return {type:"while",state:s,rulesThen:i1,rulesAfter:{}};
+return {type:"while",state:s,rules:i1,rulesThen:{}};
 }
 
-state = o:var_name "." st:var_name _ "(" _ v:operand _ ")" 
+state = o:spokObject ".isOfState" _ "(" _ v:var_name _ ")" 
 {
 
-  return {type:"state", object:variables[o], stateName:st,stateValue:v};
+  return {type:"state", object:o, stateName:v};
 }
+
+/*
+ * Node KeepState
+ */
+
+keep_state =   "keep(" _ o:spokObject _ "," _ state:var_name _ ")"
+{
+return {type:"keepState", state:{type:"state",name:state, object:o}};
+}
+
+
 /*
  * Basic elements
  */
