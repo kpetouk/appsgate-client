@@ -1865,8 +1865,8 @@ define([
 					console.log("unknown type", device.type, device);
 					break;
 			}
-			
-			places.get(device.placeId).get("devices").push(device.id);
+			//places.get(device.placeId).get("devices").push(device.id);
+			places.get("-1").get("devices").push(device.id);
 		},
 		
 		/**

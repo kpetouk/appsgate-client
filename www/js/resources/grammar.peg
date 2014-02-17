@@ -308,7 +308,7 @@ state = o:spokObject ".isOfState" _ "(" _ v:var_name _ ")"
  * Node KeepState
  */
 
-keep_state =   "keep(" _ o:spokObject _ "," _ state:var_name _ ")"
+keep_state =   "_keep(" _ o:spokObject _ "," _ state:var_name _ ")"
 {
 return {type:"keepState", state:{type:"state",name:state, object:o}};
 }
