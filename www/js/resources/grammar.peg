@@ -27,7 +27,7 @@ pg = h:header _ d:declarations _ i:insts _
     p.name = h['name'];
   }
   if (h['author']) {
-    p.author = h['author']; 
+    p.header = { author: h['author']}; 
   }
   if (h['daemon']) {
     p.daemon = h['daemon'];

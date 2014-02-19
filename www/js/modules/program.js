@@ -78,14 +78,12 @@ define([
 			runningState : "DEPLOYED",
 			modified : true,
 			userSource : "",
-			source : {
 				name : "",
 				parameters : [],
-				author : "",
+				header : {},
 				daemon : "false",
 				definitions : [],
 				body : { "type" : "instructions", "rules": []}
-			}
 		},
 		
 		/**
@@ -99,8 +97,6 @@ define([
 			// name
 			if (typeof this.get("name") === "undefined") {
 				this.set("name", this.get("source").name);
-			} else {
-				this.get("source").name = this.get("name");
 			}
 			
 			// daemon
@@ -112,6 +108,10 @@ define([
 			this.on("change:source", function() {
 				this.set("name", this.get("source").name);
 				this.set("daemon", this.get("source").daemon);
+                this.set("body", this.get("source").body);
+                this.set("header", this.get("source").header);
+                                this.set("definitions", this.get("source").definitions);
+
 			});
 			
 			// each program listens to the event whose id corresponds to its own id
@@ -178,9 +178,10 @@ define([
 				id				: this.get("id"),
 				runningState	: this.get("runningState"),
 				modified         : this.get("modified"),
-                name: this.get("source").name,
-                body: this.get("source").body,
-                definitions: this.get("source").definitions,
+                name: this.get("name"),
+                body: this.get("body"),
+                header : this.get("header"),
+                definitions: this.get("definitions"),
 				source			: this.get("source"),
 				userSource	: this.get("userSource")
 			}
@@ -980,6 +981,7 @@ define([
 				$(".alert-success").removeClass("hide");
 
 				this.model.set("source", ast);
+                console.log(ast);
 				this.model.set("userSource", programInput);
 
 			} catch(e) {

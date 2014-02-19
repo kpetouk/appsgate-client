@@ -122,7 +122,7 @@ define([
 			var programsReady = false;
 
 			// places
-			dispatcher.on("placesReady", function() {
+/*			dispatcher.on("placesReady", function() {
 				placesReady = true;
 				if (placesReady && devicesReady && programsReady) {
 					dispatcher.trigger("dataReady");
@@ -136,13 +136,14 @@ define([
 					dispatcher.trigger("dataReady");
 				}
 			});
+            */
 
 			// programs
 			dispatcher.on("programsReady", function() {
 				programsReady = true;
-				if (placesReady && devicesReady && programsReady) {
+	//			if (placesReady && devicesReady && programsReady) {
 					dispatcher.trigger("dataReady");
-				}
+	//			}
 			});
 
 			// all data have been received, launch the user interface
