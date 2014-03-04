@@ -15,7 +15,7 @@ define( [
 		 */
     initialize:function(){
       MediaPlayerCloseView.__super__.initialize.apply(this, arguments);
-      this.color = "gray";
+			this.name = "MediaPlayerCloseView";
 			this.volumeDisplay;
     },
 
@@ -137,7 +137,7 @@ define( [
         var paper = Snap("#svgspace");
         var group  = paper.g();
         var rect = paper.rect(0.5*dt*size, 0.5*dt*size, viewWidth,viewHeight).attr({fill:this.color,stroke:"black"});
-        var text = paper.text(0,0,this.model.get("name"));
+        var text = paper.text(0,0,$.i18n.t(this.model.getProperty("name")));
 				text.transform("m" + (viewWidth/2) / text.getBBox().width  + ", 0, 0, " + (viewHeight/10) / text.getBBox().height + "," + viewWidth/5 + "," + viewWidth/5);
         group.add(rect,text);
 				

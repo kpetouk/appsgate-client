@@ -9,15 +9,122 @@ define([
    */
   Brick = Backbone.Model.extend({
 
-    /**
-     * constructor
-     */
     initialize:function() {
-      this.parents		= [];
-      this.children		= [];
+      var self = this;
+      Brick.__super__.initialize.apply(this, arguments);
+      this.children = [];
+      this.parents = [];
       this.views = [];
-      this.viewFactories= {};
+      this.viewFactories = {};
+
+			this.x = this.getProperty("x")?parseInt(this.getProperty("x")):0;
+			this.y = this.getProperty("y")?parseInt(this.getProperty("y")):0;
+			this.w = this.getProperty("w")?parseInt(this.getProperty("w")):1;
+			this.h = this.getProperty("h")?parseInt(this.getProperty("h")):1;
+      
+      dispatcher.on("newSpace-" + this.cid, function(id) {
+        self.set("id", id);
+      });
+
     },
+
+    // Get the value of an attribute.
+    getProperty: function(prop) {
+      var result = null;
+      var properties = this.get("properties")
+      for(p in properties) {
+        if(properties[p].key === prop){
+          result = properties[p].value;
+          break;
+        }
+      }
+      return result;
+    },
+
+    setProperty:function(key,value) {
+      var added = false;
+      var properties = this.get("properties")?this.get("properties"):[];
+      if(properties.length > 0) {
+        for(p in properties) {
+          if(properties[p].key === key) {
+            properties[p].value = value;
+            added = true;
+            break;
+          }
+        }
+      }
+      if (!added) {
+        properties.push({"key":key, "value":value});
+        this.set("properties", properties);
+      }
+    },
+
+    getTag: function(tagName) {
+      var result = "";
+      var tags = this.get("tags")
+      for(t in tags) {
+        if(tags[t].key === tagName){
+          result = tags[t].value;
+          break;
+        }
+      }
+      return result;
+    },
+
+    /**
+     * Send a message to the server to perform a remote call
+     * 
+     * @param method Remote method name to call
+     * @param args Array containing the argument taken by the method. Each entry of the array has to be { type : "", value "" }
+     * @param callId Identifier of the message
+     */
+    remoteCall:function(method, args, callId) {
+      // build the message
+      var messageJSON = {
+        method		: method,
+        args		: args
+      };
+
+      if (typeof callId !== "undefined") {
+        messageJSON.callId = callId;
+      }
+
+      // send the message
+      communicator.sendMessage(messageJSON);
+    },
+
+    /**
+     * Override its synchronization method to send a notification on the network
+     */
+    sync:function(method, model) {
+      // copy all useful data to attributes to keep them persistent
+      if(model.type) model.set("type", model.type);
+      if(model.parents.length > 0) model.set("parent", model.parents[0].get("id"));
+      var childrenIds = [];
+      for(c in model.children) {
+        childrenIds.push(model.children[c].get("id"));
+      }
+      model.set("children", childrenIds);
+			model.setProperty("x", "" + model.x);
+			model.setProperty("y", "" + model.y);
+			model.setProperty("w", "" + model.w);
+			model.setProperty("h", "" + model.h);
+
+      switch (method) {
+        case "create":
+          this.remoteCall("newSpace", [{ type : "String", value : model.get("parent") }, { type : "String", value : model.get("type") }, { type : "JSONObject", value : model.toJSON() }], "newSpace-" + model.cid);
+        break;
+        case "delete":
+          this.remoteCall("removeSpace", [{ type : "String", value : model.get("id") }], "removeSpace-" + model.cid);
+        break;
+        case "update":
+          this.remoteCall("updateSpace", [{ type : "String", value : model.get("id") }, { type : "JSONObject", value : model.toJSON() }], "updateSpace-" + model.cid);
+        break;
+        default:
+          break;
+      }
+    },
+
 
     /**
      * Appends a view factory to the model, which provides an appropriate view for the brick at a given level of zoom
@@ -62,8 +169,9 @@ define([
     /**
      * Provides an existing view if it exists or creates a new one from a view factory
      * @param name The name of the view to provide
+     * @param node to append to
      */
-    getNewView:function(name) {
+    getNewView:function(name, root) {
       var res = null, fact = null;
       // checking if the requested view factory already exists
       if(name && this.viewFactories[name]) {
@@ -83,7 +191,7 @@ define([
         }
         // otherwise we create a new one
         else {
-          res = new fact.constr({model:this});}
+          res = new fact.constr({model:this, el:root});}
           res.validity = fact.validity;
           res.factory  = fact;
       }
@@ -96,6 +204,7 @@ define([
      * @param parent The parent brick model
      */
     appendParent:function(parent) {
+      this.set("parent", parent.get("id"));
       if(this.parents.indexOf(parent) == -1) {
         this.parents.push(parent);
         parent.appendChild(this);
@@ -115,6 +224,25 @@ define([
     },
 
     /**
+     * Appends the children models based on the ids contained in the children attribute of this brick
+     */
+    initChildren:function() {
+      var self = this;
+			
+      // initializing current node children
+      this.get("children").forEach(function(childId) {
+        var nodes = AppsGate.Root.where({id:childId});
+        if(nodes.length === 1){
+          self.appendChild(nodes[0]);
+          nodes[0].initChildren();
+        }
+        else if(nodes.length > 1){
+          console.log("WARNING! Several bricks seem to share the same id " + childId);
+        }
+      });
+    },
+
+    /**
      * Appends a child to the current brick model
      * @param child The child brick model to append
      */
@@ -125,6 +253,30 @@ define([
         // Also plug child's views
         for(view in this.views) {
           this.views[view].appendChildFromBrick(child);
+        }
+      }
+    },
+
+    appendChildWithCoord:function(child, x, y) {
+      if(this.children.indexOf(child) == -1) {
+        this.children.push(child);
+        child.appendParent(this);
+        // Also plug child's views
+        for(view in this.views) {
+          var curView = this.views[view];
+          var screenPoint = $("#svgspace")[0].createSVGPoint();
+          screenPoint.x = x;
+          screenPoint.y = y;
+          var CTM = curView.root.node.getCTM();
+          var globalCTM = curView.groot.node.getCTM();
+          var targetPoint = screenPoint.matrixTransform( curView.groot.node.getScreenCTM().inverse() );
+          var newX = Math.round(targetPoint.x/curView.size);
+          var newY = Math.round(targetPoint.y/curView.size);
+					
+					child.x = newX;
+					child.y = newY;
+					
+          curView.appendChildFromBrick	( child, function() {this.x = newX; this.y = newY; this.w = 1; this.h = 1;}, undefined, curView.getChildrenContext(1, 1));
         }
       }
     },

@@ -1,8 +1,10 @@
 {
 	"app" : {
-		"name"	: "AppsGate"
+		"name"	: "AppsGate",
+		"signin" : "Identification"
 	},
 	"form" : {
+		"enter-button"	: "Entrer",
 		"cancel-button"	: "Annuler",
 		"valid-button"	: "Valider",
 		"close-button"	: "Fermer",
@@ -11,13 +13,28 @@
 		"edit-button"	: "Editer",
 		"save-button"	: "Sauvegarder",
 		"saving-button" : "En cours...",
-		"browse-button"	: "Parcourir"
+		"browse-button"	: "Parcourir",
+		"background-editor" : "Fond",
+		"size-editor" : "Taille"
 	},
 	"navbar" : {
+		"edit"				: "Editer",
+		"stop-edit"		: "Fin edition",
 		"places"			: "Pièces",
 		"devices"			: "Dispositifs",
 		"programs"			: "Programmes",
 		"button-settings"	: "Préférences"
+	},
+	"editbar" : {
+		"undo"	: "Annuler",
+		"redo"	: "Refaire",
+		"add"		: "Ajouter",
+		"trashbin" : "Corbeille"
+	},
+	"login" : {
+		"username" : "Nom d'identification",
+		"password" : "Mot de passe",
+		"confirm-password" : "Mot de passe de confirmation"
 	},
 	"modal-lost-connection" : {
 		"title"						: "Problème de connexion",
@@ -35,24 +52,19 @@
 		"server-unreachable"	: "Serveur indisponible...",
 		"connection"			: "Connexion..."
 	},
-	"places-menu" : {
-		"add-button"		: "Ajouter pièce",
-		"place-no-name"		: "Pièce sans nom",
-		"unlocated-devices"	: "Dispositifs non localisés"
-	},
 	"modal-add-place" : {
 		"title"						: "Ajouter pièce",
 		"place-name"				: "Nom de la pièce",
 		"place-name-empty"			: "Le nom de la pièce doit être renseigné.",
 		"place-already-existing"	: "Nom de la pièce déjà existant."
 	},
-	"modal-edit-place"	: {
-		"title"						: "Renommer pièce",
-		"place-name"				: "Nom de la pièce",
-		"place-name-empty"			: "Le nom de la pièce doit être renseigné.",
-		"place-already-existing"	: "Nom de la pièce déjà existant."
+	"edit-name-modal"	: {
+		"title"						: "Renommer",
+		"name"				: "Nom",
+		"name-empty"			: "Le nom doit être renseigné.",
+		"already-existing"	: "Nom déjà existant."
 	},
-	"places-details" : {
+	"places" : {
 		"place-no-name"	: "Pièce sans nom",
 		"undefined"		: "Non défini",
 		"header"		: {
@@ -92,7 +104,15 @@
 		"program-name-empty"		: "Le nom du programme doit être renseigné.",
 		"program-already-existing"	: "Nom du programme déjà existant."
 	},
+	"universes" : {
+		"spatialUniverse" : "Chez nous",
+		"devicesUniverse" : "Equipements",
+		"servicesUniverse": "Services",
+		"programsUniverse": "Programmes",
+		"usersUniverse"		: "Utilisateurs"
+	},
 	"devices" : {
+		"unknown" : "Inconnu",
 		"device-no-name"	: "Dispositif sans nom",
 		"device-unlocated"	: "Non localisé",
 		"type-label"		: "Type",
@@ -221,6 +241,71 @@
 				"stop"		: "Arrêter",
 				"volume"	: "Volume",
 				"browse"	: "Parcourir"
+			}
+		}
+	},
+	"services" : {
+		"unknown" : "Inconnu",
+		"device-no-name"	: "Dispositif sans nom",
+		"device-unlocated"	: "Non localisé",
+		"type-label"		: "Type",
+		"place-label"		: "Emplacement",
+		"state-label"		: "Etat",
+		"value-label"		: "Valeur",
+		"consumption-label"	: "Consommation",
+		"status-label"		: "Statut",
+		"status"			: {
+			"connected"		: "Connecté",
+			"waiting"		: "En attente",
+			"disconnected"	: "Déconnecté"
+		},
+		"mediaplayer"		: {
+			"name"		: {
+				"singular"	: "Lecteur multimédia",
+				"plural"	: "Lecteurs multimédia"
+			},
+			"status"	: {
+				"playing"	: "Lecture en cours",
+				"stopped"	: "Arrêté",
+				"selected"	: "Veuillez choisir un média"
+			},
+			"action"	: {
+				"play"		: "Lancer",
+				"resume"	: "Reprendre",
+				"pause"		: "Pause",
+				"stop"		: "Arrêter",
+				"volume"	: "Volume",
+				"browse"	: "Parcourir"
+			}
+		},
+		"mediabrowser"	: {
+			"name" : {
+				"singular"	: "Serveur multimédia",
+				"plural"		: "Serveurs multimédia"
+			}
+		},
+		"connectionManager" : {
+			"name" : {
+				"singular" : "Connection Manager",
+				"plural"	: "Connection Managers"
+			}
+		},
+		"renderingControl" : {
+			"name" : {
+				"singular" : "Rendering control",
+				"plural"	: "Rendering controls"
+			}
+		},
+		"avtransport" : {
+			"name" : {
+				"singular" : "AV Transport",
+				"plural"	: "AV Transports"
+			}
+		},
+		"contentdirectory" : {
+			"name" : {
+				"singular" : "Content Directory",
+				"plural"	: "Content Directories"
 			}
 		}
 	},

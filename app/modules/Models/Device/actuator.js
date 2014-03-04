@@ -23,9 +23,9 @@ define([
      */
     sendValue: function() {
       if (this.get("value") === "true") {
-        this.remoteCall("on", []);
+        this.remoteControl("on", []);
       } else {
-        this.remoteCall("off", []);
+        this.remoteControl("off", []);
       }
     }
   });

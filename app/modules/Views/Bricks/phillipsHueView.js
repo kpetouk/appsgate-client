@@ -14,10 +14,8 @@ define( [
 		 * constructor
 		 */
     initialize:function(){
-
-      PhillipsHueView.__super__.initialize.apply(this, arguments);
-
-			this.color = "yellow";
+			PhillipsHueView.__super__.initialize.apply(this, arguments);
+			this.name = "PhillipsHueView";
     },
 
   });

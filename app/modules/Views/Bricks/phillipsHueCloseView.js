@@ -15,6 +15,7 @@ define( [
 		 */
     initialize:function(){
       PhillipsHueCloseView.__super__.initialize.apply(this, arguments);
+			this.name = "PhillipsHueCloseView";
     },
 
 		/**
@@ -127,7 +128,7 @@ define( [
         var paper = Snap("#svgspace");
         var group  = paper.g();
         var rect = paper.rect(0.5*dt*size, 0.5*dt*size, size*(this.w-dt),size*(this.h-dt)).attr({fill:this.color,stroke:"black"});
-        var text = paper.text(this.w*size/8, this.h*size/2, this.model.get("name"));
+        var text = paper.text(this.w*size/8, this.h*size/2, $.i18n.t(this.model.getProperty("name")));
         this.adjustText(text);
 
         group.add(rect,text);

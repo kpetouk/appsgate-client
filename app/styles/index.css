@@ -2,11 +2,143 @@
 
 @import "../../vendor/bower/html5-boilerplate/css/normalize.css";
 @import "../../vendor/bower/html5-boilerplate/css/main.css";
+@import "../../vendor/bower/bootstrap/dist/css/bootstrap.css";
+@import "../../vendor/bower/jqueryui/themes/custom-theme/jquery-ui-1.10.4.custom.css";
 
 /*-- Application stylesheets. -----------------------------------------------*/
 
-html, body {
-	height:100%
+body {
+	height: 100%;
+	padding-top: 100px;
+	overflow: hidden;
+}
+
+.navbar {
+	position:absolute;
+}
+
+.user-avatar-item {
+	display:block;
+	max-width: 330px;
+	padding: 15px;
+	margin: 0 auto;
+}
+
+.user-avatar-img {
+	display:block;
+	margin: 0 auto;
+}
+
+.background-editor-img {
+	width:250px;
+	display:block;
+	margin: 0 auto;
+}
+
+.center-div {
+	display:block;
+	margin: 0 auto;
+}
+
+.emergency-stop {
+	position:absolute;
+	top:0px;
+	left:50%;
+}
+
+div {
+	-webkit-overflow-scrolling: touch;
+}
+
+/* --------------------- Home styles -----------------------------------*/
+
+.breadcrumb-home {
+	background:url(../img/home.png);
+	background-size:100% 100%;
+	background-repeat:no-repeat;
+}
+
+.fundamental-universe {
+	position:relative;
+	background:white;
+	width: 18%;
+	height:80%;
+	padding: 0.5em;
+	display: inline-block;
+	border: dotted #404040;
+	margin: 20px 20px 20px 0;
+}
+
+.fundamental-universe.configured {
+	border: solid #404040;
+}
+
+.fundamental-universe.disabled {
+	background:#E6E6E6;
+}
+
+.universe-name {
+	position:absolute;
+	bottom:0px;
+	width:100%;
+	text-align:center;
+}
+
+.universe-name-input {
+	text-align:inherit;
+	background:transparent;
+	border:0;
+}
+
+.state-stamp {
+	position:absolute;
+	top:10px;
+	right:-20px;
+	transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	-webkit-transform: rotate(45deg);
+	background:gold;
+	border: solid black;
+}
+
+.local-universes, .user-universes {
+	white-space: nowrap;
+	height:45%;
+	overflow-x:auto;
+	overflow-y:hidden;
+	-webkit-overflow-scrolling: touch;
+}
+
+.circlemenu {
+	position:absolute;
+  bottom:50px;
+  left:0px;
+}
+
+.circlemenu li:first-child {
+    background:#fff;
+		border-top-left-radius:0px !important;
+		border-bottom-right-radius:0px !important;
+		border-bottom-left-radius:0px !important;
+    font-weight:bold;
+    font-family:arial black;
+    font-size:200%;
+    border-color: #47A347;
+    border-width: 2px;
+    border-style: solid;
+    box-shadow: 0 0 2px 1px #aaa;
+}
+.circlemenu li {
+    background:#fff;
+    color:#47A347;
+		border-color: #47A347;
+    border-width: 2px;
+    border-style: solid;
+    font-size:25px;
+}
+.circlemenu a{
+    text-decoration: none;
+    color:#fff;
 }
 
 .home-menu {
@@ -26,54 +158,89 @@ html, body {
 	border-radius:50%;
 }
 
-.green-border {
-	border:10px solid green;
+/* --------------------- Habitat styles --------------------------------*/
+
+.edition-tabs {
+	width: 300px;
+	position: absolute;
+	right: 0px;
+	white-space:nowrap;
+	overflow-x:scroll;
+	padding:0px !important;
+	background:transparent !important;
+	border:0 !important;
 }
 
-.orange-border {
-	border:10px solid orange;
+.edit-palette {
+	background:transparent !important;
+	border:0 !important;
 }
 
-.blue-border {
-	border:10px solid blue;
+.edit-palette > li {
+	width:50px;
+	border-width:1px !important;
 }
 
-.gray-border {
-	border:10px solid gray;
-}
-
-.navbar {
-	height:5%;
-	top:0px;
-	left:0px;
-	width:100%;
-	background:#E8E8E8;
-}
-
-.navbar-item {
-	-webkit-margin-before:0em;
-	-webkit-margin-after:0em;
-}
-
-
-main {
-	height:90%;
+.edit-palette > li > a {
 	width:100%;
 }
 
-footer {
-	height:5%;
-	bottom:0px;
-	left:0px;
-	width:100%;
-	background:#E8E8E8;
+
+.palette-contents {
+	padding:0 !important;
+	overflow-y:auto;
+	background:transparent !important;
+	border:0 !important;
 }
 
-.footer-item {
-	-webkit-margin-before:0em;
-	-webkit-margin-after:0em;
+.place-edit-palette {
+	background:#f8f8f8;
+	padding:20px;
 }
 
+.brick-list-node, .brick-list-leaf {
+	overflow:auto;
+}
+
+/* --------------------- Svg Map Styles --------------------------------*/
+
+
+/* --------------------- Login styles ----------------------------------*/
+
+.form-signin {
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+  margin-bottom: 10px;
+}
+.form-signin .checkbox {
+  font-weight: normal;
+}
+.form-signin .form-control {
+  position: relative;
+  font-size: 16px;
+  height: auto;
+  padding: 10px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+.form-signin .form-control:focus {
+  z-index: 2;
+}
+.form-signin input[type="email"] {
+  margin-bottom: -1px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
 
 /* --------------------- Places styles ---------------------------------*/
 

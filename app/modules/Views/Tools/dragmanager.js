@@ -459,7 +459,8 @@ define( [
       }
       e = this.TabDraggable[i].pt1p.x - c*this.TabDraggable[i].pt1.x + s*this.TabDraggable[i].pt1.y
       f = this.TabDraggable[i].pt1p.y - s*this.TabDraggable[i].pt1.x - c*this.TabDraggable[i].pt1.y
-      this.mapTransform[obj.uid] = {obj:obj,matrix:'matrix('+c+','+s+','+(-s)+','+c+','+e+','+f+')'};
+			this.mapTransform[obj.uid] = {obj:obj,matrix:'matrix('+c+','+s+','+(-s)+','+c+','+e+','+f+')'};
+		
       this.updateRender();
     },
 

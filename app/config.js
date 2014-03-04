@@ -2,6 +2,7 @@
 // supplementing shared properties.
 require.config({
   paths: {
+		// VENDOR
     // Make vendor easier to access.
     "vendor": "../vendor",
 
@@ -13,6 +14,8 @@ require.config({
 
     // JQuery and Backbone
     "jquery": "../vendor/bower/jquery/jquery",
+		"jqueryui": "../vendor/bower/jqueryui/ui/jquery-ui",
+		"jqueryuitouch": "../vendor/bower/jqueryui-touch-punch/jquery.ui.touch-punch",
     "backbone": "../vendor/bower/backbone/backbone",
 
     // JQuery plugins
@@ -22,12 +25,19 @@ require.config({
     "text": "../vendor/bower/requirejs-text/text",
     "domReady": "../vendor/bower/requirejs-domready/domReady",
 		
+		// Bootstrap
+		"bootstrap": "../vendor/bower/bootstrap/dist/js/bootstrap",
+		
     // Snap.svg
     "snapsvg": "../vendor/bower/Snap.svg/dist/snap.svg",
 
 		// MomentJS
 		"moment": "../vendor/bower/momentjs/moment",
+		
+		// JQuery Circle Menu Plugin
+		"circlemenu":"../vendor/circlemenu/JQuery.circlemenu",
 
+		// APPSGATE
     // Modules
     "modules": "../app/modules",
 
@@ -52,6 +62,18 @@ require.config({
     "underscore": {
       exports: "_"
     },
+		"bootstrap": {
+			deps: [ "jquery"]
+		},
+		"jqueryui": {
+			deps: [ "jquery"]
+		},
+		"jqueryuitouch": {
+			deps: [ "jquery", "jqueryui"]
+		},
+		"circlemenu": {
+			deps: [ "jquery"]
+		},
     "backbone": {
       // These are the two hard dependencies that will be loaded first.
       deps: ["jquery", "underscore"],
@@ -71,10 +93,5 @@ require.config({
 
 // Setting up AppsGate globals.
 if (!window.AppsGate) window.AppsGate = {};
-if (!AppsGate.App) AppsGate.App = {};
-if (!AppsGate.Universe) AppsGate.Universe = {};
-if (!AppsGate.Place) AppsGate.Place = {};
-if (!AppsGate.Device) AppsGate.Device = {};
-if (!AppsGate.Program) AppsGate.Program = {};
 
 

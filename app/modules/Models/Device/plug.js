@@ -22,9 +22,9 @@ define([
      */
     sendPlugState:function() {
       if (this.get("plugState") === "true") {
-        this.remoteCall("on", []);
+        this.remoteControl("on", []);
       } else {
-        this.remoteCall("off", []);
+        this.remoteControl("off", []);
       }
     }
   });

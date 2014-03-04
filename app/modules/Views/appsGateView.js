@@ -3,7 +3,6 @@ define([
   "views/tools/utils"
 ], function(App, AppsGateUtils) {
 
-  var uid = 0;
   var AppsGateView = {};
 
   /**
@@ -12,18 +11,10 @@ define([
   AppsGateView = Backbone.View.extend({
 
     /**
-     * Returns a unique id of this view
-     */
-    getUniqueId:function() {
-      uid++;
-      return 'ViewId_' + uid;
-    },
-
-    /**
      * constructor
      */
     initialize:function() {
-      this.uid = this.getUniqueId();
+			AppsGateView.__super__.initialize.apply(this, arguments);
       this.root	= null;
       this.children = [];
       this.parent		= null;
@@ -83,35 +74,53 @@ define([
      * @param constrName The name of the constructor of the view to build
      */
     appendChildFromBrick:function(brick, fParams, constrName) {
-      // If a view constructor has been specified...
-      if(constrName) {
-        var view = brick.getNewView(constrName);
-        if(view) {fParams.apply(view, []);
-          this.appendChild(view);
-          return view;}
-      }
-      // If there is an available existing view
-      for(var p in brick.views) {
-        var view = brick.views[p];
-        if(view.parent === null) {
-          fParams.apply(view, []);
-          this.appendChild(view);
-          return view;
-        }
-        else {
-          console.log("\tchild view",p,"is still plugged to",view.parent);}
-      }
-      // Last, if there is a factory...
-      var view = brick.getNewView();
-      if(view) {
-        if(fParams){
-          fParams.apply(view, []);
-        }
-        this.appendChild(view);
-        return view;
-      }
-      return null;
-    },
+			// Stop here if there is still an existing presentation plugged to this and brick
+			var preExistingView = false;
+			for(var i=0; i<this.children.length; i++) {
+				if(this.children[i].model === brick) {
+					preExistingView = true;
+					break;
+				}
+			}
+				 
+			if(!preExistingView) {
+				// If a view factory has been specified...
+				if(constrName) {
+					var view = brick.getNewView(constrName);
+					if(view) {fParams.apply(view, []);
+						this.appendChild(view);
+						return view;
+					}
+				}
+				
+				// If there is an available existing presentation
+				for(var v in brick.views) {
+					var view = brick.views[v];
+					if(view.parent === null) {
+						//preso.init(brick, []);
+						if(fParams) {
+							fParams.apply(view, []);
+						}
+						this.appendChild(view);
+						return view;
+					}
+				}
+				
+				// Last, if there is a factory...
+				var view = brick.getNewView();
+				if(view) {
+					if(fParams) {
+						fParams.apply(view, []);
+					}
+					this.appendChild(view);
+					
+					// Recursive plug
+					//view.appendDescendants();
+					return view;
+				}
+			}
+			return null;
+		},
 
     /**
      * Removes this view from a given brick
@@ -161,7 +170,7 @@ define([
       else {
         primitiveParent = null;
       }
-      var root = this.Render();
+      var root = this.render();
       if(primitiveParent) {
         primitiveParent.appendChild(root);
       }

@@ -14,10 +14,8 @@ define( [
 		 * constructor
 		 */
     initialize:function(){
-
       MediaPlayerView.__super__.initialize.apply(this, arguments);
-
-			this.color = "gray";
+			this.name = "MediaPlayerView";
     },
 
   });

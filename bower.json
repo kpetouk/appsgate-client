@@ -3,10 +3,13 @@
   "dependencies": {
     "almond": "~0.2.6",
     "backbone": "~1.1.0",
+    "bootstrap": "~3.1.0",
     "chai": "~1.8.0",
     "i18next": null,
     "jasmine": "~2.0.0",
     "jquery": "~2.0.3",
+    "jqueryui": null,
+    "jqueryui-touch-punch": null,
     "html5-boilerplate": null,
     "lodash": "~2.4.1",
     "mocha": "~1.17.0",

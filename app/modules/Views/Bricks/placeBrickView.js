@@ -14,11 +14,8 @@ define( [
 		 * constructor
 		 */
     initialize:function(){
-			var self = this;
-
       PlaceView.__super__.initialize.apply(this, arguments);
-			this.color = "brown";
-			
+			this.name = "PlaceView";
     },
 
   });

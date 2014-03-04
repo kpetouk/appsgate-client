@@ -2,25 +2,31 @@ define(function(require, exports, module) {
   "use strict";
 
   // External dependencies.
-  var UniverseList = require("views/universelist");
-  var MapUniverseView = require("views/mapUniverseView");
+	var LoginView = require("views/login/loginview");
+  var HomeView = require("views/homeview");
+  var HabitatView = require("views/habitatview");
 
   // define the application router
   var Router = Backbone.Router.extend({
     routes: {
-      ""		: "index",
-			"reset"	: "index",
-      "spatialUniverse" : "spatialUniverse"
+      ""		: "home",
+			"login" : "login",
+			"reset"	: "home",
+			"home" : "home",
+      "spatial_root" : "habitat"
     },
 
     // default route of the application
-    index:function() {
-      this.showView(new UniverseList());
+    login:function() {
+      this.showView(new LoginView());
     },
 
-
-    spatialUniverse:function() {
-      this.showView(new MapUniverseView());
+		home:function() {
+			this.showView(new HomeView());
+		},
+		
+    habitat:function() {
+      this.showView(new HabitatView());
     },
 
     showView:function(view) {

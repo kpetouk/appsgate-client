@@ -1,7 +1,9 @@
 define( [
   "app",
-  "views/appsgateview"
-], function(App, AppsGateView) {
+	"snapsvg",
+  "views/appsgateview",
+	"text!templates/bricks/brickDraggableView.html"
+], function(App, Snap, AppsGateView, draggableTemplate) {
 
   var BrickView = {};
 
@@ -9,13 +11,15 @@ define( [
    * Basic Brick View class extending the AppsGate View class and an abstract class for all the brick views in the application
    */
   BrickView = AppsGateView.extend({
+	
+		tplDraggableView: _.template(draggableTemplate),
 
     /**
      * constructor
      */
     initialize:function() {
       BrickView.__super__.initialize.apply(this, arguments);
-      // console.log("PresoTilesAlxAppsGate Init");
+			this.name = "BrickView";
       this.dt = 0.1;
       this.size = 32;
       this.svg_point = null;
@@ -23,17 +27,41 @@ define( [
       this.toUnplugList = [];
 
 
-      this.x = this.y = 0;
-      this.w = this.h = 5;
+      this.x = this.model?this.model.x:0;
+			this.y = this.model?this.model.y:0;
+      this.w = this.model?this.model.w:0;
+			this.h = this.model?this.model.h:0;
       this.innerMagnitude = 12;
-      this.color = 'cyan';
+      this.color = 'white';
       this.display = true;
       this.scaleToDisplayChildren = 0.5;
       this.validity = { pixelsMinDensity : 0,
         pixelsMaxDensity : 999999999,
         pixelsRatio		 : this.w / this.h };
+				
+				if(typeof this.el === 'undefined' || this.el.tagName !== 'svg') {
+					this.el = "#svgspace";
+				}
     },
 
+		/**
+		 * Converts the model to its JSON representation.
+		 */
+		toJSON:function() {
+			return {
+				name : this.name,
+				dt		: this.dt,
+				size	: this.size,
+				x : this.x,
+				y : this.y,
+				innerMagnitude : this.innerMagnitude,
+				color : this.color,
+				scaleToDisplayChildren : this.scaleToDisplayChildren,
+				display : this.display,
+				validity : this.validity,
+			} 
+		},
+	
     /**
 		 * Adds an element to the dragged list
 		 * @param obj Element to add
@@ -126,11 +154,92 @@ define( [
      * Returns the coordinates relative to this view
      */
     getViewCoords:function() {
+			dt = this.dt;
+      size = this.size;
       return {	x1 : 0.5*dt*size,
         y1 : 0.5*dt*size,
         x2 : 0.5*dt*size + size*(this.w-dt),
         y2 : 0.5*dt*size + size*(this.h-dt) };
     },
+
+		// Handle the start state. Create a view to drag
+		startDrag: function (x, y, e) {
+			e.stopPropagation();
+			
+      var self = this.node.ViewRoot;
+			
+			self.root.attr({display:"none"});
+			
+			$("body").append(self.tplDraggableView);
+			$("#draggableFeedback").css("position","absolute");
+			$("#draggableFeedback").css("z-index","9999");
+									
+			self.model.getNewView("undefined", "#svgDraggable").render();
+				
+		},
+				
+		moveDrag: function (x, y, dx, dy, e) {
+			e.stopPropagation();
+			$("#draggableFeedback").offset({left:e.clientX,top:e.clientY});
+		},
+				
+				// Handle the end state. Append the corresponding brick to the drop target
+		stopDrag: function (e) {
+			var self = this.node.ViewRoot;
+			e.stopPropagation();
+			$("#draggableFeedback").remove();
+			
+			var target = Snap.getElementByPoint(e.clientX,e.clientY).node;
+			
+			while(target && typeof target.classList === 'undefined' || (!target.classList.contains('btn-trashbin') && !target.classList.contains('ViewRoot'))) {
+						target = target.parentNode;
+					}
+			
+			// if the target is the trashbin, we delete the dragged element
+			if(target && typeof target.classList !== 'undefined' && target.classList.contains('btn-trashbin')) {
+				var parent = self.model.parents[0];
+				if(parent) {
+					parent.removeChild(self.model);
+					parent.save();
+				}
+				self.model.destroy();
+			}
+			else if (target && target.ViewRoot && target.ViewRoot.model) {
+				self.moveView(e.clientX,e.clientY, target.ViewRoot);
+				
+				self.root.attr({display:"block"});
+			}
+			else {
+				self.root.attr({display:"block"});
+			}
+			
+			
+			self.root.undrag();
+					
+		},
+
+		moveView:function(x,y, target) {
+			if(this.model.parents[0] !== target.model) {
+				var parent = this.model.parents[0];
+				parent.removeChild(this.model);
+				parent.save();
+				target.model.appendChild(this.model);
+				
+			}
+			var screenPoint = $("#svgspace")[0].createSVGPoint();
+			screenPoint.x = x;
+			screenPoint.y = y;
+			var CTM = target.root.node.getCTM();
+			var globalCTM = target.groot.node.getCTM();
+			var targetPoint = screenPoint.matrixTransform( target.groot.node.getScreenCTM().inverse() );
+			var newX = Math.round(targetPoint.x/this.size);
+			var newY = Math.round(targetPoint.y/this.size);
+
+			this.model.x = newX;
+			this.model.y = newY;
+			this.root.transform("t" + [newX*this.size,newY*this.size]);
+			this.model.save();
+		},
 
     /**
      * Renders this view
@@ -144,15 +253,18 @@ define( [
         size = this.size;
 
         // we create the root element of this view
-        var paper = Snap("#svgspace");
+				
+        var paper = Snap(this.el);
         var group  = paper.g();
-        group.transform("t"+[this.x*size,this.y*size]);
+				if(this.el === "#svgspace"){
+					group.transform("t"+[this.x*size,this.y*size]);
+				}
         group.attr({class:"ViewRoot"});
 
         this.root = group;
         this.root.node.ViewRoot = this;
-
-        // initialize the svg point for this view
+				
+				// initialize the svg point for this view
         this.svg_point = paper.node.createSVGPoint();
 
         // initialize the root for children views
@@ -167,9 +279,24 @@ define( [
         // add the basic graphical elements of this view
         this.gView = paper.g();
         var r  = paper.rect(0.5*dt*size, 0.5*dt*size, size*(this.w-dt),size*(this.h-dt));
-        r.attr({class:"tile", fill:this.color, stroke:"black"});
-
-        this.bgRect = r;
+        r.attr({class:"tile", fill:this.color, stroke:"green"});
+				
+				// handle taphold
+				var pressTimer;
+				r.mousedown(function() {
+					pressTimer = window.setTimeout(function() {
+						dispatcher.trigger("editMode", self.model);
+						self.root.drag(self.moveDrag, self.startDrag, self.stopDrag);
+					},1000)
+					return false;
+				});
+				r.mouseup(function() {
+					// Clear timeout
+					clearTimeout(pressTimer)
+					return false;
+				});
+				
+				this.bgRect = r;
         this.gView.add(r);
         this.root.add(this.gView);
         this.root.add(groupRoot);
@@ -177,8 +304,8 @@ define( [
 
         // proceed to add the children views of this view
         if(this.model.children.length > 0 && this.children.length === 0){
-          this.model.children.forEach(function(device){
-            self.integrateBrick(device);
+          this.model.children.forEach(function(child){
+            self.appendChildFromBrick(child);
           });
         }
 
@@ -194,29 +321,22 @@ define( [
     },
 
     /**
-     * Integrates automatically elements of a given brick's view, positioning them one after the other
-     * with a default size
-     * @param brick The brick model, which view should be integrated
-     */
-    integrateBrick:function(brick) {
-      var parentWidth = Math.floor( this.innerMagnitude*this.w / Math.max(this.w, this.h) );
-      var newX = this.children.length % parentWidth;
-      var newY = Math.floor(this.children.length / parentWidth);
-      var tile = this.appendChildFromBrick	( brick, function() {this.x = newX; this.y = newY; this.w = 1; this.h = 1;}, undefined, this.getChildrenContext(1, 1));
-    },
-
-    /**
      * Renders the elements of a given child and appends them to the elements of the current view
      * @param child The child view to append
      */
     primitivePlug:function(child) {
-      this.render(),
-      group = child.render();
-      this.groot.add(group);
+			try{
+				this.render();
+				var group = child.render();
+				this.groot.add(group);
+			} catch (e) {
+				if(group)group.remove();
+				console.log(e);
+			}
     },
 
     /**
-     * Returns the current pixel density and pixel ration of the children of this view
+     * Returns the current pixel density and pixel ratio of the children of this view
      * @param w Width of this view
      * @param h Height of this view
      * @param MT Transform matrix
@@ -351,10 +471,14 @@ define( [
     deletePrimitives:function() {
       console.log("PresoTilesAlxAppsGate::deletePrimitives", this);
       if(this.root) {
-        this.root.parentNode.remove(this.root);this.root=null;
-        this.rect.parentNode.remove(this.rect);this.rect=null;
-        this.gView.parentNode.remove(this.gView);this.gView=null;
-        this.groot.parentNode.remove(this.groot);this.groot=null;
+				if(this.root.parentNode) {
+					this.root.parentNode.remove(this.root);this.root=null;
+					this.rect.parentNode.remove(this.rect);this.rect=null;
+					this.gView.parentNode.remove(this.gView);this.gView=null;
+					this.groot.parentNode.remove(this.groot);this.groot=null;
+				} else {
+					this.root = null; this.rect = null; this.gView = null; this.groot = null;
+				}
       }
     }
 
