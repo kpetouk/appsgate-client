@@ -48,7 +48,7 @@ define([
 			this.webSocket.onerror = function(error) {
 				console.log(error);
 				dispatcher.trigger("WebSocketClose");
-			}
+			};
 
       // socket opened event - broadcast an event to the application
       this.webSocket.onopen = function() {

@@ -1,75 +1,45 @@
 define([
-  "jquery",
-  "underscore",
-  "backbone"
-], function($, _, Backbone, Grammar) {
+  "app",
+  "models/brick"
+], function(App, Brick) {
 
-  // model
-  AppsGate.Universe.Model = Backbone.Model.extend({
+	var Universe = {};
 
-    // default values
-    defaults: {
-        name : "",
-        places : [],
-        devices: [],
-        programs: []
-    },
+  /**
+	 * Universe model class, representing a universe in AppsGate
+	 */
+  Universe = Brick.extend({
 
     /**
      * @constructor
      */
     initialize:function() {
-      var self = this;
+			Universe.__super__.initialize.apply(this, arguments);
+			
+			
+			this.set("universe-type", "fundamental");
+			if(this.get("type") === "USER_ROOT") {
+				this.set("name", "universes.usersUniverse");
+			}
+			else if (this.get("type") === "SPATIAL_ROOT") {
+				this.set("name", "universes.spatialUniverse");
+			}
+			else if (this.get("type") === "DEVICE_ROOT") {
+				this.set("name", "universes.devicesUniverse");
+			}
+			else if (this.get("type") === "SERVICE_ROOT") {
+				this.set("name", "universes.servicesUniverse");
+			}
+			else if (this.get("type") === "PROGRAM_ROOT") {
+				this.set("name", "universes.programsUniverse");
+			}
+			else{
+				this.set("name", this.id);
+				this.set("universe-type", "local");
+			}
+			
     },
 
-    /**
-     * Send a message to the server to perform a remote call
-     * 
-     * @param method Remote method name to call
-     * @param args Array containing the argument taken by the method. Each entry of the array has to be { type : "", value "" }
-     */
-    remoteCall:function(method, args) {
-      communicator.sendMessage({
-        method  : method,
-        args    : args
-      });
-    },
-
-    /**
-     * Override its synchronization method to send a notification on the network
-     */
-    sync:function(method, model) {
-      switch (method) {
-        case "create":
-          // create an id to the place
-          var id;
-        do {
-          id = "place-" + Math.round(Math.random() * 10000).toString();
-        } while (places.where({ id : id }).length > 0);
-        model.set("id", id);
-
-        this.remoteCall("newPlace", [{ type : "JSONObject", value : model.toJSON() }]);
-        break;
-        case "delete":
-          this.remoteCall("removePlace", [{ type : "String", value : model.get("id") }]);
-        break;
-        case "update":
-          this.remoteCall("updatePlace", [{ type : "JSONObject", value : model.toJSON() }]);
-        break;
-        default:
-          break;
-      }
-    },
-
-    /**
-     * Converts the model to its JSON representation.
-     */
-    toJSON:function() {
-      return {
-        id : this.get("id").toString(),
-        name : this.get("name"),
-        devices : this.get("devices")
-      };
-    }
   });
+	return Universe;
 });

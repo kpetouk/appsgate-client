@@ -2,28 +2,45 @@ define(function(require, exports, module) {
   "use strict";
 
   // External dependencies.
-  var app = require("app");
-  var Backbone = require("backbone");
-  require("views/universelist");
-  require("views/spatialUniverse");
+	var LoginView = require("views/login/loginview");
+  var HomeView = require("views/homeview");
+  var HabitatView = require("views/habitatview");
+	var DevicesView = require("views/devicesview");
+	var ServicesView = require("views/servicesview");
 
   // define the application router
   var Router = Backbone.Router.extend({
     routes: {
-      ""		: "index",
-      "reset"	: "index",
-      "spatialUniverse" : "spatialUniverse"
+      ""		: "home",
+			"login" : "login",
+			"reset"	: "home",
+			"home" : "home",
+      "spatial_root" : "habitat",
+			"device_root" : "devices",
+			"service_root" : "services"
     },
 
     // default route of the application
-    index:function() {
-      this.showView(new AppsGate.Universe.Views.List());
+    login:function() {
+      this.showView(new LoginView());
     },
 
-
-    spatialUniverse:function() {
-      this.showView(new AppsGate.Universe.Views.SpatialUniverse());
+		home:function() {
+			this.showView(new HomeView());
+		},
+		
+    habitat:function() {
+      this.showView(new HabitatView());
     },
+		
+		devices:function() {
+      this.showView(new DevicesView());
+    },
+		
+		services:function() {
+			this.showView(new ServicesView());
+		},
+
 
     showView:function(view) {
       // remove and unbind the current view

@@ -21,9 +21,9 @@ define([
 
       this.type = "PLACE";
 
-      this.appendViewFactory( 'PlaceBrickView', PlaceBrickView, { pixelsMinDensity : 0, pixelsMaxDensity : 999999999, pixelsRatio		 : 1 });
+      this.appendViewFactory( 'PlaceBrickView', PlaceBrickView, { pixelsMinDensity : 0, pixelsMaxDensity : 999999999, pixelsRatio : 1 });
 
-		},
+    },
 
   });
 

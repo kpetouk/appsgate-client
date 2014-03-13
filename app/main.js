@@ -4,13 +4,13 @@ require(["config"], function() {
   // Kick off the application.
   require(["domReady", "app"], function (domReady, app) {
 
-	  /**
+    /**
      * Encapsulate actions to perform before switching the view to avoid ghost views
      * @returns {undefined}
      */
     Backbone.View.prototype.close = function() {
-			// unbind all the events associated to the view
-			this.unbind();
+      // unbind all the events associated to the view
+      this.unbind();
     };
 
     /**
@@ -33,10 +33,10 @@ require(["config"], function() {
 
     // domReady is RequireJS plugin that triggers when DOM is ready
     domReady(function() {
-			// initialise localisation
-			$.i18n.init({ resGetPath:'app/locales/__lng__/__ns__.json', lng : 'fr-FR' }).done(function() {
-				app.initialize();
-			});
+      // initialise localisation
+      $.i18n.init({ resGetPath:'app/locales/__lng__/__ns__.json', lng : 'fr-FR' }).done(function() {
+        app.initialize();
+      });
     });
   });
 });

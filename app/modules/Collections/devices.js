@@ -47,9 +47,9 @@ define([
     addDevice:function(brick) {
       var self = this;
       var deviceType;
-      for(i in brick.properties) {
+      for(var i in brick.properties) {
         if(brick.properties[i].key === "deviceType") {
-          deviceType = brick.properties[i].value
+          deviceType = brick.properties[i].value;
           break;
         }
       }

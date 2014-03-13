@@ -1,7 +1,8 @@
 // This is the runtime configuration file.  It complements the Gruntfile.js by
 // supplementing shared properties.
 require.config({
-    paths: {
+  paths: {
+		// VENDOR
     // Make vendor easier to access.
     "vendor": "../vendor",
 
@@ -13,30 +14,44 @@ require.config({
 
     // JQuery and Backbone
     "jquery": "../vendor/bower/jquery/jquery",
+		"jqueryui": "../vendor/bower/jqueryui/ui/jquery-ui",
+		"jqueryuitouch": "../vendor/bower/jqueryui-touch-punch/jquery.ui.touch-punch",
     "backbone": "../vendor/bower/backbone/backbone",
 
-	// RequireJS plugins
+    // JQuery plugins
+    "i18n": "../vendor/bower/i18next/release/i18next.amd.withJQuery-1.7.1",
+
+    // RequireJS plugins
     "text": "../vendor/bower/requirejs-text/text",
     "domReady": "../vendor/bower/requirejs-domready/domReady",
-		"i18n": "../vendor/bower/requirejs-i18n/i18n",
+		
+		// Bootstrap
+		"bootstrap": "../vendor/bower/bootstrap/dist/js/bootstrap",
+		
+    // Snap.svg
+    "snapsvg": "../vendor/bower/Snap.svg/dist/snap.svg",
 
-	// Snap.Svg
-	"snapsvg": "../vendor/bower/Snap.svg/dist/snap.svg",
+		// MomentJS
+		"moment": "../vendor/bower/momentjs/moment",
+		
+		// JQuery Circle Menu Plugin
+		"circlemenu":"../vendor/circlemenu/JQuery.circlemenu",
 
+		// APPSGATE
     // Modules
     "modules": "../app/modules",
-	
-	// Collections
-	"collections": "../app/modules/collections",
-	
-	// Models
-	"models": "../app/modules/models",
-	
-	// Views
-	"views": "../app/modules/views",
-	
-	// Templates
-	"templates": "../app/templates"
+
+    // Collections
+    "collections": "../app/modules/collections",
+
+    // Models
+    "models": "../app/modules/models",
+
+    // Views
+    "views": "../app/modules/views",
+
+    // Templates
+    "templates": "../app/templates"
 
   },
 
@@ -44,22 +59,39 @@ require.config({
   shim: {
     // This is required to ensure Backbone works as expected within the AMD
     // environment.
+    "underscore": {
+      exports: "_"
+    },
+		"bootstrap": {
+			deps: [ "jquery"]
+		},
+		"jqueryui": {
+			deps: [ "jquery"]
+		},
+		"jqueryuitouch": {
+			deps: [ "jquery", "jqueryui"]
+		},
+		"circlemenu": {
+			deps: [ "jquery"]
+		},
     "backbone": {
       // These are the two hard dependencies that will be loaded first.
       deps: ["jquery", "underscore"],
 
       // This maps the global `Backbone` object to `require("backbone")`.
       exports: "Backbone"
-    }
+    },
+    "i18n" : {
+      deps: [ "jquery" ] 
+    },
+		"moment" : {
+			exports: "moment"
+		}
+
   }
 });
 
 // Setting up AppsGate globals.
-    if (!window.AppsGate) window.AppsGate = {};
-    if (!AppsGate.App) AppsGate.App = {};
-    if (!AppsGate.Universe) AppsGate.Universe = {};
-    if (!AppsGate.Place) AppsGate.Place = {};
-    if (!AppsGate.Device) AppsGate.Device = {};
-    if (!AppsGate.Program) AppsGate.Program = {};
+if (!window.AppsGate) window.AppsGate = {};
 
 

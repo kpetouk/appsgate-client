@@ -44,6 +44,11 @@ define([
         console.log("Socket closed");
         dispatcher.trigger("WebSocketClose");
       };
+			
+			this.webSocket.onerror = function(error) {
+				console.log(error);
+				dispatcher.trigger("WebSocketClose");
+			};
 
       // socket opened event - broadcast an event to the application
       this.webSocket.onopen = function() {
@@ -94,20 +99,20 @@ define([
 
     /**
      * @method handleMessage
+		 * Receives a message from the backend and dispatches it to the recepient module
      */
     handleMessage:function(message) {
       // rebuild the message for the application
       var jsonMessage = JSON.parse(message.data);
-      console.log("received", message.data);
+      console.log("received", message);
 
       if (jsonMessage.callId !== undefined) {
-        if (typeof jsonMessage.value === "string" && jsonMessage.callId !== "mediaBrowser") {
+        if (typeof jsonMessage.value === "string") {
           jsonMessage.value = JSON.parse(jsonMessage.value);
         }
         dispatcher.trigger(jsonMessage.callId, jsonMessage.value);
       } else if (typeof jsonMessage.objectId !== "undefined") {
         var id = jsonMessage.objectId;
-        delete jsonMessage.objectId;
         dispatcher.trigger(id, jsonMessage);
       } else {
         var commandName = _.keys(jsonMessage)[0];

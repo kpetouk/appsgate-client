@@ -1,39 +1,72 @@
 define([
-  "jquery",
-  "underscore",
-  "backbone",
-  "main",
-  "models/universe"
-], function($, _, Backbone) {
+	"app",
+	"models/universe"
+], function(App, Universe) {
+
+	var Universes = {};
   // collection
-  AppsGate.Universe.Collection = Backbone.Collection.extend({
-    model: AppsGate.Universe.Model,
+  Universes = Backbone.Collection.extend({
+    model: Universe,
 
     /**
-     * Fetch the universes from the server
+     * Fetch the users from the server
      *
      * @constructor
      */
     initialize:function() {
       var self = this;
-
-      // sort the universes alphabetically
-      this.comparator = function(universe) {
-        return universe.get("name");
-      };
-
-      var spatialUniverse = new AppsGate.Universe.Model();
-      var bricksUniverse = new AppsGate.Universe.Model();
-      var programsUniverse = new AppsGate.Universe.Model();
-      spatialUniverse.set("name","Spatial Universe");
-      bricksUniverse.set("name", "Bricks Universe");
-      programsUniverse.set("name", "Programs Universe");
-
-      // create the default universes
-      this.add(spatialUniverse);
-      this.add(bricksUniverse);
-      this.add(programsUniverse);
-
-    },
+		},
+		
+		addUniverse:function(brick){
+			this.add(new Universe(brick), {at:0});
+		},
+		
+		getUniverseByType:function(type){
+			return this.findWhere({type:type});
+		},
+		
+		getFundamentalUniverses:function() {
+			//return this.where({"universe-type":"fundamental"});
+			var result = [];
+			result.push(this.getUsersUniverse());
+			result.push(this.getSpatialUniverse());
+			result.push(this.getDevicesUniverse());
+			result.push(this.getServicesUniverse());
+			result.push(this.getProgramsUniverse());
+			return result;
+		},
+		
+		getUsersUniverse:function() {
+			return this.findWhere({type:"USER_ROOT"});
+		},
+		
+		getSpatialUniverse:function() {
+			return this.findWhere({type:"SPATIAL_ROOT"});
+		},
+		
+		getDevicesUniverse:function() {
+			return this.findWhere({type:"DEVICE_ROOT"});
+		},
+		
+		getServicesUniverse:function() {
+			return this.findWhere({type:"SERVICE_ROOT"});
+		},
+		
+		getProgramsUniverse:function() {
+			return this.findWhere({type:"PROGRAM_ROOT"});
+		},
+		
+		getLocalUniverses:function() {
+			return this.findWhere({"universe-type":"local"});
+		},
+		
+		getUserUniverses:function() {
+			return this.findWhere({type:"user"});
+			// TODO check if the connected user is allowed to see those
+		}
+		
   });
+	
+	return Universes;
+	
 });
