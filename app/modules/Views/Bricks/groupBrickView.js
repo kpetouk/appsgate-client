@@ -18,7 +18,8 @@ define( [
 			var self = this;
 
       GroupView.__super__.initialize.apply(this, arguments);
-						
+			this.name = "GroupView";
+			this.stroke = "#C0C0C0";
     },
 
   });

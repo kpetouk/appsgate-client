@@ -1,8 +1,8 @@
 define([
   "app",
   "models/device/device",
-  "views/bricks/phillipshueview",
-  "views/bricks/phillipshuecloseview"
+  "views/bricks/devices/phillipshueview",
+  "views/bricks/devices/phillipshuecloseview"
 ], function(App, Device, PhillipsHueView, PhillipsHueCloseView) {
 
   var PhillipsHue = {};
@@ -19,8 +19,6 @@ define([
     initialize: function() {
       PhillipsHue.__super__.initialize.apply(this, arguments);
 			
-			this.setProperty("name", "Lampe " + this.cid);
-
       this.appendViewFactory( 'PhillipsHueView', PhillipsHueView, { pixelsMinDensity : 0, pixelsMaxDensity : 0.5, pixelsRatio : 1 });
       this.appendViewFactory( 'PhillipsHueCloseView', PhillipsHueCloseView,{ pixelsMinDensity : 0.5, pixelsMaxDensity : 2, pixelsRatio : 1 });
 

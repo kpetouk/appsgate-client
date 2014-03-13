@@ -1,14 +1,14 @@
 define( [
   "app",
-  "views/brickview"
-], function(App, BrickView) {
+  "views/bricks/services/serviceview"
+], function(App, ServiceView) {
 
   var MediaPlayerCloseView = {};
 
   /**
 	 * Class of a close view of a Media Player
 	 */
-  MediaPlayerCloseView = BrickView.extend({
+  MediaPlayerCloseView = ServiceView.extend({
 
 		/**
 		 * constructor
@@ -136,7 +136,7 @@ define( [
 				var viewHeight = size*(this.h-dt);
         var paper = Snap("#svgspace");
         var group  = paper.g();
-        var rect = paper.rect(0.5*dt*size, 0.5*dt*size, viewWidth,viewHeight).attr({fill:this.color,stroke:"black"});
+        var rect = paper.rect(0.5*dt*size, 0.5*dt*size, viewWidth,viewHeight).attr({rx:6,ry:6,fill:this.color,stroke:this.stroke});
         var text = paper.text(0,0,$.i18n.t(this.model.getProperty("name")));
 				text.transform("m" + (viewWidth/2) / text.getBBox().width  + ", 0, 0, " + (viewHeight/10) / text.getBBox().height + "," + viewWidth/5 + "," + viewWidth/5);
         group.add(rect,text);

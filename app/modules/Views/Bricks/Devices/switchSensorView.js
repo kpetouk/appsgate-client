@@ -1,6 +1,6 @@
 define( [
   "app",
-  "views/brickview"
+  "views/bricks/devices/deviceview"
 ], function(App, BrickView) {
 
   var SwitchSensorView = {};
@@ -17,7 +17,6 @@ define( [
 
       SwitchSensorView.__super__.initialize.apply(this, arguments);
 
-			this.color = "gray";
     },
 
   });

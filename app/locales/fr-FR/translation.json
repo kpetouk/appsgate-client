@@ -15,7 +15,9 @@
 		"saving-button" : "En cours...",
 		"browse-button"	: "Parcourir",
 		"background-editor" : "Fond",
-		"size-editor" : "Taille"
+		"size-editor" : "Taille",
+		"size-width" : "Largeur",
+		"size-height" : "Hauteur"
 	},
 	"navbar" : {
 		"edit"				: "Editer",

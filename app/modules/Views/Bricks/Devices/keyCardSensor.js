@@ -1,14 +1,14 @@
 define( [
   "app",
-  "views/brickview"
-], function(App, BrickView) {
+  "views/bricks/devices/deviceview"
+], function(App, DeviceView) {
 
   var KeyCardSensorView = {};
 
   /**
 	 * Class of a default view of a key card sensor
 	 */
-  KeyCardSensorView = BrickView.extend({
+  KeyCardSensorView = DeviceView.extend({
 
 		/**
 		 * constructor
@@ -17,7 +17,6 @@ define( [
 
       KeyCardSensorView.__super__.initialize.apply(this, arguments);
 
-			this.color = "gray";
     },
 
   });

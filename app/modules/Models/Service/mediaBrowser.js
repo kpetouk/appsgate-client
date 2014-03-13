@@ -1,7 +1,7 @@
 define([
   "app",
-  "models/device/device"
-], function(App, Device) {
+  "models/service/service"
+], function(App, Service) {
 
   var MediaBrowser = {};
 
@@ -10,7 +10,7 @@ define([
    *
    * @class Device.MediaBrowser
    */
-  MediaBrowser = Device.extend({
+  MediaBrowser = Service.extend({
     /**
      * @constructor
      */

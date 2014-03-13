@@ -1,14 +1,14 @@
 define( [
   "app",
-  "views/brickview"
-], function(App, BrickView) {
+  "views/bricks/services/serviceview"
+], function(App, ServiceView) {
 
   var MediaPlayerView = {};
 
   /**
 	 * Class of a default view of Media Player
 	 */
-  MediaPlayerView = BrickView.extend({
+  MediaPlayerView = ServiceView.extend({
 
 		/**
 		 * constructor

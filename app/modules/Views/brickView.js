@@ -29,10 +29,11 @@ define( [
 
       this.x = this.model?this.model.x:0;
 			this.y = this.model?this.model.y:0;
-      this.w = this.model?this.model.w:0;
-			this.h = this.model?this.model.h:0;
+      this.w = this.model?this.model.w:1;
+			this.h = this.model?this.model.h:1;
       this.innerMagnitude = 12;
       this.color = 'white';
+			this.stroke = 'black';
       this.display = true;
       this.scaleToDisplayChildren = 0.5;
       this.validity = { pixelsMinDensity : 0,
@@ -166,6 +167,8 @@ define( [
 		startDrag: function (x, y, e) {
 			e.stopPropagation();
 			
+			console.log("started dragging");
+			
       var self = this.node.ViewRoot;
 			
 			self.root.attr({display:"none"});
@@ -203,6 +206,7 @@ define( [
 					parent.save();
 				}
 				self.model.destroy();
+				dispatcher.trigger("cancelEditMode");
 			}
 			else if (target && target.ViewRoot && target.ViewRoot.model) {
 				self.moveView(e.clientX,e.clientY, target.ViewRoot);
@@ -213,8 +217,9 @@ define( [
 				self.root.attr({display:"block"});
 			}
 			
-			
+			console.log("stopped dragging, removing listener");
 			self.root.undrag();
+			self.dragged = false;
 					
 		},
 
@@ -238,7 +243,7 @@ define( [
 			this.model.x = newX;
 			this.model.y = newY;
 			this.root.transform("t" + [newX*this.size,newY*this.size]);
-			this.model.save();
+			
 		},
 
     /**
@@ -279,18 +284,32 @@ define( [
         // add the basic graphical elements of this view
         this.gView = paper.g();
         var r  = paper.rect(0.5*dt*size, 0.5*dt*size, size*(this.w-dt),size*(this.h-dt));
-        r.attr({class:"tile", fill:this.color, stroke:"green"});
+        r.attr({class:"tile", rx:"6", ry:"6", fill:this.color, stroke:this.stroke, "stroke-width":"2"});
+				
+				var border = paper.rect(0.5*dt/2*size, 0.5*dt/2*size, size*(this.w-dt/2),size*(this.h-dt/2));
+				border.attr({rx:"6", ry:"6", fill:"none", stroke:"black", "stroke-width":"0.5"});
 				
 				// handle taphold
-				var pressTimer;
-				r.mousedown(function() {
+				var detectTapHold = function(e) {
+					var startX = e.clientX;
+					var startY = e.clientY;
+					
+					if(!self.dragged){
 					pressTimer = window.setTimeout(function() {
-						dispatcher.trigger("editMode", self.model);
-						self.root.drag(self.moveDrag, self.startDrag, self.stopDrag);
-					},1000)
+						if(startX == e.clientX && startY == e.clientY) {
+							dispatcher.trigger("editMode", self.model);
+							console.log("set draggable");
+							self.root.drag(self.moveDrag, self.startDrag, self.stopDrag);
+							self.dragged = true;
+						}
+					},1000);
+					}
 					return false;
-				});
-				r.mouseup(function() {
+				};
+				
+				var pressTimer;
+				this.gView.mousedown(detectTapHold);
+				this.gView.mouseup(function(e) {
 					// Clear timeout
 					clearTimeout(pressTimer)
 					return false;
@@ -298,6 +317,7 @@ define( [
 				
 				this.bgRect = r;
         this.gView.add(r);
+				this.gView.add(border);
         this.root.add(this.gView);
         this.root.add(groupRoot);
         this.rect = r;
@@ -312,7 +332,22 @@ define( [
       }
       return this.root;
     },
-
+		
+		redrawView:function() {
+			this.x = this.model.x;
+			this.y = this.model.y;
+			this.w = this.model.w;
+			this.h = this.model.h;
+			if(this.root) {
+				this.root.remove();
+				this.root = null;
+			}
+		
+			if(this.parent) {
+				this.parent.primitivePlug(this);
+			}
+		},
+		
     /**
      * Returns inner root element of this view
      */

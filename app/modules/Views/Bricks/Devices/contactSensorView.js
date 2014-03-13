@@ -1,14 +1,14 @@
 define( [
   "app",
-  "views/brickview"
-], function(App, BrickView) {
+  "views/bricks/devices/deviceview"
+], function(App, DeviceView) {
 
   var ContactSensorView = {};
 
   /**
 	 * Class of a default view of a contact sensor
 	 */
-  ContactSensorView = BrickView.extend({
+  ContactSensorView = DeviceView.extend({
 
 		/**
 		 * constructor
@@ -17,7 +17,6 @@ define( [
 
       ContactSensorView.__super__.initialize.apply(this, arguments);
 
-			this.color = "gray";
     },
 
   });

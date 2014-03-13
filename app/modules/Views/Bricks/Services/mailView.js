@@ -1,14 +1,14 @@
 define( [
   "app",
-  "views/brickview"
-], function(App, BrickView) {
+  "views/bricks/services/serviceview"
+], function(App, ServiceView) {
 
   var MailView = {};
 
   /**
 	 * Class of a default view of an e-mail service
 	 */
-  MailView = BrickView.extend({
+  MailView = ServiceView.extend({
 
 		/**
 		 * constructor
@@ -17,7 +17,6 @@ define( [
 
       MailView.__super__.initialize.apply(this, arguments);
 
-			this.color = "whitesmoke";
     },
 
   });

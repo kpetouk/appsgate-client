@@ -58,9 +58,7 @@ define([
 			var args = arguments;
       if (method == "update" && model.changedAttributes()) {
         _.keys(model.changedAttributes()).forEach(function(attribute) {
-          if (attribute === "name") {
-            model.sendName();
-          } else if (attribute === "plugState") {
+          if (attribute === "plugState") {
             model.sendPlugState();
           } else if (attribute === "value" && (model.getProperty("deviceType") === "7" || model.getProperty("deviceType") === 7)) {
             model.sendValue();

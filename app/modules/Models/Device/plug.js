@@ -1,7 +1,8 @@
 define([
   "app",
-  "models/device/device"
-], function(App, Device) {
+  "models/device/device",
+  "views/bricks/devices/plugview"
+], function(App, Device, PlugView) {
 
   var Plug = {};
   /**
@@ -14,7 +15,7 @@ define([
     initialize:function() {
       Plug.__super__.initialize.apply(this, arguments);
 
-      this.appendViewFactory( 'PresoBasicSmartPlug', PresoBasicSmartPlug, { pixelsMinDensity : 0, pixelsMaxDensity : 999999999, pixelsRatio : 1 });
+      this.appendViewFactory( 'PlugView', PlugView, { pixelsMinDensity : 0, pixelsMaxDensity : 999999999, pixelsRatio : 1 });
     },
 
     /**

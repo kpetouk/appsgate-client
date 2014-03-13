@@ -5,6 +5,8 @@ define(function(require, exports, module) {
 	var LoginView = require("views/login/loginview");
   var HomeView = require("views/homeview");
   var HabitatView = require("views/habitatview");
+	var DevicesView = require("views/devicesview");
+	var ServicesView = require("views/servicesview");
 
   // define the application router
   var Router = Backbone.Router.extend({
@@ -13,7 +15,9 @@ define(function(require, exports, module) {
 			"login" : "login",
 			"reset"	: "home",
 			"home" : "home",
-      "spatial_root" : "habitat"
+      "spatial_root" : "habitat",
+			"device_root" : "devices",
+			"service_root" : "services"
     },
 
     // default route of the application
@@ -28,6 +32,15 @@ define(function(require, exports, module) {
     habitat:function() {
       this.showView(new HabitatView());
     },
+		
+		devices:function() {
+      this.showView(new DevicesView());
+    },
+		
+		services:function() {
+			this.showView(new ServicesView());
+		},
+
 
     showView:function(view) {
       // remove and unbind the current view

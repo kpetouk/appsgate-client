@@ -16,6 +16,7 @@ define( [
     initialize:function(){
       PlaceView.__super__.initialize.apply(this, arguments);
 			this.name = "PlaceView";
+			this.stroke = "#9ACD32";
     },
 
   });

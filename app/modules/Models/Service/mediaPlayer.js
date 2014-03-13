@@ -1,9 +1,9 @@
 define([
   "app",
-  "models/device/device",
-  "views/bricks/mediaplayerview",
-	"views/bricks/mediaplayercloseview"
-], function(App, Device, MediaPlayerView, MediaPlayerCloseView) {
+  "models/service/service",
+  "views/bricks/services/mediaplayerview",
+	"views/bricks/services/mediaplayercloseview"
+], function(App, Service, MediaPlayerView, MediaPlayerCloseView) {
 
   var MediaPlayer = {};
 
@@ -12,30 +12,27 @@ define([
    *
    * @class Device.MediaPlayer
    */
-  MediaPlayer = Device.extend({
+  MediaPlayer = Service.extend({
     /**
      * @constructor
      */
     initialize:function() {
 		  MediaPlayer.__super__.initialize.apply(this, arguments);
 			var self = this;
-			
-			//this.setProperty("name", "Lecteur" + this.cid);
-			
+						
       this.appendViewFactory( 'MediaPlayerView', MediaPlayerView, { pixelsMinDensity : 0, pixelsMaxDensity : 0.5, pixelsRatio : 1 });
 			this.appendViewFactory( 'MediaPlayerCloseView', MediaPlayerCloseView,{ pixelsMinDensity : 0.5, pixelsMaxDensity : 2, pixelsRatio : 1 });
 
       // setting default friendly name if none exists
       if(this.get("name") === ""){
         this.set("name", this.get("friendlyName"));
-        this.save();
       }
 			
 			// request current volume level
 			this.requestVolume();
 
       // listening for volume value
-      dispatcher.on(this.get("id") + ":volume", function(volume) {
+      dispatcher.on(this.get("ref") + ":volume", function(volume) {
         self.set("volume", volume);
 			});
     },

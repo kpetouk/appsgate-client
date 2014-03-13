@@ -19,8 +19,8 @@ define([
 
 			this.x = this.getProperty("x")?parseInt(this.getProperty("x")):0;
 			this.y = this.getProperty("y")?parseInt(this.getProperty("y")):0;
-			this.w = this.getProperty("w")?parseInt(this.getProperty("w")):1;
-			this.h = this.getProperty("h")?parseInt(this.getProperty("h")):1;
+			this.w = typeof this.getProperty("w") === "string"?parseInt(this.getProperty("w")):1;
+			this.h = typeof this.getProperty("h") === "string"?parseInt(this.getProperty("h")):1;
       
       dispatcher.on("newSpace-" + this.cid, function(id) {
         self.set("id", id);
@@ -147,6 +147,12 @@ define([
         }
       }
     },
+		
+		redrawViews:function() {
+			for (v in this.views) {
+				this.views[v].redrawView();
+			}
+		},
 
     /**
      * Provides a new view from a view factory given a context representing the current level of zoom
@@ -257,7 +263,7 @@ define([
       }
     },
 
-    appendChildWithCoord:function(child, x, y) {
+    appendChildWithCoord:function(child, x, y, w, h) {
       if(this.children.indexOf(child) == -1) {
         this.children.push(child);
         child.appendParent(this);
@@ -275,8 +281,10 @@ define([
 					
 					child.x = newX;
 					child.y = newY;
+					if(typeof w !== 'undefined') child.w = w;
+					if(typeof h !== 'undefined') child.h = h;
 					
-          curView.appendChildFromBrick	( child, function() {this.x = newX; this.y = newY; this.w = 1; this.h = 1;}, undefined, curView.getChildrenContext(1, 1));
+          curView.appendChildFromBrick	( child, undefined, undefined, curView.getChildrenContext(1, 1));
         }
       }
     },

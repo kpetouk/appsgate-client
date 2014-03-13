@@ -126,7 +126,7 @@ define( [
       var ms = Date.now();
       var timer = setTimeout(function() { self.processClick();}, 10+self.dblClickDelay);
       for(var i=0; i<evt.changedTouches.length;i++) {
-        ptr = evt.changedTouches.item(i);
+        ptr = evt.changedTouches[i];
         self.touchClickData[ptr.identifier] = {target:ptr.target,id:ptr.identifier,x:ptr.clientX,y:ptr.clientY,ms:ms,timer:timer};
       }
       if(this.touchClickTimer) {
@@ -135,8 +135,8 @@ define( [
       }
 
       if(evt.touches.length === 1) {
-        ptr = evt.touches.item(0);
-        var obj = {ms:ms,evt:1,id:ptr.identifier,x:ptr.clientX,y:ptr.clientY,target:evt.touches.item(0).target};
+        ptr = evt.touches[0];
+        var obj = {ms:ms,evt:1,id:ptr.identifier,x:ptr.clientX,y:ptr.clientY,target:evt.touches[0].target};
         self.touchList.push(obj);
       }
     },
@@ -151,14 +151,14 @@ define( [
       var ptr;
       // Manage click
       for(var i=0; i<evt.changedTouches.length; i++) {
-        ptr = evt.changedTouches.item(i);
+        ptr = evt.changedTouches[i];
         if(self.touchClickData[ptr.identifier] && Math.abs(self.touchClickData[ptr.identifier].x - ptr.clientX) < 5 && Math.abs(self.touchClickData[ptr.identifier].y - ptr.clientY) < 5 && self.touchClickData[ptr.identifier].ms > ms-self.clickDelay) {
           self.touchClickData[ptr.identifier].click = true;
         }
       }
       // Manage double click
       if(evt.touches.length === 0) {
-        ptr = evt.changedTouches.item(0);
+        ptr = evt.changedTouches[0];
         var obj = {ms:ms,evt:0,id:ptr.identifier,x:ptr.clientX,y:ptr.clientY};
         self.touchList.push(obj);
         // console.log( this.L_touches );
@@ -174,7 +174,7 @@ define( [
 
       if(!this.root) {
 
-				self.model = AppsGate.Root.Universes.getSpatialUniverse();
+				//self.model = AppsGate.Root.Universes.getSpatialUniverse();
 				self.model.views.push(this);
         var paper = Snap("#svgspace");
 				paper.attr({class:"ViewRoot", xlink:"http://www.w3.org/1999/xlink", width:"100%", height:"100%"});
@@ -189,7 +189,6 @@ define( [
         groupRoot.attr({class:"rootInternal"});
         this.groot = groupRoot;
         this.root.append(this.groot);
-        this.root.drag(this.viewDrag, this.startViewDrag);
 
         var svg = this.root.node;
         this.svg_point = svg.createSVGPoint();
@@ -200,11 +199,6 @@ define( [
 				});
 
         paper.dblclick(this.cbClic);
-
-        /*window.requestAnimFrame(function() {
-          self.cbClic({target: svg
-          });
-        });*/
 
         // DragManager
         DragManager.init(this.root.node);

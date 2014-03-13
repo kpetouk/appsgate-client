@@ -11,12 +11,12 @@ define([
 	"text!templates/bricks/brickEditPalette.html"
 ], function(App, Snap, SvgMapView, BrickListView, svgTemplate, navbarTemplate, circleMenuTemplate, universeTabTemplate, draggableTemplate, brickEditTemplate) {
  
-	var HabitatView = {};
+	var DevicesView = {};
   
   /**
 	 * View used as home page of the application
 	 */
-  HabitatView = Backbone.View.extend({
+  DevicesView = Backbone.View.extend({
     el: $("#main"),
     template: _.template(svgTemplate),
 		tplNavBar: _.template(navbarTemplate),
@@ -41,7 +41,7 @@ define([
 		 */
     initialize:function() {
 			var self = this;
-      HabitatView.__super__.initialize.apply(this, arguments);
+      DevicesView.__super__.initialize.apply(this, arguments);
 			
 			this.editMode = false;
 			
@@ -52,13 +52,7 @@ define([
 				self.showBrickEditPanel(brick);
 			});
 
-			dispatcher.on("cancelEditMode", function() {
-        if(self.editMode){
-					self.toggleEditMode(false);
-				}
-				self.cancelBrickEdit();
-			});
-
+			
 		},
 		
 		/**
@@ -130,7 +124,7 @@ define([
 			this.initializeSvgMap();
 			
 			// Render the svg map view
-			var svgMap = new SvgMapView({model:AppsGate.Root.Universes.getSpatialUniverse()});
+			var svgMap = new SvgMapView({model:AppsGate.Root.Universes.getDevicesUniverse()});
 			svgMap.render();
 										
 			// initialize the circle menu
@@ -312,5 +306,5 @@ define([
 		
   });
 
-  return HabitatView;
+  return DevicesView;
 });

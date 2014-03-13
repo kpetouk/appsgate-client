@@ -116,8 +116,8 @@ define( [
       while(T_tmp.length) {
         n_tmp = T_tmp.pop();
         for(var i=0; i<n_tmp.childNodes.length; i++) {
-          T_rep.push( n_tmp.childNodes.item(i) );
-          T_tmp.push( n_tmp.childNodes.item(i) );
+          T_rep.push( n_tmp.childNodes[i] );
+          T_tmp.push( n_tmp.childNodes[i] );
         }
       }
       return T_rep;
@@ -211,7 +211,7 @@ define( [
       while(TabTmp.length) {
         nodeTmp = TabTmp.pop();
         for(var i=0; i<nodeTmp.childNodes.length; i++) {
-          childTmp   = nodeTmp.childNodes.item(i);
+          childTmp   = nodeTmp.childNodes[i];
           idxChildTmp = this.indexOfNode(childTmp);
           // Is nc_tmp still dragged?
           if(idxChildTmp >= 0) {
@@ -264,7 +264,7 @@ define( [
       e.preventDefault();
       var evt = null, coords = null;
       for(var i=0;i<e.changedTouches.length;i++) {
-        evt    = e.changedTouches.item(i);
+        evt    = e.changedTouches[i];
         coords = DragManager.getCoordinateRelativeTo(evt.pageX, evt.pageY, DragManager.can);
         DragManager.startDrag(evt, node, evt.identifier, coords.x, coords.y);
       }
@@ -324,7 +324,7 @@ define( [
     stopDragTouch:function (e) {
       //e.preventDefault();
       for(var i=0;i<e.changedTouches.length;i++) {
-        DragManager.stopDrag(e.changedTouches.item(i), e.changedTouches.item(i).identifier);
+        DragManager.stopDrag(e.changedTouches[i], e.changedTouches[i].identifier);
       }
     },
 
@@ -369,7 +369,7 @@ define( [
       e.preventDefault();
       var evt = null, coords = null;
       for(var i=0;i<e.changedTouches.length;i++) {
-        evt = e.changedTouches.item(i);
+        evt = e.changedTouches[i];
         coords = DragManager.getCoordinateRelativeTo(evt.pageX, evt.pageY, DragManager.can);
         DragManager.updateInteraction(evt.identifier, coords.x, coords.y);
       }
@@ -446,14 +446,13 @@ define( [
         return;
       }
       if(dx == 0) {
-        s = -dxp/dy; c = dyp/dy;
+				c = dyp/dy;
       }
       else {
         if(dy == 0) {
-          s = dyp/dx; c = dxp/dx;
+					c = dxp/dx;
         }
         else{
-          s = (dyp/dy - dxp/dx) / (dy/dx + dx/dy);
           c = (dxp + s*dy)/dx;
         }
       }

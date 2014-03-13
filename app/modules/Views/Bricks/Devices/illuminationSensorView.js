@@ -1,14 +1,14 @@
 define( [
-  "app",
-  "views/brickview"
-], function(App, BrickView) {
+	"app",
+  "views/bricks/devices/deviceview"
+], function(App, DeviceView) {
 
   var IlluminationSensorView = {};
 
   /**
 	 * Class of a default view of an illumination sensor
 	 */
-  IlluminationSensorView = BrickView.extend({
+  IlluminationSensorView = DeviceView.extend({
 
 		/**
 		 * constructor
@@ -17,7 +17,6 @@ define( [
 
       IlluminationSensorView.__super__.initialize.apply(this, arguments);
 
-			this.color = "cyan";
     },
 
   });

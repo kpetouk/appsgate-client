@@ -1,14 +1,14 @@
 define( [
   "app",
-  "views/brickview"
-], function(App, BrickView) {
+  "views/bricks/devices/deviceview"
+], function(App, DeviceView) {
 
   var PhillipsHueView = {};
 
   /**
 	 * Class of a default view of a Phillips Hue Lamp
 	 */
-  PhillipsHueView = BrickView.extend({
+  PhillipsHueView = DeviceView.extend({
 
 		/**
 		 * constructor

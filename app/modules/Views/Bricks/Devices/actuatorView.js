@@ -1,14 +1,14 @@
 define( [
   "app",
-  "views/brickview"
-], function(App, BrickView) {
+  "views/bricks/devices/deviceview"
+], function(App, DeviceView) {
 
   var ActuatorView = {};
 
   /**
 	 * Class of a default view of an actuator
 	 */
-  ActuatorView = BrickView.extend({
+  ActuatorView = DeviceView.extend({
 
 		/**
 		 * constructor
@@ -17,7 +17,6 @@ define( [
 
       ActuatorView.__super__.initialize.apply(this, arguments);
 
-			this.color = "gray";
     },
 
   });
