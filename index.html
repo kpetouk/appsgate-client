@@ -8,10 +8,15 @@
 		<title>AppsGate</title>
 					
 		<!-- Application styles. -->
-		<!-- build:[href] /styles.min.css -->
 		<link rel="stylesheet" href="/app/styles/index.css">
-		<!-- /build -->
 		
+		<script type="text/javascript">
+			// load mobile specific js files
+			if (navigator.userAgent.toLowerCase().match(/(ipad|ipod|iphone|android)/)) {
+				document.write("<script type='text/javascript' src='vendor/cordova/cordova.js'><\/script>");
+			}
+		</script>
+
 	</head>
 	<body>
 			
@@ -19,9 +24,7 @@
 		<main role="main" id="main"></main>
 		
 		<!-- Application source. -->
-		<!-- build:[src] /source.min.js -->
 		<script data-main="/app/main" src="/vendor/bower/requirejs/require.js"></script>
-		<!-- /build -->
 		
 	</body>
 </html>

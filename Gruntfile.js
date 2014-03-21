@@ -3,7 +3,7 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     // Wipe out previous builds and test reporting.
-    clean: ["www/", "test/reports"],
+    clean: ["phonegap-distribution/www/app", "phonegap-distribution/www/index.html", "phonegap-distribution/www/source.min.js", "phonegap-distribution/www/source.min.js.map", "phonegap-distribution/www/styles.css", "phonegap-distribution/www/styles.min.css", "phonegap-distribution/www/vendor", "test/reports"],
 
     // Run your source code through JSHint's defaults.
     jshint: ["app/**/*.js"],
@@ -16,7 +16,7 @@ module.exports = function(grunt) {
           mainConfigFile: "app/config.js",
           generateSourceMaps: true,
           include: ["main"],
-          out: "www/source.min.js",
+          out: "phonegap-distribution/www/source.min.js",
           optimize: "uglify2",
 
           // Since we bootstrap with nested `require` calls this option allows
@@ -29,7 +29,7 @@ module.exports = function(grunt) {
           // Setting the base url to the distribution directory allows the
           // Uglify minification process to correctly map paths for Source
           // Maps.
-          baseUrl: "www/app",
+          baseUrl: "phonegap-distribution/www/app",
 
           // Wrap everything in an IIFE.
           wrap: true,
@@ -48,7 +48,7 @@ module.exports = function(grunt) {
     styles: {
       // Out the concatenated contents of the following styles into the below
       // development file path.
-      "www/styles.css": {
+      "phonegap-distribution/www/styles.css": {
         // Point this to where your `index.css` file is location.
         src: "app/styles/index.css",
 
@@ -65,7 +65,7 @@ module.exports = function(grunt) {
     cssmin: {
       release: {
         files: {
-          "www/styles.min.css": ["www/styles.css"]
+          "phonegap-distribution/www/styles.min.css": ["www/styles.css"]
         }
       }
     },
@@ -80,7 +80,7 @@ module.exports = function(grunt) {
 
       release: {
         options: {
-          prefix: "www"
+          prefix: "phonegap-distribution/www"
         }
       },
 
@@ -95,7 +95,7 @@ module.exports = function(grunt) {
     processhtml: {
       release: {
         files: {
-          "www/index.html": ["index.html"]
+          "phonegap-distribution/www/index.html": ["index.html"]
         }
       }
     },
@@ -104,8 +104,8 @@ module.exports = function(grunt) {
     copy: {
       release: {
         files: [
-          { src: ["app/**"], dest: "www/" },
-          { src: "vendor/**", dest: "www/" }
+          { src: ["app/**"], dest: "phonegap-distribution/www/" },
+          { src: "vendor/**", dest: "phonegap-distribution/www/" }
         ]
       }
     },
@@ -113,10 +113,10 @@ module.exports = function(grunt) {
     compress: {
       release: {
         options: {
-          archive: "www/source.min.js.gz"
+          archive: "phonegap-distribution/www/source.min.js.gz"
         },
 
-        files: ["www/source.min.js"]
+        files: ["phonegap-distribution/www/source.min.js"]
       }
     },
 

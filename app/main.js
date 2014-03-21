@@ -30,15 +30,31 @@ require(["config"], function() {
       this.externalElements = this.externalElements.concat(domElements);
     };
 
+		domReady(function() {
+				function onDeviceReady(desktop) {
+						console.log("device ready, initializing application...");
+            // Initialize the application-wide event dispatcher
+            // initialise localisation
+						$.i18n.init({ resGetPath:'app/locales/__lng__/__ns__.json', lng : 'fr-FR' }).done(function() {
+							app.initialize();
+						});
+            
+						// Hiding splash screen when app is loaded
+            if (desktop !== true && typeof navigator.splashscreen !== 'undefined') {
+							console.log("hiding splashscreen");
+                navigator.splashscreen.hide();
+            }
+        }
 
-    // domReady is RequireJS plugin that triggers when DOM is ready
-    domReady(function() {
-      // initialise localisation
-      $.i18n.init({ resGetPath:'app/locales/__lng__/__ns__.json', lng : 'fr-FR' }).done(function() {
-        app.initialize();
-      });
+        if (navigator.userAgent.toLowerCase().match(/(ipad|ipod|iphone|android|blackberry)/)) {
+            // This is running on a device so waiting for deviceready event
+            document.addEventListener('deviceready', onDeviceReady, false);
+        } else {
+            // On desktop don't have to wait for anything
+            onDeviceReady(true);
+        }
     });
-  });
+	});
 });
 
 

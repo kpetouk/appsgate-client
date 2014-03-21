@@ -16,6 +16,9 @@ define([
      */
     initialize:function() {
       Group.__super__.initialize.apply(this, arguments);
+			
+			
+			this.isGroup = true;
 
       this.appendViewFactory( 'GroupBrickView', GroupBrickView, { pixelsMinDensity : 0, pixelsMaxDensity : 999999999, pixelsRatio : 1 });
 

@@ -3,8 +3,9 @@ define([
   "text!templates/home/home.html",
 	"text!templates/home/navbar.html",
 	"text!templates/home/circlemenu.html",
-	"text!templates/universes/universeContainer.html"
-], function(App, homeTemplate, navbarTemplate, circleMenuTemplate, universeTemplate) {
+	"text!templates/universes/universeContainer.html",
+	"text!templates/universes/userUniverseContainer.html"
+], function(App, homeTemplate, navbarTemplate, circleMenuTemplate, universeTemplate, userUniverseTemplate) {
  
 	var HomeView = {};
   
@@ -17,6 +18,7 @@ define([
 		tplNavbar: _.template(navbarTemplate),
 		tplCircleMenu: _.template(circleMenuTemplate),
 		tplUniverseContainer: _.template(universeTemplate),
+		tplUserUniverseContainer: _.template(userUniverseTemplate),
 		
 		/**
      * Bind events of the DOM elements from the view to their callback
@@ -24,8 +26,12 @@ define([
     events: {
       "click button.btn-toggle-edit"	: "toggleEditMode",
 			"click div.fundamental-universe"		: "navigateIn",
+			"click div.local-universe"		: "navigateIn",
 			"click input.universe-name-input"		: "editUniverseName",
-			"hidden.bs.modal"	: "toggleModalState"
+			"click div.btn-add" : "addNewUniverse",
+			"hidden.bs.modal"	: "toggleModalState",
+			"keyup #edit-name-modal input:text"			: "validEditName",
+			"click #edit-name-modal button.valid-button"	: "validEditName",
     },
 
 		
@@ -36,6 +42,11 @@ define([
       HomeView.__super__.initialize.apply(this, arguments);
 			
 			this.editMode = false;
+			
+			
+			this.listenTo(AppsGate.Root.Universes, "add", this.render);
+			this.listenTo(AppsGate.Root.Universes, "remove", this.render);
+			this.listenTo(AppsGate.Root.Universes, "change", this.render);
 			
 		},
 		
@@ -57,7 +68,7 @@ define([
 				var divWidth = window.innerWidth-(node.offset().left + node.outerWidth(true) - node.innerWidth());
 				
 				var target = e.target;
-				while(target && !target.classList.contains('fundamental-universe')) {
+				while(target && !target.classList.contains('fundamental-universe') && !target.classList.contains('local-universe')) {
 					target = target.parentNode;
 				}
 				target = $(target);
@@ -78,7 +89,15 @@ define([
 				
 				var cb = function() {
 					this.zooming = false;
-					AppsGate.Router.navigate(target.attr("id"), {trigger: true});
+					if(target.hasClass("fundamental-universe")) {
+						AppsGate.Router.navigate(target.attr("id"), {trigger: true});
+					}
+					else {
+					 var universe = AppsGate.Root.Universes.findWhere({id:target.attr("id")});
+					 AppsGate.Router.navigate(universe.get("id"));
+					 AppsGate.Router.showUniverse(universe);
+					}
+					
 				};
 				
 				zoomingTarget.animate({top:node.offset().top-50, left:node.offset().left, width:divWidth, height:divHeight, opacity:0}, 1000, cb);
@@ -103,7 +122,45 @@ define([
 				}));
 			});
 			
-			$("#programsUniverse").addClass("disabled");
+			var localUniverses = AppsGate.Root.Universes.getLocalUniverses();
+						
+			localUniverses.forEach(function(universe) {
+				$(self.$el.find(".user-universes")[0]).append(self.tplUserUniverseContainer({
+					universe : universe
+				}));
+			});
+			
+			$( ".local-universe" ).draggable({
+				helper: "clone",
+				revert: "true",
+				
+				// Handle the end state. Append the corresponding brick to the drop target
+				stop: function (e) {
+					e.stopPropagation();
+					
+					var target = Snap.getElementByPoint(e.clientX, e.clientY).node;
+			
+					while(target !== null && typeof target.classList === 'undefined' && !target.classList.contains('btn-trashbin')) {
+						target = target.parentNode;
+					}
+			
+					// if the target is the trashbin, we delete the dragged element
+					if(target !== null && typeof target.classList !== 'undefined' && target.classList.contains('btn-trashbin')) {
+						var draggedUniverse = AppsGate.Root.Universes.get(e.target.id);
+						
+						var parent = draggedUniverse.parents[0];
+						if(parent) {
+							parent.removeChild(draggedUniverse);
+							parent.save();
+						}
+						draggedUniverse.destroy();
+						dispatcher.trigger("cancelEditMode");
+					}
+				}
+			});
+
+			$("#user_root").addClass("disabled");
+			$("#program_root").addClass("disabled");
 			
 				
 			// initialize the circle menu
@@ -119,6 +176,18 @@ define([
 			
 			return this;
     },
+		
+		addNewUniverse:function() {
+			var newUniverse = AppsGate.Root.Universes.add({name:$.i18n.t("universes.universe-no-name")});
+			newUniverse.save();
+			newUniverse.set("type", "UNIVERSE");
+			newUniverse.set("name",$.i18n.t("universes.universe-no-name"));
+			var test = $.i18n.t("universes.universe-no-name");
+			console.log(test);
+			var curHabitat = AppsGate.Root.Habitats.at(0);
+			newUniverse.set("parent",curHabitat.get("id"));
+			newUniverse.save();
+		},
 		
 		toggleEditMode:function() {
 			this.editMode = !this.editMode;
@@ -138,10 +207,13 @@ define([
 			if(this.editMode && !this.modalShown){
 			
 				var target = e.target;
-				while(target && !target.classList.contains('fundamental-universe')) {
+				while(target && !target.classList.contains('fundamental-universe') && !target.classList.contains('local-universe')) {
+					if (target.classList.contains('fundamental-universe')) {
+						return;
+					}
 					target = target.parentNode;
 				}
-				this.editedModel = AppsGate.Root.Universes.getUniverseByType(target.id.toUpperCase());
+				this.editedModel = AppsGate.Root.Universes.get(target.id);
 				this.initializeModal();
 				$("#edit-name-modal").modal("show");
 				
@@ -178,7 +250,7 @@ define([
 			}
 			
 			// name already existing
-			if (AppsGate.Universes.where({ name : $("#edit-name-modal input").val() }).length > 0) {
+			if (AppsGate.Root.Universes.where({ name : $("#edit-name-modal input").val() }).length > 0) {
 				$("#edit-name-modal .text-danger").removeClass("hide");
 				$("#edit-name-modal .text-danger").text($.i18n.t("edit-name-modal.already-existing"));
 				$("#edit-name-modal .valid-button").addClass("disabled");
@@ -206,12 +278,12 @@ define([
 				
 				// update the name if it is ok
 				if (this.checkName()) {
-					this.$el.find("#edit-name-modal").on("hidden.bs.modal", function() {
+					self.$el.find("#edit-name-modal").on("hidden.bs.modal", function() {
 						// set the new name to the place
-						this.editedModel.set("name", $("#edit-name-modal input").val());
+						self.editedModel.set("name", $("#edit-name-modal input").val());
 						
 						// send the update to the backend
-						this.editedModel.save();
+						self.editedModel.save();
 						
 						return false;
 					});
@@ -220,7 +292,7 @@ define([
 					$("#edit-name-modal").modal("hide");
 				}
 			} else if (e.type === "keyup") {
-				this.checkName();
+				self.checkName();
 			}
 		},
 

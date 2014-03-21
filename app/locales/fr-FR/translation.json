@@ -111,7 +111,8 @@
 		"devicesUniverse" : "Equipements",
 		"servicesUniverse": "Services",
 		"programsUniverse": "Programmes",
-		"usersUniverse"		: "Utilisateurs"
+		"usersUniverse"		: "Utilisateurs",
+		"universe-no-name": "Univers sans nom"
 	},
 	"devices" : {
 		"unknown" : "Inconnu",

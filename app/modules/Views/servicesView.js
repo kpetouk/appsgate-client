@@ -100,7 +100,7 @@ define([
 					$("body").append(self.tplDraggableView);
 					$("#draggableFeedback").css("position","absolute");
 					
-					place = AppsGate.Root.Places.add({name:$.i18n.t("places.place-no-name")});
+					place = AppsGate.Root.Groups.add({name:$.i18n.t("places.place-no-name")});
 					
 					place.getNewView("PlaceBrickView", "#svgDraggable").render();
 				

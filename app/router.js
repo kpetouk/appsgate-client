@@ -7,11 +7,12 @@ define(function(require, exports, module) {
   var HabitatView = require("views/habitatview");
 	var DevicesView = require("views/devicesview");
 	var ServicesView = require("views/servicesview");
+	var UniverseView = require("views/universeview");
 
   // define the application router
   var Router = Backbone.Router.extend({
     routes: {
-      ""		: "home",
+      ""		: "login",
 			"login" : "login",
 			"reset"	: "home",
 			"home" : "home",
@@ -52,6 +53,11 @@ define(function(require, exports, module) {
       this.currentView = view;
       this.currentView.render();
     },
+		
+		showUniverse:function(universe) {
+			var view = new UniverseView({model:universe});
+			this.showView(view);
+		}
 
   });
 
