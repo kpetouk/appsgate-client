@@ -85,6 +85,35 @@ define([
 				
 				drag: function (e, ui) {
 					this.clone.offset({left:e.clientX,top:e.clientY});
+					
+					var clientX = null;
+			var clientY = null;
+			if(e.type === "drag") {
+				clientX = e.clientX;
+				clientY = e.clientY;
+			}
+			else if (e.type === "touchend") {
+				clientX = e.changedTouches[0].clientX;
+				clientY = e.changedTouches[0].clientY;
+			}
+			
+			
+			$("#draggableFeedback").addClass("hidden");
+			
+			target = Snap.getElementByPoint(clientX, clientY).node;
+			
+			$("#draggableFeedback").removeClass("hidden");
+			
+			//console.log(target);
+			while(target !== null && typeof target.classList === 'undefined' || !target.classList.contains('ViewRoot')) {
+						target = target.parentNode;
+					}
+					
+				if (target && target.ViewRoot) {
+					var CTM = target.ViewRoot.groot.node.getCTM();
+					this.cloneView.node.ViewRoot.root.transform("m" + CTM.a + "," + CTM.b + "," + CTM.c + "," + CTM.d + ",0,0" );
+				}
+
 				},
 				
 				// Handle the end state. Append the corresponding brick to the drop target

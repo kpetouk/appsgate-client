@@ -18,6 +18,8 @@ define([
       Place.__super__.initialize.apply(this, arguments);
 
       var self = this;
+			
+			this.isGroup = true;
 
       this.type = "PLACE";
 

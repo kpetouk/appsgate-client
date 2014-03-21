@@ -215,8 +215,8 @@ module.exports = function(grunt) {
     "jshint",
     "processhtml",
     "copy",
-    "requirejs",
-    "styles",
-    "cssmin",
+    //"requirejs",
+    //"styles",
+    //"cssmin",
   ]);
 };

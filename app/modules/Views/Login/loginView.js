@@ -39,16 +39,16 @@ define([
 			var self = this;
 			this.$el.html(this.template());
 			
-			if(AppsGate.Users.length > 0) {
+			/*if(AppsGate.Users.length > 0) {
 				AppsGate.Users.forEach(function(user) {
 					$(self.$el.find(".user-list")[0]).append(self.tplUserContainer({
 						user : user
 					}));
 				});
 			}
-			else {
+			else {*/
 				$(self.$el.find(".user-list")[0]).append(self.tplUserContainer());
-			}
+			//}
 
       // translate the view
       this.$el.i18n();
@@ -60,16 +60,16 @@ define([
       e.preventDefault();
 
       // name already exists
-      if (AppsGate.Users.where({ id : $(this.$el.find(".user-id")[0]).val() }).length > 0) {
+      /*if (AppsGate.Users.where({ id : $(this.$el.find(".user-id")[0]).val() }).length > 0) {
         var user = AppsGate.Users.where({ id: $(this.$el.find(".user-id")[0]).val() });
         if(user.get("password") !== $(this.$el.find(".password")[0]).val()){
           return false;
         }
       }
-      else{
+      else{*/
           // Routing to home
           AppsGate.Router.home();
-      }
+      //}
     },
 
     validUserId:function(e) {

@@ -77,6 +77,26 @@ div {
 	background:#E6E6E6;
 }
 
+.local-universe {
+	position:relative;
+	background:white;
+	width: 18%;
+	height:80%;
+	padding: 0.5em;
+	display: inline-block;
+	border: dotted #404040;
+	margin: 20px 20px 20px 0;
+}
+
+.local-universe.configured {
+	border: solid #404040;
+}
+
+.local-universe.disabled {
+	background:#E6E6E6;
+}
+
+
 .universe-name {
 	position:absolute;
 	bottom:0px;
@@ -200,6 +220,11 @@ div {
 
 .brick-list-node, .brick-list-leaf {
 	overflow:auto;
+}
+
+.size-edit-input {
+	width:25%;
+	display:inline;
 }
 
 /* --------------------- Svg Map Styles --------------------------------*/

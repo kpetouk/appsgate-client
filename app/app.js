@@ -32,6 +32,8 @@ define(function(require, exports, module) {
 
 				// Wait for the socket to be opened
 			dispatcher.on("WebSocketOpen", function() {
+			
+				console.log("loading appsgate tree");
 				
 				// listen to the event when the list of users is received
 				dispatcher.on("AppsGateRoot", function(brick) {
@@ -49,6 +51,7 @@ define(function(require, exports, module) {
 
 				// all data have been received, launch the user interface
         dispatcher.on("treeReady", function() {
+					console.log("preparations ready, displaying page");
           // Routing to login
 					Backbone.history.start();
         });

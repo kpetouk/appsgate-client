@@ -16,6 +16,8 @@ define([
       this.parents = [];
       this.views = [];
       this.viewFactories = {};
+			
+			this.isGroup = false;
 
 			this.x = this.getProperty("x")?parseInt(this.getProperty("x")):0;
 			this.y = this.getProperty("y")?parseInt(this.getProperty("y")):0;

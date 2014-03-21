@@ -32,7 +32,11 @@ define([
       "click button.btn-toggle-edit"	: "toggleEditMode",
 			"click #brick-edit-validbtn"	: "applyBrickEdit",
 			"click #brick-edit-cancelbtn" : "cancelBrickEdit",
-			"click #size-choice-buttons" : "changeBrickSize"
+			"click #size-choice-buttons" : "changeBrickSize",
+			"click #increase-brick-width-btn" : "increaseBrickWidth",
+			"click #increase-brick-height-btn" : "increaseBrickHeight",
+			"click #decrease-brick-width-btn" : "decreaseBrickWidth",
+			"click #decrease-brick-height-btn" : "decreaseBrickHeight"
     },
 
 		
@@ -272,6 +276,22 @@ define([
 			this.editedBrick.redrawViews();
 		},
 		
+		increaseBrickWidth:function() {
+			$("#brick-width-input")[0].value = parseInt($("#brick-width-input")[0].value) + 1;
+		},
+		
+		increaseBrickHeight:function() {
+			$("#brick-height-input")[0].value = parseInt($("#brick-height-input")[0].value) + 1;
+		},
+				
+		decreaseBrickWidth:function() {
+			$("#brick-width-input")[0].value = parseInt($("#brick-width-input")[0].value) - 1;
+		},
+		
+		decreaseBrickHeight:function() {
+			$("#brick-height-input")[0].value = parseInt($("#brick-height-input")[0].value) - 1;
+		},
+		
 		/**
 		 * Called when apply button is pressed in place edit palette
 		 * Saves the changes to the server
@@ -306,6 +326,7 @@ define([
 			if(this.DDTarget){
 				this.DDTarget = null;
 			}
+			location.reload();
 			this.showEditPalette();
 		},
 	

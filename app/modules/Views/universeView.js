@@ -11,12 +11,12 @@ define([
 	"text!templates/bricks/brickEditPalette.html"
 ], function(App, Snap, SvgMapView, BrickListView, svgTemplate, navbarTemplate, circleMenuTemplate, universeTabTemplate, draggableTemplate, brickEditTemplate) {
  
-	var DevicesView = {};
+	var UniverseView = {};
   
   /**
 	 * View used as home page of the application
 	 */
-  DevicesView = Backbone.View.extend({
+  UniverseView = Backbone.View.extend({
     el: $("#main"),
     template: _.template(svgTemplate),
 		tplNavBar: _.template(navbarTemplate),
@@ -41,7 +41,7 @@ define([
 		 */
     initialize:function() {
 			var self = this;
-      DevicesView.__super__.initialize.apply(this, arguments);
+      UniverseView.__super__.initialize.apply(this, arguments);
 			
 			this.editMode = false;
 			
@@ -100,9 +100,9 @@ define([
 					$("body").append(self.tplDraggableView);
 					$("#draggableFeedback").css("position","absolute");
 					
-					place = AppsGate.Root.Places.add({name:$.i18n.t("places.place-no-name")});
+					place = AppsGate.Root.Groups.add({name:$.i18n.t("groups.group-no-name")});
 					
-					place.getNewView("PlaceBrickView", "#svgDraggable").render();
+					place.getNewView("GroupBrickView", "#svgDraggable").render();
 				
 				},
 				
@@ -124,7 +124,7 @@ define([
 			this.initializeSvgMap();
 			
 			// Render the svg map view
-			var svgMap = new SvgMapView({model:AppsGate.Root.Universes.getDevicesUniverse()});
+			var svgMap = new SvgMapView({model:self.model});
 			svgMap.render();
 										
 			// initialize the circle menu
@@ -306,5 +306,5 @@ define([
 		
   });
 
-  return DevicesView;
+  return UniverseView;
 });

@@ -57,11 +57,11 @@ define([
 		},
 		
 		getLocalUniverses:function() {
-			return this.findWhere({"universe-type":"local"});
+			return this.where({"universe-type":"local"});
 		},
 		
 		getUserUniverses:function() {
-			return this.findWhere({type:"user"});
+			return this.where({type:"user"});
 			// TODO check if the connected user is allowed to see those
 		}
 		

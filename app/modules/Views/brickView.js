@@ -22,6 +22,7 @@ define( [
 			this.name = "BrickView";
       this.dt = 0.1;
       this.size = 32;
+			this.nameHeight	=0;
       this.svg_point = null;
       this.draggedList = [];
       this.toUnplugList = [];
@@ -178,13 +179,46 @@ define( [
 			$("#draggableFeedback").css("position","absolute");
 			$("#draggableFeedback").css("z-index","9999");
 									
-			self.model.getNewView("undefined", "#svgDraggable").render();
+			this.draggedViewSvg = self.model.getNewView("undefined", "#svgDraggable").render();
 				
 		},
 				
-		moveDrag: function (x, y, dx, dy, e) {
+		moveDrag: function (dx, dy, x, y, e) {
 			e.stopPropagation();
 			$("#draggableFeedback").offset({left:e.clientX,top:e.clientY});
+			
+			var clientX = null;
+			var clientY = null;
+			if(e.type === "mouseup") {
+				clientX = e.clientX;
+				clientY = e.clientY;
+			}
+			else if (e.type === "touchend") {
+				clientX = e.changedTouches[0].clientX;
+				clientY = e.changedTouches[0].clientY;
+			}
+			
+			
+			$("#draggableFeedback").addClass("hidden");
+			
+			target = Snap.getElementByPoint(x, y).node;
+			
+			$("#draggableFeedback").removeClass("hidden");
+			
+			//console.log(target);
+			while(target !== null && typeof target.classList === 'undefined' || !target.classList.contains('ViewRoot')) {
+						target = target.parentNode;
+					}
+					
+				if (target && target.ViewRoot) {
+								var CTM = target.ViewRoot.groot.node.getCTM()
+;
+				//console.log(target);
+				console.log(CTM);
+				console.log("m" + CTM.a + "," + CTM.b + "," + CTM.c + "," + CTM.d + "," + CTM.e + "," + CTM.f);
+				this.draggedViewSvg.node.ViewRoot.root.transform("m" + CTM.a + "," + CTM.b + "," + CTM.c + "," + CTM.d + ",0,0" );
+				}
+
 		},
 				
 				// Handle the end state. Append the corresponding brick to the drop target
@@ -193,7 +227,18 @@ define( [
 			e.stopPropagation();
 			$("#draggableFeedback").remove();
 			
-			var target = Snap.getElementByPoint(e.clientX,e.clientY).node;
+			var clientX = null;
+			var clientY = null;
+			if(e.type === "mouseup") {
+				clientX = e.clientX;
+				clientY = e.clientY;
+			}
+			else if (e.type === "touchend") {
+				clientX = e.changedTouches[0].clientX;
+				clientY = e.changedTouches[0].clientY;
+			}
+			
+			target = Snap.getElementByPoint(clientX, clientY).node;
 			
 			while(target && typeof target.classList === 'undefined' || (!target.classList.contains('btn-trashbin') && !target.classList.contains('ViewRoot'))) {
 						target = target.parentNode;
@@ -210,7 +255,7 @@ define( [
 				dispatcher.trigger("cancelEditMode");
 			}
 			else if (target && target.ViewRoot && target.ViewRoot.model) {
-				self.moveView(e.clientX,e.clientY, target.ViewRoot);
+				self.moveView(clientX,clientY, target.ViewRoot);
 				
 				self.root.attr({display:"block"});
 			}
@@ -220,6 +265,7 @@ define( [
 			
 			console.log("stopped dragging, removing listener");
 			self.root.undrag();
+			self.rect.attr({"stroke-width":"2"});
 			self.dragged = false;
 					
 		},
@@ -257,10 +303,14 @@ define( [
       if(!this.root) {
         dt = this.dt;
         size = this.size;
-
-        // we create the root element of this view
 				
-        var paper = Snap(this.el);
+				// The space for children
+				if(this.model.isGroup) {
+					this.nameHeight = 11;
+				}
+        
+				// we create the root element of this view
+				var paper = Snap(this.el);
         var group  = paper.g();
 				if(this.el === "#svgspace"){
 					group.transform("t"+[this.x*size,this.y*size]);
@@ -284,24 +334,53 @@ define( [
 
         // add the basic graphical elements of this view
         this.gView = paper.g();
-        var r  = paper.rect(0.5*dt*size, 0.5*dt*size, size*(this.w-dt),size*(this.h-dt));
+				var shadow = paper.rect(0.5*dt*size, 0.5*dt*size, size*(this.w-dt),(this.nameHeight+size)*(this.h-dt));
+				shadow.attr({class:"shadow", rx:"6", ry:"6", fill:this.color});
+        var r  = paper.rect(0.5*dt*size, 0.5*dt*size, size*(this.w-dt),(this.nameHeight+size)*(this.h-dt));
         r.attr({class:"tile", rx:"6", ry:"6", fill:this.color, stroke:this.stroke, "stroke-width":"2"});
-				
-				var border = paper.rect(0.5*dt/2*size, 0.5*dt/2*size, size*(this.w-dt/2),size*(this.h-dt/2));
+				var border = paper.rect(0.5*dt/2*size, 0.5*dt/2*size, size*(this.w-dt/2),(this.nameHeight+size)*(this.h-dt/2));
 				border.attr({rx:"6", ry:"6", fill:"none", stroke:"black", "stroke-width":"0.5"});
+				
+				this.bgRect = r;
+				this.shadow = shadow;
+        this.gView.add(shadow);
+				this.gView.add(r);
+				this.gView.add(border);
+								
+				if(this.model.isGroup) {
+					this.childrenIndicator = paper.rect(1.5*dt*size, this.nameHeight+1.5*dt*size, size*(this.w-3*dt), (this.nameHeight+size)*(this.h-0.5-dt)).attr({class:"tile", rx:"6", ry:"6", fill:this.stroke, stroke:"black", "stroke-width":"0.5"});
+				
+					if(this.model.children.length > 0 && scale >= this.scaleToDisplayChildren) {
+						this.childrenIndicator.attr({"display":"inherit"});
+					}
+					else {
+						this.childrenIndicator.attr({"display":"none"});
+					}
+
+					this.gView.add(this.childrenIndicator);
+				
+					var text = paper.text(3,this.nameHeight+1.5*dt*size,this.model.getProperty("name"));
+					this.gView.add(text);
+				}
+								
+				this.root.add(this.gView);
+        this.root.add(groupRoot);
+        this.rect = r;
 				
 				// handle taphold
 				var detectTapHold = function(e) {
 					var startX = e.clientX;
 					var startY = e.clientY;
 					
-					if(!self.dragged){
+					var multitouch = e.originalEvent != null && e.originalEvent.touches[1] != null ? true : false;
+					if(self.dragged != true && !multitouch){
 					pressTimer = window.setTimeout(function() {
 						if(startX == e.clientX && startY == e.clientY) {
 							dispatcher.trigger("editMode", self.model);
 							console.log("set draggable");
 							self.root.drag(self.moveDrag, self.startDrag, self.stopDrag);
 							self.dragged = true;
+							self.rect.attr({"stroke-width":"4"});
 						}
 					},1000);
 					}
@@ -315,13 +394,7 @@ define( [
 					clearTimeout(pressTimer);
 					return false;
 				});
-				
-				this.bgRect = r;
-        this.gView.add(r);
-				this.gView.add(border);
-        this.root.add(this.gView);
-        this.root.add(groupRoot);
-        this.rect = r;
+
 
         // proceed to add the children views of this view
         if(this.model.children.length > 0 && this.children.length === 0){
@@ -346,6 +419,11 @@ define( [
 		
 			if(this.parent) {
 				this.parent.primitivePlug(this);
+				this.model.children.forEach(function(child) {
+					child.views.forEach(function(view){
+						view.redrawView();
+					});
+				});
 			}
 		},
 		
@@ -458,24 +536,34 @@ define( [
             console.log("Warning, no other compatible presentations...");
           }
         }
-        // if the zoom isn't strong enough to display children, they are hidden
-        if(scale < this.scaleToDisplayChildren) {
-          if(this.display) {
-            this.display = false;
-            L_CB.push( function(v) {self.cb_Fade(v,1,0);} );
-            res = true;
-          }
-          else {
-            res = false;
-          }
-        }
-        else {
-          if(!this.display) {
-            this.display = true;
-            L_CB.push( function(v) {self.cb_Fade(v,0,1);} );
-          }
-          res = true;
-        }
+				
+				if(scale < this.scaleToDisplayChildren) {
+					if(this.display) {
+						this.display = false;
+						L_CB.push(
+							function(v) {
+								if(self.childrenIndicator && self.childrenIndicator.node.parentElement && self.model.children.length > 0) {
+									self.cb_Fade(v,0,1,self.childrenIndicator.node);
+								}
+								self.cb_Fade(v,1,0);
+							});
+						res = true;
+					} else {
+						res = false;
+					}
+				} else {
+					if(!this.display) {
+						this.display = true;
+						L_CB.push(
+							function(v) {
+								if(self.childrenIndicator && self.childrenIndicator.node.parentElement) {
+									self.cb_Fade(v,1,0,self.childrenIndicator.node);
+								}
+								self.cb_Fade(v,0,1);
+							});
+					}
+					res = true;
+				}
         return res;
     },
 

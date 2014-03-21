@@ -34,7 +34,7 @@ define([
 				this.set("name", "universes.programsUniverse");
 			}
 			else{
-				this.set("name", this.id);
+				this.set("name", this.getProperty("name"));
 				this.set("universe-type", "local");
 			}
 			
