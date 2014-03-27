@@ -110,7 +110,7 @@ define([
 				this.set("daemon", this.get("source").daemon);
                 this.set("body", this.get("source").body);
                 this.set("header", this.get("source").header);
-                                this.set("definitions", this.get("source").definitions);
+                this.set("definitions", this.get("source").definitions);
 
 			});
 			
@@ -182,7 +182,6 @@ define([
                 body: this.get("body"),
                 header : this.get("header"),
                 definitions: this.get("definitions"),
-				source			: this.get("source"),
 				userSource	: this.get("userSource")
 			}
 		}

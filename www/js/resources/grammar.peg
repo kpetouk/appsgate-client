@@ -15,34 +15,35 @@
       variables[vName] = obj;
     }
   }
-var functions = [];
+  var functions = [];
 }
 /*
  * Program
  */
-pg = h:header _ d:declarations _ i:insts _
+pg = h:header _"_DECL_" _ d:declarations _ "_BODY_" _ r:rules _
 {
   p={};
   if (h['name']) {
     p.name = h['name'];
   }
-  if (h['author']) {
-    p.header = { author: h['author']}; 
-  }
   if (h['daemon']) {
     p.daemon = h['daemon'];
   }
+  p.package = h['package'];
+
+  p.header = {author:h['author'], phrase:h['phrase'], comment:h['comment']}
+
   p.definitions=d;
-  p.body = {type:"setOfRules", rules:i};
+  p.body = r;
   return p;
 }
 
 /*
  * Header
  */
-header  = h:headerInst*
+header  = h:headerInst* 
 {
-header=[];
+  header=[];
   h.forEach(function(e) {
      header[e.key.toLowerCase()] = e.value;
   });
@@ -50,23 +51,22 @@ header=[];
   return header;
 }
 
-headerInst = daemonInst / hInst
+headerInst = hInst 
 
-hInst = t:var_name _ ":" _ v:var_name "\n" 
+hInst = t:pname _ ":" _ s:string _
+{
+  return {key:t, value:s};
+}
+/ t:pname _ ":" _ v:pname _
 {
   return {key:t, value:v};
-}
-
-daemonInst = "daemon" _ ":" _ v:bool "\n"
-{
-  return {key:"daemon", value:v};
 }
 
 /*
  * Declarations
  */
 
-declarations "declarations" = v:var_decl* f:function_decl*
+declarations "declarations" = v:vardecl* f:functionDecl*
 {
   return v.concat(f);
 }
@@ -75,37 +75,41 @@ declarations "declarations" = v:var_decl* f:function_decl*
  * Variables
  */
 
-var_decl = "var" _ v:var_assignation _ ";"  _
+vardecl = "var" _ v:varassignation _ ";"  _
 {
-  addVariable(v.var_name, v);
+  addVariable(v.id, v);
   return v;
 }
-
-var_assignation =  v:var_name _ "=" _ a:argument _
+ / "var" _ v:pname _ ";" _
 {
-  a.var_name = v;
-  return a;
-}
- /  v:var_name _ "=" _ "[" _ o:arguments _ "]" _
-{
-  return { type:'list', id:v, var_name:v, list:o};
-}
- / v:var_name _ "=" _ o:object _
-{
-  o.var_name = v;
-  return o;
+  var v2 = {id:v};
+  addVariable(v,v2);
+  return v2;
 }
 
-var_list = v:var_name _","_ o:var_list 
+varassignation =  v:pname _ "=" _ a:argument _
 {
-  return [{type:'variable',id: v, var_name:v}].concat(o);
+  return {id:v,value:a};
 }
- / v:var_name 
+ /  v:pname _ "=" _ l:list _
 {
-  return {type:'variable',id: v, var_name:v};
+  return { id:v, value:l};
+}
+ / v:pname _ "=" _ o:object _
+{
+  return {id:v,value:o};
+}
+
+var_list = v:pname _","_ o:var_list 
+{
+  return [{type:'variable',id: v}].concat(o);
+}
+ / v:pname 
+{
+  return {type:'variable',id: v};
 } 
 
-var_name = f:[a-z] v:[a-zA-Z_0-9]+
+pname = f:[a-zA-Z] v:[a-zA-Z_0-9]*
 {
   return [f].concat(v).join("");
 }
@@ -123,26 +127,26 @@ program = "|" c:[^\|]+ "|"
  * Fonctions
  */
 
-function_decl = "function" _ f:var_name _ "(" p:parameter_def ")" _ "{" _ i:insts _ "}" _
+functionDecl = "function" _ f:pname _ "(" p:parameterDef ")" _ "{" _ i:insts _ "}" _
 {
   functions[f] = f;
   return {type:'function', id:f, seqDefinitions:p, seqRules:i};
 }
 
-parameter_def = v:par_list 
+parameterDef = v:parList 
 {
   return v;
 }/ _
 
-par_list = v:var_name _","_ o:par_list 
+parList = v:pname _","_ o:parList 
 {
-  l = {type:'variable',id:v, var_name:v};
+  l = {type:'PROUT',id:v};
   addVariable(v,l);
   return [l].concat(o);
 }
- / v:var_name 
+ / v:pname 
 {
-  o = {type:'variable',id:v, var_name:v};
+  o = {type:'PROUT',id:v};
   addVariable(v,o);
   return o;
 } 
@@ -165,20 +169,20 @@ inst = b:block _
 {
 return b;
 }
-/ d:inst_def _ ";"
+/ d:instDef _ ";"
 {
   return d;
 }
  
-block = when / if / while
+block = when / if / while / rules
 
-inst_def = ret 
+instDef = ret 
  / keep_state
  / action 
- / function_call
- / v:var_assignation 
+ / functionCall
+ / v:varassignation 
 {
-  return {type:"assignation", name:v.var_name, value:v}
+  return {type:"assignation", name:v.id, value:v}
 }
 
 
@@ -191,7 +195,7 @@ ret = "return" _ a:argument
  return {type:"return"}
 }
 
-function_call = f:var_name"("param:arguments")"
+functionCall = f:pname"("param:arguments")"
 {
   if (typeof functions[f] !== 'undefined') {
     return {type:'functionNode', id:f, params:param}
@@ -210,11 +214,11 @@ arguments =  a:argument _ "," _ l:arguments
 }
  / _
 
-argument = device / var / stringValue / numValue / boolean 
+argument = device / var / stringValue / numValue / boolean / select
 
-spokObject = program / device /var
+spokObject = program / device / var / select / list
 
-var = v:var_name 
+var = v:pname 
 {
   if (typeof variables[v] !== 'undefined') {
     return {type:'variable', id:v}
@@ -223,10 +227,44 @@ var = v:var_name
   }
 }
 
+rules =  setOfRules / sequenceOfRules
+
+sequenceOfRules = "{" _ i:insts _ "}"
+{
+  return {type:"seqRules", rules:i}
+}
+
+setOfRules = "<<<" _ i:insts _ ">>>"
+{
+  return {type:"setOfRules", rules:i}
+}
+
+/**
+ * Node Select
+ */
+select = "_select(" _ "["_ what:strings _"]"_"," _ "["where:arguments"]"_ ")"
+{
+  return {type:'select', what:what, where:where};
+}
+ / "_selectState(" _ w:argument _ "," _ s:pname _ "," _ v:string _ "," _ start:int _ "," _ duration:int")"
+{
+  return {type:'selectState', devices:w, state:s, value:v, start:start, duration:duration};
+}
+
+strings =  s:string _ "," _ ss:strings
+{
+  return ss.concat(s);
+}
+ / s:string 
+{
+ return [s];
+}
+ / _
+
 /*
  * Node Action
  */
-action = v:spokObject "." method:var_name "(" action:arguments ")"
+action = v:spokObject "." method:pname "(" action:arguments ")"
 {
    return {type:'action',target:v,methodName:method,action:action};
    
@@ -235,84 +273,128 @@ action = v:spokObject "." method:var_name "(" action:arguments ")"
 /**
  * Node When
  */
-when = "when" _ "[" _ e:events _"]"_ sepTHEN _ "{" _ i:insts _ "}" 
+when = "_when" _  e:events _ sepTHEN _ r:rules 
 {
-  return {type:'when',events:e,seqRulesThen:{type:"instructions", rules:i}};
+  return {type:'when',events:e,seqRulesThen:r};
 }
 
 /**
  * Node events
  */
 
-events = e:evts _"/"_ i:int _ "/" _ d:int
+events = "[" _ e:eventList _"/"_ t:opEvent _ "/" _ times:int _ "/" _ duration:int _"]"
 {
-  return {type:"events", events:e, duration:d, nbEventToOccur:i};
+  return {type:t, events:e, duration:duration, nbEventToOccur:times};
+}
+ / "[" _ e:eventList _"/"_ t:opEvent _"/"_ times:int _ "]"
+{
+  return {type:t, events:e, duration:0, nbEventToOccur:times};
+}
+ / "[" _ e:eventList _"/"_ t:opEvent _ "]"
+{
+  return {type:t, events:e, duration:0, nbEventToOccur:0};
 }
 
-evts = e:evt _ "," _ es:evts 
+eventList = e:evtNode _ "," _ es:eventList 
 {
   return [e].concat(es);
 }
- / evt:evt
+ / evt:evtNode
 {
  return [evt];
 }
 
-evt  = v:spokObject "."  e:var_name "(" event:string ")"
-{
+evtNode = evt/events
 
+opEvent = "AND" 
+{
+  return "eventsAnd";
+}
+/ "OR"
+{
+  return "eventsOr";
+}
+ / "THEN"
+{
+  return "eventsSequence";
+}
+
+/**
+ * Node event
+ */
+evt  = v:spokObject "."  e:pname "(" _ event:string _ ")"
+{
   return {type:'event',source:v,eventName:e,eventValue:event};
 }
+
+
 
 /*
  * Node If
  */
-if = "if"i b:relBool sepTHEN "{" _ t:insts _ "}" sepELSE "{" _ f:insts _ "}" 
+if = "_if"i b:relBool sepTHEN t:rules sepELSE f:rules 
 {
-  return {type:'if',expBool:  b,seqRulesTrue: {type:"instructions", rules:t},seqRulesFalse:{type:"instructions", rules:f}};
+  return { type:'if', expBool:  b,
+           seqRulesTrue: t,
+           seqRulesFalse:f
+         };
 }
 
 relBool = _ "(" left:operand _ o:operator _ right:operand ")"
 {
-  return {type:'binaryExpression',operator:o,leftOperand:left,rightOperand:right};
+  return {type:'booleanExpression', operator:o, leftOperand:left, rightOperand:right};
 }
 
 /*
  * Node Function
 */
-function =  d:spokObject "." method:var_name "(" _ action:arguments _ ")"
+function =  d:spokObject "." method:pname "(" _ action:arguments _ ")"
 {
-   return {target:d,methodName:method,action:action};
+   return {target:d, methodName:method, action:action, type:"action"};
 }
 
 /*
  * Node While
  */
 
-while = "while" _ "(" _ s:state _ ")" _ "{" _ i1:inst _ "}" _ sepTHEN _ "{" _ i2:inst _ "}"
+while = "_while" _ "(" _ s:state _ ")" _ "{" _ i1:inst _ "}" _ sepTHEN _ "{" _ i2:inst _ "}"
 {
-return {type:"while",state:s,rules:i1,rulesThen:i2};
+  return {type:"while",state:s,rules:i1,rulesThen:i2};
 }
- / "while" _ "(" _ s:state _ ")" _ "{" _ i1:inst _ "}"
+ / "_while" _ "(" _ s:state _ ")" _ "{" _ i1:inst _ "}"
 {
-return {type:"while",state:s,rules:i1,rulesThen:{}};
+  return {type:"while", state:s, rules:i1, rulesThen:{}};
 }
 
-state = o:spokObject ".isOfState" _ "(" _ v:var_name _ ")" 
+state = o:spokObject ".isOfState(" _ v:pname _ ")" 
 {
-
-  return {type:"state", object:o, stateName:v};
+  return {type:"state", object:o, name:v};
 }
 
 /*
  * Node KeepState
  */
 
-keep_state =   "_keep(" _ o:spokObject _ "," _ state:var_name _ ")"
+keep_state =   "_keep(" _ o:spokObject _ "," _ state:pname _ ")"
 {
-return {type:"keepState", state:{type:"state",name:state, object:o}};
+return {type:"keepState", state:{type:"state",name:state, object:o} };
 }
 
+/*
+ * Node Lists
+ */
+list = "[" _ o:arguments _ "]"
+{
+  return { type:'list', value:o};
+}
+ / lists / select
+
+lists = "[" _ l:list _ o:listOperator _ r:list _ "]"
+{
+ return {type:'lists', left:l, right:r, operator:o};
+}
+
+listOperator = [UTN]
 
 /*
  * Basic elements
@@ -331,9 +413,9 @@ obj = {};
   obj.value=c;
   return obj;
 }
-numValue= n:[0-9]+
+numValue= n:number
 {
-  return {type:'number', value:n.join("")};
+  return {type:'number', value:n};
 }
 boolean = v:bool
 {
