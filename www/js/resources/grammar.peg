@@ -77,36 +77,36 @@ declarations "declarations" = v:vardecl* f:functionDecl*
 
 vardecl = "var" _ v:varassignation _ ";"  _
 {
-  addVariable(v.id, v);
+  addVariable(v.var_name, v);
   return v;
 }
  / "var" _ v:pname _ ";" _
 {
-  var v2 = {id:v};
+  var v2 = {var_name:v};
   addVariable(v,v2);
   return v2;
 }
 
 varassignation =  v:pname _ "=" _ a:argument _
 {
-  return {id:v,value:a};
+  return {var_name:v,value:a};
 }
  /  v:pname _ "=" _ l:list _
 {
-  return { id:v, value:l};
+  return { var_name:v, value:l};
 }
  / v:pname _ "=" _ o:object _
 {
-  return {id:v,value:o};
+  return {var_name:v,value:o};
 }
 
 var_list = v:pname _","_ o:var_list 
 {
-  return [{type:'variable',id: v}].concat(o);
+  return [{type:'variable',value: v}].concat(o);
 }
  / v:pname 
 {
-  return {type:'variable',id: v};
+  return {type:'variable',value: v};
 } 
 
 pname = f:[a-zA-Z] v:[a-zA-Z_0-9]*
@@ -116,12 +116,12 @@ pname = f:[a-zA-Z] v:[a-zA-Z_0-9]*
 
 device = "/" c:[^\/]+ "/" 
 {
-  return {type:"device",id:c.join("")};
+  return {type:"device",value:c.join("")};
 }
 
 program = "|" c:[^\|]+ "|" 
 {
-  return {type:"programCall",id:c.join("")};
+  return {type:"programCall",value:c.join("")};
 }
 /*
  * Fonctions
@@ -182,7 +182,7 @@ instDef = ret
  / functionCall
  / v:varassignation 
 {
-  return {type:"assignation", name:v.id, value:v}
+  return {type:"assignation", name:v.value, value:v}
 }
 
 
@@ -221,7 +221,7 @@ spokObject = program / device / var / select / list
 var = v:pname 
 {
   if (typeof variables[v] !== 'undefined') {
-    return {type:'variable', id:v}
+    return {type:'variable', value:v}
   } else {
     throw { message: "Variable undefined: " + v };
   }

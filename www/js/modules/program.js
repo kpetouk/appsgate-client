@@ -83,7 +83,7 @@ define([
 				header : {},
 				daemon : "false",
 				definitions : [],
-				body : { "type" : "instructions", "rules": []}
+				body : { "type" : "setOfRules", "rules": []}
 		},
 		
 		/**
