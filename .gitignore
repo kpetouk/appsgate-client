@@ -1,9 +1,11 @@
 .DS_Store
-platforms/android/bin/*
-platforms/ios/build/*
-platforms/ios/CordovaLib/build/*
-platforms/ios/cordova/console.log
-platforms/ios/AppsGate.xcodeproj/project.xcworkspace/xcuserdata/*
+platforms/*
+plugins/*
+vendor/bower/*
+test/*
+nbproject/
+bower_components/
+www/
 *.pbxproj
 */xcuserdata/*
 platforms/ios/AppsGate.xcodeproj/project.pbxproj
