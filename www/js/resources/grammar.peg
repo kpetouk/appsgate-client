@@ -180,6 +180,7 @@ instDef = ret
  / keep_state
  / action 
  / functionCall
+ / wait
  / v:varassignation 
 {
   return {type:"assignation", name:v.value, value:v}
@@ -214,7 +215,7 @@ arguments =  a:argument _ "," _ l:arguments
 }
  / _
 
-argument = device / var / stringValue / numValue / boolean / select
+argument = device / var / stringValue / numValue / boolean / select / object
 
 spokObject = program / device / var / select / list
 
@@ -266,8 +267,17 @@ strings =  s:string _ "," _ ss:strings
  */
 action = v:spokObject "." method:pname "(" action:arguments ")"
 {
-   return {type:'action',target:v,methodName:method,action:action};
+   return {type:'action',target:v,methodName:method,args:action};
    
+}
+
+/*
+ * Node Wait
+ */
+
+wait = "_wait(" _ n:numValue _ ")"
+{
+  return {type:"wait", waitFor:n };
 }
 
 /**
@@ -383,7 +393,11 @@ return {type:"keepState", state:{type:"state",name:state, object:o} };
 /*
  * Node Lists
  */
-list = "[" _ o:arguments _ "]"
+list = "[" _ a:argument _ "]"
+{
+  return a;
+}
+/ "[" _ o:arguments _ "]"
 {
   return { type:'list', value:o};
 }
@@ -415,7 +429,7 @@ obj = {};
 }
 numValue= n:number
 {
-  return {type:'number', value:n};
+  return {type:'number', value:n.toString()};
 }
 boolean = v:bool
 {
