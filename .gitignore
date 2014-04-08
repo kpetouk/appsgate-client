@@ -1,7 +1,6 @@
 .DS_Store
 platforms/*
 plugins/*
-vendor/bower/*
 test/*
 nbproject/
 bower_components/
