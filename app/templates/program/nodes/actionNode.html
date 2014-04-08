@@ -1,0 +1,26 @@
+
+<button class="btn btn-default">
+    <% if (actionName == 'On') { %>
+    <span>
+        Allumer
+    </span>
+    <% } else if (actionName == 'Off') { %>
+    <span>
+        Eteindre
+    </span>
+    <% } else { %>
+    <span>
+        Inconnu
+    </span>
+    <% } %>
+</button>
+<% if (typeof target !== 'undefined') { %>
+<button class="btn btn-default">
+    <span>&nbsp;</span>
+</button>
+<button class="btn btn-default">
+    <span>
+        <%= target.name %>
+    </span>
+</button>
+<% } %>

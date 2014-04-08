@@ -1,7 +1,8 @@
 define([
     "app",
+    "modules/mediator",
     "text!templates/program/editor/editor.html"
-], function(App, programEditorTemplate) {
+], function(App, Mediator, programEditorTemplate) {
 
     var ProgramEditorView = {};
     /**
@@ -20,6 +21,7 @@ define([
             "click button.delete-program-button": "onDeleteProgramButton",
             "keyup textarea": "onKeyUpTextarea",
             "click .expected-elements > button.completion-button": "onClickCompletionButton",
+            "mousedown button.btn-keyboard": "onClickKeyboard",
             "click .programInput > span": "onClickSourceElement",
             "click button.browse-media": "onClickBrowseMedia",
             "click button.valid-value": "onValidValueButton",
@@ -36,9 +38,10 @@ define([
          * @constructor
          */
         initialize: function() {
-            if (typeof this.model !== "undefined") {
+            /*if (typeof this.model !== "undefined") {
                 this.userInputSource = this.model.get("name") + " " + $.i18n.t("language.written-by") + " Bob pour Alice ";
-            }
+            }*/
+            this.Mediator = new Mediator();
         },
         /**
          * Callback to start a program
@@ -537,6 +540,9 @@ define([
             // fix the program input size to be able to scroll through it
             this.resizeDiv($(self.$el.find(".editorWorkspace")[0]));
         },
+        onClickKeyboard:function(e){
+            this.Mediator.buttonPressed(e.target);
+        },
         /**
          * Render the editor view
          */
@@ -566,9 +572,10 @@ define([
                 $("#edit-program-name-modal .text-error").hide();
 
                 // try to compile the program to show the potential errors
-                if (typeof this.model !== "undefined") {
+                /*if (typeof this.model !== "undefined") {
                     this.compileProgram();
-                }
+                }-*/
+                this.Mediator.buildKeyboard();
 
                 // fix the programs list size to be able to scroll through it
                 this.resizeDiv($(self.$el.find(".editorWorkspace")[0]));

@@ -444,3 +444,18 @@ div {
 .device-title {
     font-size:2pt;
 }
+
+/* --------------------- Editor styles ----------------------------------*/
+
+.action-node-input {
+    background:gray;
+    border: 1px solid;
+}
+
+.method-input {
+    background:blueviolet;
+}
+
+.target-input {
+    background:green;
+}
