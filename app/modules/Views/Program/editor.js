@@ -22,6 +22,7 @@ define([
             "keyup textarea": "onKeyUpTextarea",
             "click .expected-elements > button.completion-button": "onClickCompletionButton",
             "mousedown button.btn-keyboard": "onClickKeyboard",
+            "mousedown button.btn-prog": "onClickProg",
             "click .programInput > span": "onClickSourceElement",
             "click button.browse-media": "onClickBrowseMedia",
             "click button.valid-value": "onValidValueButton",
@@ -541,7 +542,20 @@ define([
             this.resizeDiv($(self.$el.find(".editorWorkspace")[0]));
         },
         onClickKeyboard:function(e){
-            this.Mediator.buttonPressed(e.target);
+            button = e.target;
+                        while (button !== null && typeof button.classList === 'undefined' || !button.classList.contains('btn-keyboard')) {
+                button = button.parentNode;
+            }
+
+            this.Mediator.buttonPressed(button);
+        },
+        onClickProg:function(e){
+                        button = e.target;
+                        while (button !== null && typeof button.classList === 'undefined' || !button.classList.contains('btn-prog')) {
+                button = button.parentNode;
+            }
+
+            this.Mediator.setCurrentPos(button.id);
         },
         /**
          * Render the editor view

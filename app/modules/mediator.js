@@ -8,46 +8,57 @@ define([
     ProgramMediator = Backbone.Model.extend({
         tplActionNode: _.template(actionNodeTemplate),
         initialize: function() {
-            this.programJSON = {};
+            this.programJSON = {"iid":0};
+            this.currentNode = 0;
+            this.maxNodeId = 0;
+        },
+        setCurrentPos: function(id) {
+            this.currentNode = id;
         },
         buttonPressed: function(button) {
-            while (button !== null && typeof button.classList === 'undefined' || !button.classList.contains('btn-keyboard')) {
-                button = button.parentNode;
-            }
             if ($(button).hasClass("switch-on-node")) {
-                this.appendSwitchOn();
+                this.appendNode( this.getActionNode("On", "Allumer"), this.currentNode);
             }
             else if ($(button).hasClass("switch-off-node")) {
-                this.appendSwitchOff();
+                 this.appendNode( this.getActionNode("Off", "Eteindre"), this.currentNode);
+
             }
             else if ($(button).hasClass("device-node")) {
-                this.appendDevice(button.id);
+                this.appendNode(this.getDevice(button.id), this.currentNode);
             }
             this.buildInputFromJSON();
         },
-        appendSwitchOn: function() {
-            console.log("Switch on button pressed");
-            this.programJSON.type = "action";
-            this.programJSON.methodName = "On";
-            this.programJSON.args = [];
-            console.log(this.programJSON);
-            console.log(JSON.stringify(this.programJSON));
+        appendNode: function(node, pos) {
+            this.programJSON = this.recursivelyAppend(node, pos, this.programJSON);
         },
-        appendSwitchOff: function() {
-            console.log("Switch on button pressed");
-            this.programJSON.type = "action";
-            this.programJSON.methodName = "Off";
-            this.programJSON.args = [];
-            console.log(this.programJSON);
-            console.log(JSON.stringify(this.programJSON));
+        recursivelyAppend: function(nodeToAppend, pos, curNode) {
+            console.log("try to append" + nodeToAppend + ":" + pos + ":" +curNode);
+            if (curNode.iid == pos) {
+                console.log("Node updated");
+                curNode = nodeToAppend;
+            } else {
+                for (var o in curNode) {
+                    if (typeof curNode[o] === "object") {
+                        curNode[o] = this.recursivelyAppend(nodeToAppend, pos, curNode[o]);
+                    }
+                }
+            }
+            return curNode;
         },
-        appendDevice: function(deviceId) {
-            console.log("Device: " + deviceId + " button pressed");
+        getActionNode: function (name, phrase) {
+            var actId = this.maxNodeId + 1;
+            var tarId = this.maxNodeId + 2;
+            this.maxNodeId+=2;
+            return {"type":"action", "methodName":name, "args":[], "target":{"iid" : tarId }, "iid" : actId, "phrase": phrase};
+            
+        },
+        
+        getDevice: function(deviceId) {
             var deviceName = devices.get(deviceId).get("name");
-            this.programJSON.target = {"type": "device", "value": deviceId, "name":deviceName};
-            console.log(this.programJSON);
-            console.log(JSON.stringify(this.programJSON));
+            var tarId = this.maxNodeId++;
+            return {"type": "device", "value": deviceId, "name":deviceName, "iid" : tarId};
         },
+
         buildKeyboard: function() {
             $(".expected-elements").append("<button class='btn btn-default btn-keyboard switch-on-node'><span>Allumer<span></button>");
             $(".expected-elements").append("<button class='btn btn-default btn-keyboard switch-off-node'><span>Eteindre<span></button>");
@@ -59,12 +70,10 @@ define([
             });
         },
         buildInputFromJSON: function() {
+            console.log(this.programJSON);
             switch (this.programJSON.type) {
                 case "action":
-                    $(".programInput").html(this.tplActionNode({
-                        actionName: this.programJSON.methodName,
-                        target: this.programJSON.target,
-                    }));
+                    $(".programInput").html(this.tplActionNode(this.programJSON));
                     break;
             }
         }

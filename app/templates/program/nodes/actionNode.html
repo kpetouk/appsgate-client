@@ -1,24 +1,18 @@
 
-<button class="btn btn-default">
-    <% if (actionName == 'On') { %>
+<button class="btn btn-prog" id="<%= iid %>">
     <span>
-        Allumer
-    </span>
-    <% } else if (actionName == 'Off') { %>
-    <span>
-        Eteindre
-    </span>
+        <% if (phrase) { %>
+        <%=phrase%>
     <% } else { %>
-    <span>
-        Inconnu
-    </span>
+        Uknown
     <% } %>
+    </span>
 </button>
 <% if (typeof target !== 'undefined') { %>
 <button class="btn btn-default">
     <span>&nbsp;</span>
 </button>
-<button class="btn btn-default">
+<button class="btn btn-prog" id="<%= target.iid %>">
     <span>
         <%= target.name %>
     </span>
