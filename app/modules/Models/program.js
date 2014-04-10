@@ -13,19 +13,13 @@ define([
         defaults: {
             runningState: "DEPLOYED",
             modified: true,
-            userInputSource: "",
-            source: {
-                programName: "",
-                seqParameters: [],
-                author: "",
-                target: "",
-                daemon: "true",
-                seqDefinitions: [],
-                seqRules: [
-                    []
-                ]
-            }
-        },
+            userSource: "",
+            name: "",
+            parameters: [],
+            header: {},
+            definitions: [],
+            body : { "type" : "setOfRules", "rules": []}
+	},
         /**
          * Extract the name and the daemon attributes from the source to simplify their usage w/ backbone and in the templates
          * 
@@ -36,20 +30,12 @@ define([
 
             // name
             if (typeof this.get("name") === "undefined") {
-                this.set("name", this.get("source").programName);
-            } else {
-                this.get("source").programName = this.get("name");
-            }
-
-            // daemon
-            if (typeof this.get("daemon") === "undefined") {
-                this.set("daemon", this.get("source").daemon);
+                this.set("name", "FIXME");
             }
 
             // when the source has been updated, update the attributes of the program model
             this.on("change:source", function() {
-                this.set("name", this.get("source").programName);
-                this.set("daemon", this.get("source").daemon);
+                this.set("body", this.get("source").body);
             });
 
             // each program listens to the event whose id corresponds to its own id
@@ -112,9 +98,12 @@ define([
             return {
                 id: this.get("id"),
                 runningState: this.get("runningState"),
+                name:this.get("name"),
                 modified: this.get("modified"),
-                source: this.get("source"),
-                userInputSource: this.get("userInputSource")
+            	body: this.get("body"),
+            	header: this.get("header"),
+            	definitions: this.get("definitions"),
+            	userSource: this.get("userSource")
             };
         }
     });
