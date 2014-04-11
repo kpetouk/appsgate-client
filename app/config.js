@@ -14,6 +14,7 @@ require.config({
         "jqueryui": "../vendor/bower/jqueryui/ui/jquery-ui",
         "jqueryuitouch": "../vendor/bower/jqueryui-touch-punch/jquery.ui.touch-punch",
         "backbone": "../vendor/bower/backbone/backbone",
+        "peg": "../vendor/pegjs/peg",
         // JQuery plugins
         "i18n": "../vendor/bower/i18next/release/i18next.amd.withJQuery-1.7.1",
         // RequireJS plugins

@@ -69,6 +69,27 @@ define([
             communicator.sendMessage(messageJSON);
         },
         /**
+         * return the list of available actions
+         */
+        getActions: function() {
+            return [];
+        },
+        /**
+         * return the keyboard code for a given action
+        */
+        getKeyboardForAction: function(act){
+            console.error("No action has been defined for this device.");
+            return "";
+        },
+        /**
+         * default method to build a button with its name as the name of the button
+         */
+        buildButtonFromDevice: function() {
+            return "<button id='" + this.get("id") + "' class='btn btn-default btn-keyboard device-node'><span>" + this.get("name") + "<span></button>"
+        },
+
+        
+        /**
          * Override its synchronization method to send a notification on the network
          */
         sync: function(method, model) {

@@ -1,0 +1,52 @@
+PG = INST
+
+BLOC = SEQ / SET
+{
+ return "ok";
+}
+
+SEQ = ID "seqRules" _ "(" _ INSTS _ ")"
+
+SET = ID "setOfRules" _ "(" _ INSTS _ ")"
+
+INSTS  = _ (INST _)+ / "(" INSTS ")"
+
+INST  = IF / WHEN / WHILE / BLOC / ACTION / KEEP
+
+IF  = ID "if" "(" BOOLEAN ")" _ "(" _ BLOC _ ")" _ "(" _ BLOC _ ")"
+    / ID "if" "(" BOOLEAN ")" _ "(" _ BLOC _ ")" 
+
+WHEN  = ID "when(" _ EVENTS _ ")" _ "(" _ BLOC _")"
+
+WHILE  = ID "while" _ "(" _ STATE _ ")" _ "(" _ BLOC _ ")" _ "(" _ BLOC ")"
+       / ID "while" _ "(" _ STATE _ ")" _ "(" _ BLOC _ ")" 
+
+EVENTS  = ID "eventsSequence(" _ EVENTLIST _ ")"
+        / EVT
+
+EVENTLIST = (EVENTS _)+
+
+EVT  = ID "event" _ "(" _ TARGET _ ")"
+
+BOOLEAN  = ID "booleanExpression"
+
+ACTION  = ID "action" _ "(" _ TARGET _ ")" _ "(" _ ")" 
+        / ID "action" _ "(" _ TARGET _ ")"
+
+KEEP  = "keepState"
+
+STATE = "state"
+
+TARGET = ID"variable" / ID "device"
+
+ID = [0-9]+":"
+
+/* ===== Whitespace ===== */
+
+_ "whitespace"
+  = whitespace*
+
+// Whitespace is undefined in the original JSON grammar, so I assume a simple
+// conventional definition consistent with ECMA-262, 5th ed.
+whitespace
+  = [ \t\n\r]

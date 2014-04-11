@@ -1,7 +1,9 @@
 define([
     "app",
-    "text!templates/program/nodes/actionNode.html"
-], function(App, actionNodeTemplate) {
+    "text!templates/program/nodes/actionNode.html",
+    "modules/grammar",
+
+], function(App, actionNodeTemplate, Grammar) {
 
     var ProgramMediator = {};
     // router
@@ -11,6 +13,7 @@ define([
             this.programJSON = {"iid":0};
             this.currentNode = 0;
             this.maxNodeId = 0;
+            this.Grammar = new Grammar();
         },
         setCurrentPos: function(id) {
             this.currentNode = id;
@@ -32,9 +35,7 @@ define([
             this.programJSON = this.recursivelyAppend(node, pos, this.programJSON);
         },
         recursivelyAppend: function(nodeToAppend, pos, curNode) {
-            console.log("try to append" + nodeToAppend + ":" + pos + ":" +curNode);
             if (curNode.iid == pos) {
-                console.log("Node updated");
                 curNode = nodeToAppend;
             } else {
                 for (var o in curNode) {
@@ -49,7 +50,7 @@ define([
             var actId = this.maxNodeId + 1;
             var tarId = this.maxNodeId + 2;
             this.maxNodeId+=2;
-            return {"type":"action", "methodName":name, "args":[], "target":{"iid" : tarId }, "iid" : actId, "phrase": phrase};
+            return {"type":"action", "methodName":name, "target":{"iid" : tarId, "type": "empty" }, "args":[],  "iid" : actId, "phrase": phrase};
             
         },
         
@@ -59,22 +60,53 @@ define([
             return {"type": "device", "value": deviceId, "name":deviceName, "iid" : tarId};
         },
 
-        buildKeyboard: function() {
-            $(".expected-elements").append("<button class='btn btn-default btn-keyboard switch-on-node'><span>Allumer<span></button>");
-            $(".expected-elements").append("<button class='btn btn-default btn-keyboard switch-off-node'><span>Eteindre<span></button>");
+        
+        buildActionKeys: function() {
             var types = devices.getDevicesByType();
+            for (type in types) {
+                if (types[type].length > 0) {
+                    o = types[type][0];
+                    actions = o.getActions();
+                    for(a in o.getActions()) {
+                        $(".expected-elements").append(o.getKeyboardForAction(actions[a]));
+                    }
+                }
+            }
+            
+        },
+        
+        buildInstKeys: function() {
+            this.keyboard.append("<button class='btn btn-default btn-keyboard if-node'><span>Si<span></button>");
+        },
+        
+        buildDevices: function() {
             devices.forEach(function(device) {
                 if (device.get("type") != 21) {
-                    $(".expected-elements").append("<button id='" + device.get("id") + "' class='btn btn-default btn-keyboard device-node'><span>" + device.get("name") + "<span></button>");
+                    $(".expected-elements").append(device.buildButtonFromDevice());
                 }
             });
+            
+        },
+        
+        buildKeyboard: function() {
+            this.buildActionKeys();
         },
         buildInputFromJSON: function() {
-            console.log(this.programJSON);
+            this.checkProgram();
             switch (this.programJSON.type) {
                 case "action":
                     $(".programInput").html(this.tplActionNode(this.programJSON));
                     break;
+            }
+        },
+        checkProgram: function() {
+            $(".expected-elements").html("");
+            var n = this.Grammar.parse(this.programJSON);
+            if (n == null) {
+                console.log("Program is correct");
+            } else {
+                console.warn("Invalid at " + n.id);
+                this.buildDevices();
             }
         }
 

@@ -17,6 +17,29 @@ define([
     initialize: function() {
       PhillipsHue.__super__.initialize.apply(this, arguments);
     },
+    /**
+     *return the list of available actions
+     */
+    getActions: function() {
+      return ["switchOn", "switchOff"];
+    },
+    /**
+     * return the keyboard code for a given action
+     */
+    getKeyboardForAction: function(act){
+      switch(act) {
+        case "switchOn":
+          return "<button class='btn btn-default btn-keyboard switch-on-node'><span>Allumer<span></button>";
+          break;
+        case "switchOff":
+          return "<button class='btn btn-default btn-keyboard switch-off-node'><span>Eteindre<span></button>";
+          break;
+        default:
+          console.error("unexpected action found for PhilipsHue: " + act);
+          break;
+      }
+      return "";
+    },
 
     /**
      * Send a message to the backend to update the attribute value
@@ -42,7 +65,7 @@ define([
     sendSaturation:function() {
       this.remoteControl("setSaturation", [{ type : "int", value : this.get("saturation") }], this.id);
     },
-
+    
     /**
      * Send a message to the backend to update the attribute brightness
      */
