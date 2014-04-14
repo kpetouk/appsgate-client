@@ -54,14 +54,21 @@ define([
 				}
 				return args;
             }
-            var type = "";
+			if (obj.length == 0) {
+				return "";
+			}
+            var type = obj.iid +":";
             if (obj.type) {
-                type = obj.iid +":"+ obj.type;
+                type += obj.type;
             }
 		
             for (var k in obj) {
 				if (typeof obj[k] === "object") {
-					args+= "("+ this.parseNode(obj[k]) + ")";
+					if (obj[k].length != undefined) {
+						args += "["+ this.parseNode(obj[k]) + "]";
+					} else {
+						args+= "("+ this.parseNode(obj[k]) + ")";
+					}
 				}
             }
             return type + args;

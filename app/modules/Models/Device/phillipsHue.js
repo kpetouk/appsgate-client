@@ -40,6 +40,29 @@ define([
       }
       return "";
     },
+    /**
+     * return the list of available actions
+     */
+    getEvents: function() {
+      return ["switchOn", "switchOff"];
+    },
+    /**
+     * return the keyboard code for a given action
+    */
+    getKeyboardForEvent: function(evt){
+      switch(evt) {
+        case "switchOn":
+          return "<button class='btn btn-default btn-keyboard light-on-node'><span>La lampe s'allume<span></button>";
+          break;
+        case "switchOff":
+          return "<button class='btn btn-default btn-keyboard light-off-node'><span>La lampe s'eteint<span></button>";
+          break;
+        default:
+          console.error("unexpected event found for PhilipsHue: " + evt);
+          break;
+      }
+      return "";
+    },
 
     /**
      * Send a message to the backend to update the attribute value

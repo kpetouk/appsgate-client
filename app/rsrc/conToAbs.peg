@@ -5,41 +5,45 @@ BLOC = SEQ / SET
  return "ok";
 }
 
-SEQ = ID "seqRules" _ "(" _ INSTS _ ")"
+SEQ = ID "seqRules" _ "[" _ INSTS _ "]"
 
-SET = ID "setOfRules" _ "(" _ INSTS _ ")"
+SET = ID "setOfRules" _ "[" _ INSTS _ "]"
 
 INSTS  = _ (INST _)+ / "(" INSTS ")"
 
-INST  = IF / WHEN / WHILE / BLOC / ACTION / KEEP
+INST  = IF / WHEN / WHILE / BLOC / ACTION 
 
 IF  = ID "if" "(" BOOLEAN ")" _ "(" _ BLOC _ ")" _ "(" _ BLOC _ ")"
     / ID "if" "(" BOOLEAN ")" _ "(" _ BLOC _ ")" 
 
-WHEN  = ID "when(" _ EVENTS _ ")" _ "(" _ BLOC _")"
+WHEN  = ID "when" _ "(" _ EVT _ ")" _ "(" _ INST _")"
 
 WHILE  = ID "while" _ "(" _ STATE _ ")" _ "(" _ BLOC _ ")" _ "(" _ BLOC ")"
-       / ID "while" _ "(" _ STATE _ ")" _ "(" _ BLOC _ ")" 
+       / ID "while" _ "(" _ STATE _ ")" _ "(" _ KEEP _ ")" 
 
-EVENTS  = ID "eventsSequence(" _ EVENTLIST _ ")"
+EVENTS  = ID "eventsSequence" _ "[" _ EVENTLIST _ "]"
         / EVT
 
 EVENTLIST = (EVENTS _)+
 
 EVT  = ID "event" _ "(" _ TARGET _ ")"
 
-BOOLEAN  = ID "booleanExpression"
+BOOLEAN  = ID "booleanExpression" _"(" _ BOOLEAN _ ")" _ "(" _ BOOLEAN _ ")"
+         / VALUE
+         / ACTION
 
-ACTION  = ID "action" _ "(" _ TARGET _ ")" _ "(" _ ")" 
-        / ID "action" _ "(" _ TARGET _ ")"
+ACTION  = ID "action" _ "(" _ TARGET _ ")" _ "[" _ "]" 
 
-KEEP  = "keepState"
+
+KEEP  = ID "keepState"
 
 STATE = "state"
 
-TARGET = ID"variable" / ID "device"
+TARGET = ID "variable" / ID "device"
 
-ID = [0-9]+":"
+VALUE = ID "string" / ID "number" / ID "boolean"
+
+ID "ID" = [0-9]+":"
 
 /* ===== Whitespace ===== */
 

@@ -83,7 +83,7 @@ define([
                 }-*/
                 
                 //this.Mediator.buildInputFromJSON();
-                this.Mediator.buildKeyboard();
+                this.Mediator.checkProgramAndBuildKeyboard();
 
                 // fix the programs list size to be able to scroll through it
                 this.resizeDiv($(self.$el.find(".editorWorkspace")[0]));
