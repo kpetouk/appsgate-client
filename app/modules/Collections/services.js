@@ -75,19 +75,19 @@ define([
          * @return Core mail of the home - unique device
          */
         getCoreMail: function() {
-            return devices.findWhere({type: 102});
+            return services.findWhere({type: 102});
         },
         /**
          * @return Array of UPnP media players
          */
         getMediaPlayers: function() {
-            return devices.where({type: 31});
+            return services.where({type: 31});
         },
         /**
          * @return Array of UPnP media browsers
          */
         getMediaBrowsers: function() {
-            return devices.where({type: 36});
+            return services.where({type: 36});
         },
     });
 

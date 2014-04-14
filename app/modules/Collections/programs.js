@@ -27,24 +27,12 @@ define([
             // listen to the event when a program appears and add it
             dispatcher.on("newProgram", function(program) {
                 self.add(program);
-
-                // update the grammar to take the new program in consideration
-                if (typeof window.grammar !== "undefined") {
-                    delete window.grammar;
-                }
-                window.grammar = new Grammar();
             });
 
             // listen to the event when a program has been removed
             dispatcher.on("removeProgram", function(program) {
                 var removedProgram = programs.get(program.id);
                 programs.remove(removedProgram);
-
-                // update the grammar to remove the program from the grammar
-                if (typeof window.grammar !== "undefined") {
-                    delete window.grammar;
-                }
-                window.grammar = new Grammar();
             });
 
             // listen to the event when a program has been updated

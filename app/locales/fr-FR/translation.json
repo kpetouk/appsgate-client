@@ -328,6 +328,9 @@
     },
     "programs": {
         "program-no-name": "Programme sans nom",
+        "edit-program": "Modifier",
+        "end-edit-program": "Fin modifier",
+        "delete-program": "Supprimer",
         "state": {
             "deployed": "Déployé",
             "started": "Démarré",
@@ -343,7 +346,8 @@
         "title": "Editeur de programme",
         "no-program-alert": "Aucun programme",
         "valid-program-alert": "Programme valide",
-        "invalid-program-alert": "Programme invalide"
+        "invalid-program-alert": "Programme invalide",
+        "undo-last-action": "Annuler"
     },
     "language": {
         "written-by": "ecrit par",

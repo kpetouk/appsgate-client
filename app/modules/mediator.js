@@ -68,7 +68,8 @@ define([
                     o = types[type][0];
                     actions = o.getActions();
                     for(a in o.getActions()) {
-                        $(".expected-elements").append(o.getKeyboardForAction(actions[a]));
+                        var action = o.getKeyboardForAction(actions[a]);
+                        $(".expected-elements").append(action);
                     }
                 }
             }
@@ -101,6 +102,7 @@ define([
         },
         checkProgram: function() {
             $(".expected-elements").html("");
+            if(typeof this.programJSON.iid === "undefined") this.programJSON.iid = 0;
             var n = this.Grammar.parse(this.programJSON);
             if (n == null) {
                 console.log("Program is correct");
@@ -108,7 +110,7 @@ define([
                 console.warn("Invalid at " + n.id);
                 this.buildDevices();
             }
-        }
+        },
 
     });
     return ProgramMediator;

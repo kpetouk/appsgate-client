@@ -32,7 +32,7 @@ define([
       // build the message
       var messageJSON = {
         targetType	: "1",
-        objectId	: this.getProperty("ref"),
+        objectId: this.get("id"),
         method		: method,
         args		: args
       };

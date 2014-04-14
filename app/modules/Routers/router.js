@@ -69,21 +69,6 @@ define(function(require, exports, module) {
             this.currentMenuView = menuView;
             this.currentMenuView.render();
             $(".aside-menu").html(this.currentMenuView.$el);
-
-            // update the navbar - the navbar only needs to be updated when the users changed the views (places, devices or programs) so that the side menu
-            // has to be updated
-            // remove active class
-            /*_.forEach($(".navbar-nav > li"), function(navItem) {
-                $(navItem).removeClass("active");
-            });
-            // add active class to the correct menu item
-            if (Backbone.history.fragment.indexOf("places") !== -1) {
-                $($(".navbar-nav > li")[0]).addClass("active");
-            } else if (Backbone.history.fragment.indexOf("devices") !== -1) {
-                $($(".navbar-nav > li")[1]).addClass("active");
-            } else if (Backbone.history.fragment.indexOf("programs") !== -1) {
-                $($(".navbar-nav > li")[2]).addClass("active");
-            }*/
             
              // initialize the circle menu
             $(".controlmenu").circleMenu({

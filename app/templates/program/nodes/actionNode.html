@@ -1,7 +1,7 @@
 
 <button class="btn btn-prog" id="<%= iid %>">
     <span>
-        <% if (phrase) { %>
+        <% if (typeof phrase !== 'undefined') { %>
         <%=phrase%>
     <% } else { %>
         Uknown

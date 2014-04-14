@@ -32,6 +32,8 @@ require.config({
         raphael: "../vendor/bower/raphael/raphael-min",
         // Color wheel Raphael.js plugin
         colorwheel: "../vendor/raphael/plugins/colorwheel",
+        // jsTree for file browsing
+        jstree: "../vendor/jstree/jquery.jstree",
         // APPSGATE
         // Modules
         "modules": "../app/modules",

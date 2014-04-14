@@ -1,7 +1,8 @@
 define([
   "app",
-  "models/service/service"
-], function(App, Service, MediaPlayerView, MediaPlayerCloseView) {
+  "models/service/service",
+  "jstree"
+], function(App, Service) {
 
   var MediaPlayer = {};
 
@@ -81,13 +82,13 @@ define([
 
     // Displays a tree of items the player can read
     onBrowseMedia:function(selectedMedia) {
-      var browsers = devices.getMediaBrowsers();
+      var browsers = services.getMediaBrowsers();
       var currentDevice;
 
       // make sure the tree is empty
       $(".browser-container").jstree('destroy');
 
-      var xml_data;
+      var xml_data = "";
       for(var i = 0; i<browsers.length; i++){
         var name = browsers[i].get("friendlyName") !== "" ? browsers[i].get("friendlyName") : browsers[i].get("id");
         xml_data += "<item id='" + browsers[i].get("id") + "' rel='root'>" + "<content><name>" + name + "</name></content></item>";
@@ -120,12 +121,12 @@ define([
         event.preventDefault();
         var target = "" + event.currentTarget.parentNode.id;
         if(typeof currentDevice ==='undefined' || event.currentTarget.parentNode.getAttribute("rel") === "root") {
-          currentDevice = devices.get(target);
+          currentDevice = services.get(target);
           target = "0";
         }
         if(event.currentTarget.parentNode.getAttribute("rel") !== "media"){
           $("#media-browser-modal .media-button").addClass("disabled");
-          currentDevice.remoteCall("browse", [{"type":"String", "value":target},{"type":"String", "value":"BrowseDirectChildren"},{"type":"String", "value":"*"},{"type":"long" , "value":"0"},{"type":"long" , "value":"0"},{"type":"String", "value":""}], "mediaBrowser");
+          currentDevice.remoteControl("browse", [{"type":"String", "value":target},{"type":"String", "value":"BrowseDirectChildren"},{"type":"String", "value":"*"},{"type":"long" , "value":"0"},{"type":"long" , "value":"0"},{"type":"String", "value":""}]);
         }
         else {
           $("#media-browser-modal .media-button").removeClass("disabled");

@@ -113,7 +113,7 @@ define([
             this.$el.i18n();
 
             return this;
-        },
+        }
     });
 
     return HomeView;
