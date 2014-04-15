@@ -183,7 +183,7 @@ define([
                         //programs.add(program);
 
                         // display the new program
-                        appRouter.programsRouter.details(program.get("id"));
+                        appRouter.programsRouter.reader(program.get("id"));
 
                         // update the url to the new program
                         appRouter.navigate("#programs/" + program.get("id"));

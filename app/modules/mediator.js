@@ -42,10 +42,10 @@ define([
                 this.appendNode(this.getWhenJSON(), this.currentNode);
             
             } else if ($(button).hasClass("light-on-node")) {
-                this.appendNode(this.getEventJSON("state","la lampe s'allume", true), this.currentNode);
+                this.appendNode(this.getEventJSON("state","la lampe s'allume", "true"), this.currentNode);
             
             } else if ($(button).hasClass("light-off-node")) {
-                this.appendNode(this.getEventJSON("state","la lampe s'Žteint", true), this.currentNode);
+                this.appendNode(this.getEventJSON("state","la lampe s'Žteint", "false"), this.currentNode);
             }
             this.buildInputFromJSON();
         },
