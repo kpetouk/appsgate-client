@@ -27,17 +27,23 @@ define([
         
         parse: function (jsonObj) {
             try {
-                var s = this.parseNode(jsonObj);
-                console.log(s);
-                this.parser.parse(s);
+				if (jsonObj) {
+	                var s = this.parseNode(jsonObj);
+					console.log(s);
+	                this.parser.parse(s);
+				} else {
+					console.warn("undefined json");
+				}
                 return null;
             } catch (e) {
+				console.log(e);
                 console.warn("Invalid program");
                 return this.tryParse(s, e);
             }
         },
         
         tryParse: function(toParse,e) {
+			
             var l = e.offset-5;
             var id = toParse.substr(l,4);
             while(isNaN(id)) {
@@ -47,6 +53,11 @@ define([
         },
         
         parseNode : function(obj) {
+			if (typeof obj =="string") {
+				console.log("String found");
+				console.warn("Select nodes not supported yet.")
+				return "";
+			}
             var args = "";
             if (obj.length) {
                 for (var k in obj) {

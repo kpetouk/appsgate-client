@@ -32,8 +32,8 @@ BOOLEAN  = ID "booleanExpression" _"(" _ BOOLEAN _ ")" _ "(" _ BOOLEAN _ ")"
          / VALUE
          / ACTION
 
-ACTION  = ID "action" _ "(" _ TARGET _ ")" _ "[" _ "]" 
-
+ACTION = ID "action" _ "(" _ TARGET _ ")" _ "[" _ "]" 
+       / ID "action" _ "[" _ "]"  _ "(" _ TARGET _ ")"
 
 KEEP  = ID "keepState"
 
