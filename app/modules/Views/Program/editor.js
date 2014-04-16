@@ -24,7 +24,7 @@ define([
                 this.userInputSource = this.model.get("name") + " " + $.i18n.t("language.written-by") + " Bob pour Alice ";
             }*/
             this.Mediator = new Mediator();
-            //this.Mediator.programJSON = this.model.get("body");
+            this.Mediator.programJSON = this.model.get("body");
             
         },
         onClickEndEdit:function(e){
@@ -62,31 +62,14 @@ define([
             }));
             
             if(this.model){
-                // initialize the popover
-                this.$el.find("#delete-popover").popover({
-                    html: true,
-                    content: "<button type='button' class='btn btn-danger delete-program-button'>" + $.i18n.t("form.delete-button") + "</button>",
-                    placement: "bottom"
-                });
-
-                // put the name of the place by default in the modal to edit
-                if (typeof this.model !== 'undefined') {
-                    $("#edit-program-name-modal .program-name").val(this.model.get("name"));
-                }
-
-                // hide the error message
-                $("#edit-program-name-modal .text-error").hide();
-
-                // try to compile the program to show the potential errors
-                /*if (typeof this.model !== "undefined") {
-                    this.compileProgram();
-                }-*/
                 
-                //this.Mediator.buildInputFromJSON();
-                this.Mediator.checkProgramAndBuildKeyboard();
-
+                
+                this.Mediator.buildInputFromJSON();
+                
+                //this.Mediator.buildActionKeys();
+                
                 // fix the programs list size to be able to scroll through it
-                this.resizeDiv($(self.$el.find(".editorWorkspace")[0]));
+                this.resizeDiv($(self.$el.find(".editorWorkspace")[0]), true);
 
             }
             // translate the view

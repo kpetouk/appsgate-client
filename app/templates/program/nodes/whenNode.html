@@ -1,10 +1,14 @@
 
-<button class="btn btn-prog" id="<%= node.iid %>">
-    <span>lorsque</span>
-</button> 
-<%=engine.buildInputFrom(node.events)%>
-faire
-{
-<%=engine.buildInputFrom(node.seqRulesThen) %>
-}
+<div class="row">
+    <button class="btn btn-prog" id="<%= node.iid %>">
+        <span>lorsque</span>
+    </button>
+    <%=engine.buildInputFromNode(node.events)%>
+</div>
+<div class="row indent-level-1">
+    faire
+    {
+    <%=engine.buildInputFromNode(node.seqRulesThen) %>
+    }
+</div>
 

@@ -114,7 +114,7 @@ define([
                 this.resizeDiv($(self.$el.find(".editorWorkspace")[0]));
 
                 // disable start button if there is unsaved changes
-                $(".start-program-button").prop("disabled", this.model.get("modified"));
+                //$(".start-program-button").prop("disabled", this.model.get("modified"));
             }
             // translate the view
             this.$el.i18n();

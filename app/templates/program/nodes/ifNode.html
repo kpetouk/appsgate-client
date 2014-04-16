@@ -2,13 +2,13 @@
 <button class="btn btn-prog" id="<%= node.iid %>">
     <span>si</span>
 </button> 
-<%=engine.buildInputFrom(node.booleanExpression) %>
+<%=engine.buildInputFromNode(node.booleanExpression) %>
 alors
 {
-<%=engine.buildInputFrom(node.seqRulesTrue) %>
+<%=engine.buildInputFromNode(node.seqRulesTrue) %>
 }
 sinon {
 {
-<%=engine.buildInputFrom(node.seqRulesFalse) %>
+<%=engine.buildInputFromNode(node.seqRulesFalse) %>
 }
 

@@ -32,14 +32,14 @@ require(["config"], function() {
         /**
          * Resizes the div to the maximum displayable size on the screen
          */
-        Backbone.View.prototype.resizeDiv = function(jqNode) {
+        Backbone.View.prototype.resizeDiv = function(jqNode, fullScreen) {
             if (typeof jqNode !== "undefined" && typeof jqNode[0] !== "undefined") {
                 jqNode[0].classList.add("div-scrollable");
                 setTimeout(function() {
                     var divSize = window.innerHeight - (jqNode.offset().top + jqNode.outerHeight(true) - jqNode.innerHeight());
 
                     // if there isn't enough space to display the whole div, we adjust its size to the screen
-                    if (divSize < jqNode.outerHeight(true)) {
+                    if (divSize < jqNode.outerHeight(true) || fullScreen) {
                         jqNode.height(divSize);
                     }
 

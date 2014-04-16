@@ -96,7 +96,6 @@ div {
 .expected-input {
     padding: 10px;
     background: #DDDDDD;
-    margin-top: 50px;
 }
 
 .list-group-item > img {
@@ -458,4 +457,24 @@ div {
 
 .target-input {
     background:green;
+}
+
+.indent-level-1 {
+    margin-left:30px;
+}
+
+.indent-level-2 {
+    margin-left:60px;
+}
+
+.indent-level-3 {
+    margin-left:90px;
+}
+
+.programInput {
+    height:60%;
+}
+
+.expected-elements {
+    height:40%
 }
