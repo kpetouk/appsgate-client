@@ -18,10 +18,15 @@ define([
         tplDeviceNode: _.template(deviceNodeTemplate),
         tplEventNode: _.template(eventNodeTemplate),
         tplWhiteSpaceNode: _.template(whitespaceNodeTemplate),
+        blankProgramJSON:{
+            iid:0,
+            type:"setOfRules",
+            rules:[{iid: 1, type: "empty"}]
+        },
         initialize: function() {
-            this.programJSON = {"iid": 0, type: "empty"};
-            this.currentNode = 0;
-            this.maxNodeId = 0;
+            this.programJSON = this.blankProgramJSON;
+            this.currentNode = 1;
+            this.maxNodeId = 1;
             this.Grammar = new Grammar();
         },
         setCurrentPos: function(id) {
@@ -94,8 +99,9 @@ define([
             var wID = this.maxNodeId + 1;
             var eId = this.maxNodeId + 2;
             var thenId = this.maxNodeId + 3;
-            this.maxNodeId += 3;
-            return {"type": "when", "iid": wID, "events": {"type": "empty", "iid": eId}, "seqRulesThen": {"type": "empty", "iid": thenId}};
+            var ruleId = this.maxNodeId + 4;
+            this.maxNodeId += 4;
+            return {"type": "when", "iid": wID, "events": {"type": "empty", "iid": eId}, "seqRulesThen": {"iid": thenId, "type": "seqRules",  "rules":[{"iid": ruleId, "type": "empty"}]}};
         },
         buildActionKeys: function() {
             var types = devices.getDevicesByType();
@@ -183,6 +189,7 @@ define([
             return input;
         },
         buildInputFromNode: function(jsonNode) {
+            var self = this;
             param = {node: jsonNode, engine: this};
             var input = "";
             switch (jsonNode.type) {
@@ -204,6 +211,11 @@ define([
                 case "empty":
                     input = "<button class='btn btn-prog input-spot' id='" + jsonNode.iid + "'></button>";
                     break;
+                case "seqRules": case "setOfRules":
+                    jsonNode.rules.forEach(function(rule) {
+                        input += self.buildInputFromNode(rule); 
+                    });
+                    break;
                 default:
                     input = "<button class='btn btn-prog' id='" + jsonNode.iid + "'><span>" + jsonNode.type + "</span></button>";
             }
@@ -212,11 +224,6 @@ define([
         buildInputFromJSON: function() {
             this.checkProgramAndBuildKeyboard();
             $(".programInput").html(this.buildInputFromRule(this.programJSON));
-            var nextPos = $(".input-spot")[0];
-            if(nextPos){
-                $(nextPos).removeClass("input-spot");
-                this.setCurrentPos(nextPos.id);
-            }
         },
         checkProgramAndBuildKeyboard: function(programJSON) {
             if (typeof programJSON !== "undefined")
@@ -225,9 +232,10 @@ define([
             if (n == null) {
                 console.log("Program is correct");
             } else if (n.expected[0] === "ID") {
-                this.checkProgramAndBuildKeyboard({"iid": 0, type: "empty"});
+                this.checkProgramAndBuildKeyboard(this.blankProgramJSON);
             } else {
                 console.warn("Invalid at " + n.id);
+                this.setCurrentPos(n.id);
                 this.buildKeyboard(n.expected);
             }
         }
