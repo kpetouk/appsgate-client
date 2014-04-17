@@ -203,7 +203,8 @@ define([
                 case "empty":
                     input = "<button class='btn btn-prog input-spot' id='" + jsonNode.iid + "'></button>";
                     break;
-                case "seqRules": case "setOfRules":
+                case "seqRules":
+                case "setOfRules":
                     jsonNode.rules.forEach(function(rule) {
                         input += self.buildInputFromNode(rule); 
                     });
