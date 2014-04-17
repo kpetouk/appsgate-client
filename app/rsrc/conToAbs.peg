@@ -1,13 +1,13 @@
-PG = INST
-
-BLOC = SEQ / SET
+PG = SET
 {
- return "ok";
+  return "ok";
 }
+
+SET = ID "setOfRules" _ "[" _ INSTS _ "]"
 
 SEQ = ID "seqRules" _ "[" _ INSTS _ "]"
 
-SET = ID "setOfRules" _ "[" _ INSTS _ "]"
+BLOC = SEQ
 
 INSTS  = _ (INST _)+ / "(" INSTS ")"
 
@@ -16,12 +16,14 @@ INST  = IF / WHEN / WHILE / BLOC / ACTION
 IF  = ID "if" "(" BOOLEAN ")" _ "(" _ BLOC _ ")" _ "(" _ BLOC _ ")"
     / ID "if" "(" BOOLEAN ")" _ "(" _ BLOC _ ")" 
 
-WHEN  = ID "when" _ "(" _ EVT _ ")" _ "(" _ INST _")"
+WHEN  = ID "when" _ "(" _ EVT _ ")" _ "(" _ BLOC _")"
 
 WHILE  = ID "while" _ "(" _ STATE _ ")" _ "(" _ BLOC _ ")" _ "(" _ BLOC ")"
        / ID "while" _ "(" _ STATE _ ")" _ "(" _ KEEP _ ")" 
 
 EVENTS  = ID "eventsSequence" _ "[" _ EVENTLIST _ "]"
+        / ID "eventsAnd" _ "[" _ EVENTLIST _ "]"
+        / ID "eventsOr" _ "[" _ EVENTLIST _ "]"
         / EVT
 
 EVENTLIST = (EVENTS _)+
