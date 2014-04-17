@@ -18,12 +18,12 @@ define([
         tplDeviceNode: _.template(deviceNodeTemplate),
         tplEventNode: _.template(eventNodeTemplate),
         tplWhiteSpaceNode: _.template(whitespaceNodeTemplate),
-        blankProgramJSON:{
-            iid:0,
-            type:"setOfRules",
-            rules:[{iid: 1, type: "empty"}]
-        },
         initialize: function() {
+            this.blankProgramJSON = {
+                iid: 0,
+                type: "setOfRules",
+                rules: [{iid: 1, type: "empty"}]
+            };
             this.programJSON = this.blankProgramJSON;
             this.currentNode = 1;
             this.maxNodeId = 1;
@@ -101,7 +101,7 @@ define([
             var thenId = this.maxNodeId + 3;
             var ruleId = this.maxNodeId + 4;
             this.maxNodeId += 4;
-            return {"type": "when", "iid": wID, "events": {"type": "empty", "iid": eId}, "seqRulesThen": {"iid": thenId, "type": "seqRules",  "rules":[{"iid": ruleId, "type": "empty"}]}};
+            return {"type": "when", "iid": wID, "events": {"type": "empty", "iid": eId}, "seqRulesThen": {"iid": thenId, "type": "seqRules", "rules": [{"iid": ruleId, "type": "empty"}]}};
         },
         buildActionKeys: function() {
             var types = devices.getDevicesByType();
@@ -211,9 +211,10 @@ define([
                 case "empty":
                     input = "<button class='btn btn-prog input-spot' id='" + jsonNode.iid + "'></button>";
                     break;
-                case "seqRules": case "setOfRules":
+                case "seqRules":
+                case "setOfRules":
                     jsonNode.rules.forEach(function(rule) {
-                        input += self.buildInputFromNode(rule); 
+                        input += self.buildInputFromNode(rule);
                     });
                     break;
                 default:
