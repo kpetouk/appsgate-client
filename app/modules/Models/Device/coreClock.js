@@ -113,6 +113,31 @@ define([
       clearInterval(this.intervalClockValue);
       clearInterval(this.intervalLocalClockValue);
     },
+    /**
+     * return the list of available events
+     */
+    getEvents: function() {
+      return ["ClockAlarm"];
+    },
+    /**
+     * return the keyboard code for a given event
+    */
+    getKeyboardForEvent: function(evt){
+      var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
+      switch(evt) {
+        case "ClockAlarm":
+          $(btn).append("<span>Il est 7h00<span>");
+          o = {'type': 'event', 'eventName': 'ClockAlarm', 'source': {'type': 'device', 'value':this.get("id"), 'iid':'X'}, 'eventValue': '7:00', 'iid': 'X', 'phrase': 'Il est 7 heures'};
+          $(btn).attr("json", JSON.stringify(o));
+          break;
+        default:
+          console.error("unexpected event found for Clock: " + evt);
+          btn = null;
+          break;
+      }
+      return btn;
+    },
+
 
     /**
      * Send a message to the backend the core clock time

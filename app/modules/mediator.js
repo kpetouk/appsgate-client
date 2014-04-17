@@ -18,36 +18,41 @@ define([
         tplDeviceNode: _.template(deviceNodeTemplate),
         tplEventNode: _.template(eventNodeTemplate),
         tplWhiteSpaceNode: _.template(whitespaceNodeTemplate),
+        
+        blankProgramJSON:{
+            iid:0,
+            type:"setOfRules",
+            rules:[{iid: 1, type: "empty"}]
+        },
+
+        
         initialize: function() {
-            this.programJSON = {"iid": 0, type: "empty"};
-            this.currentNode = 0;
-            this.maxNodeId = 0;
+            this.programJSON = this.blankProgramJSON;
+            this.currentNode = 1;
+            this.maxNodeId = 1;
             this.Grammar = new Grammar();
         },
         setCurrentPos: function(id) {
             this.currentNode = id;
         },
         buttonPressed: function(button) {
-            if ($(button).hasClass("switch-on-node")) {
-                this.appendNode(this.getActionJSON("On", "Allumer"), this.currentNode);
-            }
-            else if ($(button).hasClass("switch-off-node")) {
-                this.appendNode(this.getActionJSON("Off", "Eteindre"), this.currentNode);
+            n = {};
+            if ($(button).hasClass("specific-node")) {
+                n = JSON.parse($(button).attr('json'));
             }
             else if ($(button).hasClass("device-node")) {
-                this.appendNode(this.getDeviceJSON(button.id), this.currentNode);
+                n = this.getDeviceJSON(button.id);
             } else if ($(button).hasClass("if-node")) {
-                this.appendNode(this.getIfJSON(), this.currentNode);
+                n = this.getIfJSON();
 
             } else if ($(button).hasClass("when-node")) {
-                this.appendNode(this.getWhenJSON(), this.currentNode);
+                n = this.getWhenJSON();
 
-            } else if ($(button).hasClass("light-on-node")) {
-                this.appendNode(this.getEventJSON("state", "la lampe s'allume", "true"), this.currentNode);
+            } else if ($(button).hasClass("clock-node")) {
+                n = this.getEventJSON("ClockAlarm", "il est 7h00", "7h00");
 
-            } else if ($(button).hasClass("light-off-node")) {
-                this.appendNode(this.getEventJSON("state", "la lampe s'�teint", "false"), this.currentNode);
             }
+            this.appendNode(this.setIidOfJson(n),this.currentNode);
             this.buildInputFromJSON();
         },
         appendNode: function(node, pos) {
@@ -65,37 +70,29 @@ define([
             }
             return curNode;
         },
-        getActionJSON: function(name, phrase) {
-            var actId = this.maxNodeId + 1;
-            var tarId = this.maxNodeId + 2;
-            this.maxNodeId += 2;
-            return {"type": "action", "methodName": name, "target": {"iid": tarId, "type": "empty"}, "args": [], "iid": actId, "phrase": phrase};
+        setIidOfJson : function(obj) {
+            console.log("setIid:" + obj);
+            if (obj.iid === "X")  {
+                obj.iid = this.maxNodeId++;
+            }
+            for (var k in obj) {
+				if (typeof obj[k] === "object") {
+                    this.setIidOfJson(obj[k]);
+                }
+            }
+            console.log(obj);
+            return obj;
         },
-        getEventJSON: function(name, phrase, value) {
-            var actId = this.maxNodeId + 1;
-            var tarId = this.maxNodeId + 2;
-            this.maxNodeId += 2;
-            return {"type": "event", "eventName": name, "source": {"iid": tarId, "type": "empty"}, "eventValue": value, "iid": actId, "phrase": phrase};
-        },
+        
         getDeviceJSON: function(deviceId) {
             var deviceName = devices.get(deviceId).get("name");
-            var tarId = this.maxNodeId++;
-            return {"type": "device", "value": deviceId, "name": deviceName, "iid": tarId};
+            return {"type": "device", "value": deviceId, "name": deviceName, "iid": "X"};
         },
         getIfJSON: function() {
-            var ifId = this.maxNodeId + 1;
-            var bId = this.maxNodeId + 2;
-            var thenId = this.maxNodeId + 3;
-            var elseId = this.maxNodeId + 4;
-            this.maxNodeId += 4;
-            return {"type": "if", "iid": ifId, "expBool": {"type": "empty", "iid": bId}, "seqRulesTrue": {"type": "empty", "iid": thenId}, "seqRulesFalse": {"type": "empty", "iid": elseId}};
+            return {"type": "if", "iid": "X", "expBool": {"type": "empty", "iid": "X"}, "seqRulesTrue": {"type": "empty", "iid": "X"}, "seqRulesFalse": {"type": "empty", "iid": "X"}};
         },
         getWhenJSON: function() {
-            var wID = this.maxNodeId + 1;
-            var eId = this.maxNodeId + 2;
-            var thenId = this.maxNodeId + 3;
-            this.maxNodeId += 3;
-            return {"type": "when", "iid": wID, "events": {"type": "empty", "iid": eId}, "seqRulesThen": {"type": "empty", "iid": thenId}};
+            return {"type": "when", "iid": "X", "events": {"type": "empty", "iid": "X"}, "seqRulesThen": {"iid": "X", "type": "seqRules",  "rules":[{"iid": "X", "type": "empty"}]}};
         },
         buildActionKeys: function() {
             var types = devices.getDevicesByType();
@@ -183,6 +180,8 @@ define([
             return input;
         },
         buildInputFromNode: function(jsonNode) {
+                        var self = this;
+
             param = {node: jsonNode, engine: this};
             var input = "";
             switch (jsonNode.type) {
@@ -204,19 +203,20 @@ define([
                 case "empty":
                     input = "<button class='btn btn-prog input-spot' id='" + jsonNode.iid + "'></button>";
                     break;
+                case "seqRules": case "setOfRules":
+                    jsonNode.rules.forEach(function(rule) {
+                        input += self.buildInputFromNode(rule); 
+                    });
+                    break;
                 default:
                     input = "<button class='btn btn-prog' id='" + jsonNode.iid + "'><span>" + jsonNode.type + "</span></button>";
+                    break;
             }
             return input;
         },
         buildInputFromJSON: function() {
             this.checkProgramAndBuildKeyboard();
             $(".programInput").html(this.buildInputFromRule(this.programJSON));
-            var nextPos = $(".input-spot")[0];
-            if(nextPos){
-                $(nextPos).removeClass("input-spot");
-                this.setCurrentPos(nextPos.id);
-            }
         },
         checkProgramAndBuildKeyboard: function(programJSON) {
             if (typeof programJSON !== "undefined")
@@ -225,9 +225,10 @@ define([
             if (n == null) {
                 console.log("Program is correct");
             } else if (n.expected[0] === "ID") {
-                this.checkProgramAndBuildKeyboard({"iid": 0, type: "empty"});
+                this.checkProgramAndBuildKeyboard(this.blankProgramJSON);
             } else {
                 console.warn("Invalid at " + n.id);
+                this.setCurrentPos(n.id);
                 this.buildKeyboard(n.expected);
             }
         }

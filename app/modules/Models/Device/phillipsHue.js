@@ -27,41 +27,49 @@ define([
      * return the keyboard code for a given action
      */
     getKeyboardForAction: function(act){
+      var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
       switch(act) {
         case "switchOn":
-          return "<button class='btn btn-default btn-keyboard switch-on-node'><span>Allumer<span></button>";
+          $(btn).append("<span>Allumer<span>");
+          $(btn).attr("json", '{"type": "action", "methodName":"On", "target": {"iid": "X", "type": "empty"}, "args": [], "iid": "X", "phrase": "light-on"}');
           break;
         case "switchOff":
-          return "<button class='btn btn-default btn-keyboard switch-off-node'><span>Eteindre<span></button>";
+          $(btn).append("<span>Eteindre<span>");
+          $(btn).attr("json", '{"type": "action", "methodName":"Off", "target": {"iid": "X", "type": "empty"}, "args": [], "iid": "X", "phrase": "light-off"}');
           break;
         default:
           console.error("unexpected action found for PhilipsHue: " + act);
+          btn = null;
           break;
       }
-      return "";
+      return btn;
     },
     /**
-     * return the list of available actions
+     * return the list of available events
      */
     getEvents: function() {
       return ["switchOn", "switchOff"];
     },
     /**
-     * return the keyboard code for a given action
+     * return the keyboard code for a given event
     */
     getKeyboardForEvent: function(evt){
+      var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
       switch(evt) {
         case "switchOn":
-          return "<button class='btn btn-default btn-keyboard light-on-node'><span>La lampe s'allume<span></button>";
+          $(btn).append("<span>La lampe s'allume<span>");
+          $(btn).attr("json", '{"type": "event", "eventName": "state", "source": {"iid": "X", "type": "empty"}, "eventValue": "true", "iid": "X", "phrase": "la lampe s\'allume"}');
           break;
         case "switchOff":
-          return "<button class='btn btn-default btn-keyboard light-off-node'><span>La lampe s'eteint<span></button>";
+          $(btn).append("<span>La lampe s'eteind<span>");
+          $(btn).attr("json", '{"type": "event", "eventName": "state", "source": {"iid": "X", "type": "empty"}, "eventValue": "false", "iid": "X", "phrase": "la lampe s\'eteind"}');
           break;
         default:
           console.error("unexpected event found for PhilipsHue: " + evt);
+          btn = null;
           break;
       }
-      return "";
+      return btn;
     },
 
     /**
