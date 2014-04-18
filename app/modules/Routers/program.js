@@ -49,12 +49,10 @@ define([
                 appRouter.currentView.close();
             }
 
-
             $("#main").html(appRouter.navbartemplate());
 
             appRouter.currentMenuView = new ProgramEditorView({el:$("#main"),model: programs.get(id)});
             appRouter.currentMenuView.render();
-            //$("#main").append(this.currentMenuView.$el);
 
             $("#main").append(appRouter.circlemenutemplate());
 
