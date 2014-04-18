@@ -135,13 +135,13 @@ define([
                 for (t in nodes) {
                     switch (nodes[t]) {
                         case '"if"':
-                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard if-node'><span>Si<span></button>");
+                            //$(".expected-elements").append("<button class='btn btn-default btn-keyboard if-node'><span>Si<span></button>");
                             break;
                         case '"when"':
                             $(".expected-elements").append("<button class='btn btn-default btn-keyboard when-node'><span>lorsque<span></button>");
                             break;
                         case '"while"':
-                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard while-node'><span>tant que<span></button>");
+                            //$(".expected-elements").append("<button class='btn btn-default btn-keyboard while-node'><span>tant que<span></button>");
                             break;
                         case '"seqRules"':
                             break;
@@ -179,6 +179,11 @@ define([
             input += this.tplWhiteSpaceNode({node: jsonNode, maxId: this.maxNodeId});
             return input;
         },
+        
+        getDeviceName:function(id) {
+            return devices.get(id).get("name");
+        },
+        
         buildInputFromNode: function(jsonNode) {
                         var self = this;
 
