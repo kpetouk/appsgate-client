@@ -141,13 +141,13 @@ define([
                 for (t in nodes) {
                     switch (nodes[t]) {
                         case '"if"':
-                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard if-node'><span>Si<span></button>");
+                            //$(".expected-elements").append("<button class='btn btn-default btn-keyboard if-node'><span>Si<span></button>");
                             break;
                         case '"when"':
                             $(".expected-elements").append("<button class='btn btn-default btn-keyboard when-node'><span>lorsque<span></button>");
                             break;
                         case '"while"':
-                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard while-node'><span>tant que<span></button>");
+                            //$(".expected-elements").append("<button class='btn btn-default btn-keyboard while-node'><span>tant que<span></button>");
                             break;
                         case '"seqRules"':
                             break;
@@ -180,6 +180,19 @@ define([
                 console.warn("For now, it is not supported to have multiple instruction in one program.")
             }
         },
+<<<<<<< HEAD
+=======
+        buildInputFromRule: function(jsonNode) {
+            var input = this.buildInputFromNode(jsonNode);
+            input += this.tplWhiteSpaceNode({node: jsonNode, maxId: this.maxNodeId});
+            return input;
+        },
+        
+        getDeviceName:function(id) {
+            return devices.get(id).get("name");
+        },
+        
+>>>>>>> FETCH_HEAD
         buildInputFromNode: function(jsonNode) {
             var self = this;
 

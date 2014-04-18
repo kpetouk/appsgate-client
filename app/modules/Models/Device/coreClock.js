@@ -126,8 +126,8 @@ define([
       var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
       switch(evt) {
         case "ClockAlarm":
-          $(btn).append("<span>Il est 7h00<span>");
-          o = {'type': 'event', 'eventName': 'ClockAlarm', 'source': {'type': 'device', 'value':this.get("id"), 'iid':'X'}, 'eventValue': '7:00', 'iid': 'X', 'phrase': 'Il est 7 heures'};
+          $(btn).append("<span>Il est 11h00<span>");
+          o = {'type': 'event', 'eventName': 'ClockAlarm', 'source': {'type': 'device', 'value':this.get("id"), 'iid':'X'}, 'eventValue': this.getClockAlarm(11,0), 'iid': 'X', 'phrase': 'Il est 11h00'};
           $(btn).attr("json", JSON.stringify(o));
           break;
         default:
@@ -138,6 +138,13 @@ define([
       return btn;
     },
 
+    getClockAlarm: function (hour, minute) {
+      	var time = this.get("moment").clone();
+        time.set("hour", hour);
+        time.set("minute", minute);
+        time.set("second", 0);
+        return time.valueOf().toString();
+    },
 
     /**
      * Send a message to the backend the core clock time

@@ -31,11 +31,11 @@ define([
       switch(act) {
         case "switchOn":
           $(btn).append("<span>Allumer<span>");
-          $(btn).attr("json", '{"type": "action", "methodName":"On", "target": {"iid": "X", "type": "empty"}, "args": [], "iid": "X", "phrase": "light-on"}');
+          $(btn).attr("json", '{"type": "action", "methodName":"On", "target": {"iid": "X", "type": "empty"}, "args": [], "iid": "X", "phrase": "Allumer"}');
           break;
         case "switchOff":
           $(btn).append("<span>Eteindre<span>");
-          $(btn).attr("json", '{"type": "action", "methodName":"Off", "target": {"iid": "X", "type": "empty"}, "args": [], "iid": "X", "phrase": "light-off"}');
+          $(btn).attr("json", '{"type": "action", "methodName":"Off", "target": {"iid": "X", "type": "empty"}, "args": [], "iid": "X", "phrase": "Eteindre"}');
           break;
         default:
           console.error("unexpected action found for PhilipsHue: " + act);
@@ -61,8 +61,8 @@ define([
           $(btn).attr("json", '{"type": "event", "eventName": "state", "source": {"iid": "X", "type": "empty"}, "eventValue": "true", "iid": "X", "phrase": "la lampe s\'allume"}');
           break;
         case "switchOff":
-          $(btn).append("<span>La lampe s'eteind<span>");
-          $(btn).attr("json", '{"type": "event", "eventName": "state", "source": {"iid": "X", "type": "empty"}, "eventValue": "false", "iid": "X", "phrase": "la lampe s\'eteind"}');
+          $(btn).append("<span>La lampe s'eteint<span>");
+          $(btn).attr("json", '{"type": "event", "eventName": "state", "source": {"iid": "X", "type": "empty"}, "eventValue": "false", "iid": "X", "phrase": "la lampe s\'eteint"}');
           break;
         default:
           console.error("unexpected event found for PhilipsHue: " + evt);
