@@ -19,18 +19,18 @@ define([
         tplEventNode: _.template(eventNodeTemplate),
         tplWhiteSpaceNode: _.template(whitespaceNodeTemplate),
         
-        blankProgramJSON:{
-            iid:0,
-            type:"setOfRules",
-            rules:[{iid: 1, type: "empty"}]
-        },
-
-        
         initialize: function() {
-            this.programJSON = this.blankProgramJSON;
+            this.resetProgramJSON();
             this.currentNode = 1;
             this.maxNodeId = 1;
             this.Grammar = new Grammar();
+        },
+        resetProgramJSON: function() {
+            this.programJSON = {
+                iid:0,
+                type:"setOfRules",
+                rules:[{iid:1,type:"empty"}]
+            }
         },
         setCurrentPos: function(id) {
             this.currentNode = id;
@@ -219,14 +219,15 @@ define([
             this.checkProgramAndBuildKeyboard();
             $(".programInput").html(this.buildInputFromRule(this.programJSON));
         },
-        checkProgramAndBuildKeyboard: function(programJSON) {
+        checkProgramAndBuildKeyboard: function() {
             if (typeof programJSON !== "undefined")
                 this.programJSON = programJSON;
             var n = this.Grammar.parse(this.programJSON);
             if (n == null) {
                 console.log("Program is correct");
             } else if (n.expected[0] === "ID") {
-                this.checkProgramAndBuildKeyboard(this.blankProgramJSON);
+                this.resetProgramJSON();
+                this.checkProgramAndBuildKeyboard();
             } else {
                 console.warn("Invalid at " + n.id);
                 this.setCurrentPos(n.id);
