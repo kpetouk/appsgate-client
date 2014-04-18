@@ -10,7 +10,7 @@ define([
         initialize: function() {
             this.grammar = this.build(grammar);
         },
-        build : function(g) {
+        build: function(g) {
             console.log("Building the parser...");
             try {
                 this.parser = PEG.buildParser(g, {
@@ -24,63 +24,63 @@ define([
             }
             return null;
         },
-        
-        parse: function (jsonObj) {
+        parse: function(jsonObj, currentNode) {
             try {
-				if (jsonObj) {
-	                var s = this.parseNode(jsonObj);
-					console.log(s);
-	                this.parser.parse(s);
-				} else {
-					console.warn("undefined json");
-				}
+                if (jsonObj) {
+                    var s = this.parseNode(jsonObj, currentNode);
+                    console.log(s);
+                    this.parser.parse(s);
+                } else {
+                    console.warn("undefined json");
+                }
                 return null;
             } catch (e) {
-				console.log(e);
+                console.log(e);
                 console.warn("Invalid program");
                 return this.tryParse(s, e);
             }
         },
-        
-        tryParse: function(toParse,e) {
-			
-            var l = e.offset-5;
-            var id = toParse.substr(l,4);
-            while(isNaN(id)) {
+        tryParse: function(toParse, e) {
+
+            var l = e.offset - 5;
+            var id = toParse.substr(l, 4);
+            while (isNaN(id)) {
                 id = id.substr(1);
             }
-            return { "id":id, "expected": e.expected};
+            return {"id": id, "expected": e.expected};
         },
-        
-        parseNode : function(obj) {
-			if (typeof obj =="string") {
-				console.log("String found");
-				console.warn("Select nodes not supported yet.")
-				return "";
-			}
+        parseNode: function(obj, currentNode) {
+            if (typeof obj == "string") {
+                console.log("String found");
+                console.warn("Select nodes not supported yet.")
+                return "";
+            }
             var args = "";
             if (obj.length) {
                 for (var k in obj) {
-					args += this.parseNode(obj[k]) + " ";
-				}
-				return args;
+                    args += this.parseNode(obj[k], currentNode) + " ";
+                }
+                return args;
             }
-			if (obj.length == 0) {
-				return "";
-			}
-            var type = obj.iid +":";
+            if (obj.length == 0) {
+                return "";
+            }
+            var type = obj.iid + ":";
+            if (obj.type == "empty" && obj.iid == currentNode ){
+                return type + "selected";
+            }
             if (obj.type) {
                 type += obj.type;
             }
-		
+
             for (var k in obj) {
-				if (typeof obj[k] === "object") {
-					if (obj[k].length != undefined) {
-						args += "["+ this.parseNode(obj[k]) + "]";
-					} else {
-						args+= "("+ this.parseNode(obj[k]) + ")";
-					}
-				}
+                if (typeof obj[k] === "object") {
+                    if (obj[k].length != undefined) {
+                        args += "[" + this.parseNode(obj[k], currentNode) + "]";
+                    } else {
+                        args += "(" + this.parseNode(obj[k], currentNode) + ")";
+                    }
+                }
             }
             return type + args;
         }

@@ -18,7 +18,6 @@ define([
         tplDeviceNode: _.template(deviceNodeTemplate),
         tplEventNode: _.template(eventNodeTemplate),
         tplWhiteSpaceNode: _.template(whitespaceNodeTemplate),
-        
         initialize: function() {
             this.resetProgramJSON();
             this.currentNode = 1;
@@ -27,9 +26,9 @@ define([
         },
         resetProgramJSON: function() {
             this.programJSON = {
-                iid:0,
-                type:"setOfRules",
-                rules:[{iid:1,type:"empty"}]
+                iid: 0,
+                type: "setOfRules",
+                rules: [{iid: 1, type: "empty"}]
             }
         },
         setCurrentPos: function(id) {
@@ -52,7 +51,7 @@ define([
                 n = this.getEventJSON("ClockAlarm", "il est 7h00", "7h00");
 
             }
-            this.appendNode(this.setIidOfJson(n),this.currentNode);
+            this.appendNode(this.setIidOfJson(n), this.currentNode);
             this.buildInputFromJSON();
         },
         appendNode: function(node, pos) {
@@ -64,26 +63,30 @@ define([
             } else {
                 for (var o in curNode) {
                     if (typeof curNode[o] === "object") {
+                        // If adding an element to a rules array, we add an empty element to allow further insertions
+                        if(curNode[o].iid == pos && $.isArray(curNode) && (curNode[o].type === "mandatory" || curNode[o].type === "empty")){
+                            curNode.push(this.setIidOfJson(this.getEmptyJSON()));
+                        }
                         curNode[o] = this.recursivelyAppend(nodeToAppend, pos, curNode[o]);
+                        
                     }
                 }
             }
             return curNode;
         },
-        setIidOfJson : function(obj) {
+        setIidOfJson: function(obj) {
             console.log("setIid:" + obj);
-            if (obj.iid === "X")  {
+            if (obj.iid === "X") {
                 obj.iid = this.maxNodeId++;
             }
             for (var k in obj) {
-				if (typeof obj[k] === "object") {
+                if (typeof obj[k] === "object") {
                     this.setIidOfJson(obj[k]);
                 }
             }
             console.log(obj);
             return obj;
         },
-        
         getDeviceJSON: function(deviceId) {
             var deviceName = devices.get(deviceId).get("name");
             return {"type": "device", "value": deviceId, "name": deviceName, "iid": "X"};
@@ -92,7 +95,10 @@ define([
             return {"type": "if", "iid": "X", "expBool": {"type": "empty", "iid": "X"}, "seqRulesTrue": {"type": "empty", "iid": "X"}, "seqRulesFalse": {"type": "empty", "iid": "X"}};
         },
         getWhenJSON: function() {
-            return {"type": "when", "iid": "X", "events": {"type": "empty", "iid": "X"}, "seqRulesThen": {"iid": "X", "type": "seqRules",  "rules":[{"iid": "X", "type": "empty"}]}};
+            return {"type": "when", "iid": "X", "events": {"type": "mandatory", "iid": "X"}, "seqRulesThen": {"iid": "X", "type": "seqRules", "rules": [{"iid": "X", "type": "mandatory"}]}};
+        },
+        getEmptyJSON: function() {
+            return {"type": "empty", "iid": "X"};
         },
         buildActionKeys: function() {
             var types = devices.getDevicesByType();
@@ -174,13 +180,8 @@ define([
                 console.warn("For now, it is not supported to have multiple instruction in one program.")
             }
         },
-        buildInputFromRule: function(jsonNode) {
-            var input = this.buildInputFromNode(jsonNode);
-            input += this.tplWhiteSpaceNode({node: jsonNode, maxId: this.maxNodeId});
-            return input;
-        },
         buildInputFromNode: function(jsonNode) {
-                        var self = this;
+            var self = this;
 
             param = {node: jsonNode, engine: this};
             var input = "";
@@ -206,7 +207,7 @@ define([
                 case "seqRules":
                 case "setOfRules":
                     jsonNode.rules.forEach(function(rule) {
-                        input += self.buildInputFromNode(rule); 
+                        input += self.buildInputFromNode(rule);
                     });
                     break;
                 default:
@@ -217,12 +218,12 @@ define([
         },
         buildInputFromJSON: function() {
             this.checkProgramAndBuildKeyboard();
-            $(".programInput").html(this.buildInputFromRule(this.programJSON));
+            $(".programInput").html(this.buildInputFromNode(this.programJSON));
         },
         checkProgramAndBuildKeyboard: function() {
             if (typeof programJSON !== "undefined")
                 this.programJSON = programJSON;
-            var n = this.Grammar.parse(this.programJSON);
+            var n = this.Grammar.parse(this.programJSON, this.currentNode);
             if (n == null) {
                 console.log("Program is correct");
             } else if (n.expected[0] === "ID") {
@@ -230,7 +231,9 @@ define([
                 this.checkProgramAndBuildKeyboard();
             } else {
                 console.warn("Invalid at " + n.id);
-                this.setCurrentPos(n.id);
+                if(typeof n.id !== "undefined"){
+                   this.setCurrentPos(n.id);
+                }
                 this.buildKeyboard(n.expected);
             }
         }
