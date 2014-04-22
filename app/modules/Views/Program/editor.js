@@ -21,33 +21,34 @@ define([
          */
         initialize: function() {
             /*if (typeof this.model !== "undefined") {
-                this.userInputSource = this.model.get("name") + " " + $.i18n.t("language.written-by") + " Bob pour Alice ";
-            }*/
+             this.userInputSource = this.model.get("name") + " " + $.i18n.t("language.written-by") + " Bob pour Alice ";
+             }*/
             this.Mediator = new Mediator();
             this.Mediator.programJSON = this.model.get("body");
-            
+
         },
-        onClickEndEdit:function(e){
+        onClickEndEdit: function(e) {
             this.model.set("body", this.Mediator.programJSON);
             this.model.set("modified", false);
             this.model.save();
             appRouter.navigate("#programs/" + this.model.get("id"), {trigger: true});
+            this.undelegateEvents();
         },
-        onClickKeyboard:function(e){
+        onClickKeyboard: function(e) {
             button = e.target;
-                        while (button !== null && typeof button.classList === 'undefined' || !button.classList.contains('btn-keyboard')) {
+            while (button !== null && typeof button.classList === 'undefined' || !button.classList.contains('btn-keyboard')) {
                 button = button.parentNode;
             }
 
             this.Mediator.buttonPressed(button);
         },
-        onClickProg:function(e){
-                        button = e.target;
-                        while (button !== null && typeof button.classList === 'undefined' || !button.classList.contains('btn-prog')) {
+        onClickProg: function(e) {
+            button = e.target;
+            while (button !== null && typeof button.classList === 'undefined' || !button.classList.contains('btn-prog')) {
                 button = button.parentNode;
             }
 
-            this.Mediator.setCurrentPos(button.id);
+            this.Mediator.setCursorAndBuildKeyboard(button.id);
         },
         /**
          * Render the editor view
@@ -60,14 +61,14 @@ define([
             this.$el.append(this.tplEditor({
                 program: this.model
             }));
-            
-            if(this.model){
-                
-                
+
+            if (this.model) {
+
+
                 this.Mediator.buildInputFromJSON();
-                
+
                 //this.Mediator.buildActionKeys();
-                
+
                 // fix the programs list size to be able to scroll through it
                 this.resizeDiv($(self.$el.find(".editorWorkspace")[0]), true);
 
