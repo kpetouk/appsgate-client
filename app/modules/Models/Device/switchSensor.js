@@ -19,7 +19,36 @@ define([
      */
     initialize: function() {
       SwitchSensor.__super__.initialize.apply(this, arguments);
-    }
+    },
+        /**
+     * return the list of available events
+     */
+    getEvents: function() {
+      return ["switchUp", "switchBottom"];
+    },
+    /**
+     * return the keyboard code for a given event
+    */
+    getKeyboardForEvent: function(evt){
+      var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
+      switch(evt) {
+        case "switchUp":
+          $(btn).append("<span>Le bouton du haut est clique<span>");
+          $(btn).attr("json", '{"type": "event", "eventName": "switchNumber", "source": {"iid": "X", "type": "empty"}, "eventValue": "1", "iid": "X", "phrase": "le bouton haut est clique"}');
+          break;
+        case "switchBottom":
+          $(btn).append("<span>Le bouton du bas est clique<span>");
+          $(btn).attr("json", '{"type": "event", "eventName": "switchNumber", "source": {"iid": "X", "type": "empty"}, "eventValue": "1", "iid": "X", "phrase": "le bouton bas est clique"}');
+          break;
+        default:
+          console.error("unexpected event found for SwitchSensor: " + evt);
+          btn = null;
+          break;
+      }
+      return btn;
+    },
+
   });
+  
   return SwitchSensor;
 });
