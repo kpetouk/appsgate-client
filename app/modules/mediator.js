@@ -6,8 +6,11 @@ define([
     "text!templates/program/nodes/whenNode.html",
     "text!templates/program/nodes/deviceNode.html",
     "text!templates/program/nodes/eventNode.html",
+    "text!templates/program/nodes/stateNode.html",
+    "text!templates/program/nodes/keepStateNode.html",
+    "text!templates/program/nodes/whileNode.html",
     "text!templates/program/nodes/whitespaceNode.html"
-], function(App, Grammar, actionNodeTemplate, ifNodeTemplate, whenNodeTemplate, deviceNodeTemplate, eventNodeTemplate, whitespaceNodeTemplate) {
+], function(App, Grammar, actionNodeTemplate, ifNodeTemplate, whenNodeTemplate, deviceNodeTemplate, eventNodeTemplate, stateNodeTemplate, keepStateNodeTemplate, whileNodeTemplate, whitespaceNodeTemplate) {
 
     var ProgramMediator = {};
     // router
@@ -17,6 +20,9 @@ define([
         tplWhenNode: _.template(whenNodeTemplate),
         tplDeviceNode: _.template(deviceNodeTemplate),
         tplEventNode: _.template(eventNodeTemplate),
+        tplStateNode: _.template(stateNodeTemplate),
+        tplKeepStateNode: _.template(keepStateNodeTemplate),
+        tplWhileNode: _.template(whileNodeTemplate),
         tplWhiteSpaceNode: _.template(whitespaceNodeTemplate),
         initialize: function() {
             this.resetProgramJSON();
@@ -36,9 +42,7 @@ define([
         },
         setCursorAndBuildKeyboard:function(id) {
             this.setCurrentPos(id);
-            var jsonClone = jQuery.extend({}, this.programJSON);
-            this.recursivelyAppend({"iid":id,"type":"selected"}, id, jsonClone);
-            this.checkProgramAndBuildKeyboard(jsonClone);
+            this.checkProgramAndBuildKeyboard(this.programJSON);
         },
         buttonPressed: function(button) {
             n = {};
@@ -51,7 +55,11 @@ define([
                 n = this.getIfJSON();
 
             } else if ($(button).hasClass("when-node")) {
-                n = this.getWhenJSON();
+                n = {"type": "when", "iid": "X", "events": {"type": "mandatory", "iid": "X"}, "seqRulesThen": {"iid": "X", "type": "seqRules", "rules": [{"iid": "X", "type": "mandatory"}]}};
+            } else if ($(button).hasClass("while-node")) {
+                n = {"type": "while", "iid": "X", "state": this.getEmptyJSON("mandatory"), "rules": {"iid": "X", "type": "seqRules", "rules": [this.getEmptyJSON("mandatory")]}, "rulesThen": {"iid": "X", "type": "seqRules", "rules": [this.getEmptyJSON("empty")]}};
+            } else if ($(button).hasClass("whileKeep-node")) {
+                n = {"type": "while", "iid": "X", "state": this.getEmptyJSON("mandatory"), "rules": {"type": "keepState", "iid": "X", "state": this.getEmptyJSON("mandatory")}};
 
             } else if ($(button).hasClass("clock-node")) {
                 n = this.getEventJSON("ClockAlarm", "il est 7h00", "7h00");
@@ -71,7 +79,7 @@ define([
                     if (typeof curNode[o] === "object") {
                         // If adding an element to a rules array, we add an empty element to allow further insertions
                         if (curNode[o].iid == pos && $.isArray(curNode) && (curNode[o].type === "mandatory" || curNode[o].type === "empty")) {
-                            curNode.push(this.setIidOfJson(this.getEmptyJSON()));
+                            curNode.push(this.setIidOfJson(this.getEmptyJSON("empty")));
                         }
                         curNode[o] = this.recursivelyAppend(nodeToAppend, pos, curNode[o]);
 
@@ -81,7 +89,6 @@ define([
             return curNode;
         },
         setIidOfJson: function(obj) {
-            console.log("setIid:" + obj);
             if (obj.iid === "X") {
                 obj.iid = this.maxNodeId++;
             }
@@ -90,7 +97,6 @@ define([
                     this.setIidOfJson(obj[k]);
                 }
             }
-            console.log(obj);
             return obj;
         },
         getDeviceJSON: function(deviceId) {
@@ -100,10 +106,7 @@ define([
         getIfJSON: function() {
             return {"type": "if", "iid": "X", "expBool": {"type": "empty", "iid": "X"}, "seqRulesTrue": {"type": "empty", "iid": "X"}, "seqRulesFalse": {"type": "empty", "iid": "X"}};
         },
-        getWhenJSON: function() {
-            return {"type": "when", "iid": "X", "events": {"type": "mandatory", "iid": "X"}, "seqRulesThen": {"iid": "X", "type": "seqRules", "rules": [{"iid": "X", "type": "mandatory"}]}};
-        },
-        getEmptyJSON: function() {
+        getEmptyJSON: function(type) {
             return {"type": "empty", "iid": "X"};
         },
         buildActionKeys: function() {
@@ -132,6 +135,19 @@ define([
             }
 
         },
+        buildStateKeys: function() {
+            var types = devices.getDevicesByType();
+            for (type in types) {
+                if (types[type].length > 0) {
+                    o = types[type][0];
+                    states = o.getStates();
+                    for (a in states) {
+                        $(".expected-elements").append(o.getKeyboardForState(states[a]));
+                    }
+                }
+            }
+
+        },
         buildDevices: function() {
             devices.forEach(function(device) {
                 if (device.get("type") != 21) {
@@ -153,13 +169,18 @@ define([
                             $(".expected-elements").append("<button class='btn btn-default btn-keyboard when-node'><span>lorsque<span></button>");
                             break;
                         case '"while"':
-                            //$(".expected-elements").append("<button class='btn btn-default btn-keyboard while-node'><span>tant que<span></button>");
+                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard while-node'><span>tant que<span></button>");
+                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard whileKeep-node'><span>tant que...maintenir<span></button>");
+                            break;
+                        case '"state"':
+                            this.buildStateKeys();
                             break;
                         case '"seqRules"':
                             break;
                         case '"setOfRules"':
                             break;
                         case '"keepState"':
+                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard keepState-node'><span>maintenir l'etat<span></button>");
                             break;
                         case '"device"':
                             this.buildDevices();
@@ -187,6 +208,10 @@ define([
             }
         },
         getDeviceName: function(id) {
+            if (devices.get(id) == undefined) {
+                console.warn("device not found: " + id);
+                return "Not FOUND";
+            }
             return devices.get(id).get("name");
         },
         buildInputFromNode: function(jsonNode) {
@@ -209,6 +234,15 @@ define([
                     break;
                 case "event":
                     input = this.tplEventNode(param);
+                    break;
+                case "state":
+                    input = this.tplStateNode(param);
+                    break;
+                case "while":
+                    input = this.tplWhileNode(param);
+                    break;
+                case "keepState":
+                    input = this.tplKeepStateNode(param);
                     break;
                 case "empty":
                     input = "<button class='btn btn-prog input-spot' id='" + jsonNode.iid + "'></button>";

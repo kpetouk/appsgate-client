@@ -11,15 +11,16 @@ BLOC = SEQ
 
 INSTS  = _ (INST _)+ / "(" INSTS ")"
 
-INST  = IF / WHEN / WHILE / ACTION 
+INST  = IF / WHEN / WHILE / ACTION / EMPTY / WHILE_KEEP
 
 IF  = ID "if" "(" BOOLEAN ")" _ "(" _ BLOC _ ")" _ "(" _ BLOC _ ")"
     / ID "if" "(" BOOLEAN ")" _ "(" _ BLOC _ ")" 
 
 WHEN  = ID "when" _ "(" _ EVT _ ")" _ "(" _ BLOC _")"
 
-WHILE  = ID "while" _ "(" _ STATE _ ")" _ "(" _ BLOC _ ")" _ "(" _ BLOC ")"
-       / ID "while" _ "(" _ STATE _ ")" _ "(" _ KEEP _ ")" 
+WHILE  = ID "while" _ "(" _ STATE _ ")" _ "(" _ BLOC _ ")" _ "(" _ BLOC _ ")"
+
+WHILE_KEEP = ID "while" _ "(" _ STATE _ ")" _ "(" _ KEEP _ ")" 
 
 EVENTS  = ID "eventsSequence" _ "[" _ EVENTLIST _ "]"
         / ID "eventsAnd" _ "[" _ EVENTLIST _ "]"
@@ -37,11 +38,13 @@ BOOLEAN  = ID "booleanExpression" _"(" _ BOOLEAN _ ")" _ "(" _ BOOLEAN _ ")"
 ACTION = ID "action" _ "(" _ TARGET _ ")" _ "[" _ "]" 
        / ID "action" _ "[" _ "]"  _ "(" _ TARGET _ ")"
 
-KEEP  = ID "keepState"
+KEEP  = ID "keepState" _ "(" _ STATE _ ")"
 
-STATE = "state"
+STATE = ID "state" _ "(" _ TARGET _")"
 
-TARGET = ID "variable" / ID "device"
+TARGET = ID "variable" / ID "device" / EMPTY
+
+EMPTY = ID "empty"
 
 VALUE = ID "string" / ID "number" / ID "boolean"
 

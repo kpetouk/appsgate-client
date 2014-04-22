@@ -66,7 +66,7 @@ define([
                 return "";
             }
             var type = obj.iid + ":";
-            if (obj.type == "empty" && obj.iid == currentNode ){
+            if (obj.iid == currentNode ){
                 return type + "selected";
             }
             if (obj.type) {
