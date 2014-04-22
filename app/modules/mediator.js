@@ -34,6 +34,12 @@ define([
         setCurrentPos: function(id) {
             this.currentNode = id;
         },
+        setCursorAndBuildKeyboard:function(id) {
+            this.setCurrentPos(id);
+            var jsonClone = jQuery.extend({}, this.programJSON);
+            this.recursivelyAppend({"iid":id,"type":"selected"}, id, jsonClone);
+            this.checkProgramAndBuildKeyboard(jsonClone);
+        },
         buttonPressed: function(button) {
             n = {};
             if ($(button).hasClass("specific-node")) {
@@ -64,11 +70,11 @@ define([
                 for (var o in curNode) {
                     if (typeof curNode[o] === "object") {
                         // If adding an element to a rules array, we add an empty element to allow further insertions
-                        if(curNode[o].iid == pos && $.isArray(curNode) && (curNode[o].type === "mandatory" || curNode[o].type === "empty")){
+                        if (curNode[o].iid == pos && $.isArray(curNode) && (curNode[o].type === "mandatory" || curNode[o].type === "empty")) {
                             curNode.push(this.setIidOfJson(this.getEmptyJSON()));
                         }
                         curNode[o] = this.recursivelyAppend(nodeToAppend, pos, curNode[o]);
-                        
+
                     }
                 }
             }
@@ -180,19 +186,9 @@ define([
                 console.warn("For now, it is not supported to have multiple instruction in one program.")
             }
         },
-<<<<<<< HEAD
-=======
-        buildInputFromRule: function(jsonNode) {
-            var input = this.buildInputFromNode(jsonNode);
-            input += this.tplWhiteSpaceNode({node: jsonNode, maxId: this.maxNodeId});
-            return input;
-        },
-        
-        getDeviceName:function(id) {
+        getDeviceName: function(id) {
             return devices.get(id).get("name");
         },
-        
->>>>>>> FETCH_HEAD
         buildInputFromNode: function(jsonNode) {
             var self = this;
 
@@ -233,7 +229,7 @@ define([
             this.checkProgramAndBuildKeyboard();
             $(".programInput").html(this.buildInputFromNode(this.programJSON));
         },
-        checkProgramAndBuildKeyboard: function() {
+        checkProgramAndBuildKeyboard: function(programJSON) {
             if (typeof programJSON !== "undefined")
                 this.programJSON = programJSON;
             var n = this.Grammar.parse(this.programJSON, this.currentNode);
@@ -244,8 +240,8 @@ define([
                 this.checkProgramAndBuildKeyboard();
             } else {
                 console.warn("Invalid at " + n.id);
-                if(typeof n.id !== "undefined"){
-                   this.setCurrentPos(n.id);
+                if (typeof n.id !== "undefined") {
+                    this.setCurrentPos(n.id);
                 }
                 this.buildKeyboard(n.expected);
             }
