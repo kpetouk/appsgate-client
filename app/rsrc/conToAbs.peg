@@ -32,7 +32,7 @@ EVENTLIST = (EVENTS _)+
 EVT  = ID "event" _ "(" _ TARGET _ ")"
 
 BOOLEAN  = ID "booleanExpression" _"(" _ BOOLEAN _ ")" _ "(" _ BOOLEAN _ ")"
-         / VALUE
+		 / ID "booleanExpression" _"(" _ BOOLEAN _ ")"
          / ACTION
 
 ACTION = ID "action" _ "(" _ TARGET _ ")" _ "[" _ "]" 
