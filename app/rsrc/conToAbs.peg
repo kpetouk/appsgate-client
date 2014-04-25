@@ -31,9 +31,20 @@ EVENTLIST = (EVENTS _)+
 
 EVT  = ID "event" _ "(" _ TARGET _ ")"
 
-BOOLEAN  = ID "booleanExpression" _"(" _ BOOLEAN _ ")" _ "(" _ BOOLEAN _ ")"
-         / VALUE
-         / ACTION
+/**
+ * BOOLEAN expression can manipulate number also, which is not "logical".
+ * HACK
+ */
+BOOLEAN  = ID "booleanExpression" _"(" _ BOOLEAN_VALUE _ ")" _ "(" _ BOOLEAN_VALUE _ ")"
+         / ID "booleanExpression" _"(" _ NUMERIC_VALUE _ ")" _ "(" _ NUMERIC_VALUE _ ")"
+         / ID "booleanExpression" _"(" _ BOOLEAN_VALUE _ ")"
+   
+BOOLEAN_VALUE =  ID "boolean"
+               / BOOLEAN
+               / ACTION
+
+NUMERIC_VALUE = ID "number"
+              / ACTION
 
 ACTION = ID "action" _ "(" _ TARGET _ ")" _ "[" _ "]" 
        / ID "action" _ "[" _ "]"  _ "(" _ TARGET _ ")"

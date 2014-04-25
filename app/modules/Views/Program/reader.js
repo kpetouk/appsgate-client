@@ -56,7 +56,7 @@ define([
             var program = programs.get($(e.currentTarget).attr("id"));
 
             // change its running state
-            program.set("runningState", "STOPPED");
+            program.set("runningState", "DEPLOYED");
 
             // send modification to the backend
             program.save();
