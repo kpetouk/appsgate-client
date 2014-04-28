@@ -2,12 +2,12 @@
 <button class="btn btn-prog btn-prog-inst" id="<%= node.iid %>">
     <span>si</span>
 </button> 
-<%=engine.buildInputFromNode(node.booleanExpression) %>
+<%=engine.buildInputFromNode(node.expBool) %>
 alors
 {
 <%=engine.buildInputFromNode(node.seqRulesTrue) %>
 }
-sinon {
+sinon
 {
 <%=engine.buildInputFromNode(node.seqRulesFalse) %>
 }

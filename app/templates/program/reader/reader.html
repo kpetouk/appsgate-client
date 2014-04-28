@@ -4,13 +4,13 @@
 <% } else { %>
 
 	<div class="lead">
-		<% if (program.get("runningState") === "STARTED") { %>
-			<div class="led led-green pull-left"></div>
-		<% } else if ((program.get("runningState") === "STOPPED") || (program.get("runningState") === "DEPLOYED")) { %>
-			<div class="led led-default pull-left"></div>
-		<% } else if (program.get("runningState") === "FAILED") { %>
-			<div class="led led-red pull-left"></div>
-		<% } %>
+        <% if ((program.get("runningState") === "WAITING") || program.get("runningState") === "PROCESSING") { %>
+        <div class="led led-green pull-left"></div>
+        <% } else if (program.get("runningState") === "DEPLOYED") { %>
+        <div class="led led-default pull-left"></div>
+        <% } else if (program.get("runningState") === "INVALID") { %>
+        <div class="led led-red pull-left"></div>
+        <% } %>
 		<% if (program.get("name") !== "") { %>
 			<%= program.get("name") %>
 		<% } else { %>
@@ -18,11 +18,9 @@
 		<% } %>
 
 		<div class="pull-right">
-			<% if (program.get("runningState") === "STARTED") { %>
+        <% if ((program.get("runningState") === "WAITING") || program.get("runningState") === "PROCESSING") { %>
 				<button type="button" id="<%= program.get('id') %>" class="btn btn-default stop-program-button" data-i18n="programs.action.stop"></button>
-			<% } else if ((program.get("runningState") === "STOPPED") 
-				|| (program.get("runningState") === "DEPLOYED") 
-				|| (program.get("runningState") === "FAILED")) { %>
+        <% } else if (program.get("runningState") === "DEPLOYED") { %>
 				<button type="button" id="<%= program.get('id') %>" class="btn btn-default start-program-button" data-i18n="programs.action.start"></button>
 			<% } %> 
 			
