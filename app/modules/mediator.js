@@ -11,8 +11,10 @@ define([
     "text!templates/program/nodes/whileNode.html",
     "text!templates/program/nodes/whitespaceNode.html",
     "text!templates/program/keyboard/backspaceButton.html",
-    "text!templates/program/nodes/booleanExpressionNode.html"
-], function(App, Grammar, actionNodeTemplate, ifNodeTemplate, whenNodeTemplate, deviceNodeTemplate, eventNodeTemplate, stateNodeTemplate, keepStateNodeTemplate, whileNodeTemplate, whitespaceNodeTemplate, backspaceButtonTemplate, booleanExpressionNodeTemplate) {
+    "text!templates/program/nodes/booleanExpressionNode.html",
+    "text!templates/program/nodes/comparatorNode.html",
+    "text!templates/program/nodes/numberNode.html"
+], function(App, Grammar, actionNodeTemplate, ifNodeTemplate, whenNodeTemplate, deviceNodeTemplate, eventNodeTemplate, stateNodeTemplate, keepStateNodeTemplate, whileNodeTemplate, whitespaceNodeTemplate, backspaceButtonTemplate, booleanExpressionNodeTemplate, comparatorNodeTemplate, numberNodeTemplate) {
 
     var ProgramMediator = {};
     // router
@@ -28,6 +30,8 @@ define([
         tplWhiteSpaceNode: _.template(whitespaceNodeTemplate),
         tplbackspaceBtn: _.template(backspaceButtonTemplate),
         tplBooleanExpressionNode: _.template(booleanExpressionNodeTemplate),
+        tplComparatorNode: _.template(comparatorNodeTemplate),
+        tplNumberNode: _.template(numberNodeTemplate),
         initialize: function() {
             this.resetProgramJSON();
             this.currentNode = 1;
@@ -54,6 +58,12 @@ define([
                 n = JSON.parse($(button).attr('json'));
             } else if ($(button).hasClass("device-node")) {
                 n = this.getDeviceJSON(button.id);
+            } else if ($(button).hasClass("number-node")) {
+                n = {
+                    "type": "number",
+                    "iid": "X",
+                    "value": "0"
+                };
             } else if ($(button).hasClass("if-node")) {
                 n = this.getIfJSON();
             } else if ($(button).hasClass("when-node")) {
@@ -187,7 +197,34 @@ define([
             return {"type": "device", "value": deviceId, "name": deviceName, "iid": "X"};
         },
         getIfJSON: function() {
-            return {"type": "if", "iid": "X", "expBool": {"type": "empty", "iid": "X"}, "seqRulesTrue": {"type": "empty", "iid": "X"}, "seqRulesFalse": {"type": "empty", "iid": "X"}};
+            return {
+                "type": "if",
+                "iid": "X",
+                "expBool": {
+                    "type": "empty",
+                    "iid": "X"
+                    },
+                "seqRulesTrue": {
+                    "type": "seqRules",
+                    "iid": "X",
+                    "rules" : [
+                               {
+                                "type":"empty",
+                                "iid":"X"
+                                }
+                                ]
+                    },
+                "seqRulesFalse": {
+                    "type": "seqRules",
+                    "iid": "X",
+                    "rules" : [
+                               {
+                                "type":"empty",
+                                "iid":"X"
+                                }
+                                ]
+                    }
+                };
         },
         getEmptyJSON: function(type) {
             return {"type": "empty", "iid": "X"};
@@ -228,6 +265,28 @@ define([
                     }
                 }
             }
+        },
+        buildDeviceStateKeys: function() {
+            var types = devices.getDevicesByType();
+            for (type in types) {
+                if (types[type].length > 0) {
+                    o = types[type][0];
+                    states = o.getDeviceStates();
+                    for (a in states) {
+                        $(".expected-elements").append(o.getKeyboardForDeviceState(states[a]));
+                    }
+                }
+            }
+        },
+        buildBooleanKeys: function() {
+            var v = {"type":"boolean", "value" : "true", "iid":"X"};
+            var f = {"type":"boolean", "value" : "false", "iid":"X"};
+            var btn_v = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' >Vrai</button>");
+            var btn_f = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' >Faux</button>");
+            $(btn_v).attr("json", JSON.stringify(v));
+            $(btn_f).attr("json", JSON.stringify(f));
+            $(".expected-elements").append(btn_v);
+            $(".expected-elements").append(btn_f);
 
         },
         buildDevices: function() {
@@ -240,16 +299,30 @@ define([
         buildBooleanExpressionKeys: function() {
 
             var btnAnd = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span>Si ... et ... <span></button>");
-            $(btnAnd).attr("json", '{"type": "booleanExpression", "iid": "X", "operator":"&&", "leftOperand": {"iid": "X", "type": "mandatory"}, "rightOperand": {"iid": "X", "type": "mandatory"}}');
+            var v = {"type": "booleanExpression", "iid": "X", "operator":"&&", "leftOperand": {"iid": "X", "type": "mandatory"}, "rightOperand": {"iid": "X", "type": "mandatory"}};
+            $(btnAnd).attr("json", JSON.stringify(v));
             $(".expected-elements").append(btnAnd);
 
-            var btnOr = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span>Si ... ou ...<span></button>");
-            $(btnOr).attr("json", '{"type": "booleanExpression", "iid": "X", "operator":"||", "leftOperand": {"iid": "X", "type": "mandatory"}, "rightOperand": {"iid": "X", "type": "mandatory"}}');
-            $(".expected-elements").append(btnOr);
+        },
+        buildComparatorKeys: function() {
 
-            var btnNot = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span>Si .... n'est pas vrai<span></button>");
-            $(btnNot).attr("json", '{"type": "booleanExpression", "iid": "X", "operator":"!", "leftOperand": {"iid": "X", "type": "mandatory"}}');
-            $(".expected-elements").append(btnNot);
+            var btnEq = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span>... indique ...<span></button>");
+            var v = {"type": "comparator", "iid": "X", "comparator":"==", "leftOperand": {"iid": "X", "type": "mandatory"}, "rightOperand": {"iid": "X", "type": "mandatory"}};
+            $(btnEq).attr("json", JSON.stringify(v));
+            $(".expected-elements").append(btnEq);
+            var btnSup = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span>... est superieur a ...<span></button>");
+            var v = {"type": "comparator", "iid": "X", "comparator":">", "leftOperand": {"iid": "X", "type": "mandatory"}, "rightOperand": {"iid": "X", "type": "mandatory"}};
+            $(btnSup).attr("json", JSON.stringify(v));
+            $(".expected-elements").append(btnSup);
+            var btnInf = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span>... est inferieur a ...<span></button>");
+            var v = {"type": "comparator", "iid": "X", "comparator":"<", "leftOperand": {"iid": "X", "type": "mandatory"}, "rightOperand": {"iid": "X", "type": "mandatory"}};
+            $(btnInf).attr("json", JSON.stringify(v));
+            $(".expected-elements").append(btnInf);
+            var btnDiff = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span>... est different de ...<span></button>");
+            var v = {"type": "comparator", "iid": "X", "comparator":"!=", "leftOperand": {"iid": "X", "type": "mandatory"}, "rightOperand": {"iid": "X", "type": "mandatory"}};
+            $(btnDiff).attr("json", JSON.stringify(v));
+            $(".expected-elements").append(btnDiff);
+
         },
         buildKeyboard: function(nodes) {
             $(".expected-elements").html("");
@@ -259,6 +332,9 @@ define([
                     switch (nodes[t]) {
                         case '"if"':
                             $(".expected-elements").append("<button class='btn btn-default btn-keyboard if-node'><span>Si<span></button>");
+                            break;
+                        case '"comparator"':
+                            this.buildComparatorKeys();
                             break;
                         case '"booleanExpression"':
                             this.buildBooleanExpressionKeys();
@@ -292,12 +368,20 @@ define([
                         case '"event"':
                             this.buildEventKeys();
                             break;
+                        case '"deviceState"':
+                            this.buildDeviceStateKeys();
+                            break;
+                        case '"boolean"':
+                            this.buildBooleanKeys();
+                            break;
                         case "ID":
                             console.log("empty program");
                             break;
+                        case '"number"':
+                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard number-node'><span>valeur<span></button>");
+                            break;
 
                         default:
-                            console.log(nodes[t] + "not implemented right now");
                             break;
                     }
                 }
@@ -330,6 +414,9 @@ define([
                 case "booleanExpression":
                     input = this.tplBooleanExpressionNode(param);
                     break;
+                case "comparator":
+                    input = this.tplComparatorNode(param);
+                    break;
                 case "when":
                     input = this.tplWhenNode(param);
                     break;
@@ -340,6 +427,7 @@ define([
                     input = this.tplEventNode(param);
                     break;
                 case "state":
+                case "deviceState":
                     input = this.tplStateNode(param);
                     break;
                 case "while":
@@ -360,7 +448,9 @@ define([
                 case "boolean":
                     input = "<button class='btn btn-prog' id='" + jsonNode.iid + "'><span>" + jsonNode.value + "</span></button>";
                     break;
-
+                case "number":
+                    input = this.tplNumberNode(param);
+                    break;
                 default:
                     input = "<button class='btn btn-prog' id='" + jsonNode.iid + "'><span>" + jsonNode.type + "</span></button>";
                     break;

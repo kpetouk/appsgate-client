@@ -28,11 +28,13 @@ define([
       switch(act) {
         case "switchOn":
           $(btn).append("<span>Ouvrir<span>");
-          $(btn).attr("json", '{"type": "action", "methodName":"on", "target": {"iid": "X", "type": "empty"}, "args": [], "iid": "X", "phrase": "Ouvrir"}');
+          var v = {"type": "action", "methodName":"on", "target": {"iid": "X", "type": "empty"}, "args": [], "iid": "X", "phrase": "Ouvrir"};
+          $(btn).attr("json", JSON.stringify(v));
           break;
         case "switchOff":
           $(btn).append("<span>Fermer<span>");
-          $(btn).attr("json", '{"type": "action", "methodName":"off", "target": {"iid": "X", "type": "empty"}, "args": [], "iid": "X", "phrase": "Fermer"}');
+          var v = {"type": "action", "methodName":"off", "target": {"iid": "X", "type": "empty"}, "args": [], "iid": "X", "phrase": "Fermer"};
+          $(btn).attr("json", JSON.stringify(v));
           break;
         default:
           console.error("unexpected action found for PhilipsHue: " + act);

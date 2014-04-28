@@ -13,8 +13,11 @@ INSTS  = _ (INST _)+ / "(" INSTS ")"
 
 INST  = IF / WHEN / WHILE / ACTION / EMPTY / WHILE_KEEP
 
-IF  = ID "if" "(" BOOLEAN ")" _ "(" _ BLOC _ ")" _ "(" _ BLOC _ ")"
-    / ID "if" "(" BOOLEAN ")" _ "(" _ BLOC _ ")" 
+IF  = ID "if" _ "(" BOOLEAN ")" _ "(" _ BLOC _ ")" _ "(" _ BLOC _ ")"
+    / ID "if" _ "(" BOOLEAN ")" _ "(" _ BLOC _ ")" 
+    / ID "if" _ "(" _ BLOC _ ")"_ "(" BOOLEAN ")" _ "(" _ BLOC _ ")" 
+    / ID "if" _ "(" _ BLOC _ ")"_ "(" BOOLEAN ")"
+    / ID "if" _ "(" _ BLOC _ ")"_ "(" BLOC ")" _ "(" _ BOOLEAN _ ")" 
 
 WHEN  = ID "when" _ "(" _ EVT _ ")" _ "(" _ BLOC _")"
 
@@ -36,16 +39,12 @@ EVT  = ID "event" _ "(" _ TARGET _ ")"
  * BOOLEAN expression can manipulate number also, which is not "logical".
  * HACK
  */
-BOOLEAN  = ID "booleanExpression" _"(" _ BOOLEAN_VALUE _ ")" _ "(" _ BOOLEAN_VALUE _ ")"
-         / ID "booleanExpression" _"(" _ NUMERIC_VALUE _ ")" _ "(" _ NUMERIC_VALUE _ ")"
-         / ID "booleanExpression" _"(" _ BOOLEAN_VALUE _ ")"
-   
-BOOLEAN_VALUE =  ID "boolean"
-               / BOOLEAN
-               / DEVICE_STATE
+BOOLEAN  = ID "booleanExpression" _"(" _ BOOLEAN _ ")" _ "(" _ BOOLEAN _ ")"
+         / ID "comparator" _"(" _ NUMERIC_VALUE _ ")" _ "(" _ NUMERIC_VALUE _ ")"
+         / ID "booleanExpression" _"(" _ BOOLEAN _ ")"
 
 NUMERIC_VALUE = ID "number"
-              / ACTION
+              / DEVICE_STATE
 
 ACTION = ID "action" _ "(" _ TARGET _ ")" _ "[" _ "]" 
        / ID "action" _ "[" _ "]"  _ "(" _ TARGET _ ")"

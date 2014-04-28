@@ -1,5 +1,8 @@
+<% if (typeof node.object !== 'undefined') { %>
 <%=engine.buildInputFromNode(node.object) %>
-
+<% } else if (typeof node.target !== 'undefined') { %>
+<%=engine.buildInputFromNode(node.target) %>
+<% } %>
 <button class="btn btn-prog btn-prog-inst" id="<%= node.iid %>">
     <span>
         <% if (typeof node.phrase !== 'undefined') { %>
