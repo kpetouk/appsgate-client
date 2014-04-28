@@ -11,11 +11,9 @@ define([
     ProgramEditorView = Backbone.View.extend({
         tplEditor: _.template(programEditorTemplate),
         events: {
-            "click button.btn-keyboard": "onClickKeyboard",
-            "click button.btn-prog": "onClickProg",
-            "click .programInput > span": "onClickSourceElement",
+            "click .btn-keyboard": "onClickKeyboard",
+            "click .btn-prog": "onClickProg",
             "click #end-edit-button": "onClickEndEdit",
-            "click button.btn-backspace": "onClickBackspace",
             "change .lamp-color-picker": "onChangeLampColorNode",
             "change .number-input": "onChangeNumberValue"
         },
@@ -27,7 +25,7 @@ define([
              this.userInputSource = this.model.get("name") + " " + $.i18n.t("language.written-by") + " Bob pour Alice ";
              }*/
             this.Mediator = new Mediator();
-            this.Mediator.programJSON = this.model.get("body");
+            this.Mediator.loadProgramJSON(this.model.get("body"));
 
         },
         onClickEndEdit: function(e) {
@@ -50,9 +48,6 @@ define([
                 button = button.parentNode;
             }
             this.Mediator.setCursorAndBuildKeyboard(button.id);
-        },
-        onClickBackspace: function () {
-            this.Mediator.removeSelectedNode();
         },
         onChangeLampColorNode: function(e) {
             e.stopPropagation();

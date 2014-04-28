@@ -151,6 +151,7 @@ define([
 
                                 // hide the modal
                                 $("#add-program-modal").modal("hide");
+
                             } catch (exception) {
                                 $("#add-program-modal .text-danger")
                                         .text($.i18n.t("modal-add-program.unable-to-parse"))
@@ -179,14 +180,12 @@ define([
                         // send the program to the backend
                         program.save();
 
-                        // add it to the collection
-                        //programs.add(program);
-
                         // display the new program
-                        appRouter.programsRouter.reader(program.get("id"));
+                        appRouter.programsRouter.editor(program.get("id"));
 
                         // update the url to the new program
-                        appRouter.navigate("#programs/" + program.get("id"));
+                        //appRouter.navigate("#programs/editor/" + this.model.get("id"), {trigger: true});
+                        this.undelegateEvents();
 
                         // set the current program active
                         _.forEach($("a.list-group-item"), function(item) {

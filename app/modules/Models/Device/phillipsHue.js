@@ -31,7 +31,7 @@ define([
       switch(act) {
         case "switchOn":
           $(btn).append("<span>Allumer<span>");
-          var v = {"type": "action", "methodName":"setWhite", "target": {"iid": "X", "type": "mandatory"}, "args": [], "iid": "X", "phrase": "Allumer"};
+          var v = {"type": "action", "deviceType":"7", "methodName":"setWhite", "target": {"iid": "X", "type": "mandatory"}, "args": [], "iid": "X", "phrase": "Allumer"};
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "switchOff":
