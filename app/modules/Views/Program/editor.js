@@ -24,7 +24,7 @@ define([
              this.userInputSource = this.model.get("name") + " " + $.i18n.t("language.written-by") + " Bob pour Alice ";
              }*/
             this.Mediator = new Mediator();
-            this.Mediator.programJSON = this.model.get("body");
+            this.Mediator.loadProgramJSON(this.model.get("body"));
 
         },
         onClickEndEdit: function(e) {

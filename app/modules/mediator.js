@@ -42,6 +42,22 @@ define([
                 rules: [{iid: 1, type: "empty"}]
             }
         },
+        loadProgramJSON: function(programJSON) {
+            this.programJSON = programJSON;
+            this.maxNodeId = this.findMaxId(programJSON);
+            this.currentNode = -1;
+        },
+        findMaxId: function(curNode) {
+            for (var o in curNode) {
+                if (typeof curNode[o] === 'object') {
+                    this.findMaxId(curNode[o]);
+                }
+                if (curNode[o].iid > this.maxNodeId) {
+                    this.maxNodeId = curNode[o].iid;
+                }
+            }
+            return this.maxNodeId;
+        },
         setCurrentPos: function(id) {
             this.currentNode = id;
         },
@@ -107,10 +123,10 @@ define([
             } else if ($(button).hasClass("TODO-node")) {
                 console.warn("Node has to be implemented");
             }
-            
+
             this.lastAddedNode = this.setIidOfJson(n)
             this.appendNode(this.lastAddedNode, this.currentNode);
-            
+
             // reset the selection because a node was added
             this.setCurrentPos(-1);
             this.buildInputFromJSON();
@@ -307,7 +323,7 @@ define([
             } else {
                 console.warn("For now, it is not supported to have multiple instruction in one program.")
             }
-            
+
             $(".expected-elements").i18n();
         },
         getDeviceName: function(id) {
@@ -387,11 +403,18 @@ define([
         buildInputFromJSON: function() {
             this.checkProgramAndBuildKeyboard();
             $(".programInput").html(this.buildInputFromNode(this.programJSON));
-            
-            if(this.currentNode === -1 && this.lastAddedNode !== null){
+
+            if (this.currentNode === -1 && this.lastAddedNode !== null) {
                 var nextInput = $("#" + this.lastAddedNode.iid).parent().nextAll(".input-spot");
                 this.setCursorAndBuildKeyboard(parseInt(nextInput.first().attr("id")));
             }
+            
+            // if no input point is chosen at this point, we select the last empty element
+            if($(".expected-elements").children().length === 0) {
+                var lastInputPoint = $(".programInput").children(".input-spot").last();
+                this.setCursorAndBuildKeyboard(parseInt(lastInputPoint.attr("id")));
+            }
+            
             appRouter.currentMenuView.$el.i18n();
         },
         checkProgramAndBuildKeyboard: function(programJSON) {

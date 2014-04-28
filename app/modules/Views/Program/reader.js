@@ -20,7 +20,7 @@ define([
          */
         initialize: function() {
             this.Mediator = new Mediator();
-            this.Mediator.programJSON = this.model.get("body");
+            this.Mediator.loadProgramJSON(this.model.get("body"));
         },
         /**
          * Callback to start a program
