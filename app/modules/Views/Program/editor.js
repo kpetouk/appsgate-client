@@ -14,7 +14,9 @@ define([
             "click button.btn-keyboard": "onClickKeyboard",
             "click button.btn-prog": "onClickProg",
             "click .programInput > span": "onClickSourceElement",
-            "click #end-edit-button": "onClickEndEdit"
+            "click #end-edit-button": "onClickEndEdit",
+            "click button.btn-backspace": "onClickBackspace",
+            "change .lamp-color-picker": "onChangeLampColorNode"
         },
         /**
          * @constructor
@@ -39,7 +41,6 @@ define([
             while (button !== null && typeof button.classList === 'undefined' || !button.classList.contains('btn-keyboard')) {
                 button = button.parentNode;
             }
-
             this.Mediator.buttonPressed(button);
         },
         onClickProg: function(e) {
@@ -47,8 +48,17 @@ define([
             while (button !== null && typeof button.classList === 'undefined' || !button.classList.contains('btn-prog')) {
                 button = button.parentNode;
             }
-
             this.Mediator.setCursorAndBuildKeyboard(button.id);
+        },
+        onClickBackspace: function () {
+            this.Mediator.removeSelectedNode();
+        },
+        onChangeLampColorNode: function(e) {
+            e.stopPropagation();
+            var iid = $(e.currentTarget).attr("target-id");
+            var value = e.currentTarget.selectedOptions[0].value;
+            this.Mediator.setNodeAttribute(iid, "methodName", value);
+          //console.log(e);  
         },
         /**
          * Render the editor view

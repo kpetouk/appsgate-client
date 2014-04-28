@@ -1,14 +1,11 @@
 
 <div class="row">
-    <button class="btn btn-prog" id="<%= node.iid %>">
+    <button class="btn btn-prog btn-prog-inst" id="<%= node.iid %>">
         <span>lorsque</span>
     </button>
     <%=engine.buildInputFromNode(node.events)%>
 </div>
 <div class="row indent-level-1">
-    faire
-    {
     <%=engine.buildInputFromNode(node.seqRulesThen) %>
-    }
 </div>
 

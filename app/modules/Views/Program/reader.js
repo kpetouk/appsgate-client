@@ -111,7 +111,7 @@ define([
                 this.Mediator.buildInputFromJSON();
 
                 // fix the programs list size to be able to scroll through it
-                this.resizeDiv($(self.$el.find(".editorWorkspace")[0]));
+                this.resizeDiv($(self.$el.find(".editorWorkspace")[0]), true);
 
                 // disable start button if there is unsaved changes
                 //$(".start-program-button").prop("disabled", this.model.get("modified"));

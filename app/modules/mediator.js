@@ -9,8 +9,9 @@ define([
     "text!templates/program/nodes/stateNode.html",
     "text!templates/program/nodes/keepStateNode.html",
     "text!templates/program/nodes/whileNode.html",
-    "text!templates/program/nodes/whitespaceNode.html"
-], function(App, Grammar, actionNodeTemplate, ifNodeTemplate, whenNodeTemplate, deviceNodeTemplate, eventNodeTemplate, stateNodeTemplate, keepStateNodeTemplate, whileNodeTemplate, whitespaceNodeTemplate) {
+    "text!templates/program/nodes/whitespaceNode.html",
+    "text!templates/program/keyboard/backspaceButton.html"
+], function(App, Grammar, actionNodeTemplate, ifNodeTemplate, whenNodeTemplate, deviceNodeTemplate, eventNodeTemplate, stateNodeTemplate, keepStateNodeTemplate, whileNodeTemplate, whitespaceNodeTemplate, backspaceButtonTemplate) {
 
     var ProgramMediator = {};
     // router
@@ -24,6 +25,7 @@ define([
         tplKeepStateNode: _.template(keepStateNodeTemplate),
         tplWhileNode: _.template(whileNodeTemplate),
         tplWhiteSpaceNode: _.template(whitespaceNodeTemplate),
+        tplbackspaceBtn: _.template(backspaceButtonTemplate),
         initialize: function() {
             this.resetProgramJSON();
             this.currentNode = 1;
@@ -40,7 +42,7 @@ define([
         setCurrentPos: function(id) {
             this.currentNode = id;
         },
-        setCursorAndBuildKeyboard:function(id) {
+        setCursorAndBuildKeyboard: function(id) {
             this.setCurrentPos(id);
             this.checkProgramAndBuildKeyboard(this.programJSON);
         },
@@ -66,19 +68,22 @@ define([
 
             }
             this.appendNode(this.setIidOfJson(n), this.currentNode);
+
+            // reset the selection because a node was added
+            this.setCurrentPos(-1);
             this.buildInputFromJSON();
         },
         appendNode: function(node, pos) {
             this.programJSON = this.recursivelyAppend(node, pos, this.programJSON);
         },
         recursivelyAppend: function(nodeToAppend, pos, curNode) {
-            if (curNode.iid == pos) {
+            if (parseInt(curNode.iid) === parseInt(pos)) {
                 curNode = nodeToAppend;
             } else {
                 for (var o in curNode) {
                     if (typeof curNode[o] === "object") {
                         // If adding an element to a rules array, we add an empty element to allow further insertions
-                        if (curNode[o].iid == pos && $.isArray(curNode) && (curNode[o].type === "mandatory" || curNode[o].type === "empty")) {
+                        if (parseInt(curNode[o].iid) === parseInt(pos) && $.isArray(curNode) && (curNode[o].type === "mandatory" || curNode[o].type === "empty")) {
                             curNode.push(this.setIidOfJson(this.getEmptyJSON("empty")));
                         }
                         curNode[o] = this.recursivelyAppend(nodeToAppend, pos, curNode[o]);
@@ -87,6 +92,45 @@ define([
                 }
             }
             return curNode;
+        },
+        removeSelectedNode: function() {
+            this.programJSON = this.recursivelyRemove(this.currentNode, this.programJSON);
+            this.buildInputFromJSON();
+        },
+        recursivelyRemove: function(pos, curNode, parentNode) {
+            if (parseInt(curNode.iid) === parseInt(pos)) {
+                curNode = {iid: curNode.iid, type: "empty"};
+            } else {
+                for (var o in curNode) {
+                    if (typeof curNode[o] === "object") {
+                        curNode[o] = this.recursivelyRemove(pos, curNode[o], curNode);
+                        if (curNode[o].iid === pos && curNode[o].type === "empty") {
+                            if (typeof curNode.iid === "undefined") {
+                                this.setCursorAndBuildKeyboard(parentNode.iid);
+                            }
+                            else {
+                                this.setCursorAndBuildKeyboard(curNode.iid);
+                            }
+                        }
+                    }
+                }
+            }
+            return curNode;
+        },
+        setNodeAttribute:function(iid, attribute, value){
+            this.recursivelySetNodeAttribute(iid, attribute, value, this.programJSON);
+        },
+        recursivelySetNodeAttribute:function(iid, attribute, value, curNode) {
+           if(parseInt(curNode.iid) === parseInt(iid)){
+               curNode[attribute] = value; 
+           }
+           else {
+               for(var o in curNode) {
+                   if(typeof curNode[o] === "object") {
+                       this.recursivelySetNodeAttribute(iid, attribute, value, curNode[o]);
+                   }
+               }
+           }
         },
         setIidOfJson: function(obj) {
             if (obj.iid === "X") {
@@ -159,6 +203,8 @@ define([
         buildKeyboard: function(nodes) {
             $(".expected-elements").html("");
 
+            $(".expected-elements").append(this.tplbackspaceBtn())
+
             if (nodes != null) {
                 for (t in nodes) {
                     switch (nodes[t]) {
@@ -203,8 +249,6 @@ define([
                             break;
                     }
                 }
-            } else {
-                console.warn("For now, it is not supported to have multiple instruction in one program.")
             }
         },
         getDeviceName: function(id) {
@@ -262,6 +306,8 @@ define([
         buildInputFromJSON: function() {
             this.checkProgramAndBuildKeyboard();
             $(".programInput").html(this.buildInputFromNode(this.programJSON));
+            
+            appRouter.currentMenuView.$el.i18n();
         },
         checkProgramAndBuildKeyboard: function(programJSON) {
             if (typeof programJSON !== "undefined")
@@ -269,6 +315,7 @@ define([
             var n = this.Grammar.parse(this.programJSON, this.currentNode);
             if (n == null) {
                 console.log("Program is correct");
+                this.buildKeyboard();
             } else if (n.expected[0] === "ID") {
                 this.resetProgramJSON();
                 this.checkProgramAndBuildKeyboard();

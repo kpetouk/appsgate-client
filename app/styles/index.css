@@ -476,5 +476,23 @@ div {
 }
 
 .expected-elements {
+    position:relative;
     height:40%
+}
+
+.btn-prog-action {
+    background:orange !important;
+}
+
+.btn-prog-device {
+    color:white;
+    background: blueviolet !important;
+}
+
+.btn-prog-inst {
+    background: turquoise !important;
+}
+.btn-backspace {
+    position:absolute;
+    right:10px;
 }
