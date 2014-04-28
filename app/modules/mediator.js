@@ -484,12 +484,6 @@ define([
                 case "number":
                     input = this.tplNumberNode(param);
                     break;
-<<<<<<< HEAD
-=======
-                case "number":
-                    input = this.tplNumberNode(param);
-                    break;
->>>>>>> FETCH_HEAD
                 default:
                     input = "<button class='btn btn-prog btn-primary' id='" + jsonNode.iid + "'><span>" + jsonNode.type + "</span></button>";
                     break;
