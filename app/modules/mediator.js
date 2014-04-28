@@ -1,7 +1,8 @@
 define([
     "app",
     "modules/grammar",
-    "text!templates/program/nodes/actionNode.html",
+    "text!templates/program/nodes/defaultActionNode.html",
+    "text!templates/program/nodes/lampActionNode.html",
     "text!templates/program/nodes/ifNode.html",
     "text!templates/program/nodes/whenNode.html",
     "text!templates/program/nodes/deviceNode.html",
@@ -10,14 +11,14 @@ define([
     "text!templates/program/nodes/keepStateNode.html",
     "text!templates/program/nodes/whileNode.html",
     "text!templates/program/nodes/whitespaceNode.html",
-    "text!templates/program/keyboard/backspaceButton.html",
     "text!templates/program/nodes/booleanExpressionNode.html"
-], function(App, Grammar, actionNodeTemplate, ifNodeTemplate, whenNodeTemplate, deviceNodeTemplate, eventNodeTemplate, stateNodeTemplate, keepStateNodeTemplate, whileNodeTemplate, whitespaceNodeTemplate, backspaceButtonTemplate, booleanExpressionNodeTemplate) {
+], function(App, Grammar, defaultActionTemplate, lampActionTemplate, ifNodeTemplate, whenNodeTemplate, deviceNodeTemplate, eventNodeTemplate, stateNodeTemplate, keepStateNodeTemplate, whileNodeTemplate, whitespaceNodeTemplate, booleanExpressionNodeTemplate) {
 
     var ProgramMediator = {};
     // router
     ProgramMediator = Backbone.Model.extend({
-        tplActionNode: _.template(actionNodeTemplate),
+        tplDefaultActionNode: _.template(defaultActionTemplate),
+        tplLampActionNode: _.template(lampActionTemplate),
         tplIfNode: _.template(ifNodeTemplate),
         tplWhenNode: _.template(whenNodeTemplate),
         tplDeviceNode: _.template(deviceNodeTemplate),
@@ -26,12 +27,12 @@ define([
         tplKeepStateNode: _.template(keepStateNodeTemplate),
         tplWhileNode: _.template(whileNodeTemplate),
         tplWhiteSpaceNode: _.template(whitespaceNodeTemplate),
-        tplbackspaceBtn: _.template(backspaceButtonTemplate),
         tplBooleanExpressionNode: _.template(booleanExpressionNodeTemplate),
         initialize: function() {
             this.resetProgramJSON();
             this.currentNode = 1;
             this.maxNodeId = 1;
+            this.lastAddedNode = null;
             this.Grammar = new Grammar();
         },
         resetProgramJSON: function() {
@@ -106,8 +107,10 @@ define([
             } else if ($(button).hasClass("TODO-node")) {
                 console.warn("Node has to be implemented");
             }
-            this.appendNode(this.setIidOfJson(n), this.currentNode);
-
+            
+            this.lastAddedNode = this.setIidOfJson(n)
+            this.appendNode(this.lastAddedNode, this.currentNode);
+            
             // reset the selection because a node was added
             this.setCurrentPos(-1);
             this.buildInputFromJSON();
@@ -239,15 +242,15 @@ define([
         },
         buildBooleanExpressionKeys: function() {
 
-            var btnAnd = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span>Si ... et ... <span></button>");
+            var btnAnd = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span data-i18n='language.if-and'><span></button>");
             $(btnAnd).attr("json", '{"type": "booleanExpression", "iid": "X", "operator":"&&", "leftOperand": {"iid": "X", "type": "mandatory"}, "rightOperand": {"iid": "X", "type": "mandatory"}}');
             $(".expected-elements").append(btnAnd);
 
-            var btnOr = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span>Si ... ou ...<span></button>");
+            var btnOr = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span data-i18n='language.if-or'><span></button>");
             $(btnOr).attr("json", '{"type": "booleanExpression", "iid": "X", "operator":"||", "leftOperand": {"iid": "X", "type": "mandatory"}, "rightOperand": {"iid": "X", "type": "mandatory"}}');
             $(".expected-elements").append(btnOr);
 
-            var btnNot = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span>Si .... n'est pas vrai<span></button>");
+            var btnNot = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span data-i18n='language.if-not'><span></button>");
             $(btnNot).attr("json", '{"type": "booleanExpression", "iid": "X", "operator":"!", "leftOperand": {"iid": "X", "type": "mandatory"}}');
             $(".expected-elements").append(btnNot);
         },
@@ -258,17 +261,17 @@ define([
                 for (t in nodes) {
                     switch (nodes[t]) {
                         case '"if"':
-                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard if-node'><span>Si<span></button>");
+                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard if-node'><span data-i18n='language.if-keyword'><span></button>");
                             break;
                         case '"booleanExpression"':
                             this.buildBooleanExpressionKeys();
                             break;
                         case '"when"':
-                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard when-node'><span>lorsque<span></button>");
+                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard when-node'><span data-i18n='language.when-keyword'><span></button>");
                             break;
                         case '"while"':
-                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard while-node'><span>tant que<span></button>");
-                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard whileKeep-node'><span>tant que...maintenir<span></button>");
+                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard while-node'><span data-i18n='language.while-keyword'><span></button>");
+                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard whileKeep-node'><span data-i18n='language.while-keep'><span></button>");
                             break;
                         case '"state"':
                             this.buildStateKeys();
@@ -278,7 +281,7 @@ define([
                         case '"setOfRules"':
                             break;
                         case '"keepState"':
-                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard keepState-node'><span>maintenir l'etat<span></button>");
+                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard keepState-node'><span data-i18n='language.keep-state'><span></button>");
                             break;
                         case '"device"':
                             this.buildDevices();
@@ -304,6 +307,8 @@ define([
             } else {
                 console.warn("For now, it is not supported to have multiple instruction in one program.")
             }
+            
+            $(".expected-elements").i18n();
         },
         getDeviceName: function(id) {
             if (devices.get(id) == undefined) {
@@ -311,6 +316,18 @@ define([
                 return "Not FOUND";
             }
             return devices.get(id).get("name");
+        },
+        buildActionNode: function(param) {
+            var result = "";
+            if (param.node.deviceType == "7") {
+                result = this.tplLampActionNode(param);
+            }
+            else {
+                result = this.tplDefaultActionNode(param);
+            }
+
+            return result;
+
         },
         buildInputFromNode: function(jsonNode) {
             var self = this;
@@ -322,7 +339,7 @@ define([
             var input = "";
             switch (jsonNode.type) {
                 case "action":
-                    input = this.tplActionNode(param);
+                    input = this.buildActionNode(param);
                     break;
                 case "if":
                     input = this.tplIfNode(param);
@@ -349,7 +366,7 @@ define([
                     input = this.tplKeepStateNode(param);
                     break;
                 case "empty":
-                    input = "<button class='btn btn-prog input-spot' id='" + jsonNode.iid + "'></button>";
+                    input = "<div class='btn btn-default btn-prog input-spot' id='" + jsonNode.iid + "'></div>";
                     break;
                 case "seqRules":
                 case "setOfRules":
@@ -370,8 +387,11 @@ define([
         buildInputFromJSON: function() {
             this.checkProgramAndBuildKeyboard();
             $(".programInput").html(this.buildInputFromNode(this.programJSON));
-
-
+            
+            if(this.currentNode === -1 && this.lastAddedNode !== null){
+                var nextInput = $("#" + this.lastAddedNode.iid).parent().nextAll(".input-spot");
+                this.setCursorAndBuildKeyboard(parseInt(nextInput.first().attr("id")));
+            }
             appRouter.currentMenuView.$el.i18n();
         },
         checkProgramAndBuildKeyboard: function(programJSON) {
