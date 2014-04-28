@@ -34,11 +34,13 @@ define([
       switch(evt) {
         case "switchUp":
           $(btn).append("<span>Le bouton du haut est clique<span>");
-          $(btn).attr("json", '{"type": "event", "eventName": "switchNumber", "source": {"iid": "X", "type": "empty"}, "eventValue": "1", "iid": "X", "phrase": "le bouton haut est clique"}');
+          var v = {"type": "event", "eventName": "switchNumber", "source": {"iid": "X", "type": "empty"}, "eventValue": "1", "iid": "X", "phrase": "le bouton haut est clique"};
+          $(btn).attr("json", JSON.stringify(v));
           break;
         case "switchBottom":
           $(btn).append("<span>Le bouton du bas est clique<span>");
-          $(btn).attr("json", '{"type": "event", "eventName": "switchNumber", "source": {"iid": "X", "type": "empty"}, "eventValue": "1", "iid": "X", "phrase": "le bouton bas est clique"}');
+          var v = {"type": "event", "eventName": "switchNumber", "source": {"iid": "X", "type": "empty"}, "eventValue": "1", "iid": "X", "phrase": "le bouton bas est clique"};
+          $(btn).attr("json", JSON.stringify(v));
           break;
         default:
           console.error("unexpected event found for SwitchSensor: " + evt);

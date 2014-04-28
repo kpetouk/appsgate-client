@@ -1,14 +1,20 @@
-
-<button class="btn btn-prog btn-prog-inst" id="<%= node.iid %>">
+<button class="btn btn-prog btn-primary" id="<%= node.iid %>">
     <span>si</span>
 </button> 
 <%=engine.buildInputFromNode(node.expBool) %>
+<div class="row indent-level-1">
+
 alors
 {
 <%=engine.buildInputFromNode(node.seqRulesTrue) %>
 }
+</div>
+<div class="row indent-level-1">
 sinon
 {
 <%=engine.buildInputFromNode(node.seqRulesFalse) %>
 }
-
+<<<<<<< HEAD
+=======
+</div>
+>>>>>>> FETCH_HEAD

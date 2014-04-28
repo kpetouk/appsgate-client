@@ -14,7 +14,8 @@ define([
             "click .btn-keyboard": "onClickKeyboard",
             "click .btn-prog": "onClickProg",
             "click #end-edit-button": "onClickEndEdit",
-            "change .lamp-color-picker": "onChangeLampColorNode"
+            "change .lamp-color-picker": "onChangeLampColorNode",
+            "change .number-input": "onChangeNumberValue"
         },
         /**
          * @constructor
@@ -55,6 +56,11 @@ define([
             this.Mediator.setNodeAttribute(iid, "methodName", value);
           //console.log(e);  
         },
+        onChangeNumberValue: function(e) {
+            e.stopPropagation();
+            var iid = $(e.currentTarget).attr("target-id");
+            var value = e.currentTarget.value;
+            this.Mediator.setNodeAttribute(iid, "value", value);        },
         /**
          * Render the editor view
          */

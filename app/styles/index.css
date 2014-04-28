@@ -481,17 +481,14 @@ div {
 }
 
 .btn-prog-action {
-    background:orange !important;
+    background:#FFCC66 !important;
 }
 
 .btn-prog-device {
     color:white;
-    background: blueviolet !important;
+    background: #9999FF !important;
 }
 
-.btn-prog-inst {
-    background: turquoise !important;
-}
 .btn-backspace {
     position:absolute;
     right:10px;

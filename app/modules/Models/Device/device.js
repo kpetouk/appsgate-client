@@ -101,11 +101,24 @@ define([
             return [];
         },
         /**
-         * return the keyboard code for a given event
+         * return the keyboard code for a given state
         */
-        getKeyboardForState: function(evt){
-            console.error("No event has been defined for this device.");
+        getKeyboardForState: function(state){
+            console.error("No state has been defined for this device.");
             return "";
+        },
+        /**
+         * return the list of available device states
+         */
+        getDeviceStates: function() {
+            return [];
+        },
+        /**
+         * return the keyboard code for a given state
+        */
+        getKeyboardForDeviceState: function(state) {
+          console.error("No device state has been defined for this device.");
+          return "";
         },
         /**
          * default method to build a button with its name as the name of the button
