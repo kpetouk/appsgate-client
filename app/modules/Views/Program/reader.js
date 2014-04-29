@@ -112,6 +112,7 @@ define([
                 
                 // setting selects in read mode
                 $('select').prop('disabled', true);
+                $('.editorWorkspace :input').prop('disabled', true);
 
                 // fix the programs list size to be able to scroll through it
                 this.resizeDiv($(self.$el.find(".editorWorkspace")[0]), true);

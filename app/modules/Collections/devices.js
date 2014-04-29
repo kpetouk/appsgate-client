@@ -29,7 +29,9 @@ define([
             // listen to the event when the list of devices is received
             dispatcher.on("listDevices", function(devices) {
                 _.each(devices, function(device) {
-                    self.addDevice(device);
+                    if (device) {
+                        self.addDevice(device);
+                    }
                 });
                 dispatcher.trigger("devicesReady");
             });
@@ -42,14 +44,6 @@ define([
             dispatcher.on("removeDevice", function(deviceId) {
                 var device = devices.findWhere({id: deviceId});
                 devices.remove(device);
-
-                console.log(device);
-
-                // update the grammar to take the new program in consideration
-                /*if (typeof window.grammar !== "undefined") {
-                    delete window.grammar;
-                }
-                window.grammar = new Grammar();*/
             });
 
             // send the request to fetch the devices
