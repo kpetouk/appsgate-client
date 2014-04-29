@@ -506,7 +506,11 @@ define([
             return input;
         },
         buildInputFromJSON: function() {
-            this.checkProgramAndBuildKeyboard();
+            if (this.checkProgramAndBuildKeyboard()) {
+                this.isValid = true;
+            } else {
+                this.isValid = false;
+            }
             $(".programInput").html(this.buildInputFromNode(this.programJSON));
 
             if (this.currentNode === -1 && this.lastAddedNode !== null) {
@@ -528,6 +532,7 @@ define([
             var n = this.Grammar.parse(this.programJSON, this.currentNode);
             if (n == null) {
                 console.log("Program is correct");
+                return true;
             } else if (n.expected[0] === "ID") {
                 this.resetProgramJSON();
                 this.checkProgramAndBuildKeyboard();
@@ -538,7 +543,9 @@ define([
                 }
                 this.buildKeyboard(n.expected);
             }
-        }
+            return false;
+        },
+        
     });
     return ProgramMediator;
 });
