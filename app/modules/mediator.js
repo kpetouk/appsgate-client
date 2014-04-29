@@ -6,7 +6,8 @@ define([
     "text!templates/program/nodes/ifNode.html",
     "text!templates/program/nodes/whenNode.html",
     "text!templates/program/nodes/deviceNode.html",
-    "text!templates/program/nodes/eventNode.html",
+    "text!templates/program/nodes/defaultEventNode.html",
+    "text!templates/program/nodes/clockEventNode.html",
     "text!templates/program/nodes/stateNode.html",
     "text!templates/program/nodes/keepStateNode.html",
     "text!templates/program/nodes/whileNode.html",
@@ -15,7 +16,7 @@ define([
     "text!templates/program/nodes/comparatorNode.html",
     "text!templates/program/nodes/numberNode.html",
     "text!templates/program/nodes/waitNode.html"
-], function(App, Grammar, defaultActionTemplate, lampActionTemplate, ifNodeTemplate, whenNodeTemplate, deviceNodeTemplate, eventNodeTemplate, stateNodeTemplate, keepStateNodeTemplate, whileNodeTemplate, whitespaceNodeTemplate, booleanExpressionNodeTemplate, comparatorNodeTemplate, numberNodeTemplate, waitNodeTemplate) {
+], function(App, Grammar, defaultActionTemplate, lampActionTemplate, ifNodeTemplate, whenNodeTemplate, deviceNodeTemplate, defaultEventNodeTemplate, clockEventNodeTemplate, stateNodeTemplate, keepStateNodeTemplate, whileNodeTemplate, whitespaceNodeTemplate, booleanExpressionNodeTemplate, comparatorNodeTemplate, numberNodeTemplate, waitNodeTemplate) {
 
     var ProgramMediator = {};
     // router
@@ -25,7 +26,8 @@ define([
         tplIfNode: _.template(ifNodeTemplate),
         tplWhenNode: _.template(whenNodeTemplate),
         tplDeviceNode: _.template(deviceNodeTemplate),
-        tplEventNode: _.template(eventNodeTemplate),
+        tplEventNode: _.template(defaultEventNodeTemplate),
+        tplClockEventNode: _.template(clockEventNodeTemplate),
         tplStateNode: _.template(stateNodeTemplate),
         tplKeepStateNode: _.template(keepStateNodeTemplate),
         tplWhileNode: _.template(whileNodeTemplate),
@@ -224,28 +226,28 @@ define([
                 "expBool": {
                     "type": "empty",
                     "iid": "X"
-                    },
+                },
                 "seqRulesTrue": {
                     "type": "seqRules",
                     "iid": "X",
-                    "rules" : [
-                               {
-                                "type":"empty",
-                                "iid":"X"
-                                }
-                                ]
-                    },
+                    "rules": [
+                        {
+                            "type": "empty",
+                            "iid": "X"
+                        }
+                    ]
+                },
                 "seqRulesFalse": {
                     "type": "seqRules",
                     "iid": "X",
-                    "rules" : [
-                               {
-                                "type":"empty",
-                                "iid":"X"
-                                }
-                                ]
-                    }
-                };
+                    "rules": [
+                        {
+                            "type": "empty",
+                            "iid": "X"
+                        }
+                    ]
+                }
+            };
         },
         getEmptyJSON: function(type) {
             return {"type": "empty", "iid": "X"};
@@ -300,8 +302,8 @@ define([
             }
         },
         buildBooleanKeys: function() {
-            var v = {"type":"boolean", "value" : "true", "iid":"X"};
-            var f = {"type":"boolean", "value" : "false", "iid":"X"};
+            var v = {"type": "boolean", "value": "true", "iid": "X"};
+            var f = {"type": "boolean", "value": "false", "iid": "X"};
             var btn_v = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' >Vrai</button>");
             var btn_f = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' >Faux</button>");
             $(btn_v).attr("json", JSON.stringify(v));
@@ -320,7 +322,7 @@ define([
         buildBooleanExpressionKeys: function() {
 
             var btnAnd = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span data-i18n='language.if-and'/></button>");
-            var v = {"type": "booleanExpression", "iid": "X", "operator":"&&", "leftOperand": {"iid": "X", "type": "mandatory"}, "rightOperand": {"iid": "X", "type": "mandatory"}};
+            var v = {"type": "booleanExpression", "iid": "X", "operator": "&&", "leftOperand": {"iid": "X", "type": "mandatory"}, "rightOperand": {"iid": "X", "type": "mandatory"}};
             $(btnAnd).attr("json", JSON.stringify(v));
             $(".expected-elements").append(btnAnd);
 
@@ -328,19 +330,19 @@ define([
         buildComparatorKeys: function() {
 
             var btnEq = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span data-i18n='language.if-equals'/></button>");
-            var v = {"type": "comparator", "iid": "X", "comparator":"==", "leftOperand": {"iid": "X", "type": "mandatory"}, "rightOperand": {"iid": "X", "type": "mandatory"}};
+            var v = {"type": "comparator", "iid": "X", "comparator": "==", "leftOperand": {"iid": "X", "type": "mandatory"}, "rightOperand": {"iid": "X", "type": "mandatory"}};
             $(btnEq).attr("json", JSON.stringify(v));
             $(".expected-elements").append(btnEq);
             var btnSup = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span data-i18n='language.if-sup'/></button>");
-            var v = {"type": "comparator", "iid": "X", "comparator":">", "leftOperand": {"iid": "X", "type": "mandatory"}, "rightOperand": {"iid": "X", "type": "mandatory"}};
+            var v = {"type": "comparator", "iid": "X", "comparator": ">", "leftOperand": {"iid": "X", "type": "mandatory"}, "rightOperand": {"iid": "X", "type": "mandatory"}};
             $(btnSup).attr("json", JSON.stringify(v));
             $(".expected-elements").append(btnSup);
             var btnInf = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span data-i18n='language.if-inf'/></button>");
-            var v = {"type": "comparator", "iid": "X", "comparator":"<", "leftOperand": {"iid": "X", "type": "mandatory"}, "rightOperand": {"iid": "X", "type": "mandatory"}};
+            var v = {"type": "comparator", "iid": "X", "comparator": "<", "leftOperand": {"iid": "X", "type": "mandatory"}, "rightOperand": {"iid": "X", "type": "mandatory"}};
             $(btnInf).attr("json", JSON.stringify(v));
             $(".expected-elements").append(btnInf);
             var btnDiff = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span data-i18n='language.if-dif'/></button>");
-            var v = {"type": "comparator", "iid": "X", "comparator":"!=", "leftOperand": {"iid": "X", "type": "mandatory"}, "rightOperand": {"iid": "X", "type": "mandatory"}};
+            var v = {"type": "comparator", "iid": "X", "comparator": "!=", "leftOperand": {"iid": "X", "type": "mandatory"}, "rightOperand": {"iid": "X", "type": "mandatory"}};
             $(btnDiff).attr("json", JSON.stringify(v));
             $(".expected-elements").append(btnDiff);
 
@@ -441,6 +443,30 @@ define([
             return result;
 
         },
+        buildEventNode: function(param) {
+            var result = "";
+            if (param.node.eventName === "ClockAlarm") {
+                var hours = [];
+                for (var i = 0; i < 24; i++) {
+                    hours.push(i);
+                }
+
+                var minutes = [];
+                for (i = 0; i < 60; i++) {
+                    minutes.push(i);
+                }
+
+                var time = moment(parseInt(param.node.eventValue));
+
+                var selectedHour = time.hour();
+                var selectedMinute = time.minute();
+                result = this.tplClockEventNode({"node": param.node, "hours": hours, "minutes": minutes, "selectedHour": selectedHour, "selectedMinute": selectedMinute});
+            }
+            else {
+                result = this.tplEventNode(param);
+            }
+            return result;
+        },
         buildInputFromNode: function(jsonNode) {
             var self = this;
 
@@ -469,7 +495,7 @@ define([
                     input = this.tplDeviceNode(param);
                     break;
                 case "event":
-                    input = this.tplEventNode(param);
+                    input = this.buildEventNode(param);
                     break;
                 case "state":
                 case "deviceState":
@@ -517,13 +543,13 @@ define([
                 var nextInput = $("#" + this.lastAddedNode.iid).parent().nextAll(".input-spot");
                 this.setCursorAndBuildKeyboard(parseInt(nextInput.first().attr("id")));
             }
-            
+
             // if no input point is chosen at this point, we select the last empty element
-            if($(".expected-elements").children().length === 0) {
+            if ($(".expected-elements").children().length === 0) {
                 var lastInputPoint = $(".programInput").children(".input-spot").last();
                 this.setCursorAndBuildKeyboard(parseInt(lastInputPoint.attr("id")));
             }
-            
+
             appRouter.currentMenuView.$el.i18n();
         },
         checkProgramAndBuildKeyboard: function(programJSON) {

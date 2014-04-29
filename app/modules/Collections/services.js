@@ -21,8 +21,10 @@ define([
 
             // listen to the event when the list of devices is received
             dispatcher.on("listDevices", function(devices) {
-                _.each(devices, function(device) {
-                    self.addService(device);
+                _.each(devices, function(service) {
+                    if (service) {
+                        self.addService(service);
+                    }
                 });
                 dispatcher.trigger("servicesReady");
             });
