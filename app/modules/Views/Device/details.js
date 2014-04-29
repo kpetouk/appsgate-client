@@ -102,7 +102,7 @@ define([
             e.preventDefault();
             var lamp = devices.get($(e.currentTarget).attr("id"));
             // send the message to the backend
-            lamp.remoteCall("blink", []);
+            lamp.remoteControl("blink", []);
 
             return false;
         },
