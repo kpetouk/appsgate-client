@@ -11,19 +11,17 @@ define([
     ProgramEditorView = Backbone.View.extend({
         tplEditor: _.template(programEditorTemplate),
         events: {
-            "click .btn-keyboard": "onClickKeyboard",
-            "click .btn-prog": "onClickProg",
+            "mouseup .btn-keyboard": "onClickKeyboard",
+            "mouseup .btn-prog": "onClickProg",
             "click #end-edit-button": "onClickEndEdit",
             "change .lamp-color-picker": "onChangeLampColorNode",
-            "change .number-input": "onChangeNumberValue"
+            "change .number-input": "onChangeNumberValue",
+            "change .hour-picker, .minute-picker": "onChangeClockValue"
         },
         /**
          * @constructor
          */
         initialize: function() {
-            /*if (typeof this.model !== "undefined") {
-             this.userInputSource = this.model.get("name") + " " + $.i18n.t("language.written-by") + " Bob pour Alice ";
-             }*/
             this.Mediator = new Mediator();
             this.Mediator.loadProgramJSON(this.model.get("body"));
 
@@ -54,13 +52,39 @@ define([
             var iid = $(e.currentTarget).attr("target-id");
             var value = e.currentTarget.selectedOptions[0].value;
             this.Mediator.setNodeAttribute(iid, "methodName", value);
-          //console.log(e);  
+            
+            // clearing selection 
+            this.resetSelection();
         },
         onChangeNumberValue: function(e) {
             e.stopPropagation();
             var iid = $(e.currentTarget).attr("target-id");
             var value = e.currentTarget.value;
-            this.Mediator.setNodeAttribute(iid, "value", value);        },
+            this.Mediator.setNodeAttribute(iid, "value", value);        
+            
+            // clearing selection 
+            this.resetSelection();
+        },
+        onChangeClockValue: function(e) {
+            e.stopPropagation();
+            
+            var iid = $(e.currentTarget).attr("target-id");
+            
+            var debugH = $("#clock-hour-"+iid);
+            var debugM = $("#clock-minute-"+iid);
+            var hourValue = $("#clock-hour-"+iid)[0].selectedOptions[0].value;
+            var minuteValue = $("#clock-minute-"+iid)[0].selectedOptions[0].value;
+            
+            this.Mediator.setNodeAttribute(iid, "eventValue", devices.getCoreClock().getClockAlarm(hourValue,minuteValue));
+            
+            // clearing selection 
+            this.resetSelection();
+        },
+        resetSelection:function() {
+            $(".expected-elements").html("");
+            this.Mediator.setCurrentPos(-1);
+            this.Mediator.buildInputFromJSON();
+        },
         /**
          * Render the editor view
          */
@@ -74,15 +98,10 @@ define([
             }));
 
             if (this.model) {
-
-
                 this.Mediator.buildInputFromJSON();
-
-                //this.Mediator.buildActionKeys();
 
                 // fix the programs list size to be able to scroll through it
                 this.resizeDiv($(self.$el.find(".editorWorkspace")[0]), true);
-
             }
             // translate the view
             this.$el.i18n();
