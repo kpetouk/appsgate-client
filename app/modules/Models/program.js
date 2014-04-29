@@ -73,20 +73,6 @@ define([
                     this.remoteCall("removeProgram", [{type: "String", value: model.get("id")}]);
                     break;
                 case "update":
-                    
-                    if (model.changedAttributes()) {
-                        _.keys(model.changedAttributes()).forEach(function(attribute) {
-                            if (attribute === "runningState") {
-                                if (model.get("runningState") === "DEPLOYED") {
-                                    model.remoteCall("stopProgram", [{type: "String", value: model.get("id")}]);
-                                }
-                                if (model.get("runningState") === "PROCESSING") {
-                                    model.remoteCall("callProgram", [{type: "String", value: model.get("id")}]);
-                                    return;
-                                }
-                            } 
-                        });
-                    } 
                     model.remoteCall("updateProgram", [{type: "JSONObject", value: model.toJSON()}]);
                     break;
             }
