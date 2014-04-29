@@ -13,8 +13,9 @@ define([
     "text!templates/program/nodes/whitespaceNode.html",
     "text!templates/program/nodes/booleanExpressionNode.html",
     "text!templates/program/nodes/comparatorNode.html",
-    "text!templates/program/nodes/numberNode.html"
-], function(App, Grammar, defaultActionTemplate, lampActionTemplate, ifNodeTemplate, whenNodeTemplate, deviceNodeTemplate, eventNodeTemplate, stateNodeTemplate, keepStateNodeTemplate, whileNodeTemplate, whitespaceNodeTemplate, booleanExpressionNodeTemplate, comparatorNodeTemplate, numberNodeTemplate) {
+    "text!templates/program/nodes/numberNode.html",
+    "text!templates/program/nodes/waitNode.html"
+], function(App, Grammar, defaultActionTemplate, lampActionTemplate, ifNodeTemplate, whenNodeTemplate, deviceNodeTemplate, eventNodeTemplate, stateNodeTemplate, keepStateNodeTemplate, whileNodeTemplate, whitespaceNodeTemplate, booleanExpressionNodeTemplate, comparatorNodeTemplate, numberNodeTemplate, waitNodeTemplate) {
 
     var ProgramMediator = {};
     // router
@@ -32,6 +33,7 @@ define([
         tplBooleanExpressionNode: _.template(booleanExpressionNodeTemplate),
         tplComparatorNode: _.template(comparatorNodeTemplate),
         tplNumberNode: _.template(numberNodeTemplate),
+        tplWaitNode: _.template(waitNodeTemplate),
         initialize: function() {
             this.resetProgramJSON();
             this.currentNode = 1;
@@ -343,6 +345,13 @@ define([
             $(".expected-elements").append(btnDiff);
 
         },
+        buildWaitKey: function() {
+            var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span data-i18n='language.wait'/></button>");
+            var v = {"type": "wait", "iid": "X", "waitFor": {"iid": "X", "type": "number", "value":"10"}};
+            $(btn).attr("json", JSON.stringify(v));
+            $(".expected-elements").append(btn);
+
+        },
         buildKeyboard: function(nodes) {
             $(".expected-elements").html("");
 
@@ -398,6 +407,9 @@ define([
                             break;
                         case '"number"':
                             $(".expected-elements").append("<button class='btn btn-default btn-keyboard number-node'><span>valeur<span></button>");
+                            break;
+                        case '"wait"':
+                            this.buildWaitKey();
                             break;
 
                         default:
@@ -483,6 +495,9 @@ define([
                     break;
                 case "number":
                     input = this.tplNumberNode(param);
+                    break;
+                case "wait":
+                    input = this.tplWaitNode(param);
                     break;
                 default:
                     input = "<button class='btn btn-prog btn-primary' id='" + jsonNode.iid + "'><span>" + jsonNode.type + "</span></button>";

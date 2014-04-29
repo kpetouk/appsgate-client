@@ -11,7 +11,7 @@ BLOC = SEQ
 
 INSTS  = _ (INST _)+ / "(" INSTS ")"
 
-INST  = IF / WHEN / WHILE / ACTION / EMPTY / WHILE_KEEP
+INST  = IF / WHEN / WHILE / ACTION / EMPTY / WAIT
 
 IF  = ID "if" _ "(" BOOLEAN ")" _ "(" _ BLOC _ ")" _ "(" _ BLOC _ ")"
     / ID "if" _ "(" BOOLEAN ")" _ "(" _ BLOC _ ")" 
@@ -21,9 +21,9 @@ IF  = ID "if" _ "(" BOOLEAN ")" _ "(" _ BLOC _ ")" _ "(" _ BLOC _ ")"
 
 WHEN  = ID "when" _ "(" _ EVT _ ")" _ "(" _ BLOC _")"
 
-WHILE  = ID "while" _ "(" _ STATE _ ")" _ "(" _ BLOC _ ")" _ "(" _ BLOC _ ")"
+WHILE  = ID "while" _ "(" _ STATE _ ")" _ "(" _ BLOC_KEEP _ ")" _ "(" _ BLOC _ ")"
 
-WHILE_KEEP = ID "while" _ "(" _ STATE _ ")" _ "(" _ KEEP _ ")" 
+BLOC_KEEP = ID "seqRules" _ "[" _ (KEEP _)+ "]"
 
 EVENTS  = ID "eventsSequence" _ "[" _ EVENTLIST _ "]"
         / ID "eventsAnd" _ "[" _ EVENTLIST _ "]"
@@ -34,6 +34,7 @@ EVENTLIST = (EVENTS _)+
 
 EVT  = ID "event" _ "(" _ TARGET _ ")"
 
+WAIT = ID "wait" _ "(" _ NUMERIC_VALUE _ ")"
 
 /**
  * BOOLEAN expression can manipulate number also, which is not "logical".
