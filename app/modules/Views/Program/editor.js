@@ -29,6 +29,11 @@ define([
         onClickEndEdit: function(e) {
             this.model.set("body", this.Mediator.programJSON);
             this.model.set("modified", false);
+            if (this.Mediator.isValid) {
+                this.model.set("runningState", "DEPLOYED");
+            } else {
+                this.model.set("runningState", "INVALID");
+            }
             this.model.save();
             appRouter.navigate("#programs/" + this.model.get("id"), {trigger: true});
             this.undelegateEvents();

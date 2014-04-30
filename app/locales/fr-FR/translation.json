@@ -181,7 +181,11 @@
             "value": {
                 "opened": "Ouvert",
                 "closed": "Fermé"
-            }
+            },
+            "event": {
+                "opened": "on ouvre",
+                "closed": "on ferme"
+            }            
         },
         "keycard-reader": {
             "name": {

@@ -34,10 +34,12 @@ define([
             var program = programs.get($(e.currentTarget).attr("id"));
 
             // change its running state
-            program.set("runningState", "PROCESSING");
+//            program.set("runningState", "PROCESSING");
 
             // send modification to the backend
-            program.save();
+//            program.save();
+            program.set("runningState", "PROCESSING");
+            program.remoteCall("callProgram", [{type: "String", value: program.get("id")}]);
 
             // refresh the menu
             this.render();
@@ -56,11 +58,12 @@ define([
             var program = programs.get($(e.currentTarget).attr("id"));
 
             // change its running state
-            program.set("runningState", "DEPLOYED");
+//            
 
             // send modification to the backend
-            program.save();
-
+//            program.save();
+            program.set("runningState", "DEPLOYED");
+            program.remoteCall("stopProgram", [{type: "String", value: program.get("id")}]);
             // refresh the menu
             this.render();
 
