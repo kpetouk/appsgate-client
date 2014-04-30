@@ -126,7 +126,7 @@ define([
       var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
       switch(evt) {
         case "ClockAlarm":
-          $(btn).append("<span data-i18n='language.clock-event'><span>");
+          $(btn).append("<span data-i18n='keyboard.clock-event'><span>");
           o = {'type': 'event', 'eventName': 'ClockAlarm', 'source': {'type': 'device', 'value':this.get("id"), 'iid':'X'}, 'eventValue': this.getClockAlarm(11,0), 'iid': 'X', 'phrase': $.i18n.t("language.clock-event")};
           $(btn).attr("json", JSON.stringify(o));
           break;

@@ -302,8 +302,8 @@ define([
         buildBooleanKeys: function() {
             var v = {"type": "boolean", "value": "true", "iid": "X"};
             var f = {"type": "boolean", "value": "false", "iid": "X"};
-            var btn_v = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' >Vrai</button>");
-            var btn_f = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' >Faux</button>");
+            var btn_v = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span data-i18n='keyboard.true'/></button>");
+            var btn_f = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span data-i18n='keyboard.false'/></button>");
             $(btn_v).attr("json", JSON.stringify(v));
             $(btn_f).attr("json", JSON.stringify(f));
             $(".expected-elements").append(btn_v);
@@ -352,7 +352,7 @@ define([
                 for (t in nodes) {
                     switch (nodes[t]) {
                         case '"if"':
-                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard if-node'><span data-i18n='language.if-keyword'><span></button>");
+                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard if-node'><span data-i18n='keyboard.if-keyword'><span></button>");
                             break;
                         case '"comparator"':
                             this.buildComparatorKeys();
@@ -361,11 +361,11 @@ define([
                             this.buildBooleanExpressionKeys();
                             break;
                         case '"when"':
-                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard when-node'><span data-i18n='language.when-keyword'><span></button>");
+                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard when-node'><span data-i18n='keyboard.when-keyword'><span></button>");
                             break;
                         case '"while"':
-                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard while-node'><span data-i18n='language.while-keyword'><span></button>");
-                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard whileKeep-node'><span data-i18n='language.while-keep'><span></button>");
+                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard while-node'><span data-i18n='keyboard.while-keyword'><span></button>");
+                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard whileKeep-node'><span data-i18n='keyboard.while-keep'><span></button>");
                             break;
                         case '"state"':
                             this.buildStateKeys();
@@ -375,7 +375,7 @@ define([
                         case '"setOfRules"':
                             break;
                         case '"keepState"':
-                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard keepState-node'><span data-i18n='language.keep-state'><span></button>");
+                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard keepState-node'><span data-i18n='keyboard.keep-state'><span></button>");
                             break;
                         case '"device"':
                             this.buildDevices();
@@ -433,7 +433,7 @@ define([
         },
         buildEventNode: function(param) {
             var result = "";
-            if (param.node.eventName = "ClockAlarm") {
+            if (param.node.eventName === "ClockAlarm") {
                 var hours = [];
                 for (var i = 0; i < 24; i++) {
                     hours.push(i);
@@ -496,11 +496,24 @@ define([
                     input = this.tplKeepStateNode(param);
                     break;
                 case "empty":
-                    input = "<div class='btn btn-default btn-prog input-spot' id='" + jsonNode.iid + "'></div>";
+                    input = "<div class='btn btn-default btn-prog input-spot' id='" + jsonNode.iid + "'><span data-i18n='language.nothing-keyword'/></div>";
                     break;
+                case "mandatory":
+                    input = "<div class='btn btn-default btn-prog input-spot' id='" + jsonNode.iid + "'><span data-i18n='language.mandatory-keyword'/></div>";
+                break;
                 case "seqRules":
+                    jsonNode.rules.forEach(function(rule) {
+                        if(rule !== jsonNode.rules[0]){
+                            input += "<div class='btn btn-default btn-prog btn-primary'><span data-i18n='language.op-then-rule'/></div>"
+                        }
+                        input += self.buildInputFromNode(rule);
+                    });
+                    break;
                 case "setOfRules":
                     jsonNode.rules.forEach(function(rule) {
+                        if(rule !== jsonNode.rules[0]){
+                            input += "<div class='btn btn-default btn-prog btn-primary'><span data-i18n='language.op-and-rule'/></div>"
+                        }
                         input += self.buildInputFromNode(rule);
                     });
                     break;

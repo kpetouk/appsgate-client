@@ -460,15 +460,15 @@ div {
 }
 
 .indent-level-1 {
-    margin-left:30px;
+    margin-left:30px !important;
 }
 
 .indent-level-2 {
-    margin-left:60px;
+    margin-left:60px !important;
 }
 
 .indent-level-3 {
-    margin-left:90px;
+    margin-left:90px !important;
 }
 
 .programInput {

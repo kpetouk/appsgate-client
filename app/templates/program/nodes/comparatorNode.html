@@ -2,13 +2,13 @@
 <%=engine.buildInputFromNode(node.leftOperand) %>
 <button class="btn btn-prog" id="<%= node.iid %>">
 <% switch(node.comparator) {
-	case '==' : %> indique <%
+case '==' : %> <span data-i18n="language.if-equals"></span> <%
 	break;
-	case '>' : %> est superieur a <%
+	case '>' : %> <span data-i18n="language.if-sup"></span> <%
 	break;
-	case '<' : %> est inferieur a <%
+	case '<' : %> <span data-i18n="language.if-inf"></span> <%
 	break;
-	case '!=' : %> est different de <%
+	case '!=' : %> <span data-i18n="language.if-dif"></span> <%
 	break;
 	} %>
 </button>
