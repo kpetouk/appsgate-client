@@ -1,11 +1,9 @@
 <div class="btn btn-default btn-prog btn-prog-action " id="<%= node.iid %>">
-    <span>
         <% if (typeof node.phrase !== 'undefined') { %>
-        <%=node.phrase%>
+            <span data-i18n='<%=node.phrase%>'></span>
         <% } else { %>
         Uknown
         <% } %>
-    </span>
 
     <% if (typeof node.target !== 'undefined') { %>
     <%=engine.buildInputFromNode(node.target) %>

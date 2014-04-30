@@ -127,7 +127,7 @@ define([
       switch(evt) {
         case "ClockAlarm":
           $(btn).append("<span data-i18n='keyboard.clock-event'><span>");
-          o = {'type': 'event', 'eventName': 'ClockAlarm', 'source': {'type': 'device', 'value':this.get("id"), 'iid':'X'}, 'eventValue': this.getClockAlarm(11,0), 'iid': 'X', 'phrase': $.i18n.t("language.clock-event")};
+          o = {'type': 'event', 'eventName': 'ClockAlarm', 'source': {'type': 'device', 'value':this.get("id"), 'iid':'X', 'deviceType':this.get("type")}, 'eventValue': this.getClockAlarm(11,0), 'iid': 'X', 'phrase': "language.clock-event"};
           $(btn).attr("json", JSON.stringify(o));
           break;
         default:

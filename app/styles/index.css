@@ -473,6 +473,8 @@ div {
 
 .programInput {
     height:60%;
+    width: 100%;
+    overflow-y: auto;
 }
 
 .expected-elements {

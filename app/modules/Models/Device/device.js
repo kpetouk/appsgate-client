@@ -127,7 +127,20 @@ define([
             return "<button id='" + this.get("id") + "' class='btn btn-default btn-keyboard device-node'><span>" + this.get("name") + "<span></button>"
         },
 
+        getJSONAction: function (type) {
+            return {"type": "action", "target": {"iid": "X", "type": type, "deviceType":this.get("type")}, "args": [], "iid": "X"};
+        },
         
+        getJSONEvent: function (type) {
+            return {"type": "event",  "source": {"iid": "X", "type": type, "deviceType":this.get("type")}, "iid": "X"};
+        },
+        getJSONState: function (type) {
+            return {"type": "state", "object": {"iid": "X", "type": type, "deviceType":this.get("type")}, "iid": "X"};
+        },
+        getJSONDeviceState: function (type) {
+            return {"type": "deviceState", "iid": "X", "target": {"iid": "X", "type": type, "deviceType":this.get("type")}, "args":[]};
+        },
+
         /**
          * Override its synchronization method to send a notification on the network
          */

@@ -28,15 +28,20 @@ define([
     */
     getKeyboardForEvent: function(evt){
       var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
+      var v = this.getJSONEvent("mandatory");
       switch(evt) {
         case "opened":
           $(btn).append("<span data-i18n='devices.contact.event.opened'/>");
-          var v = {"type": "event", "eventName": "contact", "source": {"iid": "X", "type": "mandatory"}, "eventValue": "false", "iid": "X", "phrase":  "on ouvre" }; // TODO, use internationalization
+          v.eventName = "contact";
+          v.eventValue = "false";
+          v.phrase = "devices.contact.event.opened";
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "closed":
           $(btn).append("<span data-i18n='devices.contact.event.closed'/>");
-          var v = {"type": "event", "eventName": "contact", "source": {"iid": "X", "type": "mandatory"}, "eventValue": "true", "iid": "X", "phrase": "on ferme" }; // TODO, use internationalization
+          v.eventName = "contact";
+          v.eventValue = "true";
+          v.phrase = "devices.contact.event.closed";
           $(btn).attr("json", JSON.stringify(v));
           break;          
         default:
