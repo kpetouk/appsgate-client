@@ -21,7 +21,7 @@ define([
      * return the list of available events
      */
     getEvents: function() {
-      return ["opened",'closed'];
+      return ["opened","closed"];
     },
     /**
      * return the keyboard code for a given event
@@ -46,6 +46,37 @@ define([
       }
       return btn;
     },
+
+        /**
+     * return the list of available states
+     */
+    getStates: function() {
+      return ["opened","closed"];
+    },
+    /**
+     * return the keyboard code for a given state
+    */
+    getKeyboardForState: function(state){
+      var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
+      switch(state) {
+        case "opened":
+          $(btn).append("<span>la porte est ouverte<span>");
+          var v = {"type": "state", "name": "isOpened", "object": {"iid": "X", "type": "mandatory"}, "iid": "X", "phrase": " est ouverte"};
+          $(btn).attr("json", JSON.stringify(v));
+          break;
+        case "closed":
+          $(btn).append("<span>la porte est fermée<span>");
+          var v = {"type": "state", "name": "isOpened", "object": {"iid": "X", "type": "mandatory"}, "iid": "X", "phrase": " est fermée"};
+          $(btn).attr("json", JSON.stringify(v));
+          break;
+        default:
+          console.error("unexpected state found for Contact Sensor: " + state);
+          btn = null;
+          break;
+      }
+      return btn;
+    },
+
     
     
   });
