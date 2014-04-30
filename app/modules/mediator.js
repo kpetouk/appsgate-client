@@ -216,8 +216,9 @@ define([
             return obj;
         },
         getDeviceJSON: function(deviceId) {
-            var deviceName = devices.get(deviceId).get("name");
-            return {"type": "device", "value": deviceId, "name": deviceName, "iid": "X"};
+            var d = devices.get(deviceId);
+            var deviceName = d.get("name");
+            return {"type": "device", "value": deviceId, "name": deviceName, "iid": "X", "deviceType" : d.get("type")};
         },
         getIfJSON: function() {
             return {
@@ -312,11 +313,16 @@ define([
             $(".expected-elements").append(btn_f);
 
         },
-        buildDevices: function() {
+        buildDevicesOfType: function(type) {
             devices.forEach(function(device) {
-                if (device.get("type") != 21) {
+                if (device.get("type") == type) {
                     $(".expected-elements").append(device.buildButtonFromDevice());
                 }
+            });
+        },
+        buildDevices: function() {
+            devices.forEach(function(device) {
+                    $(".expected-elements").append(device.buildButtonFromDevice());
             });
         },
         buildBooleanExpressionKeys: function() {
@@ -390,7 +396,7 @@ define([
                             this.buildDevices();
                             break;
                         case '"variable"':
-                            console.log("variables not supported in the language right now")
+                            //console.log("variables not supported in the language right now")
                             break;
                         case '"action"':
                             this.buildActionKeys();
@@ -415,6 +421,7 @@ define([
                             break;
 
                         default:
+                            this.buildDevicesOfType(nodes[t]);
                             break;
                     }
                 }
@@ -433,7 +440,7 @@ define([
         },
         buildActionNode: function(param) {
             var result = "";
-            if (param.node.deviceType == "7") {
+            if (param.node.target.deviceType == "7") {
                 result = this.tplLampActionNode(param);
             }
             else {

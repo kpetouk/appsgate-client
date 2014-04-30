@@ -57,13 +57,28 @@ KEEP  = ID "keepState" _ "(" _ STATE _ ")"
 
 STATE = ID "state" _ "(" _ TARGET _")"
 
-TARGET = ID "variable" / ID "device" / EMPTY
+TARGET = ID "variable" / ID "device" / EMPTY / MANDATORY
 
 EMPTY = ID "empty"
 
 VALUE = ID "string" / ID "number" / ID "boolean"
 
-ID "ID" = [0-9]+":"
+ID "ID" = d:[0-9]+":"
+{
+ return d.join("");
+}
+
+MANDATORY = i:ID "/" l:NUMBERS "/"
+{
+console.log(i);
+ex = {'message' : l.join(":"), 'expected':l, 'id' : i};
+throw ex;
+}
+
+NUMBERS = d:(number)+
+{
+return d;
+}
 
 /* ===== Whitespace ===== */
 
@@ -74,3 +89,25 @@ _ "whitespace"
 // conventional definition consistent with ECMA-262, 5th ed.
 whitespace
   = [ \t\n\r]
+
+number = int_:int _
+{
+console.log(parseInt(int_));
+  return parseInt(int_);
+}
+
+int
+  = digit19:digit19 digits:digits     { return digit19 + digits;       }
+  / digit:digit
+
+
+
+digits
+  = digits:digit+ { return digits.join(""); }
+
+
+digit
+  = [0-9]
+
+digit19
+  = [1-9]
