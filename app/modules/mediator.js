@@ -119,9 +119,10 @@ define([
 					"iid" : "X",
 					"state" : this.getEmptyJSON("mandatory"),
 					"rules" : {
+                        "type": "keepState",
 						"iid" : "X",
-						"type" : "seqRules",
-						"rules" : [this.getEmptyJSON("mandatory")]
+                        "state": this.getEmptyJSON("mandatory")
+
 					},
 					"rulesThen" : {
 						"iid" : "X",
@@ -129,18 +130,6 @@ define([
 						"rules" : [this.getEmptyJSON("empty")]
 					}
 				};
-			} else if ($(button).hasClass("whileKeep-node")) {
-				n = {
-					"type" : "while",
-					"iid" : "X",
-					"state" : this.getEmptyJSON("mandatory"),
-					"rules" : {
-						"type" : "keepState",
-						"iid" : "X",
-						"state" : this.getEmptyJSON("mandatory")
-					}
-				};
-
 			} else if ($(button).hasClass("clock-node")) {
 				n = this.getEventJSON("ClockAlarm", "il est 7h00", "7h00");
 			} else if ($(button).hasClass("TODO-node")) {
@@ -226,13 +215,10 @@ define([
 			return obj;
 		},
 		getDeviceJSON : function(deviceId) {
-			var deviceName = devices.get(deviceId).get("name");
-			return {
-				"type" : "device",
-				"value" : deviceId,
-				"name" : deviceName,
-				"iid" : "X"
-			};
+            var d = devices.get(deviceId);
+            var deviceName = d.get("name");
+            return {"type": "device", "value": deviceId, "name": deviceName, "iid": "X", "deviceType" : d.get("type")};
+
 		},
 		getIfJSON : function() {
 			return {
@@ -335,13 +321,18 @@ define([
 			$(".expected-elements").append(btn_f);
 
 		},
-		buildDevices : function() {
-			devices.forEach(function(device) {
-				if (device.get("type") != 21) {
-					$(".expected-elements").append(device.buildButtonFromDevice());
-				}
-			});
-		},
+        buildDevicesOfType: function(type) {
+            devices.forEach(function(device) {
+                if (device.get("type") == type) {
+                    $(".expected-elements").append(device.buildButtonFromDevice());
+                }
+            });
+        },
+        buildDevices: function() {
+            devices.forEach(function(device) {
+                    $(".expected-elements").append(device.buildButtonFromDevice());
+            });
+        },
 		buildPrograms : function() {
 			var btnCall = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
 
@@ -507,7 +498,6 @@ define([
 							break;
 						case '"while"':
 							$(".expected-elements").append("<button class='btn btn-default btn-keyboard while-node'><span data-i18n='keyboard.while-keyword'><span></button>");
-							$(".expected-elements").append("<button class='btn btn-default btn-keyboard whileKeep-node'><span data-i18n='keyboard.while-keep'><span></button>");
 							break;
 						case '"state"':
 							this.buildStateKeys();
@@ -551,6 +541,7 @@ define([
 							break;
 
 						default:
+                            this.buildDevicesOfType(nodes[t]);
 							break;
 					}
 				}
