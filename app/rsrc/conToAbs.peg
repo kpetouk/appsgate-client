@@ -57,7 +57,7 @@ KEEP  = ID "keepState" _ "(" _ STATE _ ")"
 
 STATE = ID "state" _ "(" _ TARGET _")"
 
-TARGET = ID "variable" / ID "device" / EMPTY
+TARGET = ID "variable" / ID "device" / ID "programCall" /EMPTY
 
 EMPTY = ID "empty"
 
