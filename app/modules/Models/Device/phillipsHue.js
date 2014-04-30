@@ -30,18 +30,18 @@ define([
       var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
       switch(act) {
         case "switchOn":
-          $(btn).append("<span>Allumer<span>");
-          var v = {"type": "action", "methodName":"setWhite", "target": {"iid": "X", "type": "mandatory", "deviceType":"7"}, "args": [], "iid": "X", "phrase": "Allumer"};
+          $(btn).append("<span data-i18n='keyboard.turn-on-lamp-action'/>");
+          var v = {"type": "action", "methodName":"setWhite", "target": {"iid": "X", "type": "mandatory", "deviceType":"7"}, "args": [], "iid": "X", "phrase": "language.turn-on-lamp-action"};
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "switchOff":
-          $(btn).append("<span>Eteindre<span>");
-          var v = {"type": "action", "methodName":"Off", "target": {"iid": "X", "type": "mandatory", "deviceType":"7"}, "args": [], "iid": "X", "phrase": "Eteindre"};
+          $(btn).append("<span data-i18n='keyboard.turn-off-lamp-action'/>");
+          var v = {"type": "action", "methodName":"Off", "target": {"iid": "X", "type": "mandatory", "deviceType":"7"}, "args": [], "iid": "X", "phrase": "language.turn-off-lamp-action"};
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "blink":
           $(btn).append("<span data-i18n='devices.lamp.action.blink'/>");
-          var v = {"type": "action", "methodName":"blink", "target": {"iid": "X", "type": "mandatory", "deviceType":"7"}, "args": [], "iid": "X", "phrase": "Clignoter"};
+          var v = {"type": "action", "methodName":"blink", "target": {"iid": "X", "type": "mandatory", "deviceType":"7"}, "args": [], "iid": "X", "phrase": "language.blink-lamp-action"};
           $(btn).attr("json", JSON.stringify(v));
           break;          
         default:
@@ -64,13 +64,13 @@ define([
       var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
       switch(evt) {
         case "switchOn":
-          $(btn).append("<span>on allume la lampe<span>");
-          var v = {"type": "event", "eventName": "state", "source": {"iid": "X", "type": "mandatory", "deviceType":"7"}, "eventValue": "true", "iid": "X", "phrase": "on allume "};
+          $(btn).append("<span data-i18n='keyboard.is-turned-on-lamp-event'><span>");
+          var v = {"type": "event", "eventName": "state", "source": {"iid": "X", "type": "mandatory", "deviceType":"7"}, "eventValue": "true", "iid": "X", "phrase": "language.turned-on-lamp-event"};
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "switchOff":
-          $(btn).append("<span>on eteint la lampe<span>");
-          var v = {"type": "event", "eventName": "state", "source": {"iid": "X", "type": "mandatory", "deviceType":"7"}, "eventValue": "false", "iid": "X", "phrase": "on eteint "};
+          $(btn).append("<span data-i18n='keyboard.is-turned-off-lamp-event'><span>");
+          var v = {"type": "event", "eventName": "state", "source": {"iid": "X", "type": "mandatory", "deviceType":"7"}, "eventValue": "false", "iid": "X", "phrase": "language.turned-off-lamp-event"};
           $(btn).attr("json", JSON.stringify(v));
           break;
         default:
@@ -94,13 +94,13 @@ define([
       var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
       switch(state) {
         case "isOn":
-          $(btn).append("<span>La lampe est allumee<span>");
-          var v = {"type": "state", "name": "isOn", "object": {"iid": "X", "type": "mandatory", "deviceType":"7"}, "iid": "X", "phrase": " est allumee"};
+          $(btn).append("<span data-i18n='keyboard.is-turned-on-lamp-state'><span>");
+          var v = {"type": "state", "name": "isOn", "object": {"iid": "X", "type": "mandatory", "deviceType":"7"}, "iid": "X", "phrase": "language.is-turned-on-lamp-status"};
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "isOff":
-          $(btn).append("<span>La lampe est eteinte<span>");
-          var v = {"type": "state", "name": "isOff", "object": {"iid": "X", "type": "mandatory", "deviceType":"7"}, "iid": "X", "phrase": " est eteinte"};
+          $(btn).append("<span data-i18n='keyboard.is-turned-off-lamp-state'><span>");
+          var v = {"type": "state", "name": "isOff", "object": {"iid": "X", "type": "mandatory", "deviceType":"7"}, "iid": "X", "phrase": "language.is-turned-off-lamp-status"};
           $(btn).attr("json", JSON.stringify(v));
           break;
         default:
@@ -125,14 +125,14 @@ define([
       var v = {"type": "deviceState", "iid": "X", "target": {"iid": "X", "type": "mandatory", "deviceType":"7"}, "args":[]};
       switch(state) {
         case "isOn":
-          $(btn).append("<span>La lampe est allumee<span>");
+          $(btn).append("<span data-i18n='keyboard.is-turned-on-lamp-state'><span>");
           v.methodName = "getCurrentState";
           v.returnType = "boolean";
-          v.phrase = " est allumee";
+          v.phrase = "language.is-turned-on-lamp-status";
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "getBrightness":
-          $(btn).append("<span>l'intensite<span>");
+          $(btn).append("<span data-i18n='keyboard.light-brightness'><span>");
           v.methodName = "getLightBrightness";
           v.returnType = "number";
           v.phrase = " brille";
