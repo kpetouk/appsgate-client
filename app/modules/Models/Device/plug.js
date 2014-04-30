@@ -25,24 +25,28 @@ define([
      */
     getKeyboardForAction: function(act){
       var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
+      var v = this.getJSONAction("mandatory");
       switch(act) {
         case "switchOn":
-          $(btn).append("<span>Ouvrir<span>");
-          var v = {"type": "action", "methodName":"on", "target": {"iid": "X", "type": "empty"}, "args": [], "iid": "X", "phrase": "Ouvrir"};
+          $(btn).append("<span data-i18n='devices.plug.action.turnOn'></span>");
+          v.methodName = "on";
+          v.phrase = "devices.plug.action.turnOn";
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "switchOff":
-          $(btn).append("<span>Fermer<span>");
-          var v = {"type": "action", "methodName":"off", "target": {"iid": "X", "type": "empty"}, "args": [], "iid": "X", "phrase": "Fermer"};
+          $(btn).append("<span data-i18n='devices.plug.action.turnOff'></span>");
+          v.methodName = "off";
+          v.phrase = "devices.plug.action.turnOff";
           $(btn).attr("json", JSON.stringify(v));
           break;
         default:
-          console.error("unexpected action found for PhilipsHue: " + act);
+          console.error("unexpected action found for Plug: " + act);
           btn = null;
           break;
       }
       return btn;
     },
+    
 
     /**
      * Send a message to the backend to update the attribute plugState

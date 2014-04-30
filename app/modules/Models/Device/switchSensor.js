@@ -24,22 +24,41 @@ define([
      * return the list of available events
      */
     getEvents: function() {
-      return ["switchUp", "switchBottom"];
+      return ["switchUp", "switchBottom", "switchLeft", "switchRight"];
     },
     /**
      * return the keyboard code for a given event
     */
     getKeyboardForEvent: function(evt){
       var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
+      var v = this.getJSONEvent("mandatory");
       switch(evt) {
         case "switchUp":
-          $(btn).append("<span>Le bouton du haut est clique<span>");
-          var v = {"type": "event", "eventName": "switchNumber", "source": {"iid": "X", "type": "empty"}, "eventValue": "1", "iid": "X", "phrase": "le bouton haut est clique"};
+          $(btn).append("<span data-i18n='language.pushed-switch-event'></span>");
+          v.eventName = "switchNumber";
+          v.eventValue = "1";
+          v.phrase = "language.pushed-telec-event-up";
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "switchBottom":
-          $(btn).append("<span>Le bouton du bas est clique<span>");
-          var v = {"type": "event", "eventName": "switchNumber", "source": {"iid": "X", "type": "empty"}, "eventValue": "1", "iid": "X", "phrase": "le bouton bas est clique"};
+          $(btn).append("<span data-i18n='language.pushed-switch-event'></span>");
+          v.eventName = "switchNumber";
+          v.eventValue = "0";
+          v.phrase = "language.pushed-telec-event-bottom";
+          $(btn).attr("json", JSON.stringify(v));
+          break;
+        case "switchLeft":
+          $(btn).append("<span data-i18n='language.pushed-switch-event'></span>");
+          v.eventName = "buttonStatus";
+          v.eventValue = "false";
+          v.phrase = "language.pushed-telec-event-left";
+          $(btn).attr("json", JSON.stringify(v));
+          break;
+        case "switchRight":
+          $(btn).append("<span data-i18n='language.pushed-switch-event'></span>");
+          v.eventName = "buttonStatus";
+          v.eventValue = "false";
+          v.phrase = "language.pushed-telec-event-right";
           $(btn).attr("json", JSON.stringify(v));
           break;
         default:

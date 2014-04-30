@@ -279,6 +279,11 @@
 		"pushed-switch-event"						: "on appuie sur",
 		"released-switch-event"						: "on relache",
 		
+		"pushed-telec-event-up"						: "on appuie sur le bouton haut de",
+		"pushed-telec-event-bottom"					: "on appuie sur le bouton bas de",
+		"pushed-telec-event-left"					: "on appuie a gauche de",
+		"pushed-telec-event-right"					: "on appuie a droite de",
+		
 		"opened-contact-event"						: "on ouvre",
 		"closed-contact-event"						: "on ferme",
 		"contact-sensor-keyword"					: "le capteur de contact de",

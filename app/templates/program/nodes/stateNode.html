@@ -4,12 +4,10 @@
 <%=engine.buildInputFromNode(node.target) %>
 <% } %>
 <button class="btn btn-prog btn-primary" id="<%= node.iid %>">
-    <span>
         <% if (typeof node.phrase !== 'undefined') { %>
-        <%=node.phrase%>
+            <span data-i18n='<%=node.phrase%>'></span>
     <% } else { %>
-        a un statut...
+        UNKNOWN STATE
     <% } %>
-    </span>
 </button>
 
