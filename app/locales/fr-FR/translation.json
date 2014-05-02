@@ -484,6 +484,10 @@
         "while-keyword": "Tant que",
         "while-keep": "Tant que ... maintenir ...",
         "keep-state": "Maintenir l'état ...",
-        "clock-event": "Il est "
+        "clock-event": "Il est ",
+        "play-media-action": "Jouer un media",
+        "pause-media-action": "Mettre en pause le media",
+        "stop-media-action": "Stopper",
+        "set-volume-media-action": "Mettre le volume"
     }
 }
