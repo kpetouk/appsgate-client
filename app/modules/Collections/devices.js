@@ -18,6 +18,7 @@ define([
     // collection
     Devices = Backbone.Collection.extend({
         model: Device,
+        templates: {},
         /**
          * Fetch the devices from the server
          *
@@ -60,41 +61,47 @@ define([
          */
         addDevice: function(brick) {
             var self = this;
+            var device = null;
             brick.type = parseInt(brick.type);
             switch (brick.type) {
                 case 0:
-                    self.add(new TemperatureSensor(brick));
+                    device = new TemperatureSensor(brick);
                     break;
                 case 1:
-                    self.add(new IlluminationSensor(brick));
+                    device = new IlluminationSensor(brick);
                     break;
                 case 2:
-                    self.add(new SwitchSensor(brick));
+                    device = new SwitchSensor(brick);
                     break;
                 case 3:
-                    self.add(new ContactSensor(brick));
+                    device = new ContactSensor(brick);
                     break;
                 case 4:
-                    self.add(new KeyCardSensor(brick));
+                    device = new KeyCardSensor(brick);
                     break;
                 case 5:
-                    self.add(new ARDLock(brick));
+                    device = new ARDLock(brick);
                     break;
                 case 6:
-                    self.add(new Plug(brick));
+                    device = new Plug(brick);
                     break;
                 case 7:
-                    self.add(new PhillipsHue(brick));
+                    device = new PhillipsHue(brick);
                     break;
                 case 8:
-                    self.add(new Actuator(brick));
+                    device = new Actuator(brick);
                     break;
                 case 21:
-                    self.add(new CoreClock(brick));
+                    device = new CoreClock(brick);
                     break;
                 default:
                     //console.log("unknown type", brick.type, brick);
                     break;
+            }
+            if (device != null) {
+                self.templates[brick.type] = device.getTemplate();
+                self.add(device);
+                //code
             }
             places.get(brick.placeId).get("devices").push(brick.id);
         },
@@ -173,6 +180,11 @@ define([
             return this.filter(function(device) {
                 return device.get("placeId") === "-1";
             });
+        },
+        
+        getTemplateByType: function(type,param) {
+            console.log(param);
+          return this.templates[type](param);  
         },
         /**
          * @return Dictionnary of the devices sorted by their type - key is the type id, value - array of devices corresponding the type

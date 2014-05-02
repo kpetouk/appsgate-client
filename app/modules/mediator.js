@@ -479,6 +479,7 @@ define([
 
 		},
 		buildKeyboard : function(nodes) {
+
 			$(".expected-elements").html("");
 
 			if (nodes != null) {
@@ -560,12 +561,14 @@ define([
 		},
 		buildActionNode : function(param) {
 			var result = "";
+            result = devices.getTemplateByType(param.node.target.deviceType,param);
+            /*
 			if (param.node.target.deviceType == "7") {
 				result = this.tplLampActionNode(param);
 			} else {
 				result = this.tplDefaultActionNode(param);
 			}
-
+            */
 			return result;
 
 		},

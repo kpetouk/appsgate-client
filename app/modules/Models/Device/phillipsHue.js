@@ -1,7 +1,8 @@
 define([
   "app",
-  "models/device/device"
-], function(App, Device) {
+  "models/device/device",
+  "text!templates/program/nodes/lampActionNode.html"
+], function(App, Device, ActionTemplate) {
 
   var PhillipsHue = {};
 
@@ -159,6 +160,11 @@ define([
       }
       return btn;
     },
+    
+    getTemplate: function() {
+      return _.template(ActionTemplate);  
+    },
+
 
     /**
      * Send a message to the backend to update the attribute value

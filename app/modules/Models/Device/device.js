@@ -1,7 +1,9 @@
 define([
     "app",
-    "models/brick"
-], function(App, Brick) {
+    "models/brick",
+    "text!templates/program/nodes/defaultActionNode.html",
+
+], function(App, Brick, ActionTemplate) {
 
     var Device = {};
 
@@ -141,6 +143,9 @@ define([
             return {"type": "deviceState", "iid": "X", "target": {"iid": "X", "type": type, "deviceType":this.get("type")}, "args":[]};
         },
 
+        getTemplate: function() {
+            return _.template(ActionTemplate);  
+        },
         /**
          * Override its synchronization method to send a notification on the network
          */
