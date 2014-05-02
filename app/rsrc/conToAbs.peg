@@ -43,6 +43,7 @@ WAIT = ID "wait" _ "(" _ NUMERIC_VALUE _ ")"
 BOOLEAN  = ID "booleanExpression" _"(" _ BOOLEAN _ ")" _ "(" _ BOOLEAN _ ")"
          / ID "comparator" _"(" _ NUMERIC_VALUE _ ")" _ "(" _ NUMERIC_VALUE _ ")"
          / ID "booleanExpression" _"(" _ BOOLEAN _ ")"
+         / STATE
 
 NUMERIC_VALUE = ID "number"
               / DEVICE_STATE
