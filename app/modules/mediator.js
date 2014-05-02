@@ -336,32 +336,32 @@ define([
 		buildPrograms : function() {
 			var btnCall = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
 
-			$(btnCall).append("<span>Lancer programme</span>");
+			$(btnCall).append("<span data-i18n='language.activate-program-action'/>");
 			var v = {
 				"type" : "action",
 				"methodName" : "callProgram",
 				"target" : {
 					"iid" : "X",
-					"type" : "mandatory"
+					"type" : "programs"
 				},
 				"args" : [],
 				"iid" : "X",
-				"phrase" : "Lancer programme"
+				"phrase" : "language.activate-program-action"
 			};
 			$(btnCall).attr("json", JSON.stringify(v));
 
 			var btnStop = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
-			$(btnStop).append("<span>Arreter programme</span>");
+			$(btnStop).append("<span data-i18n='language.disactivate-program-action'/>");
 			var w = {
 				"type" : "action",
 				"methodName" : "stopProgram",
 				"target" : {
 					"iid" : "X",
-					"type" : "mandatory"
+					"type" : "programs"
 				},
 				"args" : [],
 				"iid" : "X",
-				"phrase" : "Arreter programme"
+				"phrase" : "language.disactivate-program-action"
 			};
 			$(btnStop).attr("json", JSON.stringify(w));
 
@@ -512,7 +512,7 @@ define([
 						case '"device"':
 							this.buildDevices();
 							break;
-						case '"programCall"':
+						case 'programs':
 							this.buildProgramsKeys();
 							break;
 						case '"variable"':
@@ -560,7 +560,7 @@ define([
 		},
 		buildActionNode : function(param) {
 			var result = "";
-			if (param.node.deviceType == "7") {
+			if (param.node.target.deviceType == "7") {
 				result = this.tplLampActionNode(param);
 			} else {
 				result = this.tplDefaultActionNode(param);

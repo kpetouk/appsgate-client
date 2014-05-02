@@ -70,8 +70,12 @@ ID "ID" = d:[0-9]+":"
 
 MANDATORY = i:ID "/" l:NUMBERS "/"
 {
-console.log(i);
 ex = {'message' : l.join(":"), 'expected':l, 'id' : i};
+throw ex;
+}
+         / i:ID "programs"
+{
+ex = {'message' : "missing programs", 'expected':["programs"], 'id' : i};
 throw ex;
 }
 
