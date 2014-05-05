@@ -482,8 +482,20 @@ div {
     height:40%
 }
 
+.btn-primary-ro {
+    color:#428bca !important;
+    background: transparent !important;
+    border: none !important;
+}
+
 .btn-prog-action {
     background:#FFCC66 !important;
+}
+
+.btn-prog-action-ro {
+    color:#FFCC66 !important;
+    background: transparent !important;
+    border: none !important;
 }
 
 .btn-prog-device {
@@ -491,12 +503,43 @@ div {
     background: #9999FF !important;
 }
 
+.btn-prog-device-ro {
+    color: #9999FF !important;
+    background: transparent !important;
+    border: none !important;
+}
+
 .btn-prog-service {
     color:white;
     background: #CC66FF !important;
 }
 
+.btn-prog-service-ro {
+    color: #CC66FF !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+.btn-read-only {
+    color: black;
+    background: transparent;
+    border: none;
+}
+
 .btn-backspace {
     position:absolute;
     right:10px;
+}
+
+.btn-and {
+    margin-left:15px;
+}
+
+.btn-then {
+    margin-letf:15px;
+}
+
+.mandatory-spot{
+    color:transparent;
+    border:2px solid black;
 }
