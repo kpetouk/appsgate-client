@@ -6,9 +6,9 @@
     <% } %>
 
     <% if (node.methodName == "sendMailSimple" ) { %>
-        to: <span target-iid="<%= node.iid %>"><%= node.args[0].value %></span>
-        subject: <span target-iid="<%= node.iid %>"><%= node.args[1].value %></span>
-        body: <span target-iid="<%= node.iid %>"><%= node.args[2].value %></span>
+        a <input type="email" target-id="<%= node.iid %>" value="<%= node.args[0].value %>" class="arg-input" target-index="0"/>
+        dont le sujet est <input type="email" target-id="<%= node.iid %>" value="<%= node.args[1].value %>" class="arg-input" target-index="1"/><br>
+        <textarea target-id="<%= node.iid %>" class="arg-input" target-index="2"><%= node.args[2].value %></textarea>
     <% } %>
 
 </div>

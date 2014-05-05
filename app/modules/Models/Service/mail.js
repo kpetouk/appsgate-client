@@ -34,9 +34,9 @@ define([
         case "sendMail":
           $(btn).append("<span data-i18n='language.send-mail-action'></span>");
           v.methodName = "sendMailSimple";
-          v.args = [ {"type":"string", "value": "jcourtoi@inria.fr"},
-                    {"type":"string", "value": "TestSub"},
-                    {"type":"string", "value": "TestBody"}];
+          v.args = [ {"type":"String", "value": "jcourtoi@inria.fr"},
+                    {"type":"String", "value": "TestSub"},
+                    {"type":"String", "value": "TestBody"}];
           v.phrase = "language.send-mail-action";
           $(btn).attr("json", JSON.stringify(v));
           break;

@@ -197,6 +197,28 @@ define([
             }
             return curNode;
         },
+        
+        
+        /*
+         * set a node attribute
+         */
+        setNodeArg: function(iid, index, value) {
+            this.recursivelySetNodeArg(iid, index, value, this.programJSON);
+        },
+        recursivelySetNodeArg: function(iid, index, value, curNode) {
+            if (parseInt(curNode.iid) === parseInt(iid)) {
+                curNode.args[index] = value;
+            } else {
+                for (var o in curNode) {
+                    if (typeof curNode[o] === "object") {
+                        this.recursivelySetNodeArg(iid, index, value, curNode[o]);
+                    }
+                }
+            }
+        },
+        /*
+         * set a node attribute
+         */
         setNodeAttribute: function(iid, attribute, value) {
             this.recursivelySetNodeAttribute(iid, attribute, value, this.programJSON);
         },
@@ -536,10 +558,10 @@ define([
                             $(".expected-elements").append("<button class='btn btn-default btn-keyboard if-node'><span data-i18n='keyboard.if-keyword'><span></button>");
                             break;
                         case '"comparator"':
-                            this.buildComparatorKeys();
+                            //this.buildComparatorKeys();
                             break;
                         case '"booleanExpression"':
-                            this.buildBooleanExpressionKeys();
+                            //this.buildBooleanExpressionKeys();
                             break;
                         case '"when"':
                             $(".expected-elements").append("<button class='btn btn-default btn-keyboard when-node'><span data-i18n='keyboard.when-keyword'><span></button>");
