@@ -515,6 +515,17 @@ define([
         buildKeyboard: function(ex) {
             $(".expected-elements").html("");
             nodes = ex.expected;
+            // First we treat the devices and services
+            switch (ex.type) {
+                case "device":
+                    this.buildDevicesOfType(nodes[0]);
+                    return;
+                    break;
+                case "service":
+                    this.buildServicesOfType(nodes[0]);
+                    return;
+                    break;
+            }
             if (nodes != null) {
                 for (t in nodes) {
                     switch (nodes[t]) {
@@ -546,7 +557,7 @@ define([
                         case '"device"':
                             this.buildDevices();
                             break;
-                        case '"programCall"':
+                        case 'programs':
                             this.buildProgramsKeys();
                             break;
                         case '"variable"':
@@ -573,14 +584,13 @@ define([
                         case '"wait"':
                             this.buildWaitKey();
                             break;
-
+                        case '"empty"':
+                        case '"programs"':
+                        case 'separator':
+                            // silently escaping
+                            break;
                         default:
-                            if (ex.type == "devices") {
-                            this.buildDevicesOfType(nodes[t]);
-                        } else {
-                            this.buildServicesOfType(nodes[t]);
-                            
-                        }
+                            console.warn("Unsupported type: " + nodes[t]);
                             break;
                     }
                 }
@@ -606,17 +616,10 @@ define([
         },
 		buildActionNode : function(param) {
 			var result = "";
-            result = devices.getTemplateByType(param.node.target.deviceType,param);
-            /*
-			if (param.node.target.deviceType == "7") {
-				result = this.tplLampActionNode(param);
-			} else {
-				result = this.tplDefaultActionNode(param);
-			}
-            */
-			return result;
-
-
+            if (param.node.target.deviceType) {
+                return devices.getTemplateByType(param.node.target.deviceType,param);
+            }
+			return this.tplDefaultActionNode(param);
         },
         buildEventNode: function(param) {
             var result = "";

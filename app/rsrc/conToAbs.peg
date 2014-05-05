@@ -14,10 +14,7 @@ INSTS  = _ (INST _)+ / "(" INSTS ")"
 INST  = IF / WHEN / WHILE / ACTION / EMPTY / WAIT
 
 IF  = ID "if" _ "(" BOOLEAN ")" _ "(" _ BLOC _ ")" _ "(" _ BLOC _ ")"
-    / ID "if" _ "(" BOOLEAN ")" _ "(" _ BLOC _ ")" 
-    / ID "if" _ "(" _ BLOC _ ")"_ "(" BOOLEAN ")" _ "(" _ BLOC _ ")" 
-    / ID "if" _ "(" _ BLOC _ ")"_ "(" BOOLEAN ")"
-    / ID "if" _ "(" _ BLOC _ ")"_ "(" BLOC ")" _ "(" _ BOOLEAN _ ")" 
+    / ID "if" _ "(" BOOLEAN ")" _ "(" _ BLOC _ ")"
 
 WHEN  = ID "when" _ "(" _ EVT _ ")" _ "(" _ BLOC _")"
 
@@ -48,8 +45,7 @@ BOOLEAN  = ID "booleanExpression" _"(" _ BOOLEAN _ ")" _ "(" _ BOOLEAN _ ")"
 NUMERIC_VALUE = ID "number"
               / DEVICE_STATE
 
-ACTION = ID "action" _ "(" _ TARGET _ ")" _ "[" _ "]" 
-       / ID "action" _ "[" _ "]"  _ "(" _ TARGET _ ")"
+ACTION = ID "action" _ "(" _ TARGET _ ")" 
 
 DEVICE_STATE = ID "deviceState" _ "(" _ TARGET _ ")" _ "[" _ "]" 
        / ID "deviceState" _ "[" _ "]"  _ "(" _ TARGET _ ")"
@@ -69,9 +65,9 @@ ID "ID" = d:[0-9]+":"
  return d.join("");
 }
 
-MANDATORY = i:ID "/" l:NUMBERS "/"
+MANDATORY = i:ID DEVICE_SEP l:NUMBERS DEVICE_SEP
 {
-ex = {'message' : l.join(":"), 'expected':l, 'id' : i, 'type':'devices'};
+ex = {'message' : l.join(":"), 'expected':l, 'id' : i, 'type':'device'};
 throw ex;
 }
          / i:ID "programs"
@@ -79,9 +75,9 @@ throw ex;
 ex = {'message' : "missing programs", 'expected':["programs"], 'id' : i};
 throw ex;
 }
-         / i:ID "|" l:NUMBERS "|"
+         / i:ID SERVICE_SEP l:NUMBERS SERVICE_SEP
 {
-ex = {'message' : "services", 'expected':l, 'id' : i, 'type':'services'};
+ex = {'message' : "services", 'expected':l, 'id' : i, 'type':'service'};
 throw ex;
 }
 
@@ -89,6 +85,9 @@ NUMBERS = d:(number)+
 {
 return d;
 }
+
+DEVICE_SEP "separator" = "/"
+SERVICE_SEP "separator" = "|"
 
 /* ===== Whitespace ===== */
 
@@ -102,7 +101,6 @@ whitespace
 
 number = int_:int _
 {
-console.log(parseInt(int_));
   return parseInt(int_);
 }
 
