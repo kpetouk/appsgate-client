@@ -74,6 +74,8 @@ define([
         },
         setCurrentPos: function(id) {
             this.currentNode = id;
+            $(".programInput").find(".selected-node").removeClass(".selected-node");
+            $("#"+parseInt(id)).addClass("selected-node");
         },
         setCursorAndBuildKeyboard: function(id) {
             this.setCurrentPos(id);
