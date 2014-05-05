@@ -1,17 +1,24 @@
-<button class="btn btn-prog btn-primary" id="<%= node.iid %>">
-    <span>si</span>
-</button> 
-<%=engine.buildInputFromNode(node.expBool) %>
-<div class="row indent-level-1">
+<div class="main-block-node">
+    <div class="secondary-block-node">
+        <button class="btn btn-prog btn-primary" id="<%= node.iid %>">
+            <span data-i18n="language.if-keyword"/>
+        </button> 
+        <%=engine.buildInputFromNode(node.expBool) %>
+        <div class="row indent-level-1">
 
-alors
-{
-<%=engine.buildInputFromNode(node.seqRulesTrue) %>
-}
-</div>
-<div class="row indent-level-1">
-sinon
-{
-<%=engine.buildInputFromNode(node.seqRulesFalse) %>
-}
+            <button class="btn btn-prog btn-primary" id="<%= node.iid %>">
+                <span data-i18n="language.then-keyword"/>
+            </button> 
+            <%=engine.buildInputFromNode(node.seqRulesTrue) %>
+        </div>
+    </div>
+    <div class="secondary-block-node">
+        <div class="row">
+            <button class="btn btn-prog btn-primary btn-then" id="<%= node.iid %>">
+                <span data-i18n="language.else-keyword"/>
+            </button> 
+            <%=engine.buildInputFromNode(node.seqRulesFalse) %>
+        </div>
+    </div>
+
 </div>
