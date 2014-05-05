@@ -143,8 +143,11 @@ define([
             return {"type": "deviceState", "iid": "X", "target": {"iid": "X", "type": 'mandatory', "deviceType":this.get("type")}, "args":[]};
         },
 
-        getTemplate: function() {
-            return _.template(ActionTemplate);  
+        /**
+         * @returns the default template action
+         */
+        getTemplateAction: function() {
+            return _.template(ActionTemplate); 
         },
         /**
          * Override its synchronization method to send a notification on the network
