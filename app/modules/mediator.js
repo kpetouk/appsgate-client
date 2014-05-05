@@ -83,7 +83,6 @@ define([
         },
         setCursorAndBuildKeyboard: function(id) {
             this.setCurrentPos(id);
-            console.log(" Set cursor ---------> "+id);
             this.checkProgramAndBuildKeyboard(this.programJSON);
         },
         buttonPressed: function(button) {
