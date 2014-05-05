@@ -1,7 +1,8 @@
 define([
     "app",
-    "models/brick"
-], function(App, Brick) {
+    "models/brick",
+    "text!templates/program/nodes/defaultActionNode.html",
+], function(App, Brick, ActionTemplate) {
 
     var Service = {};
 
@@ -124,6 +125,13 @@ define([
             // send the message
             communicator.sendMessage(messageJSON);
         },
+		/**
+     * @returns the action template specific for lamps
+     */
+    getTemplateAction: function() {
+      return _.template(ActionTemplate);  
+    },
+
     });
     return Service;
 });

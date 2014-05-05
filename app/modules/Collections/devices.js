@@ -99,7 +99,7 @@ define([
                     break;
             }
             if (device != null) {
-                self.templates[brick.type] = device.getTemplate();
+                self.templates[brick.type] = device.getTemplateAction();
                 self.add(device);
                 //code
             }
@@ -181,10 +181,16 @@ define([
                 return device.get("placeId") === "-1";
             });
         },
-        
-        getTemplateByType: function(type,param) {
-            console.log(param);
-          return this.templates[type](param);  
+        /**
+         * @returns the template corresponding to the device
+         */ 
+        getTemplateActionByType: function(type,param) {
+            if (this.templates[type]) {
+                return this.templates[type](param);  
+            } else {
+                console.error("No template is defined for type: " + type);
+            }
+            return "";
         },
         /**
          * @return Dictionnary of the devices sorted by their type - key is the type id, value - array of devices corresponding the type

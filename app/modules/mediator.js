@@ -618,7 +618,10 @@ define([
 		buildActionNode : function(param) {
 			var result = "";
             if (param.node.target.deviceType) {
-                return devices.getTemplateByType(param.node.target.deviceType,param);
+                return devices.getTemplateActionByType(param.node.target.deviceType,param);
+            }
+            if (param.node.target.serviceType) {
+                return services.getTemplateActionByType(param.node.target.serviceType,param);
             }
 			return this.tplDefaultActionNode(param);
         },

@@ -1,7 +1,8 @@
 define([
   "app",
-  "models/service/service"
-], function(App, Service) {
+  "models/service/service",
+  "text!templates/program/nodes/mailActionNode.html"  
+], function(App, Service, ActionTemplate) {
 
   var Mail = {};
 
@@ -28,15 +29,15 @@ define([
     */
     getKeyboardForAction: function(act){
       var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
-      var v = {"type": "action", "target": {"iid": "X", "type": "service", "serviceType":this.get("type"), "value":this.get("id")}, "args": [], "iid": "X"};
+      var v = {"type": "action", "target": {"iid": "X", "type": "service", "serviceType":this.get("type"), "value":this.get("id")}, "iid": "X"};
       switch(act) {
         case "sendMail":
-          $(btn).append("<span data-i18n='languagesend-mail-action'></span>");
+          $(btn).append("<span data-i18n='language.send-mail-action'></span>");
           v.methodName = "sendMailSimple";
           v.args = [ {"type":"string", "value": "jcourtoi@inria.fr"},
                     {"type":"string", "value": "TestSub"},
                     {"type":"string", "value": "TestBody"}];
-          v.phrase = "languagesend-mail-action";
+          v.phrase = "language.send-mail-action";
           $(btn).attr("json", JSON.stringify(v));
           break;
         default:
@@ -45,6 +46,12 @@ define([
           break;
       }
       return btn;
+    },
+    /**
+     * @returns the action template specific for lamps
+     */
+    getTemplateAction: function() {
+      return _.template(ActionTemplate);  
     },
     
   });

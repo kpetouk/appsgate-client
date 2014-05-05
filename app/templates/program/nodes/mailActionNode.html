@@ -1,0 +1,14 @@
+<div class="btn btn-default btn-prog btn-prog-action" id="<%= node.iid %>">
+    <% if (typeof node.phrase !== 'undefined') { %>
+    <span data-i18n='<%=node.phrase%>'></span>
+    <% } else { %>
+    Unknown
+    <% } %>
+
+    <% if (node.methodName == "sendMailSimple" ) { %>
+        to: <span target-iid="<%= node.iid %>"><%= node.args[0].value %></span>
+        subject: <span target-iid="<%= node.iid %>"><%= node.args[1].value %></span>
+        body: <span target-iid="<%= node.iid %>"><%= node.args[2].value %></span>
+    <% } %>
+
+</div>
