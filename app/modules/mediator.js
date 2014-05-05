@@ -224,6 +224,7 @@ define([
             var d = devices.get(deviceId);
             var deviceName = d.get("name");
             return {"type": "device", "value": deviceId, "name": deviceName, "iid": "X", "deviceType": d.get("type")};
+
         }, 
         getServiceJSON: function(serviceId) {
             var s = services.get(serviceId);
@@ -694,12 +695,12 @@ define([
                     input = "<div class='btn btn-default btn-prog input-spot' id='" + jsonNode.iid + "'><span data-i18n='language.nothing-keyword'/></div>";
                     break;
                 case "mandatory":
-                    input = "<div class='btn btn-default btn-prog input-spot' id='" + jsonNode.iid + "'><span data-i18n='language.mandatory-keyword'/></div>";
+                    input = "<div class='btn btn-default btn-prog input-spot mandatory-spot' id='" + jsonNode.iid + "'><span data-i18n='language.mandatory-keyword'/></div>";
                     break;
                 case "seqRules":
                     jsonNode.rules.forEach(function(rule) {
                         if (rule !== jsonNode.rules[0]) {
-                            input += "<div class='row'><div class='btn btn-default btn-prog btn-primary'><span data-i18n='language.op-then-rule'/></div></div>";
+                            input += "<div class='row'><div class='btn btn-default btn-prog btn-then btn-primary'><span data-i18n='language.op-then-rule'/></div></div>";
                         }
                         input += self.buildInputFromNode(rule);
                     });
@@ -707,7 +708,7 @@ define([
                 case "setOfRules":
                     jsonNode.rules.forEach(function(rule) {
                         if (rule !== jsonNode.rules[0]) {
-                            input += "<div class='row'><div class='btn btn-default btn-prog btn-primary'><span data-i18n='language.op-and-rule'/></div></div>";
+                            input += "<div class='row'><div class='btn btn-default btn-prog btn-and btn-primary'><span data-i18n='language.op-and-rule'/></div></div>";
                         }
                         input += self.buildInputFromNode(rule);
                     });
