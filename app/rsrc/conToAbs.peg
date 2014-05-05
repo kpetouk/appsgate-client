@@ -58,7 +58,7 @@ KEEP  = ID "keepState" _ "(" _ STATE _ ")"
 
 STATE = ID "state" _ "(" _ TARGET _")"
 
-TARGET = ID "variable" / ID "device" / ID "programCall" / EMPTY / MANDATORY
+TARGET = ID "variable" / ID "device" / ID "service" / ID "programCall" / EMPTY / MANDATORY
 
 EMPTY = ID "empty"
 
@@ -71,12 +71,17 @@ ID "ID" = d:[0-9]+":"
 
 MANDATORY = i:ID "/" l:NUMBERS "/"
 {
-ex = {'message' : l.join(":"), 'expected':l, 'id' : i};
+ex = {'message' : l.join(":"), 'expected':l, 'id' : i, 'type':'devices'};
 throw ex;
 }
          / i:ID "programs"
 {
 ex = {'message' : "missing programs", 'expected':["programs"], 'id' : i};
+throw ex;
+}
+         / i:ID "|" l:NUMBERS "|"
+{
+ex = {'message' : "services", 'expected':l, 'id' : i, 'type':'services'};
 throw ex;
 }
 

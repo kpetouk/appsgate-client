@@ -28,7 +28,7 @@ define([
     */
     getKeyboardForAction: function(act){
       var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
-      var v = this.getJSONAction("mandatory");
+      var v = {"type": "action", "target": {"iid": "X", "type": "service", "serviceType":this.get("type"), "value":this.get("id")}, "args": [], "iid": "X"};
       switch(act) {
         case "sendMail":
           $(btn).append("<span data-i18n='languagesend-mail-action'></span>");
