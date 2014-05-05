@@ -6,6 +6,7 @@ define([
     require(["peg"]);
 
     var ProgramGrammar = {};
+	var orderedArgs = [ "state", "stateTarget", "expBool", "target", "source", "object", "rules", "events","leftOperand", "rightOperand","seqRulesTrue", "seqRulesFalse", "seqRulesThen", "rulesThen", "left", "right", "what", "where", "devices", "value", "waitFor"];
     ProgramGrammar = Backbone.Model.extend({
         initialize: function() {
             this.grammar = this.build(grammar);
@@ -41,7 +42,6 @@ define([
             }
         },
         tryParse: function(toParse, e) {
-            var id;
             if (e.id) {
                 id = e.id;
             } else {
@@ -50,10 +50,64 @@ define([
                 while (isNaN(id)) {
                     id = id.substr(1);
                 }
+				e.id = id;
             }
-            return {"id": id, "expected": e.expected};
+            return e;
         },
-        parseNode: function(obj, currentNode) {
+		parseNode: function(obj, currentNode) {
+            if (typeof obj == "string") {
+                console.log("String found");
+                console.warn("Select nodes not supported yet.")
+                return "";
+            }
+            var args = "";
+            if (obj.length) {
+                for (var k in obj) {
+                    args += this.parseNode(obj[k], currentNode) + " ";
+                }
+                return args;
+            }
+            if (obj.length == 0) {
+                return "";
+            }
+            var type = obj.iid + ":";
+            if (currentNode == -1) {
+                if (obj.type == "mandatory" && obj.deviceType) {
+                    return type + "/" + obj.deviceType + "/";
+                }
+                if (obj.type == "mandatory" && obj.serviceType) {
+                    return type + "|" + obj.serviceType + "|";
+                }
+            }
+            if (obj.iid == currentNode) {
+                if (obj.deviceType) {
+                    return type + "/" + obj.deviceType + "/";
+                }
+                if (obj.serviceType) {
+                    return type + "|" + obj.serviceType + "|";
+                }
+                if (obj.iid == currentNode && obj.type == "empty") {
+                    return type + "selected";
+                }
+            }
+            if (obj.type) {
+                type += obj.type;
+            }
+
+            for (var i in orderedArgs) {
+				k = orderedArgs[i];
+                if (typeof obj[k] === "object") {
+                    if (obj[k].length != undefined) {
+                        args += "[" + this.parseNode(obj[k], currentNode) + "]";
+                    } else {
+                        args += "(" + this.parseNode(obj[k], currentNode) + ")";
+                    }
+                }
+            }
+            return type + args;
+        },
+
+        parseNodeOld: function(obj, currentNode) {
             if (typeof obj == "string") {
                 console.log("String found");
                 console.warn("Select nodes not supported yet.")

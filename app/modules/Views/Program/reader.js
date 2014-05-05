@@ -90,8 +90,8 @@ define([
             this.$el.html(this.tplEditor({
                 program: this.model
             }));
-            
-            if(this.model){
+
+            if (this.model) {
                 // initialize the popover
                 this.$el.find("#delete-popover").popover({
                     html: true,
@@ -109,24 +109,36 @@ define([
 
                 // try to compile the program to show the potential errors
                 /*if (typeof this.model !== "undefined") {
-                    this.compileProgram();
-                }-*/
+                 this.compileProgram();
+                 }-*/
                 this.Mediator.buildInputFromJSON();
-                
+
                 // setting selects in read mode
                 $('select').prop('disabled', true);
                 $('.editorWorkspace :input').prop('disabled', true);
 
                 // fix the programs list size to be able to scroll through it
                 this.resizeDiv($(self.$el.find(".editorWorkspace")[0]), true);
-                
+
                 $(".programInput").height("auto");
+
+
 
                 // disable start button if there is unsaved changes
                 //$(".start-program-button").prop("disabled", this.model.get("modified"));
             }
             // translate the view
             this.$el.i18n();
+
+
+            $(".programInput").find(".btn").addClass("btn-read-only");
+            $(".programInput").find(".btn-primary").addClass("btn-primary-ro");
+            $(".programInput").find(".btn-prog-action").addClass("btn-prog-action-ro");
+            $(".programInput").find(".btn-prog-device").addClass("btn-prog-device-ro");
+            $(".programInput").find(".btn-prog-service").addClass("btn-prog-service-ro");
+            $(".programInput").find("select").replaceWith(function() {
+                return '<span>' + this.selectedOptions[0].innerHTML + '</span>';
+            });
 
             return this;
         }

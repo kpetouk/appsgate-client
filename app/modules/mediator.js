@@ -224,6 +224,7 @@ define([
             var d = devices.get(deviceId);
             var deviceName = d.get("name");
             return {"type": "device", "value": deviceId, "name": deviceName, "iid": "X", "deviceType": d.get("type")};
+
         }, 
         getServiceJSON: function(serviceId) {
             var s = services.get(serviceId);
@@ -515,6 +516,17 @@ define([
         buildKeyboard: function(ex) {
             $(".expected-elements").html("");
             nodes = ex.expected;
+            // First we treat the devices and services
+            switch (ex.type) {
+                case "device":
+                    this.buildDevicesOfType(nodes[0]);
+                    return;
+                    break;
+                case "service":
+                    this.buildServicesOfType(nodes[0]);
+                    return;
+                    break;
+            }
             if (nodes != null) {
                 for (t in nodes) {
                     switch (nodes[t]) {
@@ -546,7 +558,7 @@ define([
                         case '"device"':
                             this.buildDevices();
                             break;
-                        case '"programCall"':
+                        case 'programs':
                             this.buildProgramsKeys();
                             break;
                         case '"variable"':
@@ -573,14 +585,13 @@ define([
                         case '"wait"':
                             this.buildWaitKey();
                             break;
-
+                        case '"empty"':
+                        case '"programs"':
+                        case 'separator':
+                            // silently escaping
+                            break;
                         default:
-                            if (ex.type == "devices") {
-                            this.buildDevicesOfType(nodes[t]);
-                        } else {
-                            this.buildServicesOfType(nodes[t]);
-                            
-                        }
+                            console.warn("Unsupported type: " + nodes[t]);
                             break;
                     }
                 }
@@ -606,17 +617,10 @@ define([
         },
 		buildActionNode : function(param) {
 			var result = "";
-            result = devices.getTemplateByType(param.node.target.deviceType,param);
-            /*
-			if (param.node.target.deviceType == "7") {
-				result = this.tplLampActionNode(param);
-			} else {
-				result = this.tplDefaultActionNode(param);
-			}
-            */
-			return result;
-
-
+            if (param.node.target.deviceType) {
+                return devices.getTemplateByType(param.node.target.deviceType,param);
+            }
+			return this.tplDefaultActionNode(param);
         },
         buildEventNode: function(param) {
             var result = "";
@@ -694,12 +698,12 @@ define([
                     input = "<div class='btn btn-default btn-prog input-spot' id='" + jsonNode.iid + "'><span data-i18n='language.nothing-keyword'/></div>";
                     break;
                 case "mandatory":
-                    input = "<div class='btn btn-default btn-prog input-spot' id='" + jsonNode.iid + "'><span data-i18n='language.mandatory-keyword'/></div>";
+                    input = "<div class='btn btn-default btn-prog input-spot mandatory-spot' id='" + jsonNode.iid + "'><span data-i18n='language.mandatory-keyword'/></div>";
                     break;
                 case "seqRules":
                     jsonNode.rules.forEach(function(rule) {
                         if (rule !== jsonNode.rules[0]) {
-                            input += "<div class='row'><div class='btn btn-default btn-prog btn-primary'><span data-i18n='language.op-then-rule'/></div></div>";
+                            input += "<div class='row'><div class='btn btn-default btn-prog btn-then btn-primary'><span data-i18n='language.op-then-rule'/></div></div>";
                         }
                         input += self.buildInputFromNode(rule);
                     });
@@ -707,7 +711,7 @@ define([
                 case "setOfRules":
                     jsonNode.rules.forEach(function(rule) {
                         if (rule !== jsonNode.rules[0]) {
-                            input += "<div class='row'><div class='btn btn-default btn-prog btn-primary'><span data-i18n='language.op-and-rule'/></div></div>";
+                            input += "<div class='row'><div class='btn btn-default btn-prog btn-and btn-primary'><span data-i18n='language.op-and-rule'/></div></div>";
                         }
                         input += self.buildInputFromNode(rule);
                     });
