@@ -201,6 +201,28 @@ define([
             }
             return curNode;
         },
+        
+        
+        /*
+         * set a node attribute
+         */
+        setNodeArg: function(iid, index, value) {
+            this.recursivelySetNodeArg(iid, index, value, this.programJSON);
+        },
+        recursivelySetNodeArg: function(iid, index, value, curNode) {
+            if (parseInt(curNode.iid) === parseInt(iid)) {
+                curNode.args[index] = value;
+            } else {
+                for (var o in curNode) {
+                    if (typeof curNode[o] === "object") {
+                        this.recursivelySetNodeArg(iid, index, value, curNode[o]);
+                    }
+                }
+            }
+        },
+        /*
+         * set a node attribute
+         */
         setNodeAttribute: function(iid, attribute, value) {
             this.recursivelySetNodeAttribute(iid, attribute, value, this.programJSON);
         },
@@ -538,10 +560,10 @@ define([
                             $(".expected-links").append("<button class='btn btn-default btn-keyboard if-node'><span data-i18n='keyboard.if-keyword'><span></button>");
                             break;
                         case '"comparator"':
-                            this.buildComparatorKeys();
+                            //this.buildComparatorKeys();
                             break;
                         case '"booleanExpression"':
-                            this.buildBooleanExpressionKeys();
+                            //this.buildBooleanExpressionKeys();
                             break;
                         case '"when"':
                             $(".expected-links").append("<button class='btn btn-default btn-keyboard when-node'><span data-i18n='keyboard.when-keyword'><span></button>");
@@ -622,7 +644,10 @@ define([
         buildActionNode: function(param) {
             var result = "";
             if (param.node.target.deviceType) {
-                return devices.getTemplateByType(param.node.target.deviceType, param);
+                return devices.getTemplateActionByType(param.node.target.deviceType,param);
+            }
+            if (param.node.target.serviceType) {
+                return services.getTemplateActionByType(param.node.target.serviceType,param);
             }
             return this.tplDefaultActionNode(param);
         },
@@ -665,44 +690,47 @@ define([
             var input = "";
             switch (jsonNode.type) {
                 case "action":
-                    input = this.buildActionNode(param);
+                    input+="<div class='btn-current'>";
+                    input += this.buildActionNode(param);
+                    input+="<button class='btn-prog glyphicon glyphicon-trash' id='"+jsonNode.iid+"' style='right:5px;position:absolute;top:0px;'></button></div>";
+
                     break;
                 case "if":
-                    input = this.tplIfNode(param);
+                    input += this.tplIfNode(param);
                     break;
                 case "booleanExpression":
-                    input = this.tplBooleanExpressionNode(param);
+                    input += this.tplBooleanExpressionNode(param);
                     break;
                 case "comparator":
-                    input = this.tplComparatorNode(param);
+                    input += this.tplComparatorNode(param);
                     break;
                 case "when":
-                    input = this.tplWhenNode(param);
+                    input += this.tplWhenNode(param);
                     break;
                 case "device":
-                    input = this.tplDeviceNode(param);
+                    input += this.tplDeviceNode(param);
                     break;
                 case "service":
-                    input = this.tplServiceNode(param);
+                    input += this.tplServiceNode(param);
                     break;
                 case "event":
-                    input = this.buildEventNode(param);
+                    input += this.buildEventNode(param);
                     break;
                 case "state":
                 case "deviceState":
-                    input = this.tplStateNode(param);
+                    input += this.tplStateNode(param);
                     break;
                 case "while":
-                    input = this.tplWhileNode(param);
+                    input += this.tplWhileNode(param);
                     break;
                 case "keepState":
-                    input = this.tplKeepStateNode(param);
+                    input += this.tplKeepStateNode(param);
                     break;
                 case "empty":
-                    input = "<div class='btn btn-default btn-prog input-spot' id='" + jsonNode.iid + "'><span data-i18n='language.nothing-keyword'/></div>";
+                    input += "<div class='btn btn-default btn-prog input-spot' id='" + jsonNode.iid + "'><span data-i18n='language.nothing-keyword'/></div>";
                     break;
                 case "mandatory":
-                    input = "<div class='btn btn-default btn-prog input-spot mandatory-spot' id='" + jsonNode.iid + "'><span data-i18n='language.mandatory-keyword'/></div>";
+                    input += "<div class='btn btn-default btn-prog input-spot mandatory-spot' id='" + jsonNode.iid + "'><span data-i18n='language.mandatory-keyword'/></div>";
                     break;
                 case "seqRules":
                     jsonNode.rules.forEach(function(rule) {
@@ -721,19 +749,19 @@ define([
                     });
                     break;
                 case "boolean":
-                    input = "<button class='btn btn-prog btn-primary' id='" + jsonNode.iid + "'><span>" + jsonNode.value + "</span></button>";
+                    input += "<button class='btn btn-prog btn-primary' id='" + jsonNode.iid + "'><span>" + jsonNode.value + "</span></button>";
                     break;
                 case "number":
-                    input = this.tplNumberNode(param);
+                    input += this.tplNumberNode(param);
                     break;
                 case "wait":
-                    input = this.tplWaitNode(param);
+                    input += this.tplWaitNode(param);
                     break;
                 case "programCall":
-                    input = input = "<button class='btn btn-prog btn-primary' id='" + jsonNode.iid + "'><span>" + jsonNode.name + "</span></button>";
+                    input += "<button class='btn btn-prog btn-primary' id='" + jsonNode.iid + "'><span>" + jsonNode.name + "</span></button>";
                     break;
                 default:
-                    input = "<button class='btn btn-prog btn-primary' id='" + jsonNode.iid + "'><span>" + jsonNode.type + "</span></button>";
+                    input += "<button class='btn btn-prog btn-primary' id='" + jsonNode.iid + "'><span>" + jsonNode.type + "</span></button>";
                     break;
             }
             return input;
@@ -802,3 +830,4 @@ define([
     });
     return ProgramMediator;
 });
+

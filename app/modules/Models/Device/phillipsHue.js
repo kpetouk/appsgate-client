@@ -161,7 +161,10 @@ define([
       return btn;
     },
     
-    getTemplate: function() {
+    /**
+     * @returns the action template specific for lamps
+     */
+    getTemplateAction: function() {
       return _.template(ActionTemplate);  
     },
 

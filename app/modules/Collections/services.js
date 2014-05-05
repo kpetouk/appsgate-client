@@ -11,6 +11,7 @@ define([
     // collection
     Services = Backbone.Collection.extend({
         model: Service,
+        templates: {},
         /**
          * Fetch the devices from the server
          *
@@ -49,19 +50,24 @@ define([
         addService: function(brick) {
             var self = this;
             brick.type = parseInt(brick.type);
+            var service = null;
             switch (brick.type) {
                 case 31:
-                    self.add(new MediaPlayer(brick));
+                    service = new MediaPlayer(brick);
                     break;
                 case 36:
-                    self.add(new MediaBrowser(brick));
+                    service = new MediaBrowser(brick);
                     break;
                 case 102:
-                    self.add(new Mail(brick));
+                    service = new Mail(brick);
                     break;
                 default:
                     console.log("unknown type", brick.type, brick);
                     break;
+            }
+            if (service != null) {
+                self.add(service);
+                self.templates[brick.type] = service.getTemplateAction();
             }
             places.get(brick.placeId).get("devices").push(brick.id);
         },
@@ -90,6 +96,17 @@ define([
          */
         getMediaBrowsers: function() {
             return services.where({type: 36});
+        },
+        /**
+         * @returns the template corresponding to the device
+         */ 
+        getTemplateActionByType: function(type,param) {
+            if (this.templates[type]) {
+                return this.templates[type](param);  
+            } else {
+                console.error("No template is defined for type: " + type);
+            }
+            return "";
         },
     });
 

@@ -16,6 +16,7 @@ define([
             "click #end-edit-button": "onClickEndEdit",
             "change .lamp-color-picker": "onChangeLampColorNode",
             "change .number-input": "onChangeNumberValue",
+            "change .arg-input": "onChangeArgValue",
             "change .volume-input": "onChangeMediaVolume",
             "change .hour-picker, .minute-picker": "onChangeClockValue",
             "click .valid-media": "onValidMediaButton"
@@ -50,6 +51,7 @@ define([
 
         },
         onClickProg: function(e) {
+        	console.log("XXXXXXXXXX On clic prog");
             button = e.target;
             if (button !== null && typeof button.classList !== 'undefined' && (button.classList.contains('btn-media-choice') || button.classList.contains('default-media-choice'))) {
                 e.stopPropagation();
@@ -59,7 +61,12 @@ define([
                 while (button !== null && typeof button.classList === 'undefined' || !button.classList.contains('btn-prog')) {
                     button = button.parentNode;
                 }
-                this.Mediator.setCursorAndBuildKeyboard(button.id);
+            	if ($(button).hasClass("glyphicon-trash")) {
+            		this.Mediator.setCurrentPos(button.id);
+            		this.Mediator.removeSelectedNode();
+            	} else {
+            	this.Mediator.setCursorAndBuildKeyboard(button.id);
+            	}
             }
         },
         // Displays a tree of items the player can read
@@ -180,6 +187,15 @@ define([
             var iid = $(e.currentTarget).attr("target-id");
             var value = e.currentTarget.value;
             this.Mediator.setNodeAttribute(iid, "value", value);
+            // clearing selection 
+            this.resetSelection();
+        },
+        onChangeArgValue: function(e) {
+            e.stopPropagation();
+            var iid = $(e.currentTarget).attr("target-id");
+            var value = {"type":"String", "value" : e.currentTarget.value};
+            var index = $(e.currentTarget).attr("target-index")
+            this.Mediator.setNodeArg(iid, index, value);
             // clearing selection 
             this.resetSelection();
         },

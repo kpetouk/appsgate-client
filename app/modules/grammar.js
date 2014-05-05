@@ -105,59 +105,8 @@ define([
                 }
             }
             return type + args;
-        },
-
-        parseNodeOld: function(obj, currentNode) {
-            if (typeof obj == "string") {
-                console.log("String found");
-                console.warn("Select nodes not supported yet.")
-                return "";
-            }
-            var args = "";
-            if (obj.length) {
-                for (var k in obj) {
-                    args += this.parseNode(obj[k], currentNode) + " ";
-                }
-                return args;
-            }
-            if (obj.length == 0) {
-                return "";
-            }
-            var type = obj.iid + ":";
-            if (currentNode == -1) {
-                if (obj.type == "mandatory" && obj.deviceType) {
-                    return type + "/" + obj.deviceType + "/";
-                }
-                if (obj.type == "mandatory" && obj.serviceType) {
-                    return type + "|" + obj.serviceType + "|";
-                }
-            }
-            if (obj.iid == currentNode) {
-                if (obj.deviceType) {
-                    return type + "/" + obj.deviceType + "/";
-                }
-                if (obj.serviceType) {
-                    return type + "|" + obj.serviceType + "|";
-                }
-                if (obj.iid == currentNode && obj.type == "empty") {
-                    return type + "selected";
-                }
-            }
-            if (obj.type) {
-                type += obj.type;
-            }
-
-            for (var k in obj) {
-                if (typeof obj[k] === "object") {
-                    if (obj[k].length != undefined) {
-                        args += "[" + this.parseNode(obj[k], currentNode) + "]";
-                    } else {
-                        args += "(" + this.parseNode(obj[k], currentNode) + ")";
-                    }
-                }
-            }
-            return type + args;
         }
+
 
 
     });

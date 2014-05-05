@@ -455,7 +455,7 @@
         "selectedMusic": "musique",
         "img-table": "image a table",
         "received-mail-event": "un mail arrive",
-        "send-mail-action": "envoyer le mail 'Bien arrive !' a",
+        "send-mail-action": "envoyer un mail",
         "well-arrived-subject": "Bien arrive!",
         "mandatory-keyword":"Obligatoire",
         "nothing-keyword":"Rien"
