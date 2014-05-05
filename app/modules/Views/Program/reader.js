@@ -21,6 +21,9 @@ define([
         initialize: function() {
             this.Mediator = new Mediator();
             this.Mediator.loadProgramJSON(this.model.get("body"));
+            this.Mediator.readonly = true;
+            
+            this.listenTo(programs, "change", this.render);
         },
         /**
          * Callback to start a program

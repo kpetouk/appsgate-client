@@ -28,6 +28,7 @@ define([
             this.Mediator = new Mediator();
             this.Mediator.loadProgramJSON(this.model.get("body"));
 
+            this.listenTo(programs, "change", this.render);
         },
         onClickEndEdit: function(e) {
             this.model.set("body", this.Mediator.programJSON);
@@ -47,6 +48,7 @@ define([
                 button = button.parentNode;
             }
             this.Mediator.buttonPressed(button);
+
         },
         onClickProg: function(e) {
             button = e.target;
@@ -60,7 +62,6 @@ define([
                 }
                 this.Mediator.setCursorAndBuildKeyboard(button.id);
             }
-
         },
         // Displays a tree of items the player can read
         onBrowseMedia: function(selectedMedia) {
@@ -162,7 +163,7 @@ define([
 
             this.Mediator.setNodeAttribute(iid, "args", [{type: "int", value: parseInt(e.currentTarget.value)}]);
             this.Mediator.setNodeAttribute(iid, "volume", e.currentTarget.value);
-            
+
             // clearing selection 
             this.resetSelection();
         },

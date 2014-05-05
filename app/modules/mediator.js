@@ -17,8 +17,9 @@ define([
     "text!templates/program/nodes/booleanExpressionNode.html",
     "text!templates/program/nodes/comparatorNode.html",
     "text!templates/program/nodes/numberNode.html",
-    "text!templates/program/nodes/waitNode.html"
-], function(App, Grammar, defaultActionTemplate, lampActionTemplate, mediaActionTemplate, ifNodeTemplate, whenNodeTemplate, deviceNodeTemplate, serviceNodeTemplate, defaultEventNodeTemplate, clockEventNodeTemplate, stateNodeTemplate, keepStateNodeTemplate, whileNodeTemplate, whitespaceNodeTemplate, booleanExpressionNodeTemplate, comparatorNodeTemplate, numberNodeTemplate, waitNodeTemplate) {
+    "text!templates/program/nodes/waitNode.html",
+    "text!templates/program/editor/expectedInput.html"
+], function(App, Grammar, defaultActionTemplate, lampActionTemplate, mediaActionTemplate, ifNodeTemplate, whenNodeTemplate, deviceNodeTemplate, serviceNodeTemplate, defaultEventNodeTemplate, clockEventNodeTemplate, stateNodeTemplate, keepStateNodeTemplate, whileNodeTemplate, whitespaceNodeTemplate, booleanExpressionNodeTemplate, comparatorNodeTemplate, numberNodeTemplate, waitNodeTemplate, expectedInputTemplate) {
     var ProgramMediator = {};
     // router
     ProgramMediator = Backbone.Model.extend({
@@ -39,6 +40,7 @@ define([
         tplComparatorNode: _.template(comparatorNodeTemplate),
         tplNumberNode: _.template(numberNodeTemplate),
         tplWaitNode: _.template(waitNodeTemplate),
+        tplExpectedInput: _.template(expectedInputTemplate),
         initialize: function() {
             this.resetProgramJSON();
             this.currentNode = 1;
@@ -74,8 +76,10 @@ define([
         },
         setCurrentPos: function(id) {
             this.currentNode = id;
-            $(".programInput").find(".selected-node").removeClass(".selected-node");
-            $("#"+parseInt(id)).addClass("selected-node");
+            if(!this.readonly){
+                $(".programInput").find(".selected-node").removeClass("selected-node");
+                $("#"+parseInt(id)).addClass("selected-node");
+            }
         },
         setCursorAndBuildKeyboard: function(id) {
             this.setCurrentPos(id);
@@ -294,7 +298,7 @@ define([
                     o = deviceTypes[type][0];
                     actions = o.getActions();
                     for (a in actions) {
-                        $(".expected-elements").append(o.getKeyboardForAction(actions[a]));
+                        $(".expected-actions").append(o.getKeyboardForAction(actions[a]));
                     }
                 }
             }
@@ -304,7 +308,7 @@ define([
                     o = serviceTypes[type][0];
                     actions = o.getActions();
                     for (a in actions) {
-                        $(".expected-elements").append(o.getKeyboardForAction(actions[a]));
+                        $(".expected-actions").append(o.getKeyboardForAction(actions[a]));
                     }
                 }
             }
@@ -318,7 +322,7 @@ define([
                     o = types[type][0];
                     events = o.getEvents();
                     for (a in events) {
-                        $(".expected-elements").append(o.getKeyboardForEvent(events[a]));
+                        $(".expected-events").append(o.getKeyboardForEvent(events[a]));
                     }
                 }
             }
@@ -330,7 +334,7 @@ define([
                     o = types[type][0];
                     states = o.getStates();
                     for (a in states) {
-                        $(".expected-elements").append(o.getKeyboardForState(states[a]));
+                        $(".expected-links").append(o.getKeyboardForState(states[a]));
                     }
                 }
             }
@@ -342,7 +346,7 @@ define([
                     o = types[type][0];
                     states = o.getDeviceStates();
                     for (a in states) {
-                        $(".expected-elements").append(o.getKeyboardForDeviceState(states[a]));
+                        $(".expected-links").append(o.getKeyboardForDeviceState(states[a]));
                     }
                 }
             }
@@ -362,33 +366,33 @@ define([
             var btn_f = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span data-i18n='keyboard.false'/></button>");
             $(btn_v).attr("json", JSON.stringify(v));
             $(btn_f).attr("json", JSON.stringify(f));
-            $(".expected-elements").append(btn_v);
-            $(".expected-elements").append(btn_f);
+            $(".expected-links").append(btn_v);
+            $(".expected-links").append(btn_f);
 
         },
         buildDevicesOfType: function(type) {
             devices.forEach(function(device) {
                 if (device.get("type") == type) {
-                    $(".expected-elements").append(device.buildButtonFromDevice());
+                    $(".expected-devices").append(device.buildButtonFromDevice());
                 }
             });
         },
         buildDevices: function() {
             devices.forEach(function(device) {
-                $(".expected-elements").append(device.buildButtonFromDevice());
+                $(".expected-devices").append(device.buildButtonFromDevice());
             });
         },
         buildServicesOfType: function(type) {
             services.forEach(function(service) {
                 if (service.get("type") == type) {
-                    $(".expected-elements").append(service.buildButtonFromBrick());
+                    $(".expected-services").append(service.buildButtonFromBrick());
                 }
             });
         },
 
         buildServices: function() {
             services.forEach(function(service) {
-                $(".expected-elements").append(service.buildButtonFromBrick());
+                $(".expected-services").append(service.buildButtonFromBrick());
             });
         },
 		buildPrograms : function() {
@@ -423,13 +427,13 @@ define([
 			};
 			$(btnStop).attr("json", JSON.stringify(w));
 
-			$(".expected-elements").append(btnCall);
-			$(".expected-elements").append(btnStop);
+			$(".expected-programs").append(btnCall);
+			$(".expected-programs").append(btnStop);
 		},
 
         buildProgramsKeys: function() {
             programs.forEach(function(prg) {
-                $(".expected-elements").append("<button id='" + prg.get("id") + "' class='btn btn-default btn-keyboard program-node' prg_name='" + prg.get("name") + "'><span>" + prg.get("name") + "<span></button>");
+                $(".expected-programs").append("<button id='" + prg.get("id") + "' class='btn btn-default btn-keyboard program-node' prg_name='" + prg.get("name") + "'><span>" + prg.get("name") + "<span></button>");
             });
         },
         buildBooleanExpressionKeys: function() {
@@ -449,7 +453,7 @@ define([
                 }
             };
             $(btnAnd).attr("json", JSON.stringify(v));
-            $(".expected-elements").append(btnAnd);
+            $(".expected-links").append(btnAnd);
 
         },
         buildComparatorKeys: function() {
@@ -469,7 +473,7 @@ define([
                 }
             };
             $(btnEq).attr("json", JSON.stringify(v));
-            $(".expected-elements").append(btnEq);
+            $(".expected-links").append(btnEq);
             var btnSup = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span data-i18n='language.if-sup'/></button>");
             var v = {
                 "type": "comparator",
@@ -485,7 +489,7 @@ define([
                 }
             };
             $(btnSup).attr("json", JSON.stringify(v));
-            $(".expected-elements").append(btnSup);
+            $(".expected-links").append(btnSup);
             var btnInf = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span data-i18n='language.if-inf'/></button>");
             var v = {
                 "type": "comparator",
@@ -501,7 +505,7 @@ define([
                 }
             };
             $(btnInf).attr("json", JSON.stringify(v));
-            $(".expected-elements").append(btnInf);
+            $(".expected-links").append(btnInf);
             var btnDiff = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span data-i18n='language.if-dif'/></button>");
             var v = {
                 "type": "comparator",
@@ -517,7 +521,7 @@ define([
                 }
             };
             $(btnDiff).attr("json", JSON.stringify(v));
-            $(".expected-elements").append(btnDiff);
+            $(".expected-links").append(btnDiff);
 
 
         },
@@ -533,12 +537,12 @@ define([
                 }
             };
             $(btn).attr("json", JSON.stringify(v));
-            $(".expected-elements").append(btn);
+            $(".expected-actions").append(btn);
 
 
         },
         buildKeyboard: function(ex) {
-            $(".expected-elements").html("");
+            $(".expected-elements").html(this.tplExpectedInput());
             nodes = ex.expected;
             // First we treat the devices and services
             switch (ex.type) {
@@ -555,7 +559,7 @@ define([
                 for (t in nodes) {
                     switch (nodes[t]) {
                         case '"if"':
-                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard if-node'><span data-i18n='keyboard.if-keyword'><span></button>");
+                            $(".expected-links").append("<button class='btn btn-default btn-keyboard if-node'><span data-i18n='keyboard.if-keyword'><span></button>");
                             break;
                         case '"comparator"':
                             //this.buildComparatorKeys();
@@ -564,10 +568,10 @@ define([
                             //this.buildBooleanExpressionKeys();
                             break;
                         case '"when"':
-                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard when-node'><span data-i18n='keyboard.when-keyword'><span></button>");
+                            $(".expected-links").append("<button class='btn btn-default btn-keyboard when-node'><span data-i18n='keyboard.when-keyword'><span></button>");
                             break;
                         case '"while"':
-                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard while-node'><span data-i18n='keyboard.while-keyword'><span></button>");
+                            $(".expected-links").append("<button class='btn btn-default btn-keyboard while-node'><span data-i18n='keyboard.while-keyword'><span></button>");
                             break;
                         case '"state"':
                             this.buildStateKeys();
@@ -577,7 +581,7 @@ define([
                         case '"setOfRules"':
                             break;
                         case '"keepState"':
-                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard keepState-node'><span data-i18n='keyboard.keep-state'><span></button>");
+                            $(".expected-links").append("<button class='btn btn-default btn-keyboard keepState-node'><span data-i18n='keyboard.keep-state'><span></button>");
                             break;
                         case '"device"':
                             this.buildDevices();
@@ -604,7 +608,7 @@ define([
                             console.log("empty program");
                             break;
                         case '"number"':
-                            $(".expected-elements").append("<button class='btn btn-default btn-keyboard number-node'><span>valeur<span></button>");
+                            $(".expected-event").append("<button class='btn btn-default btn-keyboard number-node'><span>valeur<span></button>");
                             break;
                         case '"wait"':
                             this.buildWaitKey();
