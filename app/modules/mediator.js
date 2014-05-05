@@ -76,9 +76,9 @@ define([
         },
         setCurrentPos: function(id) {
             this.currentNode = id;
-            if(!this.readonly){
+            if (!this.readonly) {
                 $(".programInput").find(".selected-node").removeClass("selected-node");
-                $("#"+parseInt(id)).addClass("selected-node");
+                $("#" + parseInt(id)).addClass("selected-node");
             }
         },
         setCursorAndBuildKeyboard: function(id) {
@@ -231,7 +231,7 @@ define([
             var deviceName = d.get("name");
             return {"type": "device", "value": deviceId, "name": deviceName, "iid": "X", "deviceType": d.get("type")};
 
-        }, 
+        },
         getServiceJSON: function(serviceId) {
             var s = services.get(serviceId);
             var serviceName = s.get("name");
@@ -367,48 +367,46 @@ define([
                 }
             });
         },
-
         buildServices: function() {
             services.forEach(function(service) {
                 $(".expected-services").append(service.buildButtonFromBrick());
             });
         },
-		buildPrograms : function() {
-			var btnCall = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
+        buildPrograms: function() {
+            var btnCall = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
 
-			$(btnCall).append("<span data-i18n='language.activate-program-action'/>");
-			var v = {
-				"type" : "action",
-				"methodName" : "callProgram",
-				"target" : {
-					"iid" : "X",
-					"type" : "programs"
-				},
-				"args" : [],
-				"iid" : "X",
-				"phrase" : "language.activate-program-action"
-			};
-			$(btnCall).attr("json", JSON.stringify(v));
+            $(btnCall).append("<span data-i18n='language.activate-program-action'/>");
+            var v = {
+                "type": "action",
+                "methodName": "callProgram",
+                "target": {
+                    "iid": "X",
+                    "type": "programs"
+                },
+                "args": [],
+                "iid": "X",
+                "phrase": "language.activate-program-action"
+            };
+            $(btnCall).attr("json", JSON.stringify(v));
 
-			var btnStop = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
-			$(btnStop).append("<span data-i18n='language.disactivate-program-action'/>");
-			var w = {
-				"type" : "action",
-				"methodName" : "stopProgram",
-				"target" : {
-					"iid" : "X",
-					"type" : "programs"
-				},
-				"args" : [],
-				"iid" : "X",
-				"phrase" : "language.disactivate-program-action"
-			};
-			$(btnStop).attr("json", JSON.stringify(w));
+            var btnStop = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
+            $(btnStop).append("<span data-i18n='language.disactivate-program-action'/>");
+            var w = {
+                "type": "action",
+                "methodName": "stopProgram",
+                "target": {
+                    "iid": "X",
+                    "type": "programs"
+                },
+                "args": [],
+                "iid": "X",
+                "phrase": "language.disactivate-program-action"
+            };
+            $(btnStop).attr("json", JSON.stringify(w));
 
-			$(".expected-programs").append(btnCall);
-			$(".expected-programs").append(btnStop);
-		},
-
+            $(".expected-programs").append(btnCall);
+            $(".expected-programs").append(btnStop);
+        },
         buildProgramsKeys: function() {
             programs.forEach(function(prg) {
                 $(".expected-programs").append("<button id='" + prg.get("id") + "' class='btn btn-default btn-keyboard program-node' prg_name='" + prg.get("name") + "'><span>" + prg.get("name") + "<span></button>");
@@ -621,12 +619,12 @@ define([
             }
             return services.get(id).get("name");
         },
-		buildActionNode : function(param) {
-			var result = "";
+        buildActionNode: function(param) {
+            var result = "";
             if (param.node.target.deviceType) {
-                return devices.getTemplateByType(param.node.target.deviceType,param);
+                return devices.getTemplateByType(param.node.target.deviceType, param);
             }
-			return this.tplDefaultActionNode(param);
+            return this.tplDefaultActionNode(param);
         },
         buildEventNode: function(param) {
             var result = "";
@@ -760,6 +758,27 @@ define([
             }
 
             appRouter.currentMenuView.$el.i18n();
+
+            var keyBands = $(".expected-elements").children();
+            var self = this;
+            keyBands.each(function(index){
+                self.sortKeyband(this);
+            });
+        },
+        sortKeyband: function(keyband) {
+            keyband = $(keyband);
+            if (keyband.children().length < 1) {
+                keyband.hide();
+            } else {
+                var buttons = keyband.children();
+                
+                buttons.sort(function(a, b) {
+                    return $(a).text().toUpperCase().localeCompare($(b).text().toUpperCase());
+                    
+                });
+                
+                $.each(buttons, function(idx,itm){keyband.append(itm);});
+            }
         },
         checkProgramAndBuildKeyboard: function(programJSON) {
             if (typeof programJSON !== "undefined")
