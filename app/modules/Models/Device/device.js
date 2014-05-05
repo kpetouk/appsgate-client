@@ -1,7 +1,9 @@
 define([
     "app",
-    "models/brick"
-], function(App, Brick) {
+    "models/brick",
+    "text!templates/program/nodes/defaultActionNode.html",
+
+], function(App, Brick, ActionTemplate) {
 
     var Device = {};
 
@@ -128,19 +130,22 @@ define([
         },
 
         getJSONAction: function (type) {
-            return {"type": "action", "target": {"iid": "X", "type": type, "deviceType":this.get("type")}, "args": [], "iid": "X"};
+            return {"type": "action", "target": {"iid": "X", "type": 'mandatory', "deviceType":this.get("type")}, "args": [], "iid": "X"};
         },
         
         getJSONEvent: function (type) {
-            return {"type": "event",  "source": {"iid": "X", "type": type, "deviceType":this.get("type")}, "iid": "X"};
+            return {"type": "event",  "source": {"iid": "X", "type": 'mandatory', "deviceType":this.get("type")}, "iid": "X"};
         },
         getJSONState: function (type) {
-            return {"type": "state", "object": {"iid": "X", "type": type, "deviceType":this.get("type")}, "iid": "X"};
+            return {"type": "state", "object": {"iid": "X", "type": 'mandatory', "deviceType":this.get("type")}, "iid": "X"};
         },
         getJSONDeviceState: function (type) {
-            return {"type": "deviceState", "iid": "X", "target": {"iid": "X", "type": type, "deviceType":this.get("type")}, "args":[]};
+            return {"type": "deviceState", "iid": "X", "target": {"iid": "X", "type": 'mandatory', "deviceType":this.get("type")}, "args":[]};
         },
 
+        getTemplate: function() {
+            return _.template(ActionTemplate);  
+        },
         /**
          * Override its synchronization method to send a notification on the network
          */

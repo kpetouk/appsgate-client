@@ -41,16 +41,16 @@ define([
             }
         },
         tryParse: function(toParse, e) {
-			var id;
-			if (e.id) {
-				id = e.id;
-			} else {
-				var l = e.offset-5;
-				id = toParse.substr(l,4);
-				while(isNaN(id)) {
-					id = id.substr(1);
-				}
-			}
+            var id;
+            if (e.id) {
+                id = e.id;
+            } else {
+                var l = e.offset - 5;
+                id = toParse.substr(l, 4);
+                while (isNaN(id)) {
+                    id = id.substr(1);
+                }
+            }
             return {"id": id, "expected": e.expected};
         },
         parseNode: function(obj, currentNode) {
@@ -70,16 +70,24 @@ define([
                 return "";
             }
             var type = obj.iid + ":";
-			if (currentNode == -1) {
-				if (obj.type == "mandatory" && obj.deviceType) {
-					return type + "/" + obj.deviceType + "/";
-				}
-			}
-            if (obj.iid == currentNode ){
-				if (obj.deviceType) {
-					return type + "/" + obj.deviceType + "/";
-				}
-                return type + "selected";
+            if (currentNode == -1) {
+                if (obj.type == "mandatory" && obj.deviceType) {
+                    return type + "/" + obj.deviceType + "/";
+                }
+                if (obj.type == "mandatory" && obj.serviceType) {
+                    return type + "|" + obj.serviceType + "|";
+                }
+            }
+            if (obj.iid == currentNode) {
+                if (obj.deviceType) {
+                    return type + "/" + obj.deviceType + "/";
+                }
+                if (obj.serviceType) {
+                    return type + "|" + obj.serviceType + "|";
+                }
+                if (obj.iid == currentNode && obj.type == "empty") {
+                    return type + "selected";
+                }
             }
             if (obj.type) {
                 type += obj.type;
@@ -99,6 +107,5 @@ define([
 
 
     });
-
     return ProgramGrammar;
 });

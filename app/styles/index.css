@@ -491,6 +491,11 @@ div {
     background: #9999FF !important;
 }
 
+.btn-prog-service {
+    color:white;
+    background: #CC66FF !important;
+}
+
 .btn-backspace {
     position:absolute;
     right:10px;

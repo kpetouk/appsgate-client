@@ -38,6 +38,25 @@ define([
             communicator.sendMessage(messageJSON);
         },
         /**
+         * return the list of available actions
+         */
+        getActions: function() {
+            return [];
+        },
+        /**
+         * return the keyboard code for a given action
+        */
+        getKeyboardForAction: function(act){
+            console.error("No action has been defined for this brick.");
+            return "";
+        },
+		/**
+		 * method to build a button from a brick (device/service...)
+		 */
+		buildButtonFromBrick: function() {
+		  console.error("This brick does not provide a button method");
+		},
+        /**
          * Override its synchronization method to send a notification on the network
          */
         sync: function(method, model) {
