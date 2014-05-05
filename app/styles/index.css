@@ -557,3 +557,28 @@ div {
 .selected-node {
     border:4px solid black;
 }
+
+.expected-actions > button{
+    background:#FFCC66;
+}
+
+.expected-events > button{
+    background:#428bca;
+}
+
+.expected-events > button{
+    background:#428bca;
+}
+
+.expected-devices > button{
+    background:#9999FF;
+}
+
+.expected-services > button{
+    background:#CC66FF;
+}
+
+.expected-programs > button{
+    background:black;
+    color:white
+}
