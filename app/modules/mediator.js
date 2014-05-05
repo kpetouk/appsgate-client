@@ -263,6 +263,17 @@ define([
 					}
 				}
 			}
+            var services = services.getDevicesByType();
+			for (type in services) {
+				if (services[type].length > 0) {
+					o = services[type][0];
+					actions = o.getActions();
+					for (a in actions) {
+						$(".expected-elements").append(o.getKeyboardForAction(actions[a]));
+					}
+				}
+			}
+
 			this.buildPrograms();
 
 		},
@@ -331,6 +342,11 @@ define([
         buildDevices: function() {
             devices.forEach(function(device) {
                     $(".expected-elements").append(device.buildButtonFromDevice());
+            });
+        },
+        buildServices: function() {
+            services.forEach(function(service) {
+                $(".expected-elements").append(service.buildButtonFromBrick());
             });
         },
 		buildPrograms : function() {

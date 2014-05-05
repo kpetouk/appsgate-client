@@ -22,7 +22,7 @@ define([
 
     },
 		
-		/**
+	 /**
      * Send a message to the server to perform a remote call
      * 
      * @param method Remote method name to call
@@ -44,7 +44,6 @@ define([
       // send the message
       communicator.sendMessage(messageJSON);
     },
-		
 
   });
   return Service;
