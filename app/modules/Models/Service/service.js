@@ -84,6 +84,25 @@ define([
           return "";
         },
         /**
+         * default method to build a button with its name as the name of the button
+         */
+        buildButtonFromService: function() {
+            return "<button id='" + this.get("id") + "' class='btn btn-default btn-keyboard service-node'><span>" + this.get("name") + "<span></button>"
+        },
+        getJSONAction: function (type) {
+            return {"type": "action", "target": {"iid": "X", "type": 'mandatory', "serviceType":this.get("type")}, "args": [], "iid": "X"};
+        },
+        
+        getJSONEvent: function (type) {
+            return {"type": "event",  "source": {"iid": "X", "type": 'mandatory', "serviceType":this.get("type")}, "iid": "X"};
+        },
+        getJSONState: function (type) {
+            return {"type": "state", "object": {"iid": "X", "type": 'mandatory', "serviceType":this.get("type")}, "iid": "X"};
+        },
+        getJSONServiceState: function (type) {
+            return {"type": "deviceState", "iid": "X", "target": {"iid": "X", "type": 'mandatory', "serviceType":this.get("type")}, "args":[]};
+        },
+        /**
          * Send a message to the server to perform a remote call
          * 
          * @param method Remote method name to call

@@ -3,9 +3,11 @@ define([
     "modules/grammar",
     "text!templates/program/nodes/defaultActionNode.html",
     "text!templates/program/nodes/lampActionNode.html",
+    "text!templates/program/nodes/mediaPlayerActionNode.html",
     "text!templates/program/nodes/ifNode.html",
     "text!templates/program/nodes/whenNode.html",
     "text!templates/program/nodes/deviceNode.html",
+    "text!templates/program/nodes/serviceNode.html",
     "text!templates/program/nodes/defaultEventNode.html",
     "text!templates/program/nodes/clockEventNode.html",
     "text!templates/program/nodes/stateNode.html",
@@ -16,15 +18,17 @@ define([
     "text!templates/program/nodes/comparatorNode.html",
     "text!templates/program/nodes/numberNode.html",
     "text!templates/program/nodes/waitNode.html"
-], function(App, Grammar, defaultActionTemplate, lampActionTemplate, ifNodeTemplate, whenNodeTemplate, deviceNodeTemplate, defaultEventNodeTemplate, clockEventNodeTemplate, stateNodeTemplate, keepStateNodeTemplate, whileNodeTemplate, whitespaceNodeTemplate, booleanExpressionNodeTemplate, comparatorNodeTemplate, numberNodeTemplate, waitNodeTemplate) {
+], function(App, Grammar, defaultActionTemplate, lampActionTemplate, mediaActionTemplate, ifNodeTemplate, whenNodeTemplate, deviceNodeTemplate, serviceNodeTemplate, defaultEventNodeTemplate, clockEventNodeTemplate, stateNodeTemplate, keepStateNodeTemplate, whileNodeTemplate, whitespaceNodeTemplate, booleanExpressionNodeTemplate, comparatorNodeTemplate, numberNodeTemplate, waitNodeTemplate) {
     var ProgramMediator = {};
     // router
     ProgramMediator = Backbone.Model.extend({
         tplDefaultActionNode: _.template(defaultActionTemplate),
         tplLampActionNode: _.template(lampActionTemplate),
+        tplMediaActionNode: _.template(mediaActionTemplate),
         tplIfNode: _.template(ifNodeTemplate),
         tplWhenNode: _.template(whenNodeTemplate),
         tplDeviceNode: _.template(deviceNodeTemplate),
+        tplServiceNode: _.template(serviceNodeTemplate),
         tplEventNode: _.template(defaultEventNodeTemplate),
         tplClockEventNode: _.template(clockEventNodeTemplate),
         tplStateNode: _.template(stateNodeTemplate),
@@ -81,6 +85,8 @@ define([
                 n = JSON.parse($(button).attr('json'));
             } else if ($(button).hasClass("device-node")) {
                 n = this.getDeviceJSON(button.id);
+            } else if ($(button).hasClass("service-node")) {
+                n = this.getServiceJSON(button.id);
             } else if ($(button).hasClass("program-node")) {
                 n = {
                     "value": button.id,
@@ -218,7 +224,11 @@ define([
             var d = devices.get(deviceId);
             var deviceName = d.get("name");
             return {"type": "device", "value": deviceId, "name": deviceName, "iid": "X", "deviceType": d.get("type")};
-
+        }, 
+        getServiceJSON: function(serviceId) {
+            var s = services.get(serviceId);
+            var serviceName = s.get("name");
+            return {"type": "service", "value": serviceId, "name": serviceName, "iid": "X", "serviceType": s.get("type")};
         },
         getIfJSON: function() {
             return {
@@ -498,9 +508,9 @@ define([
             $(".expected-elements").append(btn);
 
         },
-        buildKeyboard: function(nodes) {
+        buildKeyboard: function(ex) {
             $(".expected-elements").html("");
-
+            nodes = ex.expected;
             if (nodes != null) {
                 for (t in nodes) {
                     switch (nodes[t]) {
@@ -561,7 +571,12 @@ define([
                             break;
 
                         default:
+                            if (ex.type == "devices") {
                             this.buildDevicesOfType(nodes[t]);
+                        } else {
+                            this.buildServicesOfType(nodes[t]);
+                            
+                        }
                             break;
                     }
                 }
@@ -578,10 +593,19 @@ define([
             }
             return devices.get(id).get("name");
         },
+        getServiceName: function(id) {
+            if (services.get(id) == undefined) {
+                console.warn("service not found: " + id);
+                return "Not FOUND";
+            }
+            return services.get(id).get("name");
+        },
         buildActionNode: function(param) {
             var result = "";
             if (param.node.target.deviceType == "7") {
                 result = this.tplLampActionNode(param);
+            } else if (param.node.target.serviceType == "31") {
+                result = this.tplMediaActionNode(param);
             } else {
                 result = this.tplDefaultActionNode(param);
             }
@@ -644,6 +668,9 @@ define([
                     break;
                 case "device":
                     input = this.tplDeviceNode(param);
+                    break;
+                case "service":
+                    input = this.tplServiceNode(param);
                     break;
                 case "event":
                     input = this.buildEventNode(param);
@@ -734,7 +761,7 @@ define([
                 if (typeof n.id !== "undefined") {
                     this.setCurrentPos(n.id);
                 }
-                this.buildKeyboard(n.expected);
+                this.buildKeyboard(n);
             }
             return false;
         },
