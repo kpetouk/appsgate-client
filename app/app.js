@@ -29,7 +29,8 @@ define(function(require, exports, module) {
 
         // Setting the connection with the box
         //window.communicator = new Communicator('ws://192.168.1.3:8087');
-        window.communicator = new Communicator('ws://localhost:8087');
+//        window.communicator = new Communicator('ws://localhost:8087');
+        window.communicator = new Communicator('ws://192.168.1.11:8087');
 
         // Wait for the socket to be opened
         dispatcher.on("WebSocketOpen", function() {

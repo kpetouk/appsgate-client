@@ -426,8 +426,8 @@ define([
             };
             $(btnStop).attr("json", JSON.stringify(w));
 
-            $(".expected-programs").append(btnCall);
-            $(".expected-programs").append(btnStop);
+            $(".expected-actions").append(btnCall);
+            $(".expected-actions").append(btnStop);
         },
         buildProgramsKeys: function() {
             programs.forEach(function(prg) {
@@ -653,6 +653,11 @@ define([
         },
         buildEventNode: function(param) {
             var result = "";
+            if (param.node.eventName === "newFace") {
+                // TODO : FIXME
+                // I use the same template function for event and for action... to check it is possible
+                return devices.getTemplateActionByType(param.node.source.deviceType, param);
+            }
             if (param.node.eventName === "ClockAlarm") {
                 var hours = [];
                 for (var i = 0; i < 24; i++) {
