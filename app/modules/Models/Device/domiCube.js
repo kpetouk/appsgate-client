@@ -36,27 +36,27 @@ define([
       v.source.value = this.get("id");
       switch(evt) {
         case "Face1":
-          $(btn).append("<img src='/app/rsrc/night.png' width='36px'>");
+          $(btn).append("<img src='/app/img/night.png' width='36px'>");
           v.eventName = "newFace";
           v.eventValue = "1";
 //          v.phrase = "language.pushed-telec-event-up";
-          v.icon = "/app/rsrc/night.png";
+          v.icon = "/app/img/night.png";
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "Face2":
-          $(btn).append("<img src='/app/rsrc/meal.png' width='36px'>");
+          $(btn).append("<img src='/app/img/meal.png' width='36px'>");
           v.eventName = "newFace";
           v.eventValue = "2";
 //          v.phrase = "language.pushed-telec-event-up";
-          v.icon = "/app/rsrc/meal.png";
+          v.icon = "/app/img/meal.png";
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "Face3":
-          $(btn).append("<img src='/app/rsrc/music.png' width='36px'>");
+          $(btn).append("<img src='/app/img/music.png' width='36px'>");
           v.eventName = "newFace";
           v.eventValue = "3";
 //          v.phrase = "language.pushed-telec-event-up";
-          v.icon = "/app/rsrc/music.png";
+          v.icon = "/app/img/music.png";
           $(btn).attr("json", JSON.stringify(v));
           break;
         default:
