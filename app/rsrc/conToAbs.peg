@@ -18,7 +18,7 @@ IF  = ID "if" _ "(" BOOLEAN ")" _ "(" _ BLOC _ ")" _ "(" _ BLOC _ ")"
 
 WHEN  = ID "when" _ "(" _ EVT _ ")" _ "(" _ BLOC _")"
 
-WHILE  = ID "while" _ "(" _ STATE _ ")" _ "(" _ BLOC_KEEP _ ")" _ "(" _ BLOC _ ")"
+WHILE  = ID "while" _ "(" _ STATE _ ")" _ "(" _ KEEP _ ")" _ "(" _ BLOC _ ")"
 
 BLOC_KEEP = ID "seqRules" _ "[" _ (KEEP _)+ "]"
 
