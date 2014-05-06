@@ -626,6 +626,12 @@ define([
             }
 
             $(".expected-elements").i18n();
+            
+            var keyBands = $(".expected-elements").children();
+            var self = this;
+            keyBands.each(function(index){
+                self.sortKeyband(this);
+            });
         },
         getDeviceName: function(id) {
             if (devices.get(id) == undefined) {
@@ -792,6 +798,8 @@ define([
             keyBands.each(function(index){
                 self.sortKeyband(this);
             });
+            
+            $(".programInput").find(".btn").css("padding","3px 6px");
         },
         sortKeyband: function(keyband) {
             keyband = $(keyband);
@@ -825,6 +833,12 @@ define([
                 }
                 this.buildKeyboard(n);
             }
+            var keyBands = $(".expected-elements").children();
+            var self = this;
+            keyBands.each(function(index){
+                self.sortKeyband(this);
+            });
+            
             return false;
         },
     });

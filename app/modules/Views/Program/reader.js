@@ -23,7 +23,7 @@ define([
             this.Mediator.loadProgramJSON(this.model.get("body"));
             this.Mediator.readonly = true;
             
-            this.listenTo(programs, "change", this.render);
+            this.listenTo(programs, "change", this.refreshDisplay);
         },
         /**
          * Callback to start a program
@@ -81,6 +81,14 @@ define([
 
             // navigate to the list of programs
             appRouter.navigate("#programs", {trigger: true});
+        },
+        refreshDisplay: function() {
+            this.Mediator.buildInputFromJSON();
+            if (this.model.get("runningState") === "DEPLOYED") {
+                $(".led").addClass("led-default").removeClass("led-red");
+            } else {
+                $(".led").addClass("led-red").removeClass("led-default");
+            }
         },
         /**
          * Render the editor view
