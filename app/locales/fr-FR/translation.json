@@ -342,7 +342,7 @@
             "failed": "Erreur"
         },
         "action": {
-            "start": "Démarrer",
+            "start": "Activer",
             "stop": "Arrêter"
         }
     },
@@ -376,6 +376,8 @@
         "it-is-not-the-case":"Ce n'est plus le cas",
         "activate-program-action": "activer le programme",
         "disactivate-program-action": "desactiver le programme",
+        "activate": "activer",
+        "disactivate": "desactiver",
         "is-activated-program-event": "est active",
         "is-disactivated-program-event": "est desactive",
         "is-running-program-status": "est actif",
@@ -472,7 +474,7 @@
         "turn-on-lamp-action": "Allumer la lampe",
         "turn-off-lamp-action": "Eteindre la lampe",
         "blink-lamp-action": "Faire clignoter",
-        "when-keyword": "Au moment ou",
+        "when-keyword": "Lorsque",
         "if-keyword": "Si",
         "if-and":"Si ... et ...",
         "if-or":"Si ... ou ...",
