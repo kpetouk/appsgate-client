@@ -374,10 +374,10 @@
         "keep-keyword":"Maintenir",
         "and-when":"Et lorsque",
         "it-is-not-the-case":"Ce n'est plus le cas",
-        "activate-program-action": "activer le programme",
-        "disactivate-program-action": "desactiver le programme",
-        "activate": "activer",
-        "disactivate": "desactiver",
+        "activate-program-action": "Activer le programme",
+        "disactivate-program-action": "Desactiver le programme",
+        "activate": "Activer",
+        "disactivate": "Desactiver",
         "is-activated-program-event": "est active",
         "is-disactivated-program-event": "est desactive",
         "is-running-program-status": "est actif",
@@ -460,6 +460,7 @@
         "send-mail-action": "envoyer un mail",
         "well-arrived-subject": "Bien arrive!",
         "mandatory-keyword":"Obligatoire",
+		"wait"										: "Attendre",
         "nothing-keyword":"Rien"
 
 

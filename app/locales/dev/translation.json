@@ -310,7 +310,7 @@
 		"turn-on-actuator-action"					: "allumer",
 		"turn-off-actuator-action"					: "eteindre",
     
-		"wait"										: "attendre",
+		"wait"										: "Attendre",
 		"seconds"									: "secondes",
 		
 		"turned-on-lamp-event"						: "on allume",

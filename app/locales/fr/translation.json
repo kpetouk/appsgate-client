@@ -245,7 +245,7 @@
 	},
 	"language" : {
 		"written-by"								: "ecrit par",
-		"when-keyword"								: "au moment ou",
+		"when-keyword"								: "lorsque",
 		"end-when-block"							: ".",
 		"if-keyword"								: "si",
 		"else-keyword"								: "sinon",
