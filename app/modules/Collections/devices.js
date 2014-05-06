@@ -10,8 +10,9 @@ define([
     "models/device/plug",
     "models/device/phillipshue",
     "models/device/actuator",
+    "models/device/domicube",
     "models/device/coreclock"
-], function(App, Device, TemperatureSensor, IlluminationSensor, SwitchSensor, ContactSensor, KeyCardSensor, ARDLock, Plug, PhillipsHue, Actuator, CoreClock) {
+], function(App, Device, TemperatureSensor, IlluminationSensor, SwitchSensor, ContactSensor, KeyCardSensor, ARDLock, Plug, PhillipsHue, Actuator, DomiCube, CoreClock) {
 
     var Devices = {};
 
@@ -93,6 +94,9 @@ define([
                     break;
                 case 21:
                     device = new CoreClock(brick);
+                    break;
+                case 210:
+                    device = new DomiCube(brick);
                     break;
                 default:
                     //console.log("unknown type", brick.type, brick);
