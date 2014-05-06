@@ -28,15 +28,18 @@ define([
             this.Mediator = new Mediator();
             this.Mediator.loadProgramJSON(this.model.get("body"));
 
-            this.listenTo(programs, "change", this.render);
+            this.listenTo(programs, "change", this.refreshDisplay);
+            this.listenTo(devices, "change", this.refreshDisplay);
         },
         onClickEndEdit: function(e) {
             this.model.set("body", this.Mediator.programJSON);
             this.model.set("modified", false);
             if (this.Mediator.isValid) {
                 this.model.set("runningState", "DEPLOYED");
+                $(".led").addClass("led-default").removeClass("led-red");
             } else {
                 this.model.set("runningState", "INVALID");
+                $(".led").addClass("led-red").removeClass("led-default");
             }
             this.model.save();
             appRouter.navigate("#programs/" + this.model.get("id"), {trigger: true});
@@ -48,10 +51,14 @@ define([
                 button = button.parentNode;
             }
             this.Mediator.buttonPressed(button);
-
+            if (this.Mediator.isValid) {
+                $(".led").addClass("led-default").removeClass("led-red");
+            } else {
+                $(".led").addClass("led-red").removeClass("led-default");
+            }
         },
         onClickProg: function(e) {
-        	console.log("XXXXXXXXXX On clic prog");
+            console.log("XXXXXXXXXX On clic prog");
             button = e.target;
             if (button !== null && typeof button.classList !== 'undefined' && (button.classList.contains('btn-media-choice') || button.classList.contains('default-media-choice'))) {
                 e.stopPropagation();
@@ -61,12 +68,12 @@ define([
                 while (button !== null && typeof button.classList === 'undefined' || !button.classList.contains('btn-prog')) {
                     button = button.parentNode;
                 }
-            	if ($(button).hasClass("glyphicon-trash")) {
-            		this.Mediator.setCurrentPos(button.id);
-            		this.Mediator.removeSelectedNode();
-            	} else {
-            	this.Mediator.setCursorAndBuildKeyboard(button.id);
-            	}
+                if ($(button).hasClass("glyphicon-trash")) {
+                    this.Mediator.setCurrentPos(button.id);
+                    this.Mediator.removeSelectedNode();
+                } else {
+                    this.Mediator.setCursorAndBuildKeyboard(button.id);
+                }
             }
         },
         // Displays a tree of items the player can read
@@ -193,7 +200,7 @@ define([
         onChangeArgValue: function(e) {
             e.stopPropagation();
             var iid = $(e.currentTarget).attr("target-id");
-            var value = {"type":"String", "value" : e.currentTarget.value};
+            var value = {"type": "String", "value": e.currentTarget.value};
             var index = $(e.currentTarget).attr("target-index")
             this.Mediator.setNodeArg(iid, index, value);
             // clearing selection 
@@ -218,6 +225,14 @@ define([
             $(".expected-elements").html("");
             this.Mediator.setCurrentPos(-1);
             this.Mediator.buildInputFromJSON();
+        },
+        refreshDisplay: function() {
+            this.Mediator.buildInputFromJSON();
+            if (this.model.get("runningState") === "DEPLOYED") {
+                $(".led").addClass("led-default").removeClass("led-red");
+            } else {
+                $(".led").addClass("led-red").removeClass("led-default");
+            }
         },
         /**
          * Render the editor view
