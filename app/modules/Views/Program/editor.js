@@ -51,6 +51,7 @@ define([
 
         },
         onClickProg: function(e) {
+        	console.log("XXXXXXXXXX On clic prog");
             button = e.target;
             if (button !== null && typeof button.classList !== 'undefined' && (button.classList.contains('btn-media-choice') || button.classList.contains('default-media-choice'))) {
                 e.stopPropagation();
@@ -60,7 +61,12 @@ define([
                 while (button !== null && typeof button.classList === 'undefined' || !button.classList.contains('btn-prog')) {
                     button = button.parentNode;
                 }
-                this.Mediator.setCursorAndBuildKeyboard(button.id);
+            	if ($(button).hasClass("glyphicon-trash")) {
+            		this.Mediator.setCurrentPos(button.id);
+            		this.Mediator.removeSelectedNode();
+            	} else {
+            	this.Mediator.setCursorAndBuildKeyboard(button.id);
+            	}
             }
         },
         // Displays a tree of items the player can read
