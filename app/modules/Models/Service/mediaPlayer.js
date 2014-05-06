@@ -1,8 +1,9 @@
 define([
     "app",
     "models/service/service",
+    "text!templates/program/nodes/mediaPlayerActionNode.html",
     "jstree"
-], function(App, Service) {
+], function(App, Service, ActionTemplate) {
 
     var MediaPlayer = {};
 
@@ -205,6 +206,12 @@ define([
                 }
             });
         },
+    /**
+     * @returns the action template specific for lamps
+     */
+    getTemplateAction: function() {
+      return _.template(ActionTemplate);  
+    },
     });
     return MediaPlayer;
 });

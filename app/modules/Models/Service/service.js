@@ -87,7 +87,7 @@ define([
         /**
          * default method to build a button with its name as the name of the button
          */
-        buildButtonFromService: function() {
+        buildButtonFromBrick: function() {
             return "<button id='" + this.get("id") + "' class='btn btn-default btn-keyboard service-node'><span>" + this.get("name") + "<span></button>"
         },
         getJSONAction: function (type) {
