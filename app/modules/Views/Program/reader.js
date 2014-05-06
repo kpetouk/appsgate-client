@@ -142,6 +142,7 @@ define([
             $(".programInput").find("select").replaceWith(function() {
                 return '<span>' + this.selectedOptions[0].innerHTML + '</span>';
             });
+            $(".programInput").find(".glyphicon-trash").hide();
 
             return this;
         }
