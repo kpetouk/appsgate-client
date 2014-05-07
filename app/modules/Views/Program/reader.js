@@ -24,6 +24,8 @@ define([
             this.Mediator.readonly = true;
 
             this.listenTo(this.model, "change", this.refreshDisplay);
+            this.listenTo(devices, "change", this.refreshDisplay);
+            this.listenTo(services, "change", this.refreshDisplay);
         },
         /**
          * Callback to start a program
