@@ -109,7 +109,7 @@ define([
         case "isOn":
           $(btn).append("<span data-i18n='keyboard.is-turned-on-lamp-state'><span>");
           v.name = "isOn";
-          v.phrase = "language.is-turned-on-lamp-status";
+          v.phrase = "language.is-turned-on-lamp-state";
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "isOff":
@@ -140,7 +140,7 @@ define([
       var v = this.getJSONDeviceState("mandatory");
       switch(state) {
         case "isOn":
-          $(btn).append("<span data-i18n='keyboard.is-turned-on-lamp-state'><span>");
+          $(btn).append("<span data-i18n='keyboard.is-turned-on-lamp-status'><span>");
           v.methodName = "getCurrentState";
           v.returnType = "boolean";
           v.phrase = "language.is-turned-on-lamp-status";

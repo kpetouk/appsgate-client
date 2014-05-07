@@ -301,15 +301,15 @@
 		
 		"turned-on-plug-event"						: "on allume",
 		"turned-off-plug-event"						: "on eteint",
-		"is-turned-on-plug-status"					: "est allumee",
-		"is-turned-off-plug-status"					: "est eteinte",
+		"is-turned-on-plug-status"					: "allumee",
+		"is-turned-off-plug-status"					: "eteinte",
 		"turn-on-plug-action"						: "allumer",
 		"turn-off-plug-action"						: "eteindre",
 
 		"turned-on-actuator-event"					: "on allume",
 		"turned-off-actuator-event"					: "on eteint",
 
-		"is-turned-on-actuator-status"					: "est allume",
+		"is-turned-on-actuator-status"					: "allume",
 		"is-turned-off-actuator-status"					: "est eteint",
 
 		"turn-on-actuator-action"					: "allumer",
@@ -317,7 +317,7 @@
 		
 		"turned-on-lamp-event"						: "on allume",
 		"turned-off-lamp-event"						: "on eteint",
-		"is-turned-on-lamp-status"					: "est allumee",
+		"is-turned-on-lamp-status"					: "allumee",
 		"is-turned-off-lamp-status"					: "est eteinte",
 		"turn-on-lamp-action"						: "allumer",
 		"turn-off-lamp-action"						: "eteindre",
@@ -352,6 +352,7 @@
 		
 		"received-mail-event"						: "un mail arrive",
 		"send-mail-action"							: "Envoyer un mail",
-		"well-arrived-subject"						: "Bien arrive!"
+		"well-arrived-subject"						: "Bien arrive!",
+		"state-verb": "est"
 	}
 }

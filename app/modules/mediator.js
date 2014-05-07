@@ -113,17 +113,11 @@ define([
                 n = {
                     "type": "when",
                     "iid": "X",
-                    "events": {
-                        "type": "mandatory",
-                        "iid": "X"
-                    },
+                    "events": this.getEmptyJSON("mandatory"),
                     "seqRulesThen": {
                         "iid": "X",
                         "type": "seqRules",
-                        "rules": [{
-                                "iid": "X",
-                                "type": "mandatory"
-                            }]
+                        "rules": [this.getEmptyJSON("mandatory")]
                     }
                 };
             } else if ($(button).hasClass("while-node")) {
@@ -264,25 +258,16 @@ define([
             return {
                 "type": "if",
                 "iid": "X",
-                "expBool": {
-                    "type": "empty",
-                    "iid": "X"
-                },
+                "expBool": this.getEmptyJSON("mandatory"),
                 "seqRulesTrue": {
                     "type": "seqRules",
                     "iid": "X",
-                    "rules": [{
-                            "type": "empty",
-                            "iid": "X"
-                        }]
+                    "rules": [this.getEmptyJSON("mandatory")]
                 },
                 "seqRulesFalse": {
                     "type": "seqRules",
                     "iid": "X",
-                    "rules": [{
-                            "type": "empty",
-                            "iid": "X"
-                        }]
+                    "rules": [this.getEmptyJSON("empty")]
                 }
             };
         },

@@ -464,7 +464,8 @@
         "well-arrived-subject": "Bien arrive!",
         "mandatory-keyword":"Obligatoire",
 		"wait"										: "Attendre",
-        "nothing-keyword":"Rien"
+        "nothing-keyword":"Rien",
+        "is-turned-on-lamp-state": "allumée"
 
 
     },
@@ -473,8 +474,8 @@
         "false": "Faux",
         "is-turned-on-lamp-state": "La lampe est allumée",
         "is-turned-off-lamp-state": "La lampe est éteinte",
-        "is-turned-on-lamp-event": "On allume la lampe",
-        "is-turned-off-lamp-event": "On éteint la lampe",
+        "is-turned-on-lamp-event": "on allume la lampe",
+        "is-turned-off-lamp-event": "on éteint la lampe",
         "turn-on-lamp-action": "Allumer la lampe",
         "turn-off-lamp-action": "Eteindre la lampe",
         "blink-lamp-action": "Faire clignoter",
@@ -491,7 +492,7 @@
         "while-keyword": "Tant que",
         "while-keep": "Tant que ... maintenir ...",
         "keep-state": "Maintenir l'état ...",
-        "clock-event": "Il est ",
+        "clock-event": "il est ",
         "play-media-action": "Jouer un media",
         "pause-media-action": "Mettre en pause le media",
         "stop-media-action": "Stopper",

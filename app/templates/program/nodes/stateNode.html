@@ -5,6 +5,7 @@
 <% } %>
 <button class="btn btn-prog btn-prog-action" id="<%= node.iid %>">
         <% if (typeof node.phrase !== 'undefined') { %>
+            <span data-i18n='language.state-verb'></span>
             <span data-i18n='<%=node.phrase%>'></span>
     <% } else { %>
         UNKNOWN STATE
