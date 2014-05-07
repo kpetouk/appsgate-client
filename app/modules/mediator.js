@@ -79,10 +79,19 @@ define([
             if (!this.readonly) {
                 $(".programInput").find(".selected-node").removeClass("selected-node");
                 $("#" + parseInt(id)).addClass("selected-node");
-            }
+//                $(".programInput").find(".btn-trash").removeClass("glyphicon");
+//                $(".programInput").find(".btn-trash").removeClass("glyphicon-trash");
+                
+//                $("button.btn-trash[id="+parseInt(id)+"]").addClass("glyphicon");
+//                $("button.btn-trash[id="+parseInt(id)+"]").addClass("glyphicon-trash");
+                //$(".btn-trash").find("#"+parseInt(id)).addClass("glyphicon-trash");
+                
+//            	+ "<button class='btn-prog btn-trash' id='"+jsonNode.iid+"' style='right:5px;position:absolute;top:0px;'></button></div>";
+                 }
         },
         setCursorAndBuildKeyboard: function(id) {
             this.setCurrentPos(id);
+            console.log(" Set cursor ---------> "+id);
             this.checkProgramAndBuildKeyboard(this.programJSON);
         },
         buttonPressed: function(button) {
@@ -541,6 +550,7 @@ define([
         },
         buildKeyboard: function(ex) {
             $(".expected-elements").html(this.tplExpectedInput());
+
             nodes = ex.expected;
             // First we treat the devices and services
             switch (ex.type) {
@@ -693,24 +703,26 @@ define([
                 node: jsonNode,
                 engine: this
             };
+            var deletable=false;
             var input = "";
             switch (jsonNode.type) {
                 case "action":
-                    input+="<div class='btn-current'>";
+                	deletable=true;
                     input += this.buildActionNode(param);
-                    input+="<button class='btn-prog glyphicon glyphicon-trash' id='"+jsonNode.iid+"' style='right:5px;position:absolute;top:0px;'></button></div>";
-
                     break;
                 case "if":
+                	deletable=true;
                     input += this.tplIfNode(param);
                     break;
                 case "booleanExpression":
+                	deletable=true;
                     input += this.tplBooleanExpressionNode(param);
                     break;
                 case "comparator":
                     input += this.tplComparatorNode(param);
                     break;
                 case "when":
+                	deletable=true;
                     input += this.tplWhenNode(param);
                     break;
                 case "device":
@@ -724,9 +736,11 @@ define([
                     break;
                 case "state":
                 case "deviceState":
+                	deletable=true;
                     input += this.tplStateNode(param);
                     break;
                 case "while":
+                	deletable=true;
                     input += this.tplWhileNode(param);
                     break;
                 case "keepState":
@@ -761,6 +775,7 @@ define([
                     input += this.tplNumberNode(param);
                     break;
                 case "wait":
+                	deletable=true;
                     input += this.tplWaitNode(param);
                     break;
                 case "programCall":
@@ -770,6 +785,19 @@ define([
                     input += "<button class='btn btn-prog btn-primary' id='" + jsonNode.iid + "'><span>" + jsonNode.type + "</span></button>";
                     break;
             }
+            
+            // For only some kind of node we add a delete button
+            if(deletable==true) {
+            	var supprClasses="";
+            	if(this.currentNode == jsonNode.iid) {
+            	 supprClasses="glyphicon glyphicon-trash";
+            	}
+            	input = "<div class='btn-current'>"
+            	+ input
+            	+ "<div class='btn-prog btn-trash "+supprClasses+"' id='"+jsonNode.iid+"' style='right:5px;position:absolute;top:0px;'></div></div>";
+            	
+            }
+
             return input;
         },
         buildInputFromJSON: function() {

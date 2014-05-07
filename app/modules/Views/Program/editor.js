@@ -58,7 +58,7 @@ define([
             }
         },
         onClickProg: function(e) {
-            console.log("XXXXXXXXXX On clic prog");
+
             button = e.target;
             if (button !== null && typeof button.classList !== 'undefined' && (button.classList.contains('btn-media-choice') || button.classList.contains('default-media-choice'))) {
                 e.stopPropagation();
@@ -73,7 +73,9 @@ define([
                     this.Mediator.removeSelectedNode();
                 } else {
                     this.Mediator.setCursorAndBuildKeyboard(button.id);
+                    this.refreshDisplay();
                 }
+
             }
         },
         // Displays a tree of items the player can read
