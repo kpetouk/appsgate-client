@@ -43,8 +43,6 @@ define([
             }
             this.model.save();
             appRouter.navigate("#programs/" + this.model.get("id"), {trigger: true});
-            this.stopListening();
-            this.undelegateEvents();
         },
         onClickKeyboard: function(e) {
             button = e.target;

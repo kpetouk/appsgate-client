@@ -9,6 +9,7 @@ require(["config"], function() {
          * @returns {undefined}
          */
         Backbone.View.prototype.close = function() {
+            this.stopListening();
             this.undelegateEvents();
             // unbind all the events associated to the view
             this.unbind();
