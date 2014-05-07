@@ -22,8 +22,8 @@ define([
             this.Mediator = new Mediator();
             this.Mediator.loadProgramJSON(this.model.get("body"));
             this.Mediator.readonly = true;
-            
-            this.listenTo(programs, "change", this.refreshDisplay);
+
+            this.listenTo(this.model, "change", this.refreshDisplay);
         },
         /**
          * Callback to start a program
@@ -36,11 +36,6 @@ define([
             // get the program to start
             var program = programs.get($(e.currentTarget).attr("id"));
 
-            // change its running state
-//            program.set("runningState", "PROCESSING");
-
-            // send modification to the backend
-//            program.save();
             program.set("runningState", "PROCESSING");
             program.remoteCall("callProgram", [{type: "String", value: program.get("id")}]);
 
@@ -60,11 +55,6 @@ define([
             // get the program to stop
             var program = programs.get($(e.currentTarget).attr("id"));
 
-            // change its running state
-//            
-
-            // send modification to the backend
-//            program.save();
             program.set("runningState", "DEPLOYED");
             program.remoteCall("stopProgram", [{type: "String", value: program.get("id")}]);
             // refresh the menu
@@ -84,11 +74,24 @@ define([
         },
         refreshDisplay: function() {
             this.Mediator.buildInputFromJSON();
-            if (this.model.get("runningState") === "DEPLOYED") {
-                $(".led").addClass("led-default").removeClass("led-red");
-            } else {
-                $(".led").addClass("led-red").removeClass("led-default");
-            }
+            // translate the view
+            this.$el.i18n();
+            var self = this;
+            _.defer(function(){ self.applyReadMode(); });
+        },
+        applyReadMode: function() {
+            // setting selects in read mode
+            $('select').prop('disabled', true);
+            $('.editorWorkspace :input').prop('disabled', true);
+            $(".programInput").find(".btn").addClass("btn-read-only");
+            $(".programInput").find(".btn-primary").addClass("btn-primary-ro");
+            $(".programInput").find(".btn-prog-action").addClass("btn-prog-action-ro");
+            $(".programInput").find(".btn-prog-device").addClass("btn-prog-device-ro");
+            $(".programInput").find(".btn-prog-service").addClass("btn-prog-service-ro");
+            $(".programInput").find("select").replaceWith(function() {
+                return '<span>' + this.selectedOptions[0].innerHTML + '</span>';
+            });
+            $(".programInput").find(".glyphicon-trash").hide();
         },
         /**
          * Render the editor view
@@ -118,39 +121,17 @@ define([
                 // hide the error message
                 $("#edit-program-name-modal .text-error").hide();
 
-                // try to compile the program to show the potential errors
-                /*if (typeof this.model !== "undefined") {
-                 this.compileProgram();
-                 }-*/
                 this.Mediator.buildInputFromJSON();
-
-                // setting selects in read mode
-                $('select').prop('disabled', true);
-                $('.editorWorkspace :input').prop('disabled', true);
 
                 // fix the programs list size to be able to scroll through it
                 this.resizeDiv($(self.$el.find(".editorWorkspace")[0]), true);
 
                 $(".programInput").height("auto");
-
-
-
-                // disable start button if there is unsaved changes
-                //$(".start-program-button").prop("disabled", this.model.get("modified"));
             }
             // translate the view
             this.$el.i18n();
-
-
-            $(".programInput").find(".btn").addClass("btn-read-only");
-            $(".programInput").find(".btn-primary").addClass("btn-primary-ro");
-            $(".programInput").find(".btn-prog-action").addClass("btn-prog-action-ro");
-            $(".programInput").find(".btn-prog-device").addClass("btn-prog-device-ro");
-            $(".programInput").find(".btn-prog-service").addClass("btn-prog-service-ro");
-            $(".programInput").find("select").replaceWith(function() {
-                return '<span>' + this.selectedOptions[0].innerHTML + '</span>';
-            });
-            $(".programInput").find(".glyphicon-trash").hide();
+            
+            this.applyReadMode();
 
             return this;
         }

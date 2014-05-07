@@ -28,7 +28,7 @@ define([
             this.Mediator = new Mediator();
             this.Mediator.loadProgramJSON(this.model.get("body"));
 
-            this.listenTo(programs, "change", this.refreshDisplay);
+            this.listenTo(this.model, "change", this.refreshDisplay);
             this.listenTo(devices, "change", this.refreshDisplay);
         },
         onClickEndEdit: function(e) {
@@ -43,7 +43,6 @@ define([
             }
             this.model.save();
             appRouter.navigate("#programs/" + this.model.get("id"), {trigger: true});
-            this.undelegateEvents();
         },
         onClickKeyboard: function(e) {
             button = e.target;
@@ -58,7 +57,7 @@ define([
             }
         },
         onClickProg: function(e) {
-            console.log("XXXXXXXXXX On clic prog");
+
             button = e.target;
             if (button !== null && typeof button.classList !== 'undefined' && (button.classList.contains('btn-media-choice') || button.classList.contains('default-media-choice'))) {
                 e.stopPropagation();
@@ -73,7 +72,9 @@ define([
                     this.Mediator.removeSelectedNode();
                 } else {
                     this.Mediator.setCursorAndBuildKeyboard(button.id);
+                    this.refreshDisplay();
                 }
+
             }
         },
         // Displays a tree of items the player can read
@@ -228,6 +229,8 @@ define([
         },
         refreshDisplay: function() {
             this.Mediator.buildInputFromJSON();
+            // translate the view
+            this.$el.i18n();
             if (this.model.get("runningState") === "DEPLOYED") {
                 $(".led").addClass("led-default").removeClass("led-red");
             } else {
