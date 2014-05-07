@@ -251,9 +251,7 @@ define([
         },
         getDeviceJSON: function(deviceId) {
             var d = devices.get(deviceId);
-            var deviceName = d.get("name");
-            return {"type": "device", "value": deviceId, "name": deviceName, "iid": "X", "deviceType": d.get("type")};
-
+            return {"type": "device", "value": deviceId, "iid": "X", "deviceType": d.get("type")};
         },
         getServiceJSON: function(serviceId) {
             var s = services.get(serviceId);
@@ -633,20 +631,6 @@ define([
                 self.sortKeyband(this);
             });
         },
-        getDeviceName: function(id) {
-            if (devices.get(id) == undefined) {
-                console.warn("device not found: " + id);
-                return "Not FOUND";
-            }
-            return devices.get(id).get("name");
-        },
-        getServiceName: function(id) {
-            if (services.get(id) == undefined) {
-                console.warn("service not found: " + id);
-                return "Not FOUND";
-            }
-            return services.get(id).get("name");
-        },
         buildActionNode: function(param) {
             var result = "";
             if (param.node.target.deviceType) {
@@ -716,9 +700,11 @@ define([
                     input += this.tplWhenNode(param);
                     break;
                 case "device":
+                    param.node.name = devices.get(param.node.value).get("name");
                     input += this.tplDeviceNode(param);
                     break;
                 case "service":
+                    param.node.name = services.get(param.node.value).get("name");
                     input += this.tplServiceNode(param);
                     break;
                 case "event":

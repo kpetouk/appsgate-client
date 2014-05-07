@@ -19,12 +19,6 @@ define([
         initialize: function() {
             var self = this;
 
-            // when a name is updated, update the grammar
-            /*this.on("change:name", function() {
-                delete window.grammar;
-                window.grammar = new Grammar();
-            });*/
-
             // each device listens to the event whose id corresponds to its own id. This ensures to
             // receive only relevant events
             dispatcher.on(this.get("id"), function(updatedVariableJSON) {

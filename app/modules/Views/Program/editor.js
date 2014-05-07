@@ -30,6 +30,7 @@ define([
 
             this.listenTo(this.model, "change", this.refreshDisplay);
             this.listenTo(devices, "change", this.refreshDisplay);
+            this.listenTo(services, "change", this.refreshDisplay);
         },
         onClickEndEdit: function(e) {
             this.model.set("body", this.Mediator.programJSON);
