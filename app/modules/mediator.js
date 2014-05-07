@@ -79,15 +79,7 @@ define([
             if (!this.readonly) {
                 $(".programInput").find(".selected-node").removeClass("selected-node");
                 $("#" + parseInt(id)).addClass("selected-node");
-//                $(".programInput").find(".btn-trash").removeClass("glyphicon");
-//                $(".programInput").find(".btn-trash").removeClass("glyphicon-trash");
-                
-//                $("button.btn-trash[id="+parseInt(id)+"]").addClass("glyphicon");
-//                $("button.btn-trash[id="+parseInt(id)+"]").addClass("glyphicon-trash");
-                //$(".btn-trash").find("#"+parseInt(id)).addClass("glyphicon-trash");
-                
-//            	+ "<button class='btn-prog btn-trash' id='"+jsonNode.iid+"' style='right:5px;position:absolute;top:0px;'></button></div>";
-                 }
+            }
         },
         setCursorAndBuildKeyboard: function(id) {
             this.setCurrentPos(id);
@@ -732,6 +724,7 @@ define([
                     input += this.tplServiceNode(param);
                     break;
                 case "event":
+                	deletable=true;
                     input += this.buildEventNode(param);
                     break;
                 case "state":
