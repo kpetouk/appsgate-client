@@ -349,7 +349,7 @@
 		"img-table"									: "image a table",
 		
 		"received-mail-event"						: "un mail arrive",
-		"send-mail-action"							: "envoyer un mail",
+		"send-mail-action"							: "Envoyer un mail",
 		"well-arrived-subject"						: "Bien arrive!"
 	}
 }

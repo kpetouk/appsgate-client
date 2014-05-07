@@ -301,8 +301,8 @@
         },
         "mail": {
             "name": {
-                "singular": "Serveur multimédia",
-                "plural": "Serveurs multimédia"
+                "singular": "Serveur mail",
+                "plural": "Serveurs mail"
             }
         },
         "connectionManager": {
@@ -457,7 +457,10 @@
         "selectedMusic": "musique",
         "img-table": "image a table",
         "received-mail-event": "un mail arrive",
-        "send-mail-action": "envoyer un mail",
+        "send-mail-action": "Envoyer un mail",
+        "mail-dest": "à",
+        "mail-subject" : "dont le sujet est",
+        "mail-body" : "objet",
         "well-arrived-subject": "Bien arrive!",
         "mandatory-keyword":"Obligatoire",
 		"wait"										: "Attendre",
