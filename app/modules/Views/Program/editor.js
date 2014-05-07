@@ -28,7 +28,7 @@ define([
             this.Mediator = new Mediator();
             this.Mediator.loadProgramJSON(this.model.get("body"));
 
-            this.listenTo(programs, "change", this.refreshDisplay);
+            this.listenTo(this.model, "change", this.refreshDisplay);
             this.listenTo(devices, "change", this.refreshDisplay);
         },
         onClickEndEdit: function(e) {
@@ -43,6 +43,7 @@ define([
             }
             this.model.save();
             appRouter.navigate("#programs/" + this.model.get("id"), {trigger: true});
+            this.stopListening();
             this.undelegateEvents();
         },
         onClickKeyboard: function(e) {
@@ -230,6 +231,8 @@ define([
         },
         refreshDisplay: function() {
             this.Mediator.buildInputFromJSON();
+            // translate the view
+            this.$el.i18n();
             if (this.model.get("runningState") === "DEPLOYED") {
                 $(".led").addClass("led-default").removeClass("led-red");
             } else {
