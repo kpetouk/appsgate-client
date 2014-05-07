@@ -288,7 +288,7 @@ define([
         },
         getEmptyJSON: function(type) {
             return {
-                "type": "empty",
+                "type": type,
                 "iid": "X"
             };
         },
@@ -537,8 +537,6 @@ define([
             };
             $(btn).attr("json", JSON.stringify(v));
             $(".expected-actions").append(btn);
-
-
         },
         buildKeyboard: function(ex) {
             $(".expected-elements").html(this.tplExpectedInput());
