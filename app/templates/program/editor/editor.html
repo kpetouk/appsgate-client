@@ -4,7 +4,8 @@
     <div class="alert alert-info" data-i18n="editor.no-program-alert"></div>
     <% } else { %>
 
-    <div class="lead">
+    <div class="row lead">
+        <div class="pull-left">
         <% if ((program.get("runningState") === "WAITING") || program.get("runningState") === "PROCESSING") { %>
         <div class="led led-green pull-left"></div>
         <% } else if (program.get("runningState") === "DEPLOYED") { %>
@@ -13,11 +14,12 @@
         <div class="led led-red pull-left"></div>
         <% } %>
         <% if (program.get("name") !== "") { %>
-        <%= program.get("name") %>
+        <input class="programNameInput" type="text" value="<%= program.get('name') %>"/>
+        <span class="hide text-danger" data-i18n="modal-edit-program.program-already-existing"></span>
         <% } else { %>
         <em>Programme sans nom</em>
         <% } %>
-
+        </div>
         <div class="pull-right">
             <a href="#programs/<%= program.get('id') %>" class="btn btn-default">
                 <span data-i18n="editor.undo-last-action"></span>

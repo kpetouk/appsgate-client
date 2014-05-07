@@ -19,7 +19,8 @@ define([
             "change .arg-input": "onChangeArgValue",
             "change .volume-input": "onChangeMediaVolume",
             "change .hour-picker, .minute-picker": "onChangeClockValue",
-            "click .valid-media": "onValidMediaButton"
+            "click .valid-media": "onValidMediaButton",
+            "keyup .programNameInput": "validEditName"
         },
         /**
          * @constructor
@@ -31,6 +32,45 @@ define([
             this.listenTo(this.model, "change", this.refreshDisplay);
             this.listenTo(devices, "change", this.refreshDisplay);
             this.listenTo(services, "change", this.refreshDisplay);
+        },
+        validEditName: function(e) {
+            e.preventDefault();
+
+            // update the name if it is ok
+            if (this.checkProgramName()) {
+                // set the new name to the place
+                this.model.set("name", $(".programNameInput").val());
+            }
+        },
+        /**
+         * Check the current value of the input text and show a message error if needed
+         * 
+         * @return false if the typed name already exists, true otherwise
+         */
+        checkProgramName: function() {
+            // name is empty
+            if ($(".programNameInput").val() === "") {
+                $(".text-danger").removeClass("hide");
+                $(".text-danger").text($.i18n.t("modal-edit-program.program-name-empty"));
+                $("#end-edit-button").addClass("disabled");
+
+                return false;
+            }
+
+            // name already existing
+            if (programs.where({name: $(".programNameInput").val()}).length > 0) {
+                $(".text-danger").removeClass("hide");
+                $(".text-danger").text($.i18n.t("modal-edit-program.program-already-existing"));
+                $("#end-edit-button").addClass("disabled");
+
+                return false;
+            }
+
+            //ok
+            $(".text-danger").addClass("hide");
+            $("#end-edit-button").removeClass("disabled");
+
+            return true;
         },
         onClickEndEdit: function(e) {
             this.model.set("body", this.Mediator.programJSON);
