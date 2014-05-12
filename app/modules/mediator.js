@@ -83,7 +83,7 @@ define([
         },
         setCursorAndBuildKeyboard: function(id) {
             this.setCurrentPos(id);
-            console.log(" Set cursor ---------> "+id);
+            console.log(" Set cursor ---------> " + id);
             this.checkProgramAndBuildKeyboard(this.programJSON);
         },
         buttonPressed: function(button) {
@@ -196,8 +196,6 @@ define([
             }
             return curNode;
         },
-        
-        
         /*
          * set a node attribute
          */
@@ -611,10 +609,10 @@ define([
             }
 
             $(".expected-elements").i18n();
-            
+
             var keyBands = $(".expected-elements").children();
             var self = this;
-            keyBands.each(function(index){
+            keyBands.each(function(index) {
                 self.sortKeyband(this);
             });
         },
@@ -635,10 +633,10 @@ define([
         buildActionNode: function(param) {
             var result = "";
             if (param.node.target.deviceType) {
-                return devices.getTemplateActionByType(param.node.target.deviceType,param);
+                return devices.getTemplateActionByType(param.node.target.deviceType, param);
             }
             if (param.node.target.serviceType) {
-                return services.getTemplateActionByType(param.node.target.serviceType,param);
+                return services.getTemplateActionByType(param.node.target.serviceType, param);
             }
             return this.tplDefaultActionNode(param);
         },
@@ -683,26 +681,26 @@ define([
                 node: jsonNode,
                 engine: this
             };
-            var deletable=false;
+            var deletable = false;
             var input = "";
             switch (jsonNode.type) {
                 case "action":
-                	deletable=true;
+                    deletable = true;
                     input += this.buildActionNode(param);
                     break;
                 case "if":
-                	deletable=true;
+                    deletable = true;
                     input += this.tplIfNode(param);
                     break;
                 case "booleanExpression":
-                	deletable=true;
+                    deletable = true;
                     input += this.tplBooleanExpressionNode(param);
                     break;
                 case "comparator":
                     input += this.tplComparatorNode(param);
                     break;
                 case "when":
-                	deletable=true;
+                    deletable = true;
                     input += this.tplWhenNode(param);
                     break;
                 case "device":
@@ -712,16 +710,16 @@ define([
                     input += this.tplServiceNode(param);
                     break;
                 case "event":
-                	deletable=true;
+                    deletable = true;
                     input += this.buildEventNode(param);
                     break;
                 case "state":
                 case "deviceState":
-                	deletable=true;
+                    deletable = true;
                     input += this.tplStateNode(param);
                     break;
                 case "while":
-                	deletable=true;
+                    deletable = true;
                     input += this.tplWhileNode(param);
                     break;
                 case "keepState":
@@ -756,7 +754,7 @@ define([
                     input += this.tplNumberNode(param);
                     break;
                 case "wait":
-                	deletable=true;
+                    deletable = true;
                     input += this.tplWaitNode(param);
                     break;
                 case "programCall":
@@ -766,17 +764,17 @@ define([
                     input += "<button class='btn btn-prog btn-primary' id='" + jsonNode.iid + "'><span>" + jsonNode.type + "</span></button>";
                     break;
             }
-            
+
             // For only some kind of node we add a delete button
-            if(deletable==true) {
-            	var supprClasses="";
-            	if(this.currentNode == jsonNode.iid) {
-            	 supprClasses="glyphicon glyphicon-trash";
-            	}
-            	input = "<div class='btn-current'>"
-            	+ input
-            	+ "<div class='btn-prog btn-trash "+supprClasses+"' id='"+jsonNode.iid+"' style='right:5px;position:absolute;top:0px;'></div></div>";
-            	
+            if (deletable == true) {
+                var supprClasses = "";
+                if (this.currentNode == jsonNode.iid) {
+                    supprClasses = "glyphicon glyphicon-trash";
+                }
+                input = "<div class='btn-current'>"
+                        + input
+                        + "<div class='btn-prog btn-trash " + supprClasses + "' id='" + jsonNode.iid + "' style='right:5px;position:absolute;top:0px;'></div></div>";
+
             }
 
             return input;
@@ -804,11 +802,11 @@ define([
 
             var keyBands = $(".expected-elements").children();
             var self = this;
-            keyBands.each(function(index){
+            keyBands.each(function(index) {
                 self.sortKeyband(this);
             });
-            
-            $(".programInput").find(".btn").css("padding","3px 6px");
+
+            $(".programInput").find(".btn").css("padding", "3px 6px");
         },
         sortKeyband: function(keyband) {
             keyband = $(keyband);
@@ -816,13 +814,15 @@ define([
                 keyband.hide();
             } else {
                 var buttons = keyband.children();
-                
+
                 buttons.sort(function(a, b) {
                     return $(a).text().toUpperCase().localeCompare($(b).text().toUpperCase());
-                    
+
                 });
-                
-                $.each(buttons, function(idx,itm){keyband.append(itm);});
+
+                $.each(buttons, function(idx, itm) {
+                    keyband.append(itm);
+                });
             }
         },
         checkProgramAndBuildKeyboard: function(programJSON) {
@@ -844,10 +844,10 @@ define([
             }
             var keyBands = $(".expected-elements").children();
             var self = this;
-            keyBands.each(function(index){
+            keyBands.each(function(index) {
                 self.sortKeyband(this);
             });
-            
+
             return false;
         },
     });
