@@ -22,6 +22,7 @@
 	"navbar" : {
         "edit"				: "Editer",
         "stop-edit"			: "Fin edition",
+				"home"	: "Chez nous",
         "users"				: "Utilisateurs",
 		"places"			: "Pièces",
 		"devices"			: "Dispositifs",
@@ -394,24 +395,24 @@
 		"space"										: "espace",
 		"true"										: "vrai",
 		"false"										: "faux",
-		
+
 		"op-more-than"								: "plus de",
 		"op-less-than"								: "moins de",
-		
+
 		"change-temperature"						: "change",
 		"indicate-temperature"						: "indique",
-		
+
 		"change-illumination"						: "change",
 		"indicate-illumination"						: "indique",
-		
+
 		"pushed-switch-event"						: "on appuie sur",
 		"released-switch-event"						: "on relache",
-		
+
 		"pushed-telec-event-up"						: "on appuie sur le bouton haut de",
 		"pushed-telec-event-bottom"					: "on appuie sur le bouton bas de",
 		"pushed-telec-event-left"					: "on appuie a gauche de",
 		"pushed-telec-event-right"					: "on appuie a droite de",
-		
+
 		"opened-contact-event"						: "on ouvre",
 		"closed-contact-event"						: "on ferme",
 		"contact-sensor-keyword"					: "le capteur de contact de",
@@ -421,12 +422,12 @@
 		"is-opened-contact-status"					: "ouvert",
 		"is-assembled-contact-status"				: "assemble",
 		"is-disassembled-contact-status"			: "desassemble",
-		
+
 		"inserted-keycard-reader-event"				: "on insere une carte dans",
 		"removed-keycard-reader-event"				: "on retire une carte de",
 		"card-inserted-keycard-reader-status"		: "une carte est inseree dans",
 		"no-card-inserted-keycard-reader-status"	: "aucune carte n est inseree dans",
-		
+
 		"turned-on-plug-event"						: "on allume",
 		"turned-off-plug-event"						: "on eteint",
 		"is-turned-on-plug-status"					: "est allumee",
@@ -442,10 +443,10 @@
 
 		"turn-on-actuator-action"					: "Allumer",
 		"turn-off-actuator-action"					: "Eteindre",
-    
+
 		"wait"										: "Attendre",
 		"seconds"									: "secondes",
-		
+
 		"turned-on-lamp-event"						: "on allume",
 		"turned-off-lamp-event"						: "on eteint",
 		"is-turned-on-lamp-status"					: "est allumee",
@@ -463,17 +464,17 @@
 		"orange-color"								: "orange",
 		"purple-color"								: "violet",
 		"pink-color"								: "rose",
-		
+
 		"clock-event"								: "il est",
 		"clock-status"								: "il est",
-		
+
 		"play-media-action"							: "Jouer",
         "browse-media-button": "Parcourir",
 		"pause-media-action"						: "Mettre en pause le media",
 		"stop-media-action"							: "Stopper",
 		"set-volume-media-action"					: "Mettre le volume de",
 		"complement-media-action"					: "sur",
-		
+
 		"alarm-music"								: "musique douce",
 		"music"										: "musique tonique",
 		"ring-bell-mail-arrived"					: "sonnerie nouveau mail arrive",
@@ -481,7 +482,7 @@
 		"movie"										: "film",
 		"selectedMusic"								: "musique",
 		"img-table"									: "image a table",
-		
+
 		"received-mail-event"						: "un mail arrive",
 		"send-mail-action"							: "Envoyer un mail",
         "mail-dest"									: "à",
