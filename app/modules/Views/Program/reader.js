@@ -29,7 +29,7 @@ define([
         },
         /**
          * Callback to start a program
-         * 
+         *
          * @param e JS mouse event
          */
         onStartProgramButton: function(e) {
@@ -48,7 +48,7 @@ define([
         },
         /**
          * Callback to stop a program
-         * 
+         *
          * @param e JS mouse event
          */
         onStopProgramButton: function(e) {
@@ -87,7 +87,7 @@ define([
         },
         applyReadMode: function() {
             // setting selects in read mode
-            $('select').prop('disabled', true);
+            $('.editorWorkspace').find('select').prop('disabled', true);
             $('.editorWorkspace :input').prop('disabled', true);
             $(".programInput").find(".btn").addClass("btn-read-only");
             $(".programInput").find(".btn-primary").addClass("btn-primary-ro");

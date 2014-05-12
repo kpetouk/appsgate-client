@@ -31,6 +31,8 @@ define(function(require, exports, module) {
         window.communicator = new Communicator('ws://192.168.1.3:8087');
         //window.communicator = new Communicator('ws://localhost:8087');
 
+        window.addEventListener("click", onFocusOutCircleMenu, false);
+
         // Wait for the socket to be opened
         dispatcher.on("WebSocketOpen", function() {
             // delete the current collections if any - in case of a reconnection
@@ -53,7 +55,7 @@ define(function(require, exports, module) {
             var devicesReady = false;
             var servicesReady = false;
             var programsReady = false;
-            
+
             // places
             dispatcher.on("placesReady", function() {
                 placesReady = true;
@@ -69,7 +71,7 @@ define(function(require, exports, module) {
                     dispatcher.trigger("dataReady");
                 }
             });
-            
+
             // services
             dispatcher.on("servicesReady", function() {
                 servicesReady = true;
@@ -122,7 +124,7 @@ define(function(require, exports, module) {
             require(['collections/devices'], function (Devices) {
                 window.devices = new Devices();
             });
-            
+
             // Initialize the collection of devices
             require(['collections/services'], function (Services) {
                 window.services = new Services();
@@ -132,38 +134,8 @@ define(function(require, exports, module) {
             require(['collections/programs'], function (Programs) {
                 window.programs = new Programs();
             });
-            
+
         });
-
-        // hide the button to flash devices if there is no camera
-        if (!navigator.camera) {
-            $("#flash-device-button").hide();
-        }
-
-        // listen to the event coming from the button to flash a device
-        /*$("#flash-device-button").on("click", function() {
-         // launch the window to flash a device
-         cordova.plugins.barcodeScanner.scan(
-         function(result) {
-         if (result.cancelled) {
-         console.log("the user cancelled the scan");
-         } else {
-         if (typeof devices.get(result.text) !== "undefined") {
-         appRouter.navigate("#devices/" + result.text, {trigger: true});
-         } else {
-         navigator.notification.alert(
-         "Dispositif non reconnu",
-         null,
-         "Information"
-         );
-         }
-         }
-         },
-         function(error) {
-         console.log("scanning failed: " + error);
-         }
-         );
-         });*/
 
         // listen to the event coming from the valid button of the modal window for the settings
         $("#settings-modal #valid-button").bind("click", onValidSettingsButton);
@@ -191,7 +163,7 @@ define(function(require, exports, module) {
 
     /**
      * Callback when the user has validated new settings
-     * 
+     *
      * @param e JS event
      */
     function onValidSettingsButton(e) {
@@ -240,6 +212,14 @@ define(function(require, exports, module) {
         $("#lost-connection-modal .text-info").show();
 
         communicator.reconnect();
+    }
+
+    function onFocusOutCircleMenu(e) {
+      $('.circlemenu').circleMenu('close');
+      /*var target = e.currentTarget;
+      if(typeof target.classList !== "undefined" && !target.classList.contains('circlemenu') && !target.parentNode.classList.contains('circlemenu')){
+
+      }-*/
     }
 
     return app;
