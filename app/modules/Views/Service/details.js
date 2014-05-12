@@ -3,8 +3,9 @@ define([
     "text!templates/services/details/serviceContainer.html",
     "text!templates/services/details/mediaplayer.html",
     "text!templates/services/details/mediabrowser.html",
-    "text!templates/services/details/mail.html"
-], function(App, serviceDetailsTemplate, mediaPlayerDetailTemplate, mediaBrowserDetailTemplate, mailDetailTemplate) {
+    "text!templates/services/details/mail.html",
+    "text!templates/services/details/weather.html"    
+], function(App, serviceDetailsTemplate, mediaPlayerDetailTemplate, mediaBrowserDetailTemplate, mailDetailTemplate, weatherDetailTemplate) {
 
     var ServiceDetailsView = {};
     // detailled view of a service
@@ -13,6 +14,7 @@ define([
         tplMediaPlayer: _.template(mediaPlayerDetailTemplate),
         tplMediaBrowser: _.template(mediaBrowserDetailTemplate),
         tplMail: _.template(mailDetailTemplate),
+        tplWeather: _.template(weatherDetailTemplate),        
         // map the events and their callback
         events: {
             "click button.back-button": "onBackButton",
@@ -247,6 +249,14 @@ define([
                             serviceDetails: this.tplMail
                         }));
                         break;
+                    case 103: // weather
+                        this.$el.html(this.template({
+                            service: this.model,
+                            sensorType: $.i18n.t("services.weather.name.singular"),
+                            places: places,
+                            serviceDetails: this.tplWeather
+                        }));
+                        break;                        
                 }
                 // resize the panel
                 this.resizeDiv($(this.$el.find(".list-group")[0]));

@@ -3,8 +3,9 @@ define([
     "models/service/service",
     "models/service/mediaplayer",
     "models/service/mediabrowser",
-    "models/service/mail"
-], function(App, Service, MediaPlayer, MediaBrowser, Mail) {
+    "models/service/mail",
+    "models/service/weather"    
+], function(App, Service, MediaPlayer, MediaBrowser, Mail, Weather) {
 
     var Services = {};
 
@@ -61,6 +62,9 @@ define([
                 case 102:
                     service = new Mail(brick);
                     break;
+                case 103:
+                    service = new Weather(brick);
+                    break;
                 default:
                     console.log("unknown type", brick.type, brick);
                     break;
@@ -85,6 +89,12 @@ define([
         getCoreMail: function() {
             return services.findWhere({type: 102});
         },
+        /**
+         * @return Core weather of the home - unique device
+         */
+        getCoreWeather: function() {
+            return services.findWhere({type: 103});
+        },        
         /**
          * @return Array of UPnP media players
          */

@@ -104,7 +104,7 @@ define([
                 this.$el.append(this.tpl());
                 var types = devices.getDevicesByType();
                 _.forEach(_.keys(types), function(type) {
-                    if (type !== "21" && type !== "36" && type !== "102") {
+                    if (type !== "21" && type !== "36" && type !== "102" && type !== "103") {
                         $(self.$el.find(".list-group")[1]).append(self.tplDeviceContainer({
                             type: type,
                             devices: types[type],

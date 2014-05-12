@@ -322,6 +322,16 @@ define([
                     }
                 }
             }
+            var serviceTypes = services.getServicesByType();
+            for (type in serviceTypes) {
+                if (serviceTypes[type].length > 0) {
+                    o = serviceTypes[type][0];
+                    states = o.getStates();
+                    for (a in states) {
+                        $(".expected-links").append(o.getKeyboardForState(states[a]));
+                    }
+                }
+            }            
         },
         buildDeviceStateKeys: function() {
             var types = devices.getDevicesByType();

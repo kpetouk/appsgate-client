@@ -17,7 +17,13 @@
         <% } else { %>
             <span data-i18n="services.mail.name.plural"></span>
         <% } %>
-    <% } %>
+    <% } else if (type === "103") { %>
+        <% if (services.length === 1) { %>
+            <span data-i18n="services.weather.name.singular"></span>
+        <% } else { %>
+            <span data-i18n="services.weather.name.plural"></span>
+        <% } %>
+    <% } %>    
 </div>
 
 <!-- render located services -->
