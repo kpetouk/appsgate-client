@@ -269,7 +269,7 @@ define([
         this.Mediator.buildInputFromJSON();
       },
       refreshDisplay: function(e) {
-        if (e.get("type") !== 21) {
+        if (typeof e !== "undefined" && e.get("type") !== 21) {
           this.Mediator.buildInputFromJSON();
           // translate the view
           this.$el.i18n();

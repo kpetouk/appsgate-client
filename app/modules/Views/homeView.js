@@ -54,7 +54,7 @@ define([
                     target = target.parentNode;
                 }
                 target = $(target);
-                
+
                 if(!target.hasClass("disabled")){
                     var targetWidth = target.innerWidth();
                     var targetHeight = target.innerHeight();
@@ -82,7 +82,7 @@ define([
                     $("#universeList").animate({opacity: 0}, 500);
                 }
                 else {
-                    this.zooming = false;                    
+                    this.zooming = false;
                 }
             }
         },
@@ -100,7 +100,7 @@ define([
                 circle_radius: 150,
                 direction: 'top-right'
             });
-            
+
             $(".navmenu").circleMenu({
                 trigger: "click",
                 item_diameter: 50,
@@ -110,7 +110,7 @@ define([
 
             $(".circlemenu").children('li:first-child')
             // translate the view
-            this.$el.i18n();
+            $("body").i18n();
 
             return this;
         }
