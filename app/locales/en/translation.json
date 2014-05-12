@@ -279,6 +279,11 @@
 		"pushed-switch-event"						: "we press on",
 		"released-switch-event"						: "we release",
 		
+		"pushed-telec-event-up"						: "on appuie sur le bouton haut de",
+		"pushed-telec-event-bottom"					: "on appuie sur le bouton bas de",
+		"pushed-telec-event-left"					: "on appuie a gauche de",
+		"pushed-telec-event-right"					: "on appuie a droite de",
+		
 		"opened-contact-event"						: "we open",
 		"closed-contact-event"						: "we close",
 		"contact-sensor-keyword"					: "the contact sensor of",
@@ -303,19 +308,24 @@
 
 		"turned-on-actuator-event"					: "we turn on",
 		"turned-off-actuator-event"					: "we turn off",
+		
 		"is-turned-on-actuator-status"					: "is turned on",
 		"is-turned-off-actuator-status"					: "is turned off",
+		
 		"turn-on-actuator-action"					: "turn on",
 		"turn-off-actuator-action"					: "turn off",
 
+		"wait"										: "Wait",
+		"seconds"									: "seconds",
+		
 		"turned-on-lamp-event"						: "we turn on",
 		"turned-off-lamp-event"						: "we turn off",
 		"is-turned-on-lamp-status"					: "is turned on",
 		"is-turned-off-lamp-status"					: "is turned off",
 		"turn-on-lamp-action"						: "turn on",
 		"turn-off-lamp-action"						: "turn off",
-		"change-color-lamp-action"					: "change the color of",
         "blink-lamp-action"                         : "blink",
+		"change-color-lamp-action"					: "change the color of",
 		"complement-change-color-lamp-action"		: "in",
 		"white-color"								: "white",
 		"red-color"									: "red",
@@ -345,6 +355,8 @@
 		
 		"received-mail-event"						: "a mail arrives",
 		"send-mail-action"							: "send the mail 'Well arrived!' to",
-		"well-arrived-subject"						: "Well arrived!"
+		"well-arrived-subject"						: "Well arrived!",
+		"state-verb"								: "is"
+
 	}
 }

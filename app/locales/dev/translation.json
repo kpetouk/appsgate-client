@@ -1,24 +1,45 @@
 {
 	"app" : {
-		"name"	: "AppsGate"
+        "name"		: "AppsGate",
+        "signin"	: "Identification"
 	},
 	"form" : {
-		"cancel-button"	: "Annuler",
-		"valid-button"	: "Valider",
-		"close-button"	: "Fermer",
-		"rename-button"	: "Renommer",
-		"delete-button"	: "Supprimer",
-		"edit-button"	: "Editer",
-		"save-button"	: "Sauvegarder",
-		"saving-button" : "En cours...",
-		"browse-button"	: "Parcourir"
+        "enter-button"		: "Entrer",
+		"cancel-button"		: "Annuler",
+		"valid-button"		: "Valider",
+		"close-button"		: "Fermer",
+		"rename-button"		: "Renommer",
+		"delete-button"		: "Supprimer",
+		"edit-button"		: "Editer",
+		"save-button"		: "Sauvegarder",
+		"saving-button" 	: "En cours...",
+        "browse-button"		: "Parcourir",
+        "background-editor"	: "Fond",
+        "size-editor"		: "Taille",
+        "size-width"		: "Largeur",
+        "size-height"		: "Hauteur"
 	},
 	"navbar" : {
+        "edit"				: "Editer",
+        "stop-edit"			: "Fin edition",
+        "users"				: "Utilisateurs",
 		"places"			: "Pièces",
 		"devices"			: "Dispositifs",
+        "services"			: "Services",
 		"programs"			: "Programmes",
 		"button-settings"	: "Préférences"
 	},
+    "editbar": {
+        "undo"				: "Annuler",
+        "redo"				: "Refaire",
+        "add"				: "Ajouter",
+        "trashbin"			: "Corbeille"
+    },
+    "login": {
+        "username"			: "Nom d'identification",
+        "password"			: "Mot de passe",
+        "confirm-password"	: "Mot de passe de confirmation"
+    },
 	"modal-lost-connection" : {
 		"title"						: "Problème de connexion",
 		"interrupted-connection"	: "La connexion a été interrompue.",
@@ -35,6 +56,13 @@
 		"server-unreachable"	: "Serveur indisponible...",
 		"connection"			: "Connexion..."
 	},
+	"edit-name-modal": {
+        "title"					: "Renommer",
+        "name"					: "Nom",
+        "name-empty"			: "Le nom doit être renseigné.",
+        "already-existing"		: "Nom déjà existant."
+    },
+
 	"places-menu" : {
 		"add-button"		: "Ajouter pièce",
 		"place-no-name"		: "Pièce sans nom",
@@ -74,11 +102,17 @@
 		"time-label"			: "Heure",
 		"time-speed-label"		: "Vitesse"
 	},
+    "modal-edit-service": {
+        "name-label": "Nom",
+        "name-placeholder": "Nom du service",
+        "name-already-existing": "Nom de service déjà existant",
+        "place-label": "Pièce"
+    },
 	"programs-menu": {
-		"add-button"		: "Ajouter programme"
+		"add-button"			: "Ajouter programme"
 	},
 	"modal-add-program"	: {
-		"title"				: "Ajouter programme",
+		"title"					: "Ajouter programme",
 		"name-label"			: "Nom",
 		"name-placeholder"		: "Nom du programme",
 		"name-empty"			: "Le nom du programme doit être renseigné.",
@@ -87,8 +121,8 @@
 		"unable-to-parse"		: "Impossible de lire ce fichier"
 	},
 	"modal-edit-program"	: {
-		"title"				: "Renommer programme",
-		"program-name"			: "Nom du programme",
+		"title"						: "Renommer programme",
+		"program-name"				: "Nom du programme",
 		"program-name-empty"		: "Le nom du programme doit être renseigné.",
 		"program-already-existing"	: "Nom du programme déjà existant."
 	},
@@ -101,24 +135,24 @@
 		"value-label"		: "Valeur",
 		"consumption-label"	: "Consommation",
 		"status-label"		: "Statut",
-		"status"			: {
+		"status": {
 			"connected"		: "Connecté",
 			"waiting"		: "En attente",
 			"disconnected"	: "Déconnecté"
 		},
-		"temperature"		: {
+		"temperature": {
 			"name"	: {
 				"singular"	: "Capteur de température",
 				"plural"	: "Capteurs de température"
 			}
 		},
-		"illumination"		: {
+		"illumination": {
 			"name"	: {
 				"singular"	: "Capteur de luminosité",
 				"plural"	: "Capteurs de luminosité"
 			}
 		},
-		"switch"			: {
+		"switch": {
 			"name"	: {
 				"singular"	: "Interrupteur",
 				"plural"	: "Interrupteurs"
@@ -128,21 +162,21 @@
 				"closed"	: "Fermé"
 			}
 		},
-		"actuator"			: {
-			"name"	: {
+		"actuator": {
+			"name": {
 				"singular"	: "Actionneur",
 				"plural"	: "Actionneurs"
 			},
-			"status"	: {
+			"status": {
 				"turnedOn"	: "Allumé",
 				"turnedOff"	: "Eteint"
 			},
-			"action"	: {
+			"action": {
 				"turnOn"	: "Allumer",
 				"turnOff"	: "Eteindre"
 			}
 		},
-		"contact"			: {
+		"contact": {
 			"name"	: {
 				"singular"	: "Capteur de contact",
 				"plural"	: "Capteurs de contact"
@@ -150,9 +184,13 @@
 			"value"	: {
 				"opened"	: "Ouvert",
 				"closed"	: "Fermé"
+            },
+            "event": {
+                "opened": "on ouvre",
+                "closed": "on ferme"
 			}
 		},
-		"keycard-reader"	: {
+		"keycard-reader": {
 			"name"	: {
 				"singular"	: "Lecteur de carte",
 				"plural"	: "Lecteurs de carte"
@@ -162,13 +200,13 @@
 				"not-inserted"	: "Pas de carte"
 			}
 		},
-		"movement"			: {
+		"movement": {
 			"name"	: {
 				"singular"	: "Capteur de mouvement",
 				"plural"	: "Capteurs de mouvement"
 			}
 		},
-		"plug"				: {
+		"plug": {
 			"name"	: {
 				"singular"	: "Prise gigogne",
 				"plural"	: "Prises gigognes"
@@ -177,12 +215,12 @@
 				"turnedOn"	: "Allumée",
 				"turnedOff"	: "Eteinte"
 			},
-			"action"	: {
+			"action": {
 				"turnOn"	: "Allumer",
 				"turnOff"	: "Eteindre"
 			}
 		},
-		"lamp"				: {
+		"lamp": {
 			"name"	: {
 				"singular"	: "Lampe Philips Hue",
 				"plural"	: "Lampes Philips Hue"
@@ -197,24 +235,24 @@
                 "blink"     : "Clignoter"
 			}
 		},
-		"clock"				: {
+		"clock"	: {
 			"name"	: {
 				"singular"	: "Horloge système",
 				"no-name"	: "Horloge système sans nom"
 			},
 			"time-speed-label"	: "Vitesse d'écoulement du temps"
 		},
-		"mediaplayer"		: {
-			"name"		: {
+		"mediaplayer": {
+			"name"	: {
 				"singular"	: "Lecteur multimédia",
 				"plural"	: "Lecteurs multimédia"
 			},
-			"status"	: {
+			"status": {
 				"playing"	: "Lecture en cours",
 				"stopped"	: "Arrêté",
 				"selected"	: "Veuillez choisir un média"
 			},
-			"action"	: {
+			"action": {
 				"play"		: "Lancer",
 				"resume"	: "Reprendre",
 				"pause"		: "Pause",
@@ -224,37 +262,127 @@
 			}
 		}
 	},
+    "services": {
+        "unknown"			: "Inconnu",
+        "device-no-name"	: "Dispositif sans nom",
+        "device-unlocated"	: "Non localisé",
+        "type-label"		: "Type",
+        "place-label"		: "Emplacement",
+        "state-label"		: "Etat",
+        "value-label"		: "Valeur",
+        "consumption-label"	: "Consommation",
+        "status-label"		: "Statut",
+        "status": {
+            "connected"		: "Connecté",
+            "waiting"		: "En attente",
+            "disconnected"	: "Déconnecté"
+        },
+        "mediaplayer": {
+            "name": {
+                "singular"	: "Lecteur multimédia",
+                "plural"	: "Lecteurs multimédia"
+            },
+            "status": {
+                "playing"	: "Lecture en cours",
+                "stopped"	: "Arrêté",
+                "selected"	: "Veuillez choisir un média"
+            },
+            "action": {
+                "play"		: "Lancer",
+                "resume"	: "Reprendre",
+                "pause"		: "Pause",
+                "stop"		: "Arrêter",
+                "volume"	: "Volume",
+                "browse"	: "Parcourir"
+            }
+        },
+        "mediabrowser": {
+            "name": {
+                "singular"	: "Serveur multimédia",
+                "plural"	: "Serveurs multimédia"
+            }
+        },
+        "mail": {
+            "name": {
+                "singular"	: "Serveur mail",
+                "plural"	: "Serveurs mail"
+            }
+        },
+        "connectionManager": {
+            "name": {
+                "singular"	: "Connection Manager",
+                "plural"	: "Connection Managers"
+            }
+        },
+        "renderingControl": {
+            "name": {
+                "singular"	: "Rendering control",
+                "plural"	: "Rendering controls"
+            }
+        },
+        "avtransport": {
+            "name": {
+                "singular"	: "AV Transport",
+                "plural"	: "AV Transports"
+            }
+        },
+        "contentdirectory": {
+            "name": {
+                "singular"	: "Content Directory",
+                "plural"	: "Content Directories"
+            }
+        }
+    },
 	"programs" : {
 		"program-no-name"	: "Programme sans nom",
+        "edit-program"		: "Modifier",
+        "end-edit-program"	: "Fin modifier",
+        "delete-program"	: "Supprimer",
 		"state"	: {
-			"deployed"	: "Déployé",
-			"started"	: "Démarré",
-			"stopped"	: "Arrêté",
-			"failed"	: "Erreur"
+			"deployed"		: "Déployé",
+			"started"		: "Démarré",
+			"stopped"		: "Arrêté",
+			"failed"		: "Erreur"
 		},
 		"action" : {
-			"start"	: "Démarrer",
-			"stop"	: "Arrêter"
+            "start"			: "Activer",
+			"stop"			: "Arrêter"
 		}
 	},
 	"editor" : {
 		"title"					: "Editeur de programme",
 		"no-program-alert"		: "Aucun programme",
 		"valid-program-alert"	: "Programme valide",
-		"invalid-program-alert"	: "Programme invalide"
+        "invalid-program-alert"	: "Programme invalide",
+        "undo-last-action"		: "Annuler"
 	},
 	"language" : {
 		"written-by"								: "ecrit par",
-		"when-keyword"								: "lorsque",
+		"when-keyword"								: "Lorsque",
 		"end-when-block"							: ".",
-		"if-keyword"								: "si",
+        "if-keyword"								: "Si",
+        "if-and"									: "Si ... et ...",
+        "if-or"										: "Si ... ou ...",
+        "if-equals"									: "... indique ...",
+        "if-sup"									: "... est superieur a ...",
+        "if-inf"									: "... est inferieur a ...",
+        "if-dif" 									: "... est different de ...",
+        "if-not"									: "Si ... n'est pas vrai ...",
 		"else-keyword"								: "sinon",
 		"end-if-block"								: ".",
-		"then-keyword"								: "alors",
-		"activate-program-action"					: "activer le programme",
-		"disactivate-program-action"				: "desactiver le programme",
-		"is-activated-program-event"				: "est active",
-		"is-disactivated-program-event"				: "est desactive",
+        "then-keyword"								: "Alors",
+        "while-keyword"								: "Tant que",
+        "while-keep"								: "Tant que ... maintenir ...",
+        "keep-state"								: " l'état ",
+        "keep-keyword"								: "Maintenir",
+        "and-when"									: "Et lorsque",
+        "it-is-not-the-case"						: "ce n'est plus le cas",
+        "activate-program-action"					: "Activer le programme",
+        "disactivate-program-action"				: "Désactiver le programme",
+        "activate"									: "Activer",
+        "disactivate"								: "Désactiver",
+        "is-activated-program-event"				: "est activé",
+        "is-disactivated-program-event"				: "est desactivé",
 		"is-running-program-status"					: "est actif",
 		"is-stopped-program-status"					: "est inactif",
 		"op-event"									: "et",
@@ -279,6 +407,11 @@
 		"pushed-switch-event"						: "on appuie sur",
 		"released-switch-event"						: "on relache",
 		
+		"pushed-telec-event-up"						: "on appuie sur le bouton haut de",
+		"pushed-telec-event-bottom"					: "on appuie sur le bouton bas de",
+		"pushed-telec-event-left"					: "on appuie a gauche de",
+		"pushed-telec-event-right"					: "on appuie a droite de",
+		
 		"opened-contact-event"						: "on ouvre",
 		"closed-contact-event"						: "on ferme",
 		"contact-sensor-keyword"					: "le capteur de contact de",
@@ -298,17 +431,17 @@
 		"turned-off-plug-event"						: "on eteint",
 		"is-turned-on-plug-status"					: "est allumee",
 		"is-turned-off-plug-status"					: "est eteinte",
-		"turn-on-plug-action"						: "allumer",
-		"turn-off-plug-action"						: "eteindre",
+		"turn-on-plug-action"						: "Allumer",
+		"turn-off-plug-action"						: "Eteindre",
 
 		"turned-on-actuator-event"					: "on allume",
 		"turned-off-actuator-event"					: "on eteint",
 
-		"is-turned-on-actuator-status"					: "est allume",
-		"is-turned-off-actuator-status"					: "est eteint",
+		"is-turned-on-actuator-status"				: "est allume",
+		"is-turned-off-actuator-status"				: "est eteint",
 
-		"turn-on-actuator-action"					: "allumer",
-		"turn-off-actuator-action"					: "eteindre",
+		"turn-on-actuator-action"					: "Allumer",
+		"turn-off-actuator-action"					: "Eteindre",
     
 		"wait"										: "Attendre",
 		"seconds"									: "secondes",
@@ -334,11 +467,12 @@
 		"clock-event"								: "il est",
 		"clock-status"								: "il est",
 		
-		"play-media-player-action"					: "jouer",
-		"pause-media-player-action"					: "mettre en pause le media",
-		"stop-media-player-action"					: "stopper",
-		"set-volume-media-player-action"			: "mettre le volume de",
-		"complement-media-player-action"			: "sur",
+		"play-media-action"							: "Jouer",
+        "browse-media-button": "Parcourir",
+		"pause-media-action"						: "Mettre en pause le media",
+		"stop-media-action"							: "Stopper",
+		"set-volume-media-action"					: "Mettre le volume de",
+		"complement-media-action"					: "sur",
 		
 		"alarm-music"								: "musique douce",
 		"music"										: "musique tonique",
@@ -350,6 +484,44 @@
 		
 		"received-mail-event"						: "un mail arrive",
 		"send-mail-action"							: "Envoyer un mail",
-		"well-arrived-subject"						: "Bien arrive!"
+        "mail-dest"									: "à",
+        "mail-subject" 								: "dont le sujet est",
+        "mail-body" 								: "objet",
+		"well-arrived-subject"						: "Bien arrive!",
+        "mandatory-keyword"							:"Obligatoire",
+        "nothing-keyword"							:"Rien",
+        "is-turned-on-lamp-state"					: "allumée",
+		"state-verb"								: "is"
+
+
+    },
+    "keyboard": {
+        "true"										: "Vrai",
+        "false"										: "Faux",
+        "is-turned-on-lamp-state"					: "la lampe est allumée",
+        "is-turned-off-lamp-state"					: "la lampe est éteinte",
+        "is-turned-on-lamp-event"					: "on allume la lampe",
+        "is-turned-off-lamp-event"					: "on éteint la lampe",
+        "turn-on-lamp-action"						: "Allumer la lampe",
+        "turn-off-lamp-action"						: "Eteindre la lampe",
+        "blink-lamp-action"							: "Faire clignoter",
+        "when-keyword"								: "Lorsque",
+        "if-keyword"								: "Si",
+        "if-and"									: "Si ... et ...",
+        "if-or"										: "Si ... ou ...",
+        "if-equals"									: "... indique ...",
+        "if-sup"									: "... est superieur a ...",
+        "if-inf"									: "... est inferieur a ...",
+        "if-dif" 									: "... est different de ...",
+        "if-not"									: "Si ... n'est pas vrai ...",
+        "light-brightness"							: "l'intensité de la lampe",
+        "while-keyword"								: "Tant que",
+        "while-keep"								: "Tant que ... maintenir ...",
+        "keep-state"								: "Maintenir l'état ...",
+        "clock-event"								: "il est ",
+        "play-media-action"							: "Jouer un media",
+        "pause-media-action"						: "Mettre en pause le media",
+        "stop-media-action"							: "Stopper",
+        "set-volume-media-action"					: "Mettre le volume"
 	}
 }
