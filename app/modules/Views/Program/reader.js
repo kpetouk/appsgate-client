@@ -74,12 +74,16 @@ define([
             // navigate to the list of programs
             appRouter.navigate("#programs", {trigger: true});
         },
-        refreshDisplay: function() {
-            this.Mediator.buildInputFromJSON();
-            // translate the view
-            this.$el.i18n();
-            var self = this;
-            _.defer(function(){ self.applyReadMode(); });
+        refreshDisplay: function(e) {
+            if (e.get("type") !== 21) {
+                this.Mediator.buildInputFromJSON();
+                // translate the view
+                this.$el.i18n();
+                var self = this;
+                _.defer(function() {
+                    self.applyReadMode();
+                });
+            }
         },
         applyReadMode: function() {
             // setting selects in read mode
@@ -132,7 +136,7 @@ define([
             }
             // translate the view
             this.$el.i18n();
-            
+
             this.applyReadMode();
 
             return this;
