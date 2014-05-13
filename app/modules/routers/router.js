@@ -47,27 +47,15 @@ define(function(require, exports, module) {
     },
     habitat: function() {
       this.placesRouter.list();
-      $(".breadcrumb").html("<li><a href='#home'><span data-i18n='navbar.home'/></a></li>");
-      $(".breadcrumb").append("<li class='active'><span data-i18n='navbar.places'/></li>");
-      this.translateNavbar();
     },
     devices: function() {
       this.devicesRouter.list();
-      $(".breadcrumb").html("<li><a href='#home'><span data-i18n='navbar.home'/></a></li>");
-      $(".breadcrumb").append("<li class='active'><span data-i18n='navbar.devices'/></li>");
-      this.translateNavbar();
     },
     services: function() {
       this.servicesRouter.list();
-      $(".breadcrumb").html("<li><a href='#home'><span data-i18n='navbar.home'/></a></li>");
-      $(".breadcrumb").append("<li class='active'><span data-i18n='navbar.services'/></li>");
-      this.translateNavbar();
     },
     programs: function() {
       this.programsRouter.list();
-      $(".breadcrumb").html("<li><a href='#home'><span data-i18n='navbar.home'/></a></li>");
-      $(".breadcrumb").append("<li class='active'><span data-i18n='navbar.programs'/></li>");
-      this.translateNavbar();
     },
     // update the side menu w/ new content
     showMenuView: function(menuView) {

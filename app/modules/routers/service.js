@@ -34,14 +34,22 @@ ServiceRouter = Backbone.Router.extend({
 
         // update the url
         appRouter.navigate("#services/types/" + typeId);
+
+        $(".breadcrumb").html("<li><a href='#home'><span data-i18n='navbar.home'/></a></li>");
+        $(".breadcrumb").append("<li class='active'><span data-i18n='navbar.services'/></li>");
+        appRouter.translateNavbar();
     },
     /**
      * Display all the services of a given type
-     * 
+     *
      * @param typeId id of the service category to show
      */
     serviceByType: function(typeId) {
         appRouter.showDetailsView(new ServicesByTypeView({id: typeId}));
+
+        $(".breadcrumb").html("<li><a href='#home'><span data-i18n='navbar.home'/></a></li>");
+        $(".breadcrumb").append("<li class='active'><span data-i18n='navbar.services'/></li>");
+        appRouter.translateNavbar();
     },
     /**
      * Show the details of a service
@@ -51,6 +59,11 @@ ServiceRouter = Backbone.Router.extend({
      */
     details: function(id) {
         appRouter.showDetailsView(new ServiceDetailsView({model: services.get(id)}));
+
+        $(".breadcrumb").html("<li><a href='#home'><span data-i18n='navbar.home'/></a></li>");
+        $(".breadcrumb").append("<li><a href='#services'><span data-i18n='navbar.services'/></a></li>");
+        $(".breadcrumb").append("<li class='active'><span>" + services.get(id).get("name") + "</span></li>");
+        appRouter.translateNavbar();
     }
 });
 return ServiceRouter;

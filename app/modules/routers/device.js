@@ -34,14 +34,22 @@ DeviceRouter = Backbone.Router.extend({
 
         // update the url
         appRouter.navigate("#devices/types/" + typeId);
+
+        $(".breadcrumb").html("<li><a href='#home'><span data-i18n='navbar.home'/></a></li>");
+        $(".breadcrumb").append("<li class='active'><span data-i18n='navbar.devices'/></li>");
+        appRouter.translateNavbar();
     },
     /**
      * Display all the devices of a given type
-     * 
+     *
      * @param typeId id of the device category to show
      */
     deviceByType: function(typeId) {
         appRouter.showDetailsView(new DevicesByTypeView({id: typeId}));
+
+        $(".breadcrumb").html("<li><a href='#home'><span data-i18n='navbar.home'/></a></li>");
+        $(".breadcrumb").append("<li class='active'><span data-i18n='navbar.devices'/></li>");
+        appRouter.translateNavbar();
     },
     /**
      * Show the details of a device
@@ -51,6 +59,10 @@ DeviceRouter = Backbone.Router.extend({
      */
     details: function(id) {
         appRouter.showDetailsView(new DeviceDetailsView({model: devices.get(id)}));
+        $(".breadcrumb").html("<li><a href='#home'><span data-i18n='navbar.home'/></a></li>");
+        $(".breadcrumb").append("<li><a href='#devices'><span data-i18n='navbar.devices'/></a></li>");
+        $(".breadcrumb").append("<li class='active'><span>" + devices.get(id).get("name") + "</span></li>");
+        appRouter.translateNavbar();
     }
 });
 return DeviceRouter;

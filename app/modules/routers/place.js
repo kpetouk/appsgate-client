@@ -24,10 +24,18 @@ define([
 
             // update the url
             appRouter.navigate("#places/" + places.at(0).get("id"));
+
+            $(".breadcrumb").html("<li><a href='#home'><span data-i18n='navbar.home'/></a></li>");
+            $(".breadcrumb").append("<li class='active'><span data-i18n='navbar.places'/></li>");
+            appRouter.translateNavbar();
         },
         // show the details of a places (i.e. list of devices in this place)
         details: function(id) {
             appRouter.showDetailsView(new PlaceDetailsView({model: places.get(id)}));
+            $(".breadcrumb").html("<li><a href='#home'><span data-i18n='navbar.home'/></a></li>");
+            $(".breadcrumb").append("<li><a href='#places'><span data-i18n='navbar.places'/></a></li>");
+            $(".breadcrumb").append("<li class='active'><span>" + places.get(id).get("name") + "</span></li>");
+            appRouter.translateNavbar();
         }
     });
     return PlaceRouter;

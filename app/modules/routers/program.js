@@ -27,6 +27,10 @@ define([
             if (programs.length > 0) {
                 appRouter.navigate("#programs/" + programs.at(0).get("id"));
             }
+
+            $(".breadcrumb").html("<li><a href='#home'><span data-i18n='navbar.home'/></a></li>");
+            $(".breadcrumb").append("<li class='active'><span data-i18n='navbar.programs'/></li>");
+            appRouter.translateNavbar();
         },
         reader: function(id) {
             // display the side menu
@@ -35,10 +39,14 @@ define([
             // display the requested program
             appRouter.showDetailsView(new ProgramReaderView({model: programs.get(id)}));
 
-            // update the url 
+            // update the url
             appRouter.navigate("#programs/" + id);
-            
+
             appRouter.currentMenuView.updateSideMenu();
+
+            $(".breadcrumb").html("<li><a href='#home'><span data-i18n='navbar.home'/></a></li>");
+            $(".breadcrumb").append("<li class='active'><span data-i18n='navbar.programs'/></li>");
+            appRouter.translateNavbar();
         },
         editor: function(id) {
             // remove and unbind the current view for the menu
@@ -72,6 +80,11 @@ define([
             });
 
             appRouter.navigate("#programs/editor/" + id);
+
+            $(".breadcrumb").html("<li><a href='#home'><span data-i18n='navbar.home'/></a></li>");
+            $(".breadcrumb").append("<li><a href='#programs'><span data-i18n='navbar.programs'/></a></li>");
+            $(".breadcrumb").append("<li class='active'><span>" + programs.get(id).get("name") + "</span></li>");
+            appRouter.translateNavbar();
         }
 
     });

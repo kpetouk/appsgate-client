@@ -740,9 +740,11 @@ define([
                     input += this.tplWhenNode(param);
                     break;
                 case "device":
+                    param.node.name = devices.get(param.node.value).get("name");
                     input += this.tplDeviceNode(param);
                     break;
                 case "service":
+                    param.node.name = services.get(param.node.value).get("name");
                     input += this.tplServiceNode(param);
                     break;
                 case "event":
