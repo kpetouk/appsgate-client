@@ -70,46 +70,46 @@ define([
      */
     getKeyboardForProperty: function(property) {
       var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
-      var v = this.getJSONProperty("mandatory");
+      var v = {"type": "action", "target": {"iid": "X", "type": "service", "serviceType":this.get("type"), "value":this.get("id")}, "iid": "X"};
       switch(property) {
         case "getWeatherCodeForecast":
-          $(btn).append("<span data-i18n='keyboard.weather-code'><span>");
+          $(btn).append("<span data-i18n='keyboard.get-weather-code-state'><span>");
           
 		  v.methodName = property;
           v.args = [ {"type":"String", "value": "Grenoble"},
                     {"type":"int", "value": "0"}];          
           v.returnType = "number";
-          v.phrase = "keyboard.weather-code";
+          v.phrase = "keyboard.get-weather-code-state";
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "getMinTemperatureForecast":
-          $(btn).append("<span data-i18n='keyboard.weather-code'><span>");
+          $(btn).append("<span data-i18n='keyboard.weather-min'><span>");
           
 		  v.methodName = property;
           v.args = [ {"type":"String", "value": "Grenoble"},
                     {"type":"int", "value": "0"}];          
           v.returnType = "number";
-          v.phrase = "keyboard.weather-code";
+          v.phrase = "keyboard.weather-min";
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "getMaxTemperatureForecast":
-          $(btn).append("<span data-i18n='keyboard.weather-code'><span>");
+          $(btn).append("<span data-i18n='keyboard.weather-max'><span>");
           
 		  v.methodName = property;
           v.args = [ {"type":"String", "value": "Grenoble"},
                     {"type":"int", "value": "0"}];          
           v.returnType = "number";
-          v.phrase = "keyboard.weather-code";
+          v.phrase = "keyboard.weather-max";
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "getAvgTemperatureForecast":
-          $(btn).append("<span data-i18n='keyboard.weather-code'><span>");
+          $(btn).append("<span data-i18n='keyboard.weather-avg'><span>");
           
 		  v.methodName = property;
           v.args = [ {"type":"String", "value": "Grenoble"},
                     {"type":"int", "value": "0"}];          
           v.returnType = "number";
-          v.phrase = "keyboard.weather-code";
+          v.phrase = "keyboard.weather-avg";
           $(btn).attr("json", JSON.stringify(v));
           break;
           
@@ -121,10 +121,10 @@ define([
       return btn;
     },
 	    /**
-     * @returns the action template specific for lamps
+     * @returns the action template specific for weather
      */
     getTemplateAction: function() {
-      return _.template(ActionTemplate);  
+      return _.template(ActionTemplate); 
     },
 
   });
