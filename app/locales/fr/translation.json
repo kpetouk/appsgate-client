@@ -492,7 +492,7 @@
         "mandatory-keyword"							:"Obligatoire",
         "nothing-keyword"							:"Rien",
         "is-turned-on-lamp-state"					: "allumée",
-		"state-verb"								: "is"
+		"state-verb"								: "est"
 
 
     },
