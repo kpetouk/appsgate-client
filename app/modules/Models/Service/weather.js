@@ -1,7 +1,8 @@
 define([
   "app",
   "models/service/service",
-], function(App, Service) {
+  "text!templates/program/nodes/weatherStateCodeNode.html"
+], function(App, Service, ActionTemplate) {
 
   var Weather = {};
 
@@ -59,22 +60,22 @@ define([
 
 
     /**
-     * return the list of available device states
+     * return the list of available properties
      */
-    getDeviceStates: function() {
+    getProperties: function() {
       return ["getWeatherCodeForecast", "getMinTemperatureForecast", "getMaxTemperatureForecast", "getAvgTemperatureForecast"];
     },
     /**
-     * return the keyboard code for a given state
+     * return the keyboard code for a given property
      */
-    getKeyboardForDeviceState: function(state) {
+    getKeyboardForProperty: function(property) {
       var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
-      var v = this.getJSONDeviceState("mandatory");
-      switch(state) {
+      var v = this.getJSONProperty("mandatory");
+      switch(property) {
         case "getWeatherCodeForecast":
           $(btn).append("<span data-i18n='keyboard.weather-code'><span>");
           
-		  v.methodName = state;
+		  v.methodName = property;
           v.args = [ {"type":"String", "value": "Grenoble"},
                     {"type":"int", "value": "0"}];          
           v.returnType = "number";
@@ -84,7 +85,7 @@ define([
         case "getMinTemperatureForecast":
           $(btn).append("<span data-i18n='keyboard.weather-code'><span>");
           
-		  v.methodName = state;
+		  v.methodName = property;
           v.args = [ {"type":"String", "value": "Grenoble"},
                     {"type":"int", "value": "0"}];          
           v.returnType = "number";
@@ -94,7 +95,7 @@ define([
         case "getMaxTemperatureForecast":
           $(btn).append("<span data-i18n='keyboard.weather-code'><span>");
           
-		  v.methodName = state;
+		  v.methodName = property;
           v.args = [ {"type":"String", "value": "Grenoble"},
                     {"type":"int", "value": "0"}];          
           v.returnType = "number";
@@ -104,7 +105,7 @@ define([
         case "getAvgTemperatureForecast":
           $(btn).append("<span data-i18n='keyboard.weather-code'><span>");
           
-		  v.methodName = state;
+		  v.methodName = property;
           v.args = [ {"type":"String", "value": "Grenoble"},
                     {"type":"int", "value": "0"}];          
           v.returnType = "number";
@@ -113,12 +114,19 @@ define([
           break;
           
         default:
-          console.error("unexpected service state found for Weather : " + state);
+          console.error("unexpected service state found for Weather : " + property);
           btn = null;
           break;
       }
       return btn;
-    }
+    },
+	    /**
+     * @returns the action template specific for lamps
+     */
+    getTemplateAction: function() {
+      return _.template(ActionTemplate);  
+    },
+
   });
   return Weather;
 });

@@ -127,18 +127,18 @@ define([
     },
 
     /**
-     * return the list of available device states
+     * return the list of available properties
      */
-    getDeviceStates: function() {
+    getProperties: function() {
       return ["isOn", "getBrightness"];
     },
     /**
-     * return the keyboard code for a given state
+     * return the keyboard code for a property
      */
-    getKeyboardForDeviceState: function(state) {
+    getKeyboardForProperty: function(property) {
       var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
-      var v = this.getJSONDeviceState("mandatory");
-      switch(state) {
+      var v = this.getJSONProperty("mandatory");
+      switch(property) {
         case "isOn":
           $(btn).append("<span data-i18n='keyboard.is-turned-on-lamp-status'><span>");
           v.methodName = "getCurrentState";
@@ -154,7 +154,7 @@ define([
           $(btn).attr("json", JSON.stringify(v));
           break;
         default:
-          console.error("unexpected device state found for PhilipsHue: " + state);
+          console.error("unexpected device state found for PhilipsHue: " + property);
           btn = null;
           break;
       }
