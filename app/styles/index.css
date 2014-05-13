@@ -206,16 +206,40 @@ div {
 #universeList {
   height:100%;
 }
+
+.fundamental-block {
+	float: left;
+	position:relative;
+	width:20%;
+}
+
+.casa fundamental-universe:before {
+	background-image: url(../img/service.svg);	
+	padding-top: 100%;
+	content: "";
+	display: block;
+	background-size:100% 100%;
+	background-repeat:no-repeat;
+}
+
+.fundamental-universe:before {
+	padding-top: 100%;
+	content: "";
+	display: block;
+	background-image: url(../img/casa.svg);	
+	background-size:100% 100%;
+	background-repeat:no-repeat;
+}
+
 .fundamental-universe {
   position:relative;
   background:white;
-  width: 18%;
-  height:80%;
+  width: 100%;
   padding: 0.5em;
   display: inline-block;
-  border: solid #404040;
-  border-radius: 100%;
-  margin: 20px 20px 20px 0;
+  /* border: solid #404040;
+  border-radius: 100%; */
+  margin: 2px 2px 2px 0;
 }
 
 .fundamental-universe.configured {
@@ -229,8 +253,8 @@ div {
 .local-universe {
   position:relative;
   background:white;
-  width: 18%;
-  height:80%;
+  width: auto;
+  min-height:80%;
   padding: 0.5em;
   display: inline-block;
   border: dotted #404040;
