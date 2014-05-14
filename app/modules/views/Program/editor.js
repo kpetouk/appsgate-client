@@ -246,7 +246,7 @@ define([
       onChangeDayForecastNode: function(e) {
         e.stopPropagation();
         var iid = $(e.currentTarget).attr("target-id");
-        var newDay = e.currentTarget.selectedOptions[1].value;
+        var newDay = e.currentTarget.selectedOptions[0].value;
         var value = {"type": "int", "value": newDay};        
         this.Mediator.setNodeArg(iid, 1, value);
 
