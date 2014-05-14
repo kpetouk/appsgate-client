@@ -90,9 +90,6 @@ define(function(require, exports, module) {
 
             // all data have been received, launch the user interface
             dispatcher.on("dataReady", function() {
-                // initialize the grammar
-               // window.grammar = new Grammar();
-
                 $("#lost-connection-modal").modal("hide");
                 $("#settings-modal").modal("hide");
 
@@ -151,6 +148,7 @@ define(function(require, exports, module) {
             $("#lost-connection-modal .text-danger").show();
             $("#lost-connection-modal .text-danger").html("La connexion a &eacute;t&eacute; interrompue.");
             $("#lost-connection-modal").modal("show");
+            $("#lost-connection-modal").i18n();
         });
 
         // set current server address and port in the modal for settings
@@ -201,6 +199,7 @@ define(function(require, exports, module) {
     function onChangeAddrServerButton() {
         $("#lost-connection-modal").modal("hide");
         $("#settings-modal").modal("show");
+        $("#settings-modal").i18n();
     }
 
     /**
@@ -216,10 +215,6 @@ define(function(require, exports, module) {
 
     function onFocusOutCircleMenu(e) {
       $('.circlemenu').circleMenu('close');
-      /*var target = e.currentTarget;
-      if(typeof target.classList !== "undefined" && !target.classList.contains('circlemenu') && !target.parentNode.classList.contains('circlemenu')){
-
-      }-*/
     }
 
     return app;
