@@ -21,7 +21,7 @@ define([
      * return the list of available events
      */
     getEvents: function() {
-      return ["opened","closed"];
+      return ["isOpened","isClosed"];
     },
     /**
      * return the keyboard code for a given event
@@ -71,7 +71,7 @@ define([
           break;
         case "closed":
           $(btn).append("<span>la porte est fermée<span>");
-          var v = {"type": "state", "name": "isOpened", "object": {"iid": "X", "type": "mandatory"}, "iid": "X", "phrase": " est fermée"};
+          var v = {"type": "state", "name": "isClosed", "object": {"iid": "X", "type": "mandatory"}, "iid": "X", "phrase": " est fermée"};
           $(btn).attr("json", JSON.stringify(v));
           break;
         default:

@@ -213,21 +213,37 @@ div {
 	width:20%;
 }
 
-.casa fundamental-universe:before {
-	background-image: url(../img/service.svg);	
-	padding-top: 100%;
-	content: "";
-	display: block;
+#places {
+	background-image: url(../img/home/places1.svg);	
 	background-size:100% 100%;
-	background-repeat:no-repeat;
+}
+
+#devices {
+	background-image: url(../img/home/devices1.svg);	
+	background-size:100% 100%;
+}
+
+#services {
+	background-image: url(../img/home/services1.svg);	
+	background-size:100% 100%;
+}
+
+#programs {
+	background-image: url(../img/home/program2.svg);	
+	background-size:100% 100%;
+}
+
+#users {
+	background-image: url(../img/home/users1.svg);	
+	background-size:100% 100%;
 }
 
 .fundamental-universe:before {
 	padding-top: 100%;
 	content: "";
 	display: block;
-	background-image: url(../img/casa.svg);	
-	background-size:100% 100%;
+
+
 	background-repeat:no-repeat;
 }
 
