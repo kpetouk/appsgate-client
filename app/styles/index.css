@@ -218,27 +218,27 @@ div {
 }
 
 #places {
-	background-image: url(../img/home/place1.svg);	
+	background-image: url("../img/home/place1.svg");	
 	background-size:100% 100%;
 }
 
 #devices {
-	background-image: url(../img/home/device1.svg);	
+	background-image: url("../img/home/device1.svg");	
 	background-size:100% 100%;
 }
 
 #services {
-	background-image: url(../img/home/service1.svg);	
+	background-image: url("../img/home/service1.svg");	
 	background-size:100% 100%;
 }
 
 #programs {
-	background-image: url(../img/home/program2.svg);
+	background-image: url("../img/home/program2.svg");
 	background-size:100% 100%;
 }
 
 #users {
-	background-image: url(../img/home/user1.svg);	
+	background-image: url("../img/home/user1.svg");	
 	background-size:100% 100%;
 }
 
@@ -273,8 +273,8 @@ div {
 .local-universe {
   position:relative;
   background:white;
-  width: auto;
-  min-height:80%;
+  /*width: auto;*/
+  min-height:100%; 
   padding: 0.5em;
   display: inline-block;
   border: dotted #404040;
@@ -316,7 +316,7 @@ div {
 
 .local-universes, .user-universes {
   white-space: nowrap;
-  height:45%;
+  /*height:45%;*/
   overflow-x:auto;
   overflow-y:hidden;
   -webkit-overflow-scrolling: touch;
