@@ -116,7 +116,7 @@ define([
           } 
           this.Mediator.setCursorAndBuildKeyboard(button.id);
           //this.refreshDisplay();
-          this.model.trigger("change",refreshDisplay);
+          this.model.trigger("change",this.refreshDisplay);
 
         }
       },
@@ -292,7 +292,7 @@ define([
       },
       refreshDisplay: function(e) {
         //if (e == undefined || ((typeof e.attributes != "undefined") && e.attributes["type"] !== 21)) {
-        if ((typeof e.attributes != "undefined") && e.attributes["type"] !== 21) {
+        if (typeof e === "undefined" || ((typeof e.attributes != "undefined") && e.attributes["type"] !== 21)) {
           this.Mediator.buildInputFromJSON();
           // translate the view
           this.$el.i18n();
