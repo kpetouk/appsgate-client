@@ -97,6 +97,9 @@ define([
             $(".programInput").find("select").replaceWith(function() {
                 return '<span>' + this.selectedOptions[0].innerHTML + '</span>';
             });
+            $(".programInput").find("input").replaceWith(function() {
+                return '<span>' + this.value + '</span>';
+            });
             $(".programInput").find(".glyphicon-trash").hide();
         },
         /**
