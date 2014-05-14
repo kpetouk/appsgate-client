@@ -223,7 +223,7 @@ div {
 }
 
 #devices {
-	background-image: url(../img/home/device1.svg);	
+	background-image: url(../img/home/device1.svg);
 	background-size:100% 100%;
 }
 
@@ -566,7 +566,14 @@ div {
 .btn-read-only {
   color: black;
   background: transparent;
-  border: none;
+  border: none !important;
+}
+
+.btn-read-only:hover,
+.btn-read-only:focus {
+  color: black;
+  background: transparent !important;
+  border: none !important;
 }
 
 .btn-backspace {
