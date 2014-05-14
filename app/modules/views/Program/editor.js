@@ -116,7 +116,7 @@ define([
             this.Mediator.removeSelectedNode();
           } 
           this.Mediator.setCursorAndBuildKeyboard(button.id);
-          this.refreshDisplay();
+          this.refreshDisplay(e);
         }
       },
       // Displays a tree of items the player can read
