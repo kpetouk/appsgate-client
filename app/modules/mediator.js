@@ -550,8 +550,47 @@ define([
             };
             $(btnDiff).attr("json", JSON.stringify(v));
             $(".expected-links").append(btnDiff);
-
-
+            
+            
+           // for each boolean seviceType make a false opeator upon boolean
+            // var types = devices.getDevicesByType();
+            // for (type in types) {
+                // if (types[type].length > 0) {
+                    // o = types[type][0];
+                    // states = o.getProperties();
+                    // for (a in states) {
+                        // $(".expected-links").append(o.getKeyboardForProperty(states[a]));
+                    // }
+                // }
+            // }
+            var serviceTypes = services.getServicesByType();
+            for (type in serviceTypes) {
+                if (serviceTypes[type].length > 0) {
+                    o = serviceTypes[type][0];
+                    var boolProps = o.getBooleanProperties();
+                    for (a in boolProps) {
+                    	console.log("Youhouh, adding "+boolProps[a]);
+                    	var btn = o.getKeyboardForProperty(boolProps[a]);
+                    	json = {};
+                    	json = JSON.parse($(btn).attr('json'));
+                    	
+            			// var btnEq = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span data-i18n='language.if-equals'/></button>");
+            			var v = {
+                			 "type": "comparator",
+                			 "iid": "X",
+                			 "comparator": "==",
+                			 "rightOperand": {
+                    		 "iid": "X",
+                    		 "value": "true",
+                    		 "type": "boolean"
+                			 }
+            			};    
+            			v.leftOperand = json;                	
+                    	$(btn).attr("json", JSON.stringify(v));
+                        $(".expected-links").append(btn);
+                    }
+                }
+            }             
         },
         buildWaitKey: function() {
             var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ><span data-i18n='language.wait'/></button>");
@@ -757,8 +796,17 @@ define([
                     input += this.tplBooleanExpressionNode(param);
                     break;
                 case "comparator":
-                    input += this.tplComparatorNode(param);
-                    break;
+                	// Hack for a simple prestenation when X == true, we only show X
+                	try {
+                		if(param.node.comparator === "==" && param.node.rightOperand.type === "boolean" && param.node.rightOperand.value === "true") {
+                			input += this.buildInputFromNode(param.node.leftOperand);
+                		} else {
+                			input += this.tplComparatorNode(param);
+                		}
+                	} catch (e) {
+                		input += this.tplComparatorNode(param);
+                	}
+                	break;
                 case "when":
                     deletable = true;
                     input += this.tplWhenNode(param);

@@ -515,7 +515,15 @@
 		"weather-town-stfrancois"					: "St Francois Longchamp",
 		"weather-for-0"								: "aujourd'hui",
 		"weather-for-1"								: "demain",
-		"weather-for-2"								: "après demain"
+		"weather-for-2"								: "après demain",
+		"weather-code-0"							: "soleil",
+		"weather-code-1"							: "nuages",
+		"weather-code-2"							: "pluie",
+		"weather-code-3"							: "neige",
+		"weather-code-4"							: "orages",
+		"weather-code-5"							: "brouillard",
+		"weather-code-6"							: "autres",
+		"weather-code-7"							: "exceptionnelle"		
 
 	},
 	"keyboard": {
@@ -551,6 +559,7 @@
 		"weather-min"								: "la temperature minimale prevue",
 		"weather-max"								: "la temperature maximale prevue",
 		"weather-avg"								: "la temperature moyenne prevue"
+
 
 	}
 }

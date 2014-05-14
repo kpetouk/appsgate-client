@@ -78,6 +78,12 @@ define([
             return [];
         },
         /**
+         * return the list of available properties (only those returning a boolean)
+         */
+        getBooleanProperties: function() {
+            return [];
+        },        
+        /**
          * return the keyboard code for a given property
         */
         getKeyboardForProperty: function(state) {

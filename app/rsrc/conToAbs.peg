@@ -43,6 +43,7 @@ BOOLEAN  = ID "booleanExpression" _"(" _ BOOLEAN _ ")" _ "(" _ BOOLEAN _ ")"
          / STATE
 
 NUMERIC_VALUE = ID "number"
+			/ ID "boolean"
               / DEVICE_STATE
 
 ACTION = ID "action" _ "(" _ TARGET _ ")" 

@@ -17,6 +17,7 @@ define([
         "change .lamp-color-picker": "onChangeLampColorNode",
         "change .weather-town-picker": "onChangeTownNode",        
         "change .day-forecast-picker": "onChangeDayForecastNode",        
+        "change .code-forecast-picker": "onChangeCodeForecastNode",        
         "change .number-input": "onChangeNumberValue",
         "change .arg-input": "onChangeArgValue",
         "change .volume-input": "onChangeMediaVolume",
@@ -250,7 +251,17 @@ define([
 
         // // clearing selection
         // this.resetSelection();
-      }, 
+      },
+      onChangeCodeForecastNode: function(e) {
+        e.stopPropagation();
+        var iid = $(e.currentTarget).attr("target-id");
+        var newCode = e.currentTarget.selectedOptions[0].value;
+        var value = {"type": "int", "value": newCode};        
+        this.Mediator.setNodeArg(iid, 2, value);
+
+        // // clearing selection
+        // this.resetSelection();
+      },        
       onChangeNumberValue: function(e) {
         e.stopPropagation();
         var iid = $(e.currentTarget).attr("target-id");
