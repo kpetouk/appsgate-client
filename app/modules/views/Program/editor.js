@@ -115,8 +115,8 @@ define([
             this.Mediator.removeSelectedNode();
           } 
           this.Mediator.setCursorAndBuildKeyboard(button.id);
-          this.refreshDisplay(e);
-          
+          //this.refreshDisplay();
+          this.model.trigger("change",refreshDisplay);
 
         }
       },
@@ -291,7 +291,8 @@ define([
         this.Mediator.buildInputFromJSON();
       },
       refreshDisplay: function(e) {
-        if (e == undefined || e.get("type") !== 21) {
+        //if (e == undefined || ((typeof e.attributes != "undefined") && e.attributes["type"] !== 21)) {
+        if ((typeof e.attributes != "undefined") && e.attributes["type"] !== 21) {
           this.Mediator.buildInputFromJSON();
           // translate the view
           this.$el.i18n();
