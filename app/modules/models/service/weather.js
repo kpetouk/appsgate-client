@@ -70,7 +70,7 @@ define([
      */
     getKeyboardForProperty: function(property) {
       var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
-      var v = {"type": "action", "target": {"iid": "X", "type": "service", "serviceType":this.get("type"), "value":this.get("id")}, "iid": "X"};
+      var v = {"type": "deviceState", "target": {"iid": "X", "type": "service", "serviceType":this.get("type"), "value":this.get("id")}, "iid": "X"};
       switch(property) {
         case "getWeatherCodeForecast":
           $(btn).append("<span data-i18n='keyboard.get-weather-code-state'><span>");
