@@ -218,17 +218,17 @@ div {
 }
 
 #places {
-	background-image: url(../img/home/places1.svg);	
+	background-image: url(../img/home/place1.svg);	
 	background-size:100% 100%;
 }
 
 #devices {
-	background-image: url(../img/home/devices1.svg);	
+	background-image: url(../img/home/device1.svg);	
 	background-size:100% 100%;
 }
 
 #services {
-	background-image: url(../img/home/services1.svg);	
+	background-image: url(../img/home/service1.svg);	
 	background-size:100% 100%;
 }
 
@@ -238,7 +238,7 @@ div {
 }
 
 #users {
-	background-image: url(../img/home/users1.svg);	
+	background-image: url(../img/home/user1.svg);	
 	background-size:100% 100%;
 }
 
