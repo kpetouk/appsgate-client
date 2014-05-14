@@ -110,16 +110,16 @@ define([
             return "";
         },
         /**
-         * return the list of available device states
+         * return the list of available properties
          */
-        getDeviceStates: function() {
+        getProperties: function() {
             return [];
         },
         /**
-         * return the keyboard code for a given state
+         * return the keyboard code for a given property
         */
-        getKeyboardForDeviceState: function(state) {
-          console.error("No device state has been defined for this device.");
+        getKeyboardForProperty: function(property) {
+          console.error("No property has been defined for this device.");
           return "";
         },
         /**
@@ -139,7 +139,7 @@ define([
         getJSONState: function (type) {
             return {"type": "state", "object": {"iid": "X", "type": 'mandatory', "deviceType":this.get("type")}, "iid": "X"};
         },
-        getJSONDeviceState: function (type) {
+        getJSONProperty: function (type) {
             return {"type": "deviceState", "iid": "X", "target": {"iid": "X", "type": 'mandatory', "deviceType":this.get("type")}, "args":[]};
         },
 

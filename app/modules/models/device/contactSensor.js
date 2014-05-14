@@ -56,7 +56,7 @@ define([
      * return the list of available states
      */
     getStates: function() {
-      return ["opened","closed"];
+      return ["isOpen","isClose"];
     },
     /**
      * return the keyboard code for a given state
@@ -64,12 +64,12 @@ define([
     getKeyboardForState: function(state){
       var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
       switch(state) {
-        case "opened":
+        case "isOpen":
           $(btn).append("<span>la porte est ouverte<span>");
           var v = {"type": "state", "name": "isOpened", "object": {"iid": "X", "type": "mandatory"}, "iid": "X", "phrase": " est ouverte"};
           $(btn).attr("json", JSON.stringify(v));
           break;
-        case "closed":
+        case "isClose":
           $(btn).append("<span>la porte est fermée<span>");
           var v = {"type": "state", "name": "isClosed", "object": {"iid": "X", "type": "mandatory"}, "iid": "X", "phrase": " est fermée"};
           $(btn).attr("json", JSON.stringify(v));

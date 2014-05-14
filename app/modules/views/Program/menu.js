@@ -27,7 +27,7 @@ define([
         },
         /**
          * Listen to the programs collection updates and refresh if any
-         * 
+         *
          * @constructor
          */
         initialize: function() {
@@ -38,7 +38,7 @@ define([
         },
         /**
          * Update the side menu to set the correct active element
-         * 
+         *
          * @param e JS click event
          */
         updateSideMenu: function(e) {
@@ -87,7 +87,7 @@ define([
         },
         /**
          * Check the current value of the input text and show an error message if needed and activate or disactivate the valid button
-         * 
+         *
          * @return false if the typed name already exists, true otherwise
          */
         checkProgramName: function() {
@@ -120,7 +120,7 @@ define([
         /**
          * Check if the name of the program does not already exist. If not, create the program
          * Hide the modal when done
-         * 
+         *
          * @param e JS event
          */
         validAddProgram: function(e) {
@@ -182,10 +182,6 @@ define([
 
                         // display the new program
                         appRouter.programsRouter.editor(program.get("id"));
-
-                        // update the url to the new program
-                        //appRouter.navigate("#programs/editor/" + this.model.get("id"), {trigger: true});
-                        this.undelegateEvents();
 
                         // set the current program active
                         _.forEach($("a.list-group-item"), function(item) {

@@ -331,6 +331,12 @@
                 "singular"	: "Content Directory",
                 "plural"	: "Content Directories"
             }
+        },
+        "weather": {
+            "name": {
+                "singular": "Service Meteo",
+                "plural": "Services Meteo"
+            }
         }
     },
 	"programs" : {
@@ -358,7 +364,7 @@
 	},
 	"language" : {
 		"written-by"								: "ecrit par",
-		"when-keyword"								: "Lorsque",
+		"when-keyword"								: "lorsque",
 		"end-when-block"							: ".",
         "if-keyword"								: "Si",
         "if-and"									: "Si ... et ...",
@@ -488,10 +494,10 @@
         "mail-subject" 								: "dont le sujet est",
         "mail-body" 								: "objet",
 		"well-arrived-subject"						: "Bien arrive!",
-        "mandatory-keyword"							:"Obligatoire",
-        "nothing-keyword"							:"Rien",
+        "mandatory-keyword"							: "Obligatoire",
+        "nothing-keyword"							: "Rien",
         "is-turned-on-lamp-state"					: "allumée",
-		"state-verb"								: "is"
+		"state-verb"								: "est"
 
 
     },
@@ -522,6 +528,11 @@
         "play-media-action"							: "Jouer un media",
         "pause-media-action"						: "Mettre en pause le media",
         "stop-media-action"							: "Stopper",
-        "set-volume-media-action"					: "Mettre le volume"
+        "set-volume-media-action"					: "Mettre le volume",
+        "is-weather-code-state"						: "la météo prévue",
+        "weather-min"								: "la temperature minimale prevue",
+        "weather-max"								: "la temperature maximale prevue",
+        "weather-avg"								: "la temperature moyenne prevue",
+		"weather-code"								: "la météo prévue"
 	}
 }

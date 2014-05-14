@@ -1,7 +1,8 @@
 define([
   "app",
   "models/service/service",
-], function(App, Service) {
+  "text!templates/program/nodes/weatherStateCodeNode.html"
+], function(App, Service, ActionTemplate) {
 
   var Weather = {};
 
@@ -59,66 +60,73 @@ define([
 
 
     /**
-     * return the list of available device states
+     * return the list of available properties
      */
-    getDeviceStates: function() {
+    getProperties: function() {
       return ["getWeatherCodeForecast", "getMinTemperatureForecast", "getMaxTemperatureForecast", "getAvgTemperatureForecast"];
     },
     /**
-     * return the keyboard code for a given state
+     * return the keyboard code for a given property
      */
-    getKeyboardForDeviceState: function(state) {
+    getKeyboardForProperty: function(property) {
       var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
-      var v = this.getJSONDeviceState("mandatory");
-      switch(state) {
+      var v = {"type": "action", "target": {"iid": "X", "type": "service", "serviceType":this.get("type"), "value":this.get("id")}, "iid": "X"};
+      switch(property) {
         case "getWeatherCodeForecast":
-          $(btn).append("<span data-i18n='keyboard.weather-code'><span>");
+          $(btn).append("<span data-i18n='keyboard.get-weather-code-state'><span>");
           
-		  v.methodName = state;
+		  v.methodName = property;
           v.args = [ {"type":"String", "value": "Grenoble"},
                     {"type":"int", "value": "0"}];          
           v.returnType = "number";
-          v.phrase = "keyboard.weather-code";
+          v.phrase = "keyboard.get-weather-code-state";
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "getMinTemperatureForecast":
-          $(btn).append("<span data-i18n='keyboard.weather-code'><span>");
+          $(btn).append("<span data-i18n='keyboard.weather-min'><span>");
           
-		  v.methodName = state;
+		  v.methodName = property;
           v.args = [ {"type":"String", "value": "Grenoble"},
                     {"type":"int", "value": "0"}];          
           v.returnType = "number";
-          v.phrase = "keyboard.weather-code";
+          v.phrase = "keyboard.weather-min";
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "getMaxTemperatureForecast":
-          $(btn).append("<span data-i18n='keyboard.weather-code'><span>");
+          $(btn).append("<span data-i18n='keyboard.weather-max'><span>");
           
-		  v.methodName = state;
+		  v.methodName = property;
           v.args = [ {"type":"String", "value": "Grenoble"},
                     {"type":"int", "value": "0"}];          
           v.returnType = "number";
-          v.phrase = "keyboard.weather-code";
+          v.phrase = "keyboard.weather-max";
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "getAvgTemperatureForecast":
-          $(btn).append("<span data-i18n='keyboard.weather-code'><span>");
+          $(btn).append("<span data-i18n='keyboard.weather-avg'><span>");
           
-		  v.methodName = state;
+		  v.methodName = property;
           v.args = [ {"type":"String", "value": "Grenoble"},
                     {"type":"int", "value": "0"}];          
           v.returnType = "number";
-          v.phrase = "keyboard.weather-code";
+          v.phrase = "keyboard.weather-avg";
           $(btn).attr("json", JSON.stringify(v));
           break;
           
         default:
-          console.error("unexpected service state found for Weather : " + state);
+          console.error("unexpected service state found for Weather : " + property);
           btn = null;
           break;
       }
       return btn;
-    }
+    },
+	    /**
+     * @returns the action template specific for weather
+     */
+    getTemplateAction: function() {
+      return _.template(ActionTemplate); 
+    },
+
   });
   return Weather;
 });

@@ -47,8 +47,7 @@ NUMERIC_VALUE = ID "number"
 
 ACTION = ID "action" _ "(" _ TARGET _ ")" 
 
-DEVICE_STATE = ID "deviceState" _ "(" _ TARGET _ ")" _ "[" _ "]" 
-       / ID "deviceState" _ "[" _ "]"  _ "(" _ TARGET _ ")"
+DEVICE_STATE = ID "deviceState" _ "(" _ TARGET _ ")"
 
 KEEP  = ID "keepState" _ "(" _ STATE _ ")"
 

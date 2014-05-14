@@ -18,8 +18,9 @@ define([
     "text!templates/program/nodes/comparatorNode.html",
     "text!templates/program/nodes/numberNode.html",
     "text!templates/program/nodes/waitNode.html",
-    "text!templates/program/editor/expectedInput.html"
-], function(App, Grammar, defaultActionTemplate, lampActionTemplate, mediaActionTemplate, ifNodeTemplate, whenNodeTemplate, deviceNodeTemplate, serviceNodeTemplate, defaultEventNodeTemplate, clockEventNodeTemplate, stateNodeTemplate, keepStateNodeTemplate, whileNodeTemplate, whitespaceNodeTemplate, booleanExpressionNodeTemplate, comparatorNodeTemplate, numberNodeTemplate, waitNodeTemplate, expectedInputTemplate) {
+    "text!templates/program/editor/expectedInput.html",
+    "text!templates/program/nodes/defaultPropertyNode.html"
+], function(App, Grammar, defaultActionTemplate, lampActionTemplate, mediaActionTemplate, ifNodeTemplate, whenNodeTemplate, deviceNodeTemplate, serviceNodeTemplate, defaultEventNodeTemplate, clockEventNodeTemplate, stateNodeTemplate, keepStateNodeTemplate, whileNodeTemplate, whitespaceNodeTemplate, booleanExpressionNodeTemplate, comparatorNodeTemplate, numberNodeTemplate, waitNodeTemplate, expectedInputTemplate, defaultPropertyNodeTemplate) {
     var ProgramMediator = {};
     // router
     ProgramMediator = Backbone.Model.extend({
@@ -41,6 +42,7 @@ define([
         tplNumberNode: _.template(numberNodeTemplate),
         tplWaitNode: _.template(waitNodeTemplate),
         tplExpectedInput: _.template(expectedInputTemplate),
+        tplDefaultPropertyNode: _.template(defaultPropertyNodeTemplate),
         initialize: function() {
             this.resetProgramJSON();
             this.currentNode = 1;
@@ -333,17 +335,27 @@ define([
                 }
             }            
         },
-        buildDeviceStateKeys: function() {
+        buildGetPropertyKeys: function() {
             var types = devices.getDevicesByType();
             for (type in types) {
                 if (types[type].length > 0) {
                     o = types[type][0];
-                    states = o.getDeviceStates();
+                    states = o.getProperties();
                     for (a in states) {
-                        $(".expected-links").append(o.getKeyboardForDeviceState(states[a]));
+                        $(".expected-links").append(o.getKeyboardForProperty(states[a]));
                     }
                 }
             }
+            var serviceTypes = services.getServicesByType();
+            for (type in serviceTypes) {
+                if (serviceTypes[type].length > 0) {
+                    o = serviceTypes[type][0];
+                    states = o.getProperties();
+                    for (a in states) {
+                        $(".expected-links").append(o.getKeyboardForProperty(states[a]));
+                    }
+                }
+            }            
         },
         buildBooleanKeys: function() {
             var v = {
@@ -553,7 +565,7 @@ define([
                             $(".expected-links").append("<button class='btn btn-default btn-keyboard if-node'><span data-i18n='keyboard.if-keyword'><span></button>");
                             break;
                         case '"comparator"':
-                            //this.buildComparatorKeys();
+                            this.buildComparatorKeys();
                             break;
                         case '"booleanExpression"':
                             //this.buildBooleanExpressionKeys();
@@ -590,7 +602,7 @@ define([
                             this.buildEventKeys();
                             break;
                         case '"deviceState"':
-                            this.buildDeviceStateKeys();
+                            this.buildGetPropertyKeys();
                             break;
                         case '"boolean"':
                             this.buildBooleanKeys();
@@ -599,7 +611,7 @@ define([
                             console.log("empty program");
                             break;
                         case '"number"':
-                            $(".expected-event").append("<button class='btn btn-default btn-keyboard number-node'><span>valeur<span></button>");
+                            $(".expected-events").append("<button class='btn btn-default btn-keyboard number-node'><span>valeur<span></button>");
                             break;
                         case '"wait"':
                             this.buildWaitKey();
@@ -649,6 +661,20 @@ define([
                 return services.getTemplateActionByType(param.node.target.serviceType, param);
             }
             return this.tplDefaultActionNode(param);
+        },
+        buildPropertyNode: function(param) {
+            var result = "";
+            if (param.node.target.deviceType) {
+                // TODO : FIXME
+                // I use the same template function for event and for action... to check it is possible
+                return devices.getTemplateActionByType(param.node.target.deviceType, param);
+            }
+            if (param.node.target.serviceType) {
+                // TODO : FIXME
+                // I use the same template function for event and for action... to check it is possible
+                return services.getTemplateActionByType(param.node.target.serviceType, param);
+            }
+            return this.tplDefaultPropertyNode(param);
         },
         buildEventNode: function(param) {
             var result = "";
@@ -714,9 +740,11 @@ define([
                     input += this.tplWhenNode(param);
                     break;
                 case "device":
+                    param.node.name = devices.get(param.node.value).get("name");
                     input += this.tplDeviceNode(param);
                     break;
                 case "service":
+                    param.node.name = services.get(param.node.value).get("name");
                     input += this.tplServiceNode(param);
                     break;
                 case "event":
@@ -724,9 +752,12 @@ define([
                     input += this.buildEventNode(param);
                     break;
                 case "state":
-                case "deviceState":
                     deletable = true;
                     input += this.tplStateNode(param);
+                    break;
+                case "deviceState":
+                    deletable = true;
+                    input += this.buildPropertyNode(param);
                     break;
                 case "while":
                     deletable = true;

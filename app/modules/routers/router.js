@@ -42,6 +42,8 @@ define(function(require, exports, module) {
     },
     home: function() {
       this.showView(new HomeView());
+      $(".breadcrumb").html("<li class='active'><span data-i18n='navbar.home'/></li>");
+      this.translateNavbar();
     },
     habitat: function() {
       this.placesRouter.list();
@@ -110,6 +112,9 @@ define(function(require, exports, module) {
       // update the content
       this.currentView = view;
       this.currentView.render();
+    },
+    translateNavbar:function(){
+      $(".navbar").i18n();
     },
     updateLocale:function(locale) {
       this.locale = locale;
