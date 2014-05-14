@@ -15,8 +15,8 @@ define([
     initialize: function() {
       ContactSensor.__super__.initialize.apply(this, arguments);
     },
-    
-    
+
+
      /**
      * return the list of available events
      */
@@ -43,7 +43,7 @@ define([
           v.eventValue = "true";
           v.phrase = "devices.contact.event.closed";
           $(btn).attr("json", JSON.stringify(v));
-          break;          
+          break;
         default:
           console.error("unexpected event found for Contact Sensor: " + evt);
           btn = null;
@@ -66,12 +66,12 @@ define([
       switch(state) {
         case "isOpen":
           $(btn).append("<span>la porte est ouverte<span>");
-          var v = {"type": "state", "name": "isOpen", "object": {"iid": "X", "type": "mandatory"}, "iid": "X", "phrase": " est ouverte"};
+          var v = {"type": "state", "name": "isOpen", "object": {"iid": "X", "type": "mandatory"}, "iid": "X", "phrase": "devices.contact.state.opened"};
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "isClose":
           $(btn).append("<span>la porte est fermée<span>");
-          var v = {"type": "state", "name": "isClose", "object": {"iid": "X", "type": "mandatory"}, "iid": "X", "phrase": " est fermée"};
+          var v = {"type": "state", "name": "isClose", "object": {"iid": "X", "type": "mandatory"}, "iid": "X", "phrase": "devices.contact.state.closed"};
           $(btn).attr("json", JSON.stringify(v));
           break;
         default:
@@ -82,8 +82,8 @@ define([
       return btn;
     },
 
-    
-    
+
+
   });
   return ContactSensor;
 });

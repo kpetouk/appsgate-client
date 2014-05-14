@@ -120,7 +120,6 @@ define(function(require, exports, module) {
       this.locale = locale;
 
       $.i18n.init({ lng : this.locale }).done(function() {
-        places.get("-1").set("name", $.i18n.t("places-menu.unlocated-devices"));
         appRouter.navigate("reset", { trigger : true });
         $("body").i18n();
       });
