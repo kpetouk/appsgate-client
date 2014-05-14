@@ -793,13 +793,13 @@ define([
         // Hack for a simple prestenation when X == true, we only show X
         buildComparatorNode: function(param) {
         	try {
-                		if(param.node.comparator === "==" && param.node.rightOperand.type === "boolean" && param.node.rightOperand.value === "true") {
-                			input += this.buildInputFromNode(param.node.leftOperand);
-                		} else {
-                			input += this.tplComparatorNode(param);
-                		}
+            	if(param.node.comparator === "==" && param.node.rightOperand.type === "boolean" && param.node.rightOperand.value === "true") {
+                	return this.buildInputFromNode(param.node.leftOperand);
+                } else {
+                	return this.tplComparatorNode(param);
+                }
            } catch (e) {
-           	input += this.tplComparatorNode(param);
+           	return this.tplComparatorNode(param);
            }
 
         },
@@ -826,7 +826,7 @@ define([
                     input += this.tplBooleanExpressionNode(param);
                     break;
                 case "comparator":
-                	this.buildComparatorNode(param);
+                	input += this.buildComparatorNode(param);
                 	break;
                 case "when":
                     deletable = true;
