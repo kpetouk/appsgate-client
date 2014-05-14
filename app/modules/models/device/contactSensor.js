@@ -30,14 +30,14 @@ define([
       var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
       var v = this.getJSONEvent("mandatory");
       switch(evt) {
-        case "opened":
+        case "isOpen":
           $(btn).append("<span data-i18n='devices.contact.event.opened'/>");
           v.eventName = "contact";
           v.eventValue = "false";
           v.phrase = "devices.contact.event.opened";
           $(btn).attr("json", JSON.stringify(v));
           break;
-        case "closed":
+        case "isClose":
           $(btn).append("<span data-i18n='devices.contact.event.closed'/>");
           v.eventName = "contact";
           v.eventValue = "true";
