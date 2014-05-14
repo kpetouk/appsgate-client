@@ -185,18 +185,42 @@ define([
             } else {
                 for (var o in curNode) {
                     if (typeof curNode[o] === "object") {
-                        curNode[o] = this.recursivelyRemove(pos, curNode[o], curNode);
-                        if (curNode[o].iid === pos && curNode[o].type === "empty") {
-                            if (typeof curNode.iid === "undefined") {
-                                this.setCursorAndBuildKeyboard(parentNode.iid);
-                            } else {
-                                this.setCursorAndBuildKeyboard(curNode.iid);
-                            }
-                        }
+                        if (Array.isArray(curNode[o])) {
+                            curNode[o] = this.recRemoveArray(pos, curNode[o], curNode);
+                        } else {
+                            curNode[o] = this.recursivelyRemove(pos, curNode[o], curNode);
+                        }   
                     }
                 }
             }
             return curNode;
+        },
+        recRemoveArray: function(pos, curNode, parentNode) {
+            var prevIsEmpty = false;
+            var retNode = [];
+            for (var o in curNode) {
+                if (typeof curNode[o] === "object" && Array.isArray(curNode[o])) {
+                    console.error("An array has been found inside an array");
+                    return curNode;
+                }
+                var recNode = this.recursivelyRemove(pos, curNode[o], curNode);
+                if (recNode.type !== "empty") {
+                        retNode.push(recNode);
+                        prevIsEmpty = false;
+                } else {
+                    if (!prevIsEmpty) {
+                        retNode.push(recNode);
+                    } else {
+                        // Check whether the deleted node is not the node with the current pos
+                        if (recNode.iid == pos) {
+                            retNode.pop();
+                            retNode.push(recNode);
+                        }
+                    }
+                    prevIsEmpty = true;
+                } 
+            }
+            return retNode;
         },
         /*
          * set a node attribute
