@@ -416,6 +416,9 @@
 
 		"pushed-switch-event"						: "on appuie sur",
 		"released-switch-event"						: "on relache",
+        
+		"pushed-switch-B1"      					: "on appuie sur B1 de",
+		"pushed-switch-B2"      					: "on appuie sur B2 de",
 
 		"pushed-telec-event-up"						: "on appuie sur le bouton haut de",
 		"pushed-telec-event-bottom"					: "on appuie sur le bouton bas de",
@@ -507,7 +510,6 @@
 		"weather-min-at"							: "la température minimale prévue à",
 		"weather-max-at"							: "la température maximale prévue à",
 		"weather-avg-at"							: "la température moyenne prévue à",
-		"weather-avg-at"							: "la température moyenne prévue à",
 		"weather-code-verb"							: "annonce",
 		"weather-town-grenoble"						: "Grenoble",
 		"weather-town-paris"						: "Paris",
@@ -536,6 +538,8 @@
 		"is-turned-off-lamp-event"					: "on éteint la lampe",
 		"turn-on-lamp-action"						: "Allumer la lampe",
 		"turn-off-lamp-action"						: "Eteindre la lampe",
+		"turn-on-plug-action"						: "Allumer l'interrupteur",
+		"turn-off-plug-action"						: "Eteindre l'interrupteur",
 		"blink-lamp-action"							: "Faire clignoter",
 		"when-keyword"								: "Lorsque",
 		"if-keyword"								: "Si",

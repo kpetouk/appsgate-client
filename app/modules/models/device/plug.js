@@ -28,13 +28,13 @@ define([
       var v = this.getJSONAction("mandatory");
       switch(act) {
         case "switchOn":
-          $(btn).append("<span data-i18n='devices.plug.action.turnOn'></span>");
+          $(btn).append("<span data-i18n='keyboard.turn-on-plug-action'></span>");
           v.methodName = "on";
           v.phrase = "devices.plug.action.turnOn";
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "switchOff":
-          $(btn).append("<span data-i18n='devices.plug.action.turnOff'></span>");
+          $(btn).append("<span data-i18n='keyboard.turn-off-plug-action'></span>");
           v.methodName = "off";
           v.phrase = "devices.plug.action.turnOff";
           $(btn).attr("json", JSON.stringify(v));
