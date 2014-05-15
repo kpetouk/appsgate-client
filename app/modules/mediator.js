@@ -923,13 +923,16 @@ define([
         var input = $.parseHTML(this.buildInputFromNode(this.programJSON));
 
         if (this.currentNode === -1 && this.lastAddedNode !== null) {
-          var nextInput = $(input).find("#" + this.lastAddedNode.iid).parent().nextAll(".input-spot");
-          this.setCursorAndBuildKeyboard(parseInt(nextInput.first().attr("id")));
+          var nextInput = this.findNextInput($(input).find("#" + this.lastAddedNode.iid).parent()); 
+          
+          this.setCursorAndBuildKeyboard(    parseInt(nextInput.nextAll(".input-spot").attr("id")));
+          console.log("nextInput : "+nextInput.nextAll(".input-spot").attr("id"));
         }
         // if no input point is chosen at this point, we select the last empty element
         else if ($(".expected-elements").children().length === 0) {
           var lastInputPoint = $(input).children(".input-spot").last();
           this.setCursorAndBuildKeyboard(parseInt(lastInputPoint.attr("id")));
+          console.log("lastInputPoint : "+lastInputPoint);
         }
 
         $(input).i18n();
@@ -943,6 +946,17 @@ define([
         $(input).find(".btn").css("padding", "3px 6px");
 
         return input;
+      },
+      findNextInput: function(selected) {
+      	//
+      	while(typeof selected != "undefined") {
+      		console.log("selected(inside) : "+selected.nextAll(".input-spot").attr("id"));
+      		if(selected.nextAll(".input-spot").length != 0) {
+      			return selected;
+      		}
+      		selected = selected.parent();
+      	}
+      	
       },
       buildInputFromJSON: function() {
         $(".programInput").html(this.getInputFromJSON());
