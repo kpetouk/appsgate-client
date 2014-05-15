@@ -161,13 +161,14 @@ define([
         } else {
           for (var o in curNode) {
             if (typeof curNode[o] === "object") {
+              var prevIid = curNode[o].iid;
               // If adding an element to a rules array, we add an empty element to allow further insertions
-              if (parseInt(curNode[o].iid) === parseInt(pos) && $.isArray(curNode) && (curNode[o].type === "mandatory" || curNode[o].type === "empty")) {
-                if(curNode.length <= 1 || (curNode.length > 1 && curNode[curNode.length-2].type !== "empty")){
+              curNode[o] = this.recursivelyAppend(nodeToAppend, pos, curNode[o]);
+              if (parseInt(prevIid) === parseInt(pos) && $.isArray(curNode)) {
+                if(curNode.length-1 == o){
                   curNode.push(this.setIidOfJson(this.getEmptyJSON("empty")));
                 }
               }
-              curNode[o] = this.recursivelyAppend(nodeToAppend, pos, curNode[o]);
             }
           }
         }
@@ -913,25 +914,25 @@ define([
 
         return input;
       },
-      buildInputFromJSON: function() {
+      getInputFromJSON: function() {
         if (this.checkProgramAndBuildKeyboard()) {
           this.isValid = true;
         } else {
           this.isValid = false;
         }
-        $(".programInput").html(this.buildInputFromNode(this.programJSON));
+        var input = $.parseHTML(this.buildInputFromNode(this.programJSON));
 
         if (this.currentNode === -1 && this.lastAddedNode !== null) {
-          var nextInput = $("#" + this.lastAddedNode.iid).parent().nextAll(".input-spot");
+          var nextInput = $(input).find("#" + this.lastAddedNode.iid).parent().nextAll(".input-spot");
           this.setCursorAndBuildKeyboard(parseInt(nextInput.first().attr("id")));
         }
         // if no input point is chosen at this point, we select the last empty element
         else if ($(".expected-elements").children().length === 0) {
-          var lastInputPoint = $(".programInput").children(".input-spot").last();
+          var lastInputPoint = $(input).children(".input-spot").last();
           this.setCursorAndBuildKeyboard(parseInt(lastInputPoint.attr("id")));
         }
 
-        appRouter.currentMenuView.$el.i18n();
+        $(input).i18n();
 
         var keyBands = $(".expected-elements").children();
         var self = this;
@@ -939,7 +940,12 @@ define([
           self.sortKeyband(this);
         });
 
-        $(".programInput").find(".btn").css("padding", "3px 6px");
+        $(input).find(".btn").css("padding", "3px 6px");
+
+        return input;
+      },
+      buildInputFromJSON: function() {
+        $(".programInput").html(this.getInputFromJSON());
       },
       sortKeyband: function(keyband) {
         keyband = $(keyband);

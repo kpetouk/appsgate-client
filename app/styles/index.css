@@ -218,17 +218,17 @@ div {
 }
 
 #places {
-	background-image: url("../img/home/place1.svg");	
+	background-image: url("../img/home/place1.svg");
 	background-size:100% 100%;
 }
 
 #devices {
-	background-image: url("../img/home/device1.svg");	
+	background-image: url("../img/home/device1.svg");
 	background-size:100% 100%;
 }
 
 #services {
-	background-image: url("../img/home/service1.svg");	
+	background-image: url("../img/home/service1.svg");
 	background-size:100% 100%;
 }
 
@@ -238,7 +238,7 @@ div {
 }
 
 #users {
-	background-image: url("../img/home/user1.svg");	
+	background-image: url("../img/home/user1.svg");
 	background-size:100% 100%;
 }
 
@@ -274,7 +274,7 @@ div {
   position:relative;
   background:white;
   /*width: auto;*/
-  min-height:100%; 
+  min-height:100%;
   padding: 0.5em;
   display: inline-block;
   border: dotted #404040;
@@ -525,7 +525,7 @@ div {
   height:40%
 }
 
-.btn-primary-ro {
+.read-only .btn-primary {
   color:#428bca !important;
   background: transparent !important;
   border: none !important;
@@ -535,7 +535,7 @@ div {
   background:#FFCC66 !important;
 }
 
-.btn-prog-action-ro {
+.read-only .btn-prog-action {
   color:#FFCC66 !important;
   background: transparent !important;
   border: none !important;
@@ -546,7 +546,7 @@ div {
   background: #9999FF !important;
 }
 
-.btn-prog-device-ro {
+.read-only .btn-prog-device {
   color: #9999FF !important;
   background: transparent !important;
   border: none !important;
@@ -557,23 +557,27 @@ div {
   background: #CC66FF !important;
 }
 
-.btn-prog-service-ro {
+.read-only .btn-prog-service {
   color: #CC66FF !important;
   background: transparent !important;
   border: none !important;
 }
 
-.btn-read-only {
+.read-only .btn {
   color: black;
   background: transparent;
   border: none !important;
 }
 
-.btn-read-only:hover,
-.btn-read-only:focus {
+.read-only .btn:hover,
+.read-only .btn:focus {
   color: black;
   background: transparent !important;
   border: none !important;
+}
+
+.read-only .glyphicon-trash {
+  display:none;
 }
 
 .btn-backspace {
@@ -675,13 +679,6 @@ div {
 .expected-programs > button{
   background:black;
   color:white
-}
-
-.btn-current {
-  position:relative;
-  border:0px;
-  padding-right: 20px;
-  display: inline-block;
 }
 
 .btn-current {

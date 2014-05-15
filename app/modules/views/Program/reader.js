@@ -77,32 +77,26 @@ define([
         appRouter.navigate("#programs", {trigger: true});
       },
       refreshDisplay: function(e) {
-        if (e.get("type") !== 21) {
-          this.Mediator.buildInputFromJSON();
-          // translate the view
-          this.$el.i18n();
+        if (typeof e === "undefined" || e.get("type") !== 21) {
+          var input = this.Mediator.getInputFromJSON();
           var self = this;
           _.defer(function() {
-            self.applyReadMode();
+            input = self.applyReadMode(input);
+            $(".programInput").html(input).addClass("read-only");
           });
         }
+        $("body").i18n();
       },
-      applyReadMode: function() {
+      applyReadMode: function(input) {
         // setting selects in read mode
-        $('.editorWorkspace').find('select').prop('disabled', true);
-        $('.editorWorkspace :input').prop('disabled', true);
-        $(".programInput").find(".btn").addClass("btn-read-only");
-        $(".programInput").find(".btn-primary").addClass("btn-primary-ro");
-        $(".programInput").find(".btn-prog-action").addClass("btn-prog-action-ro");
-        $(".programInput").find(".btn-prog-device").addClass("btn-prog-device-ro");
-        $(".programInput").find(".btn-prog-service").addClass("btn-prog-service-ro");
-        $(".programInput").find("select").replaceWith(function() {
+        $(input).find("select").replaceWith(function() {
           return '<span>' + this.selectedOptions[0].innerHTML + '</span>';
         });
-        $(".programInput").find("input").replaceWith(function() {
+        $(input).find("input").replaceWith(function() {
           return '<span>' + this.value + '</span>';
         });
-        $(".programInput").find(".glyphicon-trash").hide();
+
+        return input;
       },
       /**
       * Render the editor view
@@ -132,18 +126,13 @@ define([
           // hide the error message
           $("#edit-program-name-modal .text-error").hide();
 
-          this.Mediator.buildInputFromJSON();
+          this.refreshDisplay();
 
           // fix the programs list size to be able to scroll through it
           this.resizeDiv($(self.$el.find(".editorWorkspace")[0]), true);
 
           $(".programInput").height("auto");
         }
-        // translate the view
-        this.$el.i18n();
-
-        this.applyReadMode();
-
         return this;
       }
 
