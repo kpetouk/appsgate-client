@@ -305,10 +305,12 @@ define([
           this.Mediator.buildInputFromJSON();
           // translate the view
           this.$el.i18n();
-          if (this.model.get("runningState") === "DEPLOYED") {
-            $(".led").addClass("led-default").removeClass("led-red");
-          } else {
-            $(".led").addClass("led-red").removeClass("led-default");
+          if (this.model.get("runningState") === "PROCESSING" || this.model.get("runningState") === "WAITING") {
+            $(".led").addClass("led-green").removeClass("led-red").removeClass("led-default");
+          } else if (this.model.get("runningState") === "INVALID"){
+            $(".led").addClass("led-red").removeClass("led-green").removeClass("led-default");
+          } else{
+            $(".led").addClass("led-default").removeClass("led-green").removeClass("led-red");
           }
         }
       },
