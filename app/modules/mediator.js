@@ -150,7 +150,7 @@ define([
 
         // reset the selection because a node was added
         this.setCurrentPos(-1);
-        this.buildInputFromJSON();
+        dispatcher.trigger("refreshDisplay");
       },
       appendNode: function(node, pos) {
         this.programJSON = this.recursivelyAppend(node, pos, this.programJSON);
@@ -922,18 +922,7 @@ define([
         }
         var input = $.parseHTML(this.buildInputFromNode(this.programJSON));
 
-        if (this.currentNode === -1 && this.lastAddedNode !== null) {
-          var nextInput = this.findNextInput($(input).find("#" + this.lastAddedNode.iid).parent()); 
-          
-          this.setCursorAndBuildKeyboard(    parseInt(nextInput.nextAll(".input-spot").attr("id")));
-          console.log("nextInput : "+nextInput.nextAll(".input-spot").attr("id"));
-        }
-        // if no input point is chosen at this point, we select the last empty element
-        else if ($(".expected-elements").children().length === 0) {
-          var lastInputPoint = $(input).children(".input-spot").last();
-          this.setCursorAndBuildKeyboard(parseInt(lastInputPoint.attr("id")));
-          console.log("lastInputPoint : "+lastInputPoint);
-        }
+        $(input).find(".btn").css("padding", "3px 6px");
 
         $(input).i18n();
 
@@ -942,8 +931,6 @@ define([
         keyBands.each(function(index) {
           self.sortKeyband(this);
         });
-
-        $(input).find(".btn").css("padding", "3px 6px");
 
         return input;
       },
@@ -956,7 +943,7 @@ define([
       		}
       		selected = selected.parent();
       	}
-      	
+
       },
       buildInputFromJSON: function() {
         $(".programInput").html(this.getInputFromJSON());

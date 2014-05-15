@@ -28,6 +28,7 @@ define([
 
         this.listenTo(devices, "change", this.refreshDisplay);
         this.listenTo(services, "change", this.refreshDisplay);
+        this.listenTo(dispatcher, "refreshDisplay", this.refreshDisplay);
       },
       /**
       * Callback to start a program
