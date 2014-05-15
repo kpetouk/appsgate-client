@@ -497,7 +497,9 @@
         "mandatory-keyword"							: "Obligatoire",
         "nothing-keyword"							: "Rien",
         "is-turned-on-lamp-state"					: "allumée",
-		"state-verb"								: "est"
+		"state-verb"								: "est",
+		
+		"domicube-inactivated"						: "le domicube est désactivé"
 
 
     },

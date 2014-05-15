@@ -23,7 +23,7 @@ define([
      * return the list of available events
      */
     getEvents: function() {
-      return ["Face1", "Face2", "Face3"];
+      return ["Face1", "Face2", "Face3", "Face4", "Face5", "inactivate"];
     },
     /**
      * return the keyboard code for a given event
@@ -39,7 +39,6 @@ define([
           $(btn).append("<img src='/app/img/night.png' width='36px'>");
           v.eventName = "newFace";
           v.eventValue = "1";
-//          v.phrase = "language.pushed-telec-event-up";
           v.icon = "/app/img/night.png";
           $(btn).attr("json", JSON.stringify(v));
           break;
@@ -47,7 +46,6 @@ define([
           $(btn).append("<img src='/app/img/meal.png' width='36px'>");
           v.eventName = "newFace";
           v.eventValue = "2";
-//          v.phrase = "language.pushed-telec-event-up";
           v.icon = "/app/img/meal.png";
           $(btn).attr("json", JSON.stringify(v));
           break;
@@ -55,8 +53,29 @@ define([
           $(btn).append("<img src='/app/img/music.png' width='36px'>");
           v.eventName = "newFace";
           v.eventValue = "3";
-//          v.phrase = "language.pushed-telec-event-up";
           v.icon = "/app/img/music.png";
+          $(btn).attr("json", JSON.stringify(v));
+          break;
+        case "Face4":
+          $(btn).append("<img src='/app/img/lan.svg' width='36px'>");
+          v.eventName = "newFace";
+          v.eventValue = "4";
+          v.icon = "/app/img/lan.svg";
+          $(btn).attr("json", JSON.stringify(v));
+          break;
+        case "Face5":
+          $(btn).append("<img src='/app/img/music.png' width='36px'>");
+          v.eventName = "newFace";
+          v.eventValue = "5";
+          v.icon = "/app/img/music.png";
+          $(btn).attr("json", JSON.stringify(v));
+          break;
+        case "inactivate":
+          $(btn).append("<span data-i18n='language.domicube-inactivated'></span>");
+          v.eventName = "newFace";
+          v.eventValue = "5";
+          //v.icon = "/app/img/music.png";
+          v.phrase = "language.domicube-inactivated";
           $(btn).attr("json", JSON.stringify(v));
           break;
         default:
