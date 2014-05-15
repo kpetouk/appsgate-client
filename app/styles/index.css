@@ -563,6 +563,28 @@ div {
   border: none !important;
 }
 
+.btn-prog-service {
+  color:white;
+  background: #CC66FF !important;
+}
+
+.read-only .btn-prog-service {
+  color: #CC66FF !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+.btn-prog-prog {
+  color:white;
+  background: black !important;
+}
+
+.read-only .btn-prog-prog {
+  color: black !important;
+  background: transparent !important;
+  border: none !important;
+}
+
 .read-only .btn {
   color: black;
   background: transparent;

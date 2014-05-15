@@ -893,7 +893,7 @@ define([
           input += this.tplWaitNode(param);
           break;
         case "programCall":
-          input += "<button class='btn btn-prog btn-primary' id='" + jsonNode.iid + "'><span>" + jsonNode.name + "</span></button>";
+          input += "<button class='btn btn-prog btn-prog-prog' id='" + jsonNode.iid + "'><span>" + jsonNode.name + "</span></button>";
           break;
         default:
           input += "<button class='btn btn-prog btn-primary' id='" + jsonNode.iid + "'><span>" + jsonNode.type + "</span></button>";
