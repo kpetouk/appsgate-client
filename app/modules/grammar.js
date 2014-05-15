@@ -37,7 +37,6 @@ define([
                 return null;
             } catch (e) {
                 console.log(e);
-                console.warn("Invalid program");
                 return this.tryParse(s, e);
             }
         },
