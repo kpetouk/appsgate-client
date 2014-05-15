@@ -587,7 +587,6 @@ define([
                     o = serviceTypes[type][0];
                     var boolProps = o.getBooleanProperties();
                     for (a in boolProps) {
-                    	console.log("Youhouh, adding "+boolProps[a]);
                     	var btn = o.getKeyboardForProperty(boolProps[a]);
                     	json = {};
                     	json = JSON.parse($(btn).attr('json'));

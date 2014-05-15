@@ -29,7 +29,7 @@
     </select>
     
     <% if (node.methodName === "isWeatherSimplifiedCodeForecast" ) { %>
-    	<span data-i18n="language.state-verb"></span>
+    	<span data-i18n="language.weather-code-verb"></span>
     <select id="code-forecast-<%= node.iid %>" class="code-forecast-picker" target-id="<%= node.iid %>">
         <option <% if (node.args[2].value === "0") { %>selected<% } %> value="0" data-i18n="language.weather-code-0"></option>
         <option <% if (node.args[2].value === "1") { %>selected<% } %> value="1" data-i18n="language.weather-code-1"></option>

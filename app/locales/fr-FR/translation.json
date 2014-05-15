@@ -508,6 +508,7 @@
 		"weather-max-at"							: "la température maximale prévue à",
 		"weather-avg-at"							: "la température moyenne prévue à",
 		"weather-avg-at"							: "la température moyenne prévue à",
+		"weather-code-verb"							: "annonce",
 		"weather-town-grenoble"						: "Grenoble",
 		"weather-town-paris"						: "Paris",
 		"weather-town-lyon"							: "Lyon",
@@ -516,14 +517,14 @@
 		"weather-for-0"								: "aujourd'hui",
 		"weather-for-1"								: "demain",
 		"weather-for-2"								: "après demain",
-		"weather-code-0"							: "soleil",
-		"weather-code-1"							: "nuages",
-		"weather-code-2"							: "pluie",
-		"weather-code-3"							: "neige",
-		"weather-code-4"							: "orages",
-		"weather-code-5"							: "brouillard",
-		"weather-code-6"							: "autres",
-		"weather-code-7"							: "exceptionnelle"		
+		"weather-code-0"							: "du soleil",
+		"weather-code-1"							: "des nuages",
+		"weather-code-2"							: "de la pluie",
+		"weather-code-3"							: "de la neige",
+		"weather-code-4"							: "des oragess",
+		"weather-code-5"							: "du brouillard",
+		"weather-code-6"							: "d'autres conditions",
+		"weather-code-7"							: "des conditions rares"		
 
 	},
 	"keyboard": {
