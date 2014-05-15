@@ -15,9 +15,9 @@ define([
         "mouseup .btn-prog": "onClickProg",
         "click #end-edit-button": "onClickEndEdit",
         "change .lamp-color-picker": "onChangeLampColorNode",
-        "change .weather-town-picker": "onChangeTownNode",        
-        "change .day-forecast-picker": "onChangeDayForecastNode",        
-        "change .code-forecast-picker": "onChangeCodeForecastNode",        
+        "change .weather-town-picker": "onChangeTownNode",
+        "change .day-forecast-picker": "onChangeDayForecastNode",
+        "change .code-forecast-picker": "onChangeCodeForecastNode",
         "change .number-input": "onChangeNumberValue",
         "change .arg-input": "onChangeArgValue",
         "change .volume-input": "onChangeMediaVolume",
@@ -107,16 +107,16 @@ define([
           e.stopPropagation();
           this.onBrowseMedia($(button));
         }
-        else {
+        else if (button.tagName.toUpperCase() !== "SELECT" && button.tagName !== "INPUT"  && button.tagName !== "TEXTAREA"){
           while (button !== null && typeof button.classList === 'undefined' || !button.classList.contains('btn-prog')) {
             button = button.parentNode;
           }
           if ($(button).hasClass("glyphicon-trash")) {
             this.Mediator.setCurrentPos(button.id);
             this.Mediator.removeSelectedNode();
-          } 
+          }
           this.Mediator.setCursorAndBuildKeyboard(button.id);
-          this.refreshDisplay(e);
+          this.refreshDisplay();
         }
       },
       // Displays a tree of items the player can read
@@ -236,7 +236,7 @@ define([
         e.stopPropagation();
         var iid = $(e.currentTarget).attr("target-id");
         var newTown = e.currentTarget.selectedOptions[0].value;
-        var value = {"type": "String", "value": newTown};        
+        var value = {"type": "String", "value": newTown};
         this.Mediator.setNodeArg(iid, 0, value);
 
         // clearing selection
@@ -246,7 +246,7 @@ define([
         e.stopPropagation();
         var iid = $(e.currentTarget).attr("target-id");
         var newDay = e.currentTarget.selectedOptions[0].value;
-        var value = {"type": "int", "value": newDay};        
+        var value = {"type": "int", "value": newDay};
         this.Mediator.setNodeArg(iid, 1, value);
 
         // // clearing selection
@@ -256,12 +256,12 @@ define([
         e.stopPropagation();
         var iid = $(e.currentTarget).attr("target-id");
         var newCode = e.currentTarget.selectedOptions[0].value;
-        var value = {"type": "int", "value": newCode};        
+        var value = {"type": "int", "value": newCode};
         this.Mediator.setNodeArg(iid, 2, value);
 
         // // clearing selection
         // this.resetSelection();
-      },        
+      },
       onChangeNumberValue: function(e) {
         e.stopPropagation();
         var iid = $(e.currentTarget).attr("target-id");
