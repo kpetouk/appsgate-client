@@ -85,6 +85,13 @@ define([
             $(".programInput").html(input).addClass("read-only");
           });
         }
+        if (this.model.get("runningState") === "PROCESSING" || this.model.get("runningState") === "WAITING") {
+          $("#led-" + this.model.get("id")).addClass("led-green").removeClass("led-red").removeClass("led-default");
+        } else if (this.model.get("runningState") === "INVALID"){
+          $("#led-" + this.model.get("id")).addClass("led-red").removeClass("led-green").removeClass("led-default");
+        } else{
+          $("#led-" + this.model.get("id")).addClass("led-default").removeClass("led-green").removeClass("led-red");
+        }
         $("body").i18n();
       },
       applyReadMode: function(input) {
