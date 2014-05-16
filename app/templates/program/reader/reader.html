@@ -18,11 +18,9 @@
 		<% } %>
 
 		<div class="pull-right">
-        <% if ((program.get("runningState") === "WAITING") || program.get("runningState") === "PROCESSING") { %>
-				<button type="button" id="<%= program.get('id') %>" class="btn btn-default stop-program-button" data-i18n="programs.action.stop"></button>
-        <% } else if (program.get("runningState") === "DEPLOYED") { %>
-				<button type="button" id="<%= program.get('id') %>" class="btn btn-default start-program-button" data-i18n="programs.action.start"></button>
-			<% } %>
+        <button type="button" id="<%= program.get('id') %>" class="btn btn-default stop-program-button" data-i18n="programs.action.stop"></button>
+        <button type="button" id="<%= program.get('id') %>" class="btn btn-default start-program-button" data-i18n="programs.action.start"></button>
+
 
 			<button id="delete-popover" class="btn btn-default" rel="popover">
 				<i class="glyphicon glyphicon-trash"></i><span data-i18n="programs.delete-program"></span>

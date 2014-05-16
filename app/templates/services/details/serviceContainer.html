@@ -24,16 +24,6 @@
 			<%= sensorType %>
 		</div>
 	</li>
-		<li class="list-group-item">
-			<strong data-i18n="services.place-label"></strong>
-			<div class="pull-right">
-				<% if (service.get("placeId") === "-1") { %>
-					<span data-i18n="services.service-unlocated"></span>
-				<% } else { %>
-					<%= places.get(service.get("placeId")).get("name")%>
-				<% } %>
-			</div>
-		</li>
 	<li class="list-group-item">
 		<strong data-i18n="services.status-label"></strong>
 		<div class="pull-right">
@@ -71,7 +61,7 @@
 							<p class="hide text-danger" data-i18n="modal-edit-service.name-already-existing"></p>
 						</div>
 					</div><br>
-						<div class="row">
+						<!--div class="row">
 							<div class="col-md-3" data-i18n="modal-edit-service.place-label"></div>
 							<div class="col-md-9">
 								<select id="service-place" class="form-control">
@@ -82,8 +72,8 @@
 									<% }) %>
 								</select>
 							</div>
-						</div>
-					
+						</div-->
+
 				</form>
 			</div>
 			<div class="modal-footer">

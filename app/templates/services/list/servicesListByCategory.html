@@ -23,7 +23,7 @@
         <% } else { %>
             <span data-i18n="services.weather.name.plural"></span>
         <% } %>
-    <% } %>    
+    <% } %>
 </div>
 
 <!-- render located services -->
@@ -31,18 +31,6 @@
     <% places.forEach(function(place) { %>
         <% if (place.getTypeServices(type).length > 0) { %>
             <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                        <% if (place.get("name") !== "") { %>
-                            <%= place.get("name") %>
-                        <% } else { %>
-                            <em data-i18n="places-details.place-no-name"></em>
-                        <% } %>
-                        <span class="badge pull-right">
-                            <%= place.getTypeServices(type).length %>
-                        </span>
-                    </h3>
-                </div>
                 <div class="list-group">
                     <% place.getTypeServices(type).forEach(function(s) { %>
                         <a href="#services/<%= s.get('id') %>" class="list-group-item">

@@ -1,32 +1,10 @@
 <form class="form-horizontal">
         <legend>Modifier le capteur</legend>
-        <input type="hidden" id="id" value="<%= service.get('id') %>" /> 
+        <input type="hidden" id="id" value="<%= service.get('id') %>" />
         <div class="control-group">
             <label class="control-label" for="serviceName">Nom du capteur</label>
             <div class="controls">
                 <input type="text" id="serviceName" class="serviceName" value="<%= service.get('name') %>">
-            </div>
-        </div>
-        <div class="control-group">
-            <label class="control-label" for="selectRoom">Emplacement</label>
-            <div class="controls">
-                <select>
-                    <% _.each(places, function(place) { %>
-                        <option value=<%=place.get("id") %>
-                            <% if (place.get("id") === service.get("placeId")) { %>
-                            selected="selected"
-                            <% } %>>
-                            <%= place.get("name") %>
-                        </option>
-                    <% }); %>
-                    <option value="-1" <% if (service.get("placeId") == -1) { %>
-                        selected="selected"
-                        <% } %>>
-                        Non d&eacute;fini
-                    </option>
-                </select>
-                <span class="help-block">Type du capteur : <span class="sensorType"></span></span><br />
-                <span class="help-block">Valeur : <span class="sensorValue"></span></span>
             </div>
         </div>
         <div class="control-group">

@@ -66,18 +66,11 @@ define([
                     if (Backbone.history.fragment === "places/" + placeId) {
                         appRouter.navigate("#places", {trigger: true});
                     }
-
-                    // update the grammar
-                    /*delete window.grammar;
-                    window.grammar = new Grammar();*/
                 }
             });
             // listen to the event when a device has been moved
             dispatcher.on("moveDevice", function(messageData) {
                 self.moveDevice(messageData.srcLocationId, messageData.destLocationId, messageData.deviceId, false);
-                // update the grammar
-                /*delete window.grammar;
-                window.grammar = new Grammar();*/
             });
             // send the request to fetch the places
             communicator.sendMessage({
@@ -88,7 +81,7 @@ define([
         },
         /**
          * Return the name of the place where a device is located
-         * 
+         *
          * @param device
          * @return Name of the place where the device is located
          */
@@ -101,7 +94,7 @@ define([
         },
         /**
          * After removing a place from the collection, its devices need to be unlocated
-         * 
+         *
          * @param removedPlace Place that has been removed
          */
         updateDevicesRemovedPlace: function(removedPlace) {
@@ -157,6 +150,6 @@ define([
             }
         }
     });
-    
+
     return Places;
 });
