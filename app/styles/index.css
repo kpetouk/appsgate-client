@@ -713,3 +713,7 @@ div {
 .btn-trash {
   cursor:pointer;
 }
+
+.fix-row {
+  margin-left:15px;
+}

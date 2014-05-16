@@ -78,26 +78,26 @@ define([
         appRouter.navigate("#programs", {trigger: true});
       },
       refreshDisplay: function(e) {
-        if (typeof e === "undefined" || e.get("type") !== 21) {
-          var input = this.Mediator.getInputFromJSON();
-          var self = this;
-          _.defer(function() {
-            input = self.applyReadMode(input);
-            $(".programInput").html(input).addClass("read-only");
-          });
-        }
-        if (this.model.get("runningState") === "PROCESSING" || this.model.get("runningState") === "WAITING") {
-          $("#led-" + this.model.get("id")).addClass("led-green").removeClass("led-red").removeClass("led-default");
-          $(".start-program-button").hide();
-          $(".stop-program-button").show();
-        } else if (this.model.get("runningState") === "INVALID"){
-          $("#led-" + this.model.get("id")).addClass("led-red").removeClass("led-green").removeClass("led-default");
-          $(".start-program-button").hide();
-          $(".stop-program-button").hide();
-        } else{
-          $("#led-" + this.model.get("id")).addClass("led-default").removeClass("led-green").removeClass("led-red");
-          $(".start-program-button").show();
-          $(".stop-program-button").hide();
+        var input = this.Mediator.getInputFromJSON();
+        var self = this;
+        _.defer(function() {
+          input = self.applyReadMode(input);
+          $(".programInput").html(input).addClass("read-only");
+        });
+        if(typeof this.model !== "undefined"){
+          if (this.model.get("runningState") === "PROCESSING" || this.model.get("runningState") === "WAITING") {
+            $("#led-" + this.model.get("id")).addClass("led-green").removeClass("led-red").removeClass("led-default");
+            $(".start-program-button").hide();
+            $(".stop-program-button").show();
+          } else if (this.model.get("runningState") === "INVALID"){
+            $("#led-" + this.model.get("id")).addClass("led-red").removeClass("led-green").removeClass("led-default");
+            $(".start-program-button").hide();
+            $(".stop-program-button").hide();
+          } else{
+            $("#led-" + this.model.get("id")).addClass("led-default").removeClass("led-green").removeClass("led-red");
+            $(".start-program-button").show();
+            $(".stop-program-button").hide();
+          }
         }
         $("body").i18n();
       },
