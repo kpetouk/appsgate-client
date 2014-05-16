@@ -1,6 +1,7 @@
 define([
     "app",
     "models/device/device",
+    "text!templates/program/nodes/defaultActionNode.html",    
     "models/device/temperaturesensor",
     "models/device/illuminationsensor",
     "models/device/switchsensor",
@@ -12,7 +13,7 @@ define([
     "models/device/actuator",
     "models/device/domicube",
     "models/device/coreclock"
-], function(App, Device, TemperatureSensor, IlluminationSensor, SwitchSensor, ContactSensor, KeyCardSensor, ARDLock, Plug, PhillipsHue, Actuator, DomiCube, CoreClock) {
+], function(App, Device, ActionTemplate, TemperatureSensor, IlluminationSensor, SwitchSensor, ContactSensor, KeyCardSensor, ARDLock, Plug, PhillipsHue, Actuator, DomiCube, CoreClock) {
 
     var Devices = {};
 
@@ -190,11 +191,11 @@ define([
          */ 
         getTemplateActionByType: function(type,param) {
             if (this.templates[type]) {
-                return this.templates[type](param);  
+                return this.templates[type](param);
             } else {
-                console.error("No template is defined for type: " + type);
+                console.warn("No template is defined for type: " + type);
             }
-            return "";
+            return _.template(ActionTemplate)(param);
         },
         /**
          * @return Dictionnary of the devices sorted by their type - key is the type id, value - array of devices corresponding the type

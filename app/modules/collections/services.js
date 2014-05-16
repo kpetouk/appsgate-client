@@ -1,11 +1,12 @@
 define([
     "app",
     "models/service/service",
+    "text!templates/program/nodes/defaultActionNode.html",
     "models/service/mediaplayer",
     "models/service/mediabrowser",
     "models/service/mail",
     "models/service/weather"    
-], function(App, Service, MediaPlayer, MediaBrowser, Mail, Weather) {
+], function(App, Service, ActionTemplate, MediaPlayer, MediaBrowser, Mail, Weather) {
 
     var Services = {};
 
@@ -114,9 +115,9 @@ define([
             if (this.templates[type]) {
                 return this.templates[type](param);  
             } else {
-                console.error("No template is defined for type: " + type);
+                console.warn("No template is defined for type: " + type);
             }
-            return "";
+            return _.template(ActionTemplate)(param);
         },
     });
 

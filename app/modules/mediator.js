@@ -741,7 +741,6 @@ define([
         return services.get(id).get("name");
       },
       buildActionNode: function(param) {
-        var result = "";
         if (param.node.target.deviceType) {
           return devices.getTemplateActionByType(param.node.target.deviceType, param);
         }
