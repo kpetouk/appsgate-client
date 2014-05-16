@@ -35,6 +35,7 @@ define([
         this.listenTo(this.model, "change", this.refreshDisplay);
         this.listenTo(devices, "change", this.refreshDisplay);
         this.listenTo(services, "change", this.refreshDisplay);
+        this.listenTo(dispatcher, "refreshDisplay", this.refreshDisplay);
       },
       validEditName: function(e) {
         e.preventDefault();
@@ -303,6 +304,7 @@ define([
         //if (e == undefined || ((typeof e.attributes != "undefined") && e.attributes["type"] !== 21)) {
         if (typeof e === "undefined" || ((typeof e.attributes != "undefined") && e.attributes["type"] !== 21)) {
           this.Mediator.buildInputFromJSON();
+          this.applyEditMode();
           // translate the view
           this.$el.i18n();
           if (this.model.get("runningState") === "PROCESSING" || this.model.get("runningState") === "WAITING") {
@@ -312,6 +314,20 @@ define([
           } else{
             $(".led").addClass("led-default").removeClass("led-green").removeClass("led-red");
           }
+        }
+      },
+      applyEditMode: function() {
+        if (this.Mediator.currentNode === -1 && this.Mediator.lastAddedNode !== null) {
+          var nextInput = this.Mediator.findNextInput($(".programInput").find("#" + this.Mediator.lastAddedNode.iid).parent());
+
+          this.Mediator.setCursorAndBuildKeyboard(parseInt(nextInput.nextAll(".input-spot").attr("id")));
+          console.log("nextInput : "+nextInput.nextAll(".input-spot").attr("id"));
+        }
+        // if no input point is chosen at this point, we select the last empty element
+        if ($(".expected-elements").children().length === 0) {
+          var lastInputPoint = $(".programInput").children(".input-spot").last();
+          this.Mediator.setCursorAndBuildKeyboard(parseInt(lastInputPoint.attr("id")));
+          console.log("lastInputPoint : "+lastInputPoint);
         }
       },
       /**
@@ -328,6 +344,7 @@ define([
 
         if (this.model) {
           this.Mediator.buildInputFromJSON();
+          this.applyEditMode();
 
           // fix the programs list size to be able to scroll through it
           this.resizeDiv($(self.$el.find(".editorWorkspace")[0]), true);
