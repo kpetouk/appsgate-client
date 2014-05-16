@@ -18,9 +18,10 @@ define([
   "text!templates/program/nodes/comparatorNode.html",
   "text!templates/program/nodes/numberNode.html",
   "text!templates/program/nodes/waitNode.html",
+  "text!templates/program/nodes/programNode.html",
   "text!templates/program/editor/expectedInput.html",
   "text!templates/program/nodes/defaultPropertyNode.html"
-  ], function(App, Grammar, defaultActionTemplate, lampActionTemplate, mediaActionTemplate, ifNodeTemplate, whenNodeTemplate, deviceNodeTemplate, serviceNodeTemplate, defaultEventNodeTemplate, clockEventNodeTemplate, stateNodeTemplate, keepStateNodeTemplate, whileNodeTemplate, whitespaceNodeTemplate, booleanExpressionNodeTemplate, comparatorNodeTemplate, numberNodeTemplate, waitNodeTemplate, expectedInputTemplate, defaultPropertyNodeTemplate) {
+  ], function(App, Grammar, defaultActionTemplate, lampActionTemplate, mediaActionTemplate, ifNodeTemplate, whenNodeTemplate, deviceNodeTemplate, serviceNodeTemplate, defaultEventNodeTemplate, clockEventNodeTemplate, stateNodeTemplate, keepStateNodeTemplate, whileNodeTemplate, whitespaceNodeTemplate, booleanExpressionNodeTemplate, comparatorNodeTemplate, numberNodeTemplate, waitNodeTemplate, programNodeTemplate, expectedInputTemplate, defaultPropertyNodeTemplate) {
     var ProgramMediator = {};
     // router
     ProgramMediator = Backbone.Model.extend({
@@ -41,6 +42,7 @@ define([
       tplComparatorNode: _.template(comparatorNodeTemplate),
       tplNumberNode: _.template(numberNodeTemplate),
       tplWaitNode: _.template(waitNodeTemplate),
+      tplProgramNode: _.template(programNodeTemplate),
       tplExpectedInput: _.template(expectedInputTemplate),
       tplDefaultPropertyNode: _.template(defaultPropertyNodeTemplate),
       initialize: function() {
@@ -77,15 +79,20 @@ define([
         return this.maxNodeId;
       },
       setCurrentPos: function(id) {
-        this.currentNode = id;
-        if (!this.readonly) {
-          $(".programInput").find(".selected-node").removeClass("selected-node");
-          $("#" + parseInt(id)).addClass("selected-node");
+        if (id) {
+            console.log("Setting current_pos to: " + id);
+            this.currentNode = id;
+            if (!this.readonly) {
+              $(".programInput").find(".selected-node").removeClass("selected-node");
+              $("#" + parseInt(id)).addClass("selected-node");
+            }
+        } else {
+            this.currentNode = -1;
+            console.error("A non valid pos has been passed to setCurrent pos: " + id);
         }
       },
       setCursorAndBuildKeyboard: function(id) {
         this.setCurrentPos(id);
-        console.log(" Set cursor ---------> " + id);
         this.checkProgramAndBuildKeyboard(this.programJSON);
       },
       buttonPressed: function(button) {
@@ -721,15 +728,15 @@ define([
       },
       getDeviceName: function(id) {
         if (devices.get(id) == undefined) {
-          console.warn("device not found: " + id);
-          return "Not FOUND";
+          console.error("device not found: " + id);
+          return "UNKNOWN DEVICE";
         }
         return devices.get(id).get("name");
       },
       getServiceName: function(id) {
         if (services.get(id) == undefined) {
-          console.warn("service not found: " + id);
-          return "Not FOUND";
+          console.error("service not found: " + id);
+          return "UNKNOWN SERVICE";
         }
         return services.get(id).get("name");
       },
@@ -740,6 +747,9 @@ define([
         }
         if (param.node.target.serviceType) {
           return services.getTemplateActionByType(param.node.target.serviceType, param);
+        }
+        if (param.node.target.type === "programCall" || param.node.target.type === "programs") {
+            return this.tplProgramNode(param);
         }
         return this.tplDefaultActionNode(param);
       },
@@ -834,11 +844,11 @@ define([
           input += this.tplWhenNode(param);
           break;
         case "device":
-          param.node.name = devices.get(param.node.value).get("name");
+          param.node.name = this.getDeviceName(param.node.value);
           input += this.tplDeviceNode(param);
           break;
         case "service":
-          param.node.name = services.get(param.node.value).get("name");
+          param.node.name = this.getServiceName(param.node.value);
           input += this.tplServiceNode(param);
           break;
         case "event":
@@ -976,7 +986,7 @@ define([
           this.resetProgramJSON();
           this.checkProgramAndBuildKeyboard();
         } else {
-          console.warn("Invalid at " + n.id);
+          console.log("Invalid at " + n.id);
           if (typeof n.id !== "undefined") {
             this.setCurrentPos(n.id);
           }
