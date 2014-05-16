@@ -25,7 +25,7 @@
 
     <% if (node.methodName == "setVolume" ) { %>
     <span data-i18n='language.complement-media-action' />
-    <input type="number" class="volume-input" id="media-volume-<%=node.iid%>" target-id="<%=node.iid%>"/>
+    <input type="number" class="volume-input" id="media-volume-<%=node.iid%>" value="<%=node.args[0].value%>" target-id="<%=node.iid%>"/>
     <% } %>
 
 </div>

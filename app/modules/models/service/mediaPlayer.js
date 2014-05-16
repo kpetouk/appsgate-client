@@ -68,7 +68,9 @@ define([
                 case "setVolume":
                     $(btn).append("<span data-i18n='keyboard.set-volume-media-action'/>");
                     v.methodName = "setVolume";
-                    v.phrase = "language.set-volume-media-action"
+                    v.phrase = "language.set-volume-media-action";
+          			v.args = [ {"type":"int", "value": "0"}];
+ 
                     $(btn).attr("json", JSON.stringify(v));
                     break;
                 default:
