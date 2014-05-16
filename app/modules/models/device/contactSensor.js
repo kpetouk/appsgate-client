@@ -63,15 +63,18 @@ define([
     */
     getKeyboardForState: function(state){
       var btn = jQuery.parseHTML("<button class='btn btn-default btn-keyboard specific-node' ></button>");
+      var v = this.getJSONState("mandatory");
       switch(state) {
         case "isOpen":
           $(btn).append("<span>la porte est ouverte<span>");
-          var v = {"type": "state", "name": "isOpen", "object": {"iid": "X", "type": "mandatory"}, "iid": "X", "phrase": "devices.contact.state.opened"};
+          v.phrase = "devices.contact.state.opened";
+          v.name = "isOpen";
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "isClose":
           $(btn).append("<span>la porte est fermée<span>");
-          var v = {"type": "state", "name": "isClose", "object": {"iid": "X", "type": "mandatory"}, "iid": "X", "phrase": "devices.contact.state.closed"};
+          v.name = "isClose";
+          v.phrase = "devices.contact.state.closed";
           $(btn).attr("json", JSON.stringify(v));
           break;
         default:
