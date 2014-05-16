@@ -18,9 +18,10 @@ define([
   "text!templates/program/nodes/comparatorNode.html",
   "text!templates/program/nodes/numberNode.html",
   "text!templates/program/nodes/waitNode.html",
+  "text!templates/program/nodes/programNode.html",
   "text!templates/program/editor/expectedInput.html",
   "text!templates/program/nodes/defaultPropertyNode.html"
-  ], function(App, Grammar, defaultActionTemplate, lampActionTemplate, mediaActionTemplate, ifNodeTemplate, whenNodeTemplate, deviceNodeTemplate, serviceNodeTemplate, defaultEventNodeTemplate, clockEventNodeTemplate, stateNodeTemplate, keepStateNodeTemplate, whileNodeTemplate, whitespaceNodeTemplate, booleanExpressionNodeTemplate, comparatorNodeTemplate, numberNodeTemplate, waitNodeTemplate, expectedInputTemplate, defaultPropertyNodeTemplate) {
+  ], function(App, Grammar, defaultActionTemplate, lampActionTemplate, mediaActionTemplate, ifNodeTemplate, whenNodeTemplate, deviceNodeTemplate, serviceNodeTemplate, defaultEventNodeTemplate, clockEventNodeTemplate, stateNodeTemplate, keepStateNodeTemplate, whileNodeTemplate, whitespaceNodeTemplate, booleanExpressionNodeTemplate, comparatorNodeTemplate, numberNodeTemplate, waitNodeTemplate, programNodeTemplate, expectedInputTemplate, defaultPropertyNodeTemplate) {
     var ProgramMediator = {};
     // router
     ProgramMediator = Backbone.Model.extend({
@@ -41,6 +42,7 @@ define([
       tplComparatorNode: _.template(comparatorNodeTemplate),
       tplNumberNode: _.template(numberNodeTemplate),
       tplWaitNode: _.template(waitNodeTemplate),
+      tplProgramNode: _.template(programNodeTemplate),
       tplExpectedInput: _.template(expectedInputTemplate),
       tplDefaultPropertyNode: _.template(defaultPropertyNodeTemplate),
       initialize: function() {
@@ -745,6 +747,9 @@ define([
         }
         if (param.node.target.serviceType) {
           return services.getTemplateActionByType(param.node.target.serviceType, param);
+        }
+        if (param.node.target.type === "programCall" || param.node.target.type === "programs") {
+            return this.tplProgramNode(param);
         }
         return this.tplDefaultActionNode(param);
       },
