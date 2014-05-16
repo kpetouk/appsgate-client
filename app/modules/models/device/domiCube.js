@@ -64,10 +64,10 @@ define([
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "Face5":
-          $(btn).append("<img src='/app/img/music.png' width='36px'>");
+          $(btn).append("<img src='/app/img/question.svg' width='36px'>");
           v.eventName = "newFace";
           v.eventValue = "5";
-          v.icon = "/app/img/music.png";
+          v.icon = "/app/img/question.svg";
           $(btn).attr("json", JSON.stringify(v));
           break;
         case "inactivate":
